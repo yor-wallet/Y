@@ -200,7 +200,7 @@ const TxResult = (() => {
       const sv = r.data, q = cur.req;
       return confirmed({ id: ID.receipt(), transactionId: sv.transactionId, status: 'SUCCESS', amount: sv.amount, currency: 'OMR', fee: sv.fee, vat: sv.vat, total: sv.total,
         destinationAmount: sv.destinationAmount, destinationCurrency: sv.destinationCurrency, exchangeRate: sv.exchangeRate,
-        beneficiary: { name: cur.name, phone: q.beneficiary.phone, country: 'OM', networkName: q.provider || null }, network: q.provider || null,
+        beneficiary: { name: cur.name, phone: q.beneficiary.phone, country: q.beneficiary.country || 'OM', networkName: q.provider || null }, network: q.provider || null,
         reference: sv.reference, createdAt: Date.now() });
     }
     cur.note = r.state === 'not_found' ? 'notFound' : 'unknownYet';

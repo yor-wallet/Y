@@ -80,7 +80,9 @@ const omDisplay = d => OM_DIAL + ' ' + omFormatLocal(d);
 function formatPhoneIntl(p){
   const raw = String(p == null ? '' : p).trim();
   const digits = raw.replace(/\D/g, '');
-  return (/^968\d{8}$/.test(digits) && /^(\+|00)?968/.test(raw.replace(/\s/g, ''))) ? omDisplay(digits.slice(3)) : raw;
+  if (/^968\d{8}$/.test(digits) && /^(\+|00)?968/.test(raw.replace(/\s/g, ''))) return omDisplay(digits.slice(3));
+  const w = (typeof Destinations !== 'undefined') ? Destinations.formatIntl(raw) : null;     /* 12.16.0 : Mali (+223) and Côte d'Ivoire (+225) numbers */
+  return w || raw;
 }
 /* The sender's own number (8 local digits) when it is an Omani number, else '' — used to refuse a transfer to oneself. */
 function ownOmDigits(){
@@ -102,20 +104,26 @@ function progressSteps(current){
 /* The recipient, as a compact card (amount and review screens). */
 function recipientCard(b){
   const name = b && b.name ? b.name : '';
+  const d = Destinations.forBeneficiary(b);
   return '<div class="sp-to glass-subtle"><span class="sp-to-ic">' + icon('user', 20) + '</span><span class="sp-to-body"><small>' + escapeHtml(t('sp.to')) + '</small>' +
-    (name ? '<b>' + escapeHtml(name) + '</b>' : '') + '<span class="ltr sp-to-num" dir="ltr">' + escapeHtml(formatPhoneIntl(b.phone)) + '</span></span>' +
-    '<span class="sp-to-flag">' + flag('OM') + '</span></div>';
+    (name ? '<b>' + escapeHtml(name) + '</b>' : '') + '<span class="ltr sp-to-num" dir="ltr">' + escapeHtml(formatPhoneIntl(b.phone)) + '</span>' +
+    (d.brand === 'orange' ? '<span class="sp-to-svc">' + Destinations.orangeMark() + escapeHtml(Destinations.typeLabel(d)) + '</span>' : '') + '</span>' +
+    '<span class="sp-to-flag">' + flag(d.iso) + '</span></div>';
 }
 
 /* Screen 1 — the mobile number, and nothing else. */
 function renderCountrySelect(){
+  Destinations.set(TX_STATE.beneficiary && TX_STATE.beneficiary.country);   /* a new send starts on Oman (txReset); coming back from the amount keeps the choice */
+  const d0 = Destinations.get();
   return tfTopbar(t('sp.title')) + progressSteps('NUMBER') +
     '<div class="screen-body sp" style="padding-top:0">' +
       '<div class="sp-hero"><span class="sp-hero-ic">' + icon('mobile', 26) + '</span><h1>' + escapeHtml(t('sp.heading')) + '</h1><p>' + escapeHtml(t('sp.sub')) + '</p></div>' +
+      Destinations.pickerHtml() +
       '<div class="field"><label class="field-label" for="sp-num">' + escapeHtml(t('sp.label')) + '</label>' +
-        '<div class="field-box sp-box" dir="ltr"><span class="sp-cc"><span class="sp-flag">' + flag('OM') + '</span><b>' + OM_DIAL + '</b></span>' +
-        '<input type="tel" id="sp-num" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="18" dir="ltr" lang="en" placeholder="9123 4567" enterkeyhint="done" aria-describedby="sp-hint sp-err"></div>' +
+        '<div class="field-box sp-box" dir="ltr"><span class="sp-cc"><span class="sp-flag" id="sp-flag">' + flag(d0.iso) + '</span><b id="sp-dial">' + d0.dial + '</b></span>' +
+        '<input type="tel" id="sp-num" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="24" dir="ltr" lang="en" placeholder="' + d0.placeholder + '" enterkeyhint="done" aria-describedby="sp-hint sp-err"></div>' +
         '<div class="sp-hint" id="sp-hint">' + escapeHtml(t('sp.hint')) + '</div>' +
+        '<div class="sp-note" id="sp-note" hidden>' + Destinations.orangeMark() + '<span>' + escapeHtml(t('dst.note.orange')) + '</span></div>' +
         '<div class="field-err" id="sp-err" role="alert"></div></div>' +
       '<div id="sp-known" aria-live="polite"></div>' +
       '<button class="btn btn-primary" id="sp-next" disabled style="margin-top:calc(14px*var(--ui))">' + t('action.continue') + '</button>' +
@@ -132,6 +140,7 @@ function renderTxAmount(){
       recipientCard(b) +
       '<div class="amount-wrap" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:var(--sp-6) var(--sp-5) var(--sp-3)"><input type="text" id="amt-input" inputmode="decimal" placeholder="0.000" autocomplete="off" aria-label="' + escapeHtml(t('transfer.amount')) + '" style="width:100%;text-align:center;font-family:var(--font-mono);font-weight:700;font-size:clamp(34px,9vw,46px);letter-spacing:-.03em;background:transparent;color:var(--text);padding:0"><span class="amount-cur" style="font-family:var(--font-mono);font-size:calc(14px*var(--ui));font-weight:600;color:var(--text-2);letter-spacing:.12em">OMR</span>' +
         '<span class="caption" style="margin-top:calc(8px*var(--ui))">' + escapeHtml(t('home.main')) + ' · <span class="ltr" dir="ltr">' + escapeHtml(CurrencyEngine.format(acc.availableBalance, acc.currency)) + '</span></span></div>' +
+      '<div class="dst-est" id="amt-est" aria-live="polite" hidden></div>' +
       '<div class="field-err" id="amt-err" role="alert"></div>' +
       '<button class="btn btn-primary" id="amt-next" disabled style="margin-top:var(--sp-4)">' + t('action.continue') + '</button>' +
     '</div>';
@@ -141,16 +150,21 @@ function renderTxAmount(){
 function renderTxReview(){
   if (!TX_STATE.amount || !TX_STATE.beneficiary){ R.go(TX_STATE.beneficiary ? 'tx-amount' : 'country-select'); return ''; }
   const bd = TX_STATE.breakdown, b = TX_STATE.beneficiary;
+  const dest = Destinations.forBeneficiary(b), q = Destinations.quote(bd.amount, dest);
   return tfTopbar(t('tx.review')) + progressSteps('CONFIRMATION') +
     '<div class="screen-body" style="padding-top:0">' +
       '<div class="glass-elevated receipt-panel">' +
         '<div class="receipt-benef"><div class="receipt-avatar">' + icon('user', 24) + '</div><div class="receipt-benef-body"><div class="receipt-benef-label">' + t('receipt.beneficiary') + '</div>' +
           (b.name ? '<div class="receipt-benef-name">' + escapeHtml(b.name) + '</div>' : '') +
           '<div class="receipt-benef-phone ltr" dir="ltr">' + escapeHtml(formatPhoneIntl(b.phone)) + '</div>' +
-          '<div class="receipt-benef-country"><span class="receipt-flag">' + flag('OM') + '</span><span>' + escapeHtml(t('sp.type')) + '</span></div>' +
+          '<div class="receipt-benef-country"><span class="receipt-flag">' + flag(dest.iso) + '</span><span>' + escapeHtml(Destinations.typeLabel(dest)) + '</span></div>' +
         '</div></div>' +
       '</div>' +
-      '<div class="summary"><div class="summary-row total"><span class="summary-k">' + t('receipt.amountSent') + '</span><span class="summary-v">' + CurrencyEngine.format(bd.amount, 'OMR') + '</span></div></div>' +
+      '<div class="summary"><div class="summary-row total"><span class="summary-k">' + t('receipt.amountSent') + '</span><span class="summary-v">' + CurrencyEngine.format(bd.amount, 'OMR') + '</span></div>' +
+        (q ? '<div class="summary-row"><span class="summary-k">' + escapeHtml(t('dst.est')) + '</span><span class="summary-v ltr" dir="ltr">≈ ' + escapeHtml(CurrencyEngine.format(q.amount, q.cur)) + '</span></div>' +
+             '<div class="summary-row"><span class="summary-k">' + escapeHtml(t('dst.rate')) + '</span><span class="summary-v ltr" dir="ltr">1 OMR = ' + escapeHtml(Number(q.rate).toLocaleString('en-US', { maximumFractionDigits: 4 })) + ' ' + q.cur + '</span></div>' : '') +
+      '</div>' +
+      (q ? '<p class="dst-estnote">' + escapeHtml(t('dst.estNote')) + '</p>' : '') +
       '<div style="margin-top:var(--sp-4)"><div class="swipe-track" id="swipe" role="presentation"><div class="swipe-fill"></div><div class="swipe-label" id="swipe-label">' + t('transfer.swipe') + '</div><div class="swipe-thumb" id="swipe-thumb" tabindex="0" role="button" aria-label="' + t('transfer.swipe') + '">' + icon('send', 24) + '</div></div>' +
       '<button class="btn btn-primary swipe-kb-confirm" id="swipe-kb-confirm" aria-label="' + t('transfer.swipe') + '">' + icon('send', 20) + '<span>' + t('tx.confirm') + '</span></button></div>' +
     '</div>';

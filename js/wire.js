@@ -154,29 +154,52 @@ function wire(id){
     /* 12.12.0 — the one question of the send flow: the recipient's mobile number (Oman, +968, 8 digits starting with 7 or 9) */
     const input = document.getElementById('sp-num'), next = document.getElementById('sp-next'), err = document.getElementById('sp-err'), known = document.getElementById('sp-known');
     const own = ownOmDigits();
-    const findContact = d => { try { return ContactsEngine.all().find(c => omLocalDigits(c.digits || c.number) === d) || null; } catch(e){ return null; } };
+    const findContact = d => { try { return Destinations.get().iso === 'OM' ? (ContactsEngine.all().find(c => omLocalDigits(c.digits || c.number) === d) || null) : null; } catch(e){ return null; } };
     function check(final){
-      const d = omLocalDigits(input.value);
+      const dst = Destinations.get();
+      const d = Destinations.digits(input.value, dst);
       err.textContent = ''; known.innerHTML = ''; next.disabled = true;
       if (!d) return null;
-      if (!/^[79]/.test(d)){ err.textContent = t('sp.err_prefix'); return null; }
-      if (d.length < 8){ if (final) err.textContent = t('sp.err_short'); return null; }
-      if (own && d === own){ err.textContent = t('sp.err_self'); return null; }
+      const v = Destinations.validate(d, dst, final);
+      if (!v.ok){ if (v.key) err.textContent = t(v.key); return null; }
+      if (dst.iso === 'OM' && own && d === own){ err.textContent = t('sp.err_self'); return null; }
       const c = findContact(d);
       if (c) known.innerHTML = '<div class="sp-known glass-subtle">' + icon('check', 18) + '<span>' + escapeHtml(t('sp.known')) + '</span><b>' + escapeHtml(c.fullName || c.name || '') + '</b></div>';
       next.disabled = false;
-      return { d, contact: c };
+      return { d, contact: c, dst };
     }
-    input.oninput = () => { const f = omFormatLocal(omLocalDigits(input.value)); if (input.value !== f) input.value = f; check(false); };
+    /* 12.16.0 — destination picker: Oman (as before), Orange Money Mali, Orange Money Côte d'Ivoire. Only the prefix, the placeholder, the hint and the rules change. */
+    function paintDestination(){
+      const dst = Destinations.get();
+      document.getElementById('sp-flag').innerHTML = flag(dst.iso);
+      document.getElementById('sp-dial').textContent = dst.dial;
+      input.placeholder = dst.placeholder;
+      document.getElementById('sp-hint').textContent = dst.iso === 'OM' ? t('sp.hint') : t('dst.hint.' + dst.iso);
+      document.getElementById('sp-note').hidden = dst.brand !== 'orange';
+      document.querySelectorAll('.dst-opt').forEach(o => { const on = o.getAttribute('data-dst') === dst.iso; o.classList.toggle('on', on); o.setAttribute('aria-checked', on ? 'true' : 'false'); });
+    }
+    document.querySelectorAll('.dst-opt').forEach(o => {
+      o.onclick = () => {
+        const iso = o.getAttribute('data-dst');
+        if (iso === Destinations.get().iso) return;
+        Destinations.set(iso);
+        input.value = '';                                   /* a number of one country is never reused for another */
+        paintDestination(); check(false);
+        UIKit.haptic('tap');
+        try { input.focus({ preventScroll:true }); } catch(e){ /* rien */ }
+      };
+    });
+    paintDestination();
+    input.oninput = () => { const dst = Destinations.get(); const f = Destinations.format(Destinations.digits(input.value, dst), dst); if (input.value !== f) input.value = f; check(false); };
     input.onblur = () => { check(true); };
     input.onkeydown = e => { if (e.key === 'Enter' && !next.disabled){ e.preventDefault(); next.click(); } };
     next.onclick = () => {
       const r = check(true); if (!r) return;
-      const svc = CountryTransferEngine.getService('OM', 'local_phone');
-      TX_STATE.country = CountryTransferEngine.getConfig('OM');
-      TX_STATE.serviceId = 'local_phone';
-      TX_STATE.provider = { id: svc.id, name: svc.name[LANG] || svc.name.en, kind:'local' };
-      TX_STATE.beneficiary = { uid:null, name: r.contact ? (r.contact.fullName || r.contact.name || null) : null, phone: omIntl(r.d), identifierType:'PHONE', identifierValue: r.d, country:'OM' };
+      const dst = r.dst, svc = Destinations.serviceFor(dst);
+      TX_STATE.country = CountryTransferEngine.getConfig(dst.iso);
+      TX_STATE.serviceId = dst.serviceId;
+      TX_STATE.provider = { id: svc.id, name: svc.name[LANG] || svc.name.en, kind: dst.kind };
+      TX_STATE.beneficiary = { uid:null, name: r.contact ? (r.contact.fullName || r.contact.name || null) : null, phone: Destinations.intl(r.d, dst), identifierType: dst.identifierType, identifierValue: r.d, country: dst.iso };
       TX_STATE.amount = 0; TX_STATE.fx = null;
       R.go('tx-amount');
     };
@@ -212,11 +235,21 @@ function wire(id){
       const p = s.split('.');
       return p.length > 1 ? (p[0] + '.' + p.slice(1).join('').slice(0, 3)) : p[0];
     };
+    const dstQ = Destinations.forBeneficiary(TX_STATE.beneficiary), estEl = document.getElementById('amt-est');
+    function paintEstimate(v){
+      /* 12.16.0 — Orange Money: an ESTIMATE in XOF under the amount (indicative table, same value as the server's); nothing is shown for Oman */
+      if (!estEl || dstQ.cur === 'OMR') return;
+      const q = v > 0 ? Destinations.quote(v, dstQ) : null;
+      estEl.hidden = !q;
+      if (q) estEl.innerHTML = '<span class="dst-est-k">' + escapeHtml(t('dst.est')) + '</span><b class="ltr" dir="ltr">≈ ' + escapeHtml(CurrencyEngine.format(q.amount, q.cur)) + '</b>' +
+        '<small class="ltr" dir="ltr">1 OMR = ' + escapeHtml(Number(q.rate).toLocaleString('en-US', { maximumFractionDigits: 4 })) + ' ' + q.cur + ' · ' + escapeHtml(t('dst.rate')) + '</small>';
+    }
     function update(){
       const clean = sanitize(input.value); if (clean !== input.value) input.value = clean;
       const v = Math.round((parseFloat(clean) || 0) * 1000) / 1000;
       const bd = FeeEngine.compute(v, true);                 /* 12.12.0 : no fees, total = amount (the server debits the amount alone) */
       err.textContent = ''; next.disabled = true;
+      paintEstimate(v);
       if (v <= 0) return;
       if (v < CONFIG.LIMITS.minOMR){ err.textContent = tf('sp.err_min', { n: CurrencyEngine.format(CONFIG.LIMITS.minOMR, 'OMR') }); return; }
       if (v > CONFIG.LIMITS.perTxOMR){ err.textContent = tf('sp.err_max', { n: CurrencyEngine.format(CONFIG.LIMITS.perTxOMR, 'OMR') }); return; }
@@ -229,7 +262,7 @@ function wire(id){
       const v = Math.round((parseFloat(sanitize(input.value)) || 0) * 1000) / 1000; if (v <= 0) return;
       TX_STATE.amount = v;
       TX_STATE.breakdown = FeeEngine.compute(v, true);
-      TX_STATE.fx = null;
+      TX_STATE.fx = Destinations.quote(v, dstQ);            /* null for Oman (rials to rials) */
       R.go('tx-review');
     };
     setTimeout(() => { try { input.focus({ preventScroll:true }); } catch(e){ /* rien */ } }, 150);
@@ -258,12 +291,14 @@ function wire(id){
       thumb.classList.add('success');
       UIKit.haptic('tap');
       const b = TX_STATE.beneficiary, bd = TX_STATE.breakdown, provider = TX_STATE.provider;
+      const dst = Destinations.forBeneficiary(b);               /* 12.16.0 : Oman (OMR) or Orange Money Mali / Côte d'Ivoire (XOF) */
+      const benReq = Destinations.beneficiaryReq(b.phone, dst);
       R.go('processing');
       /* The request starts AT ONCE; the animation shows what really happens (secured -> sending -> confirmed / not completed). */
       const out = await ProcessingEngine.run(async () => {
         const res = await TransferEngine.sendExternal({
-          amount: bd.amount, destCurrency: 'OMR', provider: provider ? provider.name : '',
-          beneficiary: { firstName: '', lastName: '', phone: b.phone, country: 'OM', identifierType: 'PHONE' },
+          amount: bd.amount, destCurrency: Destinations.destCurrency(dst), provider: provider ? provider.name : '',
+          beneficiary: benReq,
           idemKey: _idemKey, pinGrant: _pin.grant
         });
         if (!res.ok) return { ok:false, error: res.error, uncertain: !!res.uncertain };
@@ -272,7 +307,7 @@ function wire(id){
           id: ID.receipt(), transactionId: sv.transactionId, status: 'SUCCESS',
           amount: sv.amount, currency: 'OMR', fee: sv.fee, vat: sv.vat, total: sv.total,
           destinationAmount: sv.destinationAmount, destinationCurrency: sv.destinationCurrency, exchangeRate: sv.exchangeRate,
-          beneficiary: { name: b.name, phone: b.phone, country: 'OM', networkName: provider ? provider.name : null },
+          beneficiary: { name: b.name, phone: b.phone, country: dst.iso, networkName: provider ? provider.name : null },
           network: provider ? provider.name : null, reference: sv.reference, createdAt: Date.now()
         };
         try { await recordLocalReceipt(receipt); } catch(e){ console.error(e); }
@@ -282,8 +317,8 @@ function wire(id){
          asks the person to check its status first. Nothing is ever sent again automatically. */
       if (!out.ok){
         TxResult.show({ kind: out.uncertain ? 'uncertain' : 'failed', error: out.error, late: out.late || null,
-          req: { amount: bd.amount, destCurrency: 'OMR', provider: provider ? provider.name : '',
-                 beneficiary: { firstName: '', lastName: '', phone: b.phone, country: 'OM', identifierType: 'PHONE' }, idemKey: _idemKey },
+          req: { amount: bd.amount, destCurrency: Destinations.destCurrency(dst), provider: provider ? provider.name : '',
+                 beneficiary: benReq, idemKey: _idemKey },
           name: b.name || '', phone: b.phone });
         return;
       }
