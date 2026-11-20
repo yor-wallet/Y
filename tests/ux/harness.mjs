@@ -8,16 +8,17 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const ROOT_APP = ROOT;
 const MOCK = fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), 'mock-supabase.js'), 'utf8');
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.woff2': 'font/woff2', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.ico': 'image/x-icon', '.txt': 'text/plain' };
 
 /* The production Content-Security-Policy (vercel.json) is applied to every page the tests open: a script, style or request it would refuse shows up as a console error. */
 const CSP = (() => { try { const h = JSON.parse(fs.readFileSync(path.join(ROOT, 'vercel.json'), 'utf8')).headers[0].headers.find(x => x.key === 'Content-Security-Policy'); return h ? h.value : ''; } catch (e) { return ''; } })();
-export function serve(port = 0){
+export function serve(port = 0, root = ROOT_APP, index){
   const srv = http.createServer((req, res) => {
-    let p = decodeURIComponent(req.url.split('?')[0]); if (p === '/') p = '/index.html';
-    const f = path.join(ROOT, p);
-    if (!f.startsWith(ROOT) || !fs.existsSync(f) || fs.statSync(f).isDirectory()){ res.writeHead(404); res.end('nf'); return; }
+    let p = decodeURIComponent(req.url.split('?')[0]); if (p === '/') p = index ? '/' + index : (process.env.FP_DEV ? '/index.src.html' : '/index.html');
+    const f = path.join(root, p);
+    if (!f.startsWith(root) || !fs.existsSync(f) || fs.statSync(f).isDirectory()){ res.writeHead(404); res.end('nf'); return; }
     const hdr = { 'content-type': TYPES[path.extname(f)] || 'application/octet-stream', 'cache-control': 'no-store' };
     if (CSP && path.extname(f) === '.html') hdr['content-security-policy'] = CSP;
     res.writeHead(200, hdr);
@@ -38,6 +39,10 @@ export async function openApp(browser, base, opts = {}){
   await page.addInitScript(() => { document.addEventListener('securitypolicyviolation', e => console.error('CSP violation: ' + e.violatedDirective + ' ' + e.blockedURI)); });
   await page.route('**/*', route => {
     const u = route.request().url();
+    /* feature switches are patched into reference-data.js, which only exists as a separate file in the readable page: use that page for this context */
+    if (opts.features && (u === base || u === base + 'index.html')){
+      return route.fulfill({ status: 200, contentType: 'text/html', headers: CSP ? { 'content-security-policy': CSP } : {}, body: fs.readFileSync(path.join(ROOT, 'index.src.html'), 'utf8') });
+    }
     if (opts.features && /\/js\/data\/reference-data\.js$/.test(u)){
       let body = fs.readFileSync(path.join(ROOT, 'js/data/reference-data.js'), 'utf8');
       for (const k of Object.keys(opts.features)) body = body.replace(new RegExp(k + '\\s*:\\s*(true|false)'), k + ': ' + opts.features[k]);
@@ -51,6 +56,7 @@ export async function openApp(browser, base, opts = {}){
     return route.abort();
   });
   await page.addInitScript((o) => { window.__FP_SPLASH_MIN = 50; try { if (o.lang) localStorage.setItem('fp_lang_test', o.lang); if (o.theme) localStorage.setItem('fp_theme', o.theme); } catch (e) {} }, opts);
+  if (opts.net){ const c = await ctx.newCDPSession(page); await c.send('Network.enable'); await c.send('Network.emulateNetworkConditions', opts.net); }
   await page.goto(base, { waitUntil: 'load' });
   if (!opts.signedOut && opts.unlock !== false){
     await page.waitForSelector('.yl', { timeout: 15000 });

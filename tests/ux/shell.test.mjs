@@ -14,4 +14,7 @@ for (const u of shell) if (u !== './' && !fs.existsSync(path.join(ROOT, u))){ co
 const ver = fs.readFileSync(path.join(ROOT, 'js/data/reference-data.js'), 'utf8').match(/version:'([^']+)'/)[1];
 assert.ok(sw.includes("'fp-shell-v" + ver + "'"), 'CACHE name must follow the version ' + ver);
 assert.equal(bad, 0);
+const srcPage = fs.readFileSync(path.join(ROOT, 'index.src.html'), 'utf8');
+for (const m of srcPage.matchAll(/<(?:script|link)[^>]+(?:src|href)="([^"#?]+)"/g)) if (!/^https?:/.test(m[1]) && !fs.existsSync(path.join(ROOT, m[1]))){ console.log('  index.src.html lists a missing file:', m[1]); bad++; }
+assert.equal(bad, 0);
 console.log('  ok   SHELL covers all', loaded.length, 'local scripts / styles (version', ver + ')');

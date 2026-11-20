@@ -1,154 +1,66 @@
 'use strict';
 
 /* ============================================================
-   OPENING ART (12.11.0) — écran d'ouverture animé + 4 illustrations de la présentation.
-   Aucune image externe : tout est dessiné en SVG / CSS (aux couleurs Friendly : turquoise #0B7F75 → #2DD4BF, blanc).
-   Les animations vivent dans css/opening.css ; sans animation (réglage « réduire les animations »), chaque dessin est déjà dans son état final.
+   OPENING ART (13.0.0) — splash + the four illustrations of the introduction.
+   Redrawn for the "Ultramarine" design: one geometric mark (a smile and a coin), flat shapes, the accent colour and ink only.
+   No external image. Animations live in css/ui.css (section 13); with "reduce motion" every drawing is already in its final state.
+   API (unchanged): OpeningArt.splash(lang), OpeningArt.hero(i), OpeningArt.DEFS, OpeningArt.count.
    ============================================================ */
 const OpeningArt = (() => {
-  const esc = (s) => (typeof escapeHtml === 'function' ? escapeHtml(s) : String(s));
-  const MARK_F = 'M190 386V200a66 66 0 0 1 66-66H368';
-  const MARK_BAR = 'M190 264H322';
+  const esc = s => (typeof escapeHtml === 'function' ? escapeHtml(s) : String(s));
+  const SPLASH_TXT = { en: 'Your money, simple and secure.', fr: 'Votre argent, simple et sécurisé.', ar: 'أموالك، بسيطة وآمنة.' };
+  const SMILE = 'M150 300Q256 410 362 300';
+  /* gradients are inlined in each drawing; the prefix keeps ids unique (the hidden splash must never shadow the ones of the introduction) */
+  const defs = p => '<defs><linearGradient id="' + p + '-tile" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6372FF"/><stop offset="1" stop-color="#2F3DDB"/></linearGradient>' +
+    '<linearGradient id="' + p + '-coin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE59A"/><stop offset="1" stop-color="#FFAE2B"/></linearGradient></defs>';
+  /* the mark on its tile (512 grid): used by the splash and the first illustration */
+  const mark = (cls, p) => '<g class="' + (cls || '') + '"><rect width="512" height="512" rx="114" fill="url(#' + p + '-tile)"/>' +
+    '<path class="oa-smile" pathLength="1" d="' + SMILE + '" fill="none" stroke="#fff" stroke-width="62" stroke-linecap="round"/>' +
+    '<circle class="oa-dot" cx="256" cy="176" r="58" fill="url(#' + p + '-coin)"/></g>';
 
-  /* ---------- écran d'ouverture ---------- */
-  const SPLASH_TXT = {
-    en: 'Your money, simple and secure.',
-    fr: 'Votre argent, simple et sécurisé.',
-    ar: 'أموالك، بسيطة وآمنة.'
-  };
-  function letters(word){
-    return Array.from(word).map((ch, i) => '<span class="sp-l" style="--i:' + i + '" aria-hidden="true">' + esc(ch) + '</span>').join('');
-  }
   function splash(lang){
     lang = lang || (typeof LANG === 'string' ? LANG : 'en');
     const ar = lang === 'ar';
-    const word = ar
-      /* l'arabe est cursif : jamais découpé lettre par lettre (cela casserait les liaisons) ni espacé */
-      ? '<span class="sp-name sp-name-ar">فرندي</span><span class="sp-pay sp-pay-ar">باي</span>'
-      : '<span class="sp-name" aria-hidden="true">' + letters('Friendly') + '</span><span class="sp-pay" aria-hidden="true">PAY</span>';
-    return '' +
-      '<div class="sp-bg" aria-hidden="true"><i class="sp-blob sp-b1"></i><i class="sp-blob sp-b2"></i><i class="sp-blob sp-b3"></i><i class="sp-dots"></i></div>' +
-      '<div class="sp-core" role="img" aria-label="' + (ar ? 'فرندي باي' : 'Friendly Pay') + '">' +
-        '<div class="sp-mark" aria-hidden="true">' +
-          '<i class="sp-halo"></i><i class="sp-ring sp-r1"></i><i class="sp-ring sp-r2"></i>' +
-          '<svg class="sp-svg" viewBox="0 0 512 512" focusable="false">' +
-            '<defs><linearGradient id="sp-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3CE0CC"/><stop offset=".5" stop-color="#079A8D"/><stop offset="1" stop-color="#00655B"/></linearGradient>' +
-            '<clipPath id="sp-clip"><rect width="512" height="512" rx="120"/></clipPath></defs>' +
-            '<g class="sp-tile"><rect width="512" height="512" rx="120" fill="url(#sp-g)"/>' +
-              '<g clip-path="url(#sp-clip)"><rect class="sp-shine" x="-200" y="-60" width="120" height="640" fill="#fff" opacity=".28"/></g></g>' +
-            '<g transform="translate(-23 -4)" fill="none" stroke="#fff" stroke-width="66" stroke-linecap="round" stroke-linejoin="round">' +
-              '<path class="sp-f1" pathLength="1" d="' + MARK_F + '"/><path class="sp-f2" pathLength="1" d="' + MARK_BAR + '"/></g>' +
-            '<circle class="sp-dot" cx="321" cy="368" r="36" fill="#FFC24B"/>' +
-          '</svg>' +
-        '</div>' +
-        '<div class="sp-word">' + word + '</div>' +
-        '<p class="sp-tag">' + esc(SPLASH_TXT[lang] || SPLASH_TXT.en) + '</p>' +
-      '</div>' +
-      '<div class="sp-foot" aria-hidden="true"><span class="sp-bar"><i></i></span></div>';
+    return '<div class="sp2" role="img" aria-label="' + (ar ? 'فرندي باي' : 'Friendly Pay') + '">' +
+      '<svg class="sp2-mark" viewBox="0 0 512 512" focusable="false" aria-hidden="true">' + defs('sp2') + mark('sp2-tile', 'sp2') + '</svg>' +
+      '<div class="sp2-word" aria-hidden="true">' + (ar ? 'فرندي <span>باي</span>' : 'Friendly <span>Pay</span>') + '</div>' +
+      '<p class="sp2-tag">' + esc(SPLASH_TXT[lang] || SPLASH_TXT.en) + '</p>' +
+      '<span class="sp2-bar" aria-hidden="true"><i></i></span></div>';
   }
 
-  /* ---------- illustrations de la présentation ---------- */
-  const DEFS = '<svg class="oa-defs" width="0" height="0" aria-hidden="true" focusable="false"><defs>' +
-    '<linearGradient id="oa-teal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3CE0CC"/><stop offset=".5" stop-color="#079A8D"/><stop offset="1" stop-color="#00655B"/></linearGradient>' +
-    '<linearGradient id="oa-teal-d" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#19B9A8"/><stop offset="1" stop-color="#09665E"/></linearGradient>' +
-    '<linearGradient id="oa-amber" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFD77A"/><stop offset="1" stop-color="#F29F1B"/></linearGradient>' +
-    '<linearGradient id="oa-card" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#D9F3EF"/></linearGradient>' +
-    '<radialGradient id="oa-glow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#2DD4BF" stop-opacity=".42"/><stop offset="1" stop-color="#2DD4BF" stop-opacity="0"/></radialGradient>' +
-    '<clipPath id="oa-tile"><rect x="105" y="73" width="110" height="110" rx="30"/></clipPath>' +
-    '<filter id="oa-blur" x="-40%" y="-80%" width="180%" height="260%"><feGaussianBlur stdDeviation="5"/></filter>' +
-    '</defs></svg>';
-
-  const spark = (x, y, s, d) => '<path class="oa-spark" style="--d:' + d + 's" transform="translate(' + x + ' ' + y + ') scale(' + s + ')" d="M0-10C1-3 3-1 10 0 3 1 1 3 0 10-1 3-3 1-10 0-3-1-1-3 0-10Z"/>';
-  const shadow = (cx, cy, rx) => '<ellipse class="oa-shadow" cx="' + cx + '" cy="' + cy + '" rx="' + rx + '" ry="8" fill="#0B7F75" opacity=".22" filter="url(#oa-blur)"/>';
-  const svg = (inner, cls) => '<svg class="oa-svg ' + (cls || '') + '" viewBox="26 12 268 236" aria-hidden="true" focusable="false">' + inner + '</svg>';
-
-  /* 1 — bienvenue : la marque au centre, quatre objets qui tournent autour */
+  /* ---------- the four illustrations (viewBox 320 x 260) ---------- */
+  const INNER_DEFS = defs('oa');
+  const wrap = (inner, cls) => '<svg class="oa2 ' + cls + '" viewBox="0 0 320 260" role="presentation" focusable="false" aria-hidden="true">' + INNER_DEFS + inner + '</svg>';
   function heroWelcome(){
-    const chip = (x, y, cls, body) => '<g transform="translate(' + x + ' ' + y + ')"><g class="oa-chip ' + cls + '">' + body + '</g></g>';
-    return svg(
-      '<circle class="oa-pulse" cx="160" cy="128" r="116" fill="url(#oa-glow)"/>' +
-      '<circle cx="160" cy="128" r="66" fill="none" stroke="var(--accent)" stroke-opacity=".2" stroke-width="1.5"/>' +
-      '<circle class="oa-spin-ring" cx="160" cy="128" r="96" fill="none" stroke="var(--accent)" stroke-opacity=".5" stroke-width="1.6" stroke-dasharray="1 9" stroke-linecap="round"/>' +
-      shadow(160, 216, 46) +
-      '<g class="oa-float"><rect x="105" y="73" width="110" height="110" rx="30" fill="url(#oa-teal)"/>' +
-        '<path clip-path="url(#oa-tile)" d="M105 73h110v36c-38 20-72 20-110 0z" fill="#fff" opacity=".14"/>' +
-        '<g transform="translate(105 73) scale(.215)"><g transform="translate(-23 -4)" fill="none" stroke="#fff" stroke-width="66" stroke-linecap="round" stroke-linejoin="round"><path d="' + MARK_F + '"/><path d="' + MARK_BAR + '"/></g><circle cx="321" cy="368" r="36" fill="#FFC24B"/></g>' +
-      '</g>' +
-      '<g class="oa-orbit">' +
-        chip(160, 32, 'oa-c1', '<circle r="21" fill="url(#oa-amber)"/><circle r="14.5" fill="none" stroke="#fff" stroke-opacity=".65" stroke-width="2"/><path d="M0-7 6 0 0 7-6 0Z" fill="#fff"/>') +
-        chip(256, 128, 'oa-c2', '<rect x="-21" y="-21" width="42" height="42" rx="13" fill="url(#oa-card)" stroke="#0B7F75" stroke-opacity=".18"/><path d="M0-11 10-6.5v5.5c0 6.5-4.5 10.5-10 12.5-5.5-2-10-6-10-12.5v-5.5z" fill="none" stroke="#0B7F75" stroke-width="2.6" stroke-linejoin="round"/><path d="M-4.5 0 -1 3.5 5-3" fill="none" stroke="#0B7F75" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>') +
-        chip(160, 224, 'oa-c3', '<rect x="-21" y="-21" width="42" height="42" rx="13" fill="url(#oa-card)" stroke="#0B7F75" stroke-opacity=".18"/><path d="M10-10-2 2M10-10 4 11 0 3-8-1l18-9Z" transform="translate(-1 0)" fill="none" stroke="#0B7F75" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>') +
-        chip(64, 128, 'oa-c4', '<rect x="-25" y="-16" width="50" height="32" rx="8" fill="url(#oa-teal-d)"/><rect x="-25" y="-8" width="50" height="6" fill="#fff" opacity=".22"/><rect x="-19" y="4" width="11" height="7" rx="2" fill="#fff" opacity=".85"/>') +
-      '</g>' +
-      spark(60, 52, 1, 0) + spark(268, 60, .8, .8) + spark(274, 206, 1, 1.5) + spark(50, 206, .7, .4)
-    , 'oa-welcome');
+    return wrap(
+      '<circle class="oa2-ring" cx="160" cy="130" r="104" fill="none" stroke="var(--ink-4)" stroke-width="1.5" stroke-dasharray="2 8" stroke-linecap="round"/>' +
+      '<g class="oa2-orbit"><circle cx="160" cy="26" r="7" fill="var(--tint)"/><circle cx="264" cy="130" r="5" fill="var(--ink)"/><circle cx="56" cy="130" r="5" fill="#FFC24B"/></g>' +
+      '<g transform="translate(88 58) scale(.28)" class="oa2-float">' + mark('', 'oa') + '</g>', 'oa2-welcome');
   }
-
-  /* 2 — envoyer : une pièce traverse l'arc d'une personne à l'autre, le destinataire reçoit */
   function heroSend(){
-    const person = (cx, cy, cls) =>
-      '<g class="' + cls + '"><circle cx="' + cx + '" cy="' + cy + '" r="36" fill="url(#oa-card)" stroke="#0B7F75" stroke-opacity=".2" stroke-width="1.5"/>' +
-      '<circle cx="' + cx + '" cy="' + (cy - 8) + '" r="11" fill="url(#oa-teal)"/><path d="M' + (cx - 20) + ' ' + (cy + 24) + 'c2-12 10-17 20-17s18 5 20 17a36 36 0 0 1-40 0Z" fill="url(#oa-teal)"/></g>';
-    return svg(
-      '<circle class="oa-pulse" cx="160" cy="130" r="118" fill="url(#oa-glow)"/>' +
-      shadow(70, 206, 34) + shadow(250, 206, 34) +
-      '<path class="oa-flow" d="M100 130Q160 28 220 130" fill="none" stroke="var(--accent)" stroke-opacity=".55" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 10"/>' +
-      '<g class="oa-bolt" transform="translate(160 66)"><circle r="15" fill="url(#oa-teal)"/><path d="M2-8-5 2h5l-2 7 7-10H2l2-7Z" fill="#fff"/></g>' +
-      person(70, 150, 'oa-from') + person(250, 150, 'oa-to') +
-      '<circle class="oa-ripple" cx="250" cy="150" r="38" fill="none" stroke="var(--accent)" stroke-width="3"/>' +
-      '<g class="oa-coin"><g transform="translate(100 130)"><circle r="14" fill="url(#oa-amber)"/><circle r="9.5" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.8"/><path d="M0-4.5 4 0 0 4.5-4 0Z" fill="#fff"/></g></g>' +
-      '<g transform="translate(274 120)"><g class="oa-ok"><circle r="14" fill="#16A37F"/><path d="M-6 0 -2 4 6-4" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></g></g>' +
-      '<rect x="36" y="196" width="68" height="22" rx="11" fill="url(#oa-card)" stroke="#0B7F75" stroke-opacity=".18"/><rect x="216" y="196" width="68" height="22" rx="11" fill="url(#oa-card)" stroke="#0B7F75" stroke-opacity=".18"/>' +
-      '<text x="70" y="211.5" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="10.5" font-weight="700" fill="#0B7F75" direction="ltr">FRD-••••</text>' +
-      '<text x="250" y="211.5" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="10.5" font-weight="700" fill="#0B7F75" direction="ltr">FRD-••••</text>' +
-      spark(160, 28, .9, .2) + spark(40, 90, .7, 1) + spark(286, 84, .8, .6)
-    , 'oa-send');
+    const phone = x => '<rect x="' + x + '" y="92" width="56" height="104" rx="12" fill="var(--cell)" stroke="var(--ink)" stroke-width="3"/><rect x="' + (x + 20) + '" y="102" width="16" height="4" rx="2" fill="var(--ink)"/>';
+    return wrap(
+      '<path d="M84 80Q160 4 236 80" fill="none" stroke="var(--ink-4)" stroke-width="3" stroke-dasharray="1 9" stroke-linecap="round"/>' +
+      '<path class="oa2-trail" pathLength="1" d="M84 80Q160 4 236 80" fill="none" stroke="var(--tint)" stroke-width="4" stroke-linecap="round"/>' +
+      phone(36) + phone(228) +
+      '<circle class="oa2-coin" r="14" fill="url(#oa-coin)"/>' +
+      '<g class="oa2-ok"><circle cx="256" cy="144" r="13" fill="var(--pos)"/><path d="M249 144l5 5 9-10" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></g>' +
+      '<rect x="48" y="150" width="32" height="6" rx="3" fill="var(--tint)"/><rect x="48" y="164" width="20" height="6" rx="3" fill="var(--ink-4)"/>', 'oa2-send');
   }
-
-  /* 3 — crypto : pile de pièces, une pièce qui tourne, un graphique qui monte, un échange */
-  function heroCrypto(){
-    const coinFace = (r) => '<circle r="' + r + '" fill="url(#oa-amber)"/><circle r="' + (r * .7) + '" fill="none" stroke="#fff" stroke-opacity=".65" stroke-width="2.2"/><path d="M0-' + (r * .34) + ' ' + (r * .3) + ' 0 0 ' + (r * .34) + ' -' + (r * .3) + ' 0Z" fill="#fff"/>';
-    const bar = (x, h, d) => '<rect class="oa-bar" style="--d:' + d + 's" x="' + x + '" y="' + (214 - h) + '" width="13" height="' + h + '" rx="4" fill="url(#oa-teal-d)"/>';
-    return svg(
-      '<circle class="oa-pulse" cx="160" cy="130" r="118" fill="url(#oa-glow)"/>' +
-      shadow(160, 218, 58) +
-      '<g><ellipse cx="160" cy="208" rx="46" ry="14" fill="#C97D0F"/><rect x="114" y="190" width="92" height="18" fill="#E3920F"/><ellipse cx="160" cy="190" rx="46" ry="14" fill="url(#oa-amber)"/>' +
-        '<ellipse cx="160" cy="184" rx="46" ry="14" fill="#C97D0F"/><rect x="114" y="166" width="92" height="18" fill="#E3920F"/><ellipse cx="160" cy="166" rx="46" ry="14" fill="url(#oa-amber)"/>' +
-        '<ellipse cx="160" cy="160" rx="46" ry="14" fill="#C97D0F"/><rect x="114" y="142" width="92" height="18" fill="#E3920F"/><ellipse cx="160" cy="142" rx="46" ry="14" fill="url(#oa-amber)"/>' +
-        '<ellipse cx="160" cy="142" rx="30" ry="8.5" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="2"/></g>' +
-      '<g class="oa-hover"><g transform="translate(160 84)"><g class="oa-flip">' + coinFace(34) + '</g></g></g>' +
-      '<g class="oa-chart"><rect x="28" y="112" width="84" height="102" rx="18" fill="url(#oa-card)" stroke="#0B7F75" stroke-opacity=".16"/>' +
-        bar(42, 28, 0) + bar(61, 44, .12) + bar(80, 62, .24) +
-        '</g>' +
-      '<g class="oa-swap" transform="translate(262 150)"><circle r="30" fill="url(#oa-card)" stroke="#0B7F75" stroke-opacity=".16"/>' +
-        '<g class="oa-swap-arrows" fill="none" stroke="#0B7F75" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M-12-4h20m-6-6 6 6-6 6"/><path d="M12 6H-8m6-6-6 6 6 6" transform="translate(0 2)"/></g></g>' +
-      spark(60, 44, .9, .3) + spark(276, 66, .8, 1) + spark(40, 232, .6, .7)
-    , 'oa-crypto');
+  function heroCards(){
+    const chip = '<rect x="22" y="34" width="30" height="22" rx="5" fill="rgba(255,255,255,.85)"/>';
+    return wrap(
+      '<g class="oa2-c2" transform="translate(70 46) rotate(-8 90 56)"><rect width="180" height="112" rx="16" fill="var(--tint)"/>' + chip + '<rect x="22" y="84" width="60" height="7" rx="3.5" fill="rgba(255,255,255,.55)"/></g>' +
+      '<g class="oa2-c1" transform="translate(70 92) rotate(5 90 56)"><rect width="180" height="112" rx="16" fill="var(--ink)"/>' + chip + '<circle cx="146" cy="84" r="11" fill="#FFC24B"/><circle cx="132" cy="84" r="11" fill="rgba(255,255,255,.4)"/><rect x="22" y="84" width="60" height="7" rx="3.5" fill="rgba(255,255,255,.45)"/></g>', 'oa2-cards');
   }
-
-  /* 4 — sécurité : bouclier avec coche qui se dessine, code à 6 chiffres qui se remplit, balayage du visage */
   function heroSecure(){
-    const dot = (x, i) => '<circle class="oa-pin" style="--i:' + i + '" cx="' + x + '" cy="214" r="6"/>';
-    return svg(
-      '<circle class="oa-pulse" cx="160" cy="112" r="112" fill="url(#oa-glow)"/>' +
-      '<circle class="oa-shield-ring" cx="160" cy="108" r="78" fill="none" stroke="var(--accent)" stroke-width="2"/>' +
-      shadow(160, 190, 52) +
-      '<g class="oa-float"><path d="M160 44 224 70v46c0 40-26 66-64 80-38-14-64-40-64-80V70z" fill="url(#oa-teal)"/>' +
-        '<path d="M160 44 224 70v46c0 40-26 66-64 80z" fill="#fff" opacity=".12"/>' +
-        '<path class="oa-check" pathLength="1" d="M132 118 152 138 190 98" fill="none" stroke="#fff" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/></g>' +
-      '<g transform="translate(52 62)"><g class="oa-face"><rect x="-26" y="-26" width="52" height="52" rx="14" fill="url(#oa-card)" stroke="#0B7F75" stroke-opacity=".16"/>' +
-        '<g fill="none" stroke="#0B7F75" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M-17-9v-6a2 2 0 0 1 2-2h6M17-9v-6a2 2 0 0 0-2-2h-6M-17 9v6a2 2 0 0 0 2 2h6M17 9v6a2 2 0 0 1-2 2h-6"/><path d="M-6-4v3M6-4v3M-5 7q5 5 10 0" stroke-width="2.6"/></g>' +
-        '<rect class="oa-scan" x="-18" y="-1" width="36" height="3" rx="1.5" fill="var(--accent)"/></g></g>' +
-      '<g transform="translate(268 70)"><g class="oa-lock"><rect x="-24" y="-24" width="48" height="48" rx="14" fill="url(#oa-card)" stroke="#0B7F75" stroke-opacity=".16"/>' +
-        '<rect x="-10" y="-3" width="20" height="15" rx="4" fill="url(#oa-teal-d)"/><path d="M-6-3v-4a6 6 0 0 1 12 0v4" fill="none" stroke="#0B7F75" stroke-width="3" stroke-linecap="round"/></g></g>' +
-      '<rect x="90" y="196" width="140" height="36" rx="18" fill="url(#oa-card)" stroke="#0B7F75" stroke-opacity=".18"/>' +
-      dot(112, 0) + dot(131, 1) + dot(150, 2) + dot(170, 3) + dot(189, 4) + dot(208, 5) +
-      spark(40, 150, .8, .5) + spark(284, 150, .9, 1.1)
-    , 'oa-secure');
+    const dot = (x, i) => '<circle class="oa2-pin" style="--i:' + i + '" cx="' + x + '" cy="218" r="7"/>';
+    return wrap(
+      '<path class="oa2-shield" d="M160 34 232 62v52c0 46-30 76-72 90-42-14-72-44-72-90V62z" fill="var(--tint)"/>' +
+      '<path class="oa2-check" pathLength="1" d="M128 120l22 22 44-46" fill="none" stroke="#fff" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>' +
+      dot(118, 0) + dot(139, 1) + dot(160, 2) + dot(181, 3) + dot(202, 4), 'oa2-secure');
   }
-
-  const HEROES = [heroWelcome, heroSend, heroCrypto, heroSecure];
-  function hero(i){ const f = HEROES[i]; return f ? f() : ''; }
-
-  return { splash, hero, DEFS, count: HEROES.length };
+  const HEROES = [heroWelcome, heroSend, heroCards, heroSecure];
+  const hero = i => (HEROES[i] || HEROES[0])();
+  return { splash, hero, DEFS: '', count: HEROES.length };   /* gradients are inlined in each drawing (a shared <defs> in a hidden svg would not resolve) */
 })();

@@ -37,7 +37,7 @@ for (const lang of ['en', 'fr', 'ar']){
     await page.fill('#sp-num', '+223 76123456'); await page.dispatchEvent('#sp-num', 'input');
     assert.equal(await page.inputValue('#sp-num'), '76 12 34 56'); assert.ok(await page.locator('#sp-next').isDisabled(), 'names missing: Continue must stay disabled');
     await page.fill('#sp-first', 'Aminata'); await page.fill('#sp-last', 'Traoré');
-    assert.ok(!(await page.locator('#sp-next').isDisabled()));
+    await page.waitForFunction(() => !document.getElementById('sp-next').disabled, null, { timeout: 3000 }).catch(async () => { throw new Error('Continue stayed disabled: ' + JSON.stringify(await page.evaluate(() => ({ num: document.getElementById('sp-num').value, f: document.getElementById('sp-first').value, l: document.getElementById('sp-last').value, err: document.getElementById('sp-err').textContent, nerr: document.getElementById('sp-nerr').textContent, dst: Destinations.get().iso })))); });
     await page.fill('#sp-last', '12'); assert.ok(await page.locator('#sp-next').isDisabled());
     await page.fill('#sp-num', '7612'); await page.dispatchEvent('#sp-num', 'input'); await page.dispatchEvent('#sp-num', 'blur');
     assert.ok((await page.locator('#sp-err').textContent()).length > 0);

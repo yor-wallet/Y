@@ -1,6 +1,6 @@
 # Mise en ligne YOR WALLET 12.1.0 sur Vercel
 
-Ce dossier (`yor-wallet/`) est prêt à être déployé tel quel : site statique, aucune étape de build.
+Ce dossier (`yor-wallet/`) est prêt à être déployé tel quel : site statique, aucune étape de build au déploiement (les bundles `js/app.js` et `css/app.css` sont déjà construits ; après une modification du code, relancer `tools/build.mjs`, voir `architecture.md`).
 Le projet Vercel `yor-wallet` existe déjà sur votre compte (il ne contient pour l'instant qu'une page de test).
 
 ## Ce qui est configuré (`vercel.json`)

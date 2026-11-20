@@ -70,7 +70,7 @@ function applyTheme(mode){
   const eff = dark ? 'dark' : 'light';
   document.documentElement.setAttribute('data-theme', eff);
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute('content', eff === 'dark' ? '#000000' : '#F2F2F7');
+  if (meta) meta.setAttribute('content', eff === 'dark' ? '#000000' : '#FFFFFF');
   /* « Système » suit le téléphone en direct (nuit / jour), sans recharger */
   if (!_themeMq && window.matchMedia){
     try {

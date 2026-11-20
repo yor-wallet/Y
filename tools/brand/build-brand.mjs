@@ -14,14 +14,13 @@ const A = p => path.join(ROOT, 'assets', p);
 for (const d of ['icons/ar', 'brand/png', 'share', 'splash']) fs.mkdirSync(A(d), { recursive: true });
 
 /* ---------- the mark ---------- */
-const DEFS = '<defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3CE0CC"/><stop offset=".5" stop-color="#079A8D"/><stop offset="1" stop-color="#00655B"/></linearGradient>' +
-  '<radialGradient id="hl" cx=".3" cy="0" r=".95"><stop offset="0" stop-color="#fff" stop-opacity=".36"/><stop offset=".62" stop-color="#fff" stop-opacity="0"/></radialGradient>' +
+const DEFS = '<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6372FF"/><stop offset="1" stop-color="#2A33C9"/></linearGradient>' +
+  '<radialGradient id="hl" cx=".3" cy="0" r=".95"><stop offset="0" stop-color="#fff" stop-opacity=".32"/><stop offset=".62" stop-color="#fff" stop-opacity="0"/></radialGradient>' +
   '<linearGradient id="coin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE59A"/><stop offset="1" stop-color="#FFAE2B"/></linearGradient>' +
-  '<filter id="sh" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="10" stdDeviation="11" flood-color="#00362F" flood-opacity=".38"/></filter></defs>';
-const GLYPH = {
-  en: '<g transform="translate(-23 -4)" fill="none" stroke="#fff" stroke-width="66" stroke-linecap="round" stroke-linejoin="round"><path d="M190 386V200a66 66 0 0 1 66-66H368"/><path d="M190 264H322"/></g><circle cx="321" cy="368" r="36" fill="url(#coin)"/>',
-  ar: '<g fill="none" stroke="#fff" stroke-width="62" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="318" cy="296" rx="50" ry="45"/><path d="M368 308Q368 392 290 392H146"/></g><circle cx="318" cy="150" r="36" fill="url(#coin)"/>'
-};
+  '<filter id="sh" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="10" stdDeviation="11" flood-color="#10186B" flood-opacity=".4"/></filter></defs>';
+/* one mark for every language: a smile (Friendly) and a coin (Pay) */
+const GLYPH = { en: '<path d="M150 300Q256 410 362 300" fill="none" stroke="#fff" stroke-width="62" stroke-linecap="round"/><circle cx="256" cy="176" r="58" fill="url(#coin)"/>' };
+GLYPH.ar = GLYPH.en;
 /* rx: 114 = the rounded tile (browsers, in-app logo); 0 = full bleed (iOS masks it itself); scale < 1 = maskable safe zone */
 function markSvg(lang, rx = 114, scale = 1, size = 512){
   const g = scale === 1 ? '<g filter="url(#sh)">' + GLYPH[lang] + '</g>' : '<g transform="translate(256 256) scale(' + scale + ') translate(-256 -256)"><g filter="url(#sh)">' + GLYPH[lang] + '</g></g>';
@@ -29,7 +28,7 @@ function markSvg(lang, rx = 114, scale = 1, size = 512){
 }
 function wordmarkSvg(lang, scheme){
   const dark = scheme === 'dark';                        /* "dark" = dark text for light backgrounds, as before */
-  const ink = dark ? '#0B1F1D' : '#FFFFFF', sub = dark ? '#007A6F' : (lang === 'ar' ? '#BFF5EC' : '#8FF3E3');
+  const ink = dark ? '#0B1F1D' : '#FFFFFF', sub = dark ? '#3B49E8' : '#B9C0FF';
   const inner = DEFS + '<rect width="512" height="512" rx="114" fill="url(#bg)"/><rect width="512" height="512" rx="114" fill="url(#hl)"/><g filter="url(#sh)">' + GLYPH[lang] + '</g>';
   if (lang === 'ar'){
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 120" direction="rtl"><g transform="translate(400 0) scale(.2)">' + inner + '</g>' +
@@ -93,16 +92,16 @@ await shot(wm(wordmarkSvg('ar', 'white')), 1560, 360, A('brand/png/logo-wordmark
 const SPLASH = [[1320, 2868], [1206, 2622], [1290, 2796], [1179, 2556], [1284, 2778], [1170, 2532], [1125, 2436], [1242, 2688], [828, 1792], [1242, 2208], [750, 1334], [640, 1136]];
 for (const [w, h] of SPLASH) for (const th of ['light', 'dark']){
   const m = Math.round(Math.min(w, h) * .26), dark = th === 'dark';
-  const html = '<div style="width:' + w + 'px;height:' + h + 'px;background:' + (dark ? '#000' : '#F2F2F7') + ';display:flex;flex-direction:column;align-items:center;justify-content:center;gap:' + Math.round(m * .2) + 'px">' +
-    sized(markSvg('en'), m) + '<div style="font:700 ' + Math.round(m * .24) + 'px/1.1 Inter,sans-serif;letter-spacing:-.02em;color:' + (dark ? '#fff' : '#000') + '">Friendly <span style="font-weight:500;color:' + (dark ? '#32D4C0' : '#007A6F') + '">Pay</span></div></div>';
+  const html = '<div style="width:' + w + 'px;height:' + h + 'px;background:' + (dark ? '#000' : '#FFFFFF') + ';display:flex;flex-direction:column;align-items:center;justify-content:center;gap:' + Math.round(m * .2) + 'px">' +
+    sized(markSvg('en'), m) + '<div style="font:700 ' + Math.round(m * .24) + 'px/1.1 Inter,sans-serif;letter-spacing:-.02em;color:' + (dark ? '#fff' : '#000') + '">Friendly <span style="font-weight:500;color:' + (dark ? '#9AA4FF' : '#3B49E8') + '">Pay</span></div></div>';
   await shot(html, w, h, A('splash/ios-' + w + 'x' + h + '-' + th + '.jpg'), { jpeg: true });
 }
 
 /* share images 1200 x 630 */
-const OG = { en: ['Send money simply and securely.', 'Mobile money to Oman, Mali and Côte d’Ivoire · Cards · English, Français, العربية'], fr: ['Envoyez de l’argent simplement et en toute sécurité.', 'Vers Oman, le Mali et la Côte d’Ivoire · Cartes · English, Français, العربية'], ar: ['أرسل الأموال ببساطة وأمان.', 'إلى عُمان ومالي وساحل العاج · البطاقات · English · Français · العربية'] };
+const OG = { en: ['Send money simply and securely.', 'Mobile money to Oman and Mali · Cards · English, Français, العربية'], fr: ['Envoyez de l’argent simplement et en toute sécurité.', 'Vers Oman et le Mali · Cartes · English, Français, العربية'], ar: ['أرسل الأموال ببساطة وأمان.', 'إلى عُمان ومالي · البطاقات · English · Français · العربية'] };
 for (const lang of ['en', 'fr', 'ar']){
   const [t1, t2] = OG[lang], ar = lang === 'ar';
-  const html = '<div style="width:1200px;height:630px;background:linear-gradient(135deg,#00443E 0%,#007A6F 55%,#13A596 100%);display:flex;align-items:center;justify-content:' + (ar ? 'flex-end' : 'flex-start') + ';padding:0 96px;box-sizing:border-box;gap:56px;flex-direction:' + (ar ? 'row-reverse' : 'row') + ';direction:' + (ar ? 'rtl' : 'ltr') + '">' +
+  const html = '<div style="width:1200px;height:630px;background:linear-gradient(135deg,#1A2294 0%,#3B49E8 55%,#6372FF 100%);display:flex;align-items:center;justify-content:' + (ar ? 'flex-end' : 'flex-start') + ';padding:0 96px;box-sizing:border-box;gap:56px;flex-direction:' + (ar ? 'row-reverse' : 'row') + ';direction:' + (ar ? 'rtl' : 'ltr') + '">' +
     sized(markSvg(ar ? 'ar' : 'en'), 240) +
     '<div style="color:#fff;font-family:' + (ar ? '\'IBM Plex Sans Arabic\'' : 'Inter') + ',sans-serif;max-width:640px"><div style="font-weight:800;font-size:' + (ar ? 76 : 68) + 'px;line-height:1.08;letter-spacing:' + (ar ? 0 : '-.03em') + '">' + (ar ? 'فرندي باي' : 'Friendly Pay') + '</div>' +
     '<div style="margin-top:20px;font-weight:700;font-size:40px;line-height:1.25;opacity:.96">' + t1 + '</div><div style="margin-top:18px;font-weight:500;font-size:26px;line-height:1.4;opacity:.78">' + t2 + '</div></div></div>';

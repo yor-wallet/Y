@@ -12,19 +12,19 @@ const Promos = (() => {
   const KEY = 'yor.promos.dismissed';
   const AUTO_MS = 6500;
   const ITEMS = [
-    { id: 'send', tone: 'send', nav: 'country-select', art: 'assets/ads/ad-send.svg',
+    { id: 'send', tone: 'send', nav: 'country-select',
       title: { fr: 'Envoyez à vos proches', en: 'Send to your loved ones', ar: 'أرسل إلى أحبّائك' },
       body:  { fr: 'Quelques gestes suffisent, depuis votre téléphone.', en: 'A few taps are all it takes, right from your phone.', ar: 'بضع لمسات تكفي، من هاتفك مباشرة.' },
       cta:   { fr: 'Envoyer', en: 'Send', ar: 'إرسال' } },
-    { id: 'card', tone: 'card', nav: 'cards', art: 'assets/ads/ad-card.svg',
+    { id: 'card', tone: 'card', nav: 'cards',
       title: { fr: 'Vos cartes Friendly', en: 'Your Friendly cards', ar: 'بطاقاتك من فرندي' },
       body:  { fr: 'Gelez ou dégelez une carte en un geste.', en: 'Freeze or unfreeze a card with one tap.', ar: 'جمّد البطاقة أو ألغِ التجميد بلمسة واحدة.' },
       cta:   { fr: 'Mes cartes', en: 'My cards', ar: 'بطاقاتي' } },
-    { id: 'secure', tone: 'secure', nav: 'settings', art: 'assets/ads/ad-secure.svg',
+    { id: 'secure', tone: 'secure', nav: 'settings',
       title: { fr: 'Votre compte protégé', en: 'Your account, protected', ar: 'حسابك محمي' },
       body:  { fr: 'Code PIN et Face ID gardent l’accès à votre argent.', en: 'PIN and Face ID guard access to your money.', ar: 'رمز PIN وFace ID يحميان الوصول إلى أموالك.' },
       cta:   { fr: 'Réglages', en: 'Settings', ar: 'الإعدادات' } },
-    { id: 'lang', tone: 'lang', nav: 'settings', art: 'assets/ads/ad-lang.svg',
+    { id: 'lang', tone: 'lang', nav: 'settings',
       title: { fr: 'Friendly parle votre langue', en: 'Friendly speaks your language', ar: 'فرندي بلغتك' },
       body:  { fr: 'Français, English et العربية, à votre choix.', en: 'Français, English and العربية, your choice.', ar: 'العربية وEnglish وFrançais، كما تفضّل.' },
       cta:   { fr: 'Langue', en: 'Language', ar: 'اللغة' } },
@@ -53,7 +53,6 @@ const Promos = (() => {
           '<div class="rv-promo-txt"><span class="rv-promo-tag">' + esc(u.tag) + '</span>' +
             '<h3>' + esc(tx(it.title)) + '</h3><p>' + esc(tx(it.body)) + '</p>' +
             '<button class="rv-promo-cta" type="button" data-nav="' + esc(it.nav) + '">' + esc(tx(it.cta)) + '</button></div>' +
-          '<img class="rv-promo-art" src="' + esc(it.art) + '" alt="" width="240" height="200" decoding="async"' + (i ? ' loading="lazy"' : '') + ' draggable="false">' +
         '</article>').join('') +
       '</div>' +
       '<div class="rv-promo-foot"><div class="rv-promo-dots">' +

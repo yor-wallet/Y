@@ -1,3 +1,35 @@
+# Friendly Pay 13.0.0 — nouvelle identité « Ultramarine », livraison en deux fichiers
+
+La 12.16.0 avait la même identité (turquoise) et les mêmes compositions que la 12.15 sous une peau iOS. La 13.0.0 change l'identité et les compositions ; la logique (transferts, code, Face ID, session) n'est pas touchée.
+
+## Apparence — rien à voir avec la 12.x
+- **Identité** : fond blanc, texte encre, **un seul accent bleu outremer** (`#3B49E8` clair / `#9AA4FF` sombre, contrastes 6,4 : 1 et 8,2 : 1), chiffres arrondis (`ui-rounded` / SF Rounded). Fini le turquoise, les dégradés sarcelle, la teinte menthe et le filet champagne.
+- **Accueil** sans carte de solde : salutation en grand titre, solde en très gros chiffres sur le fond, un bouton **Envoyer** pleine largeur et trois boutons contour (Recevoir, Historique, Plus) ; activité récente en lignes à plat, bord à bord. Les publicités illustrées deviennent des conseils texte.
+- **Barre d'onglets classique** pleine largeur (filet, libellés, icône pleine pour l'onglet actif) : plus de dock flottant ni de bouton Envoyer surélevé.
+- **Listes à plat** (accueil, historique) ; groupes arrondis seulement dans Réglages / Profil / Services (qui n'est plus une grille d'icônes mais une liste à chevrons).
+- **Contrôles** : boutons rectangles arrondis (14 px) pleins, filtres contour (le choisi est plein encre), champs gris discrets, progression de l'envoi en trois segments, choix de destination en contrôle segmenté, toasts encre.
+- **Nouvelle marque** : un sourire et une pièce ambrée sur dégradé outremer (la même marque pour toutes les langues). Icônes d'app, 24 écrans de démarrage, images de partage, favicon, logos, hors-ligne / 404 : tout régénéré (`tools/brand/build-brand.mjs`).
+- **Écran d'ouverture et présentation redessinés** (`js/ui/opening-art.js`) : marque animée (le sourire se trace, la pièce tombe) ; quatre illustrations plates (bienvenue, envoi, cartes, sécurité) avec les couleurs du thème ; titres de 34 px alignés à gauche.
+- Supprimés (ancienne identité, inutilisés) : `assets/ads`, `assets/illustrations`, `assets/cards`, `assets/ui/chip.svg`, `contactless.svg`, l'ancien `css/ios.css`.
+
+## Performance
+- **Deux fichiers au lieu de 68** : `tools/build.mjs` (esbuild + lightningcss) assemble, dans le même ordre, les scripts et feuilles listés par `index.src.html` → `js/app.js` et `css/app.css`, minifiés (les noms globaux sont conservés : même comportement). `index.html` est généré. Le site reste statique, **sans étape de build au déploiement** : les bundles sont versionnés comme `js/vendor/reown-appkit.js`.
+- Mesures (`tests/ux/perf.mjs`, Chromium, même parcours : ouverture jusqu'à l'écran de code, médiane de 5) :
+
+  | | requêtes | octets bruts | octets brotli | prêt (réseau libre) | prêt (4G lente émulée*) |
+  |---|---|---|---|---|---|
+  | 12.15.0 (zip d'origine) | 67 | 1 059 Ko | 282 Ko | 512 ms | 6 063 ms |
+  | 13.0.0 livré | 4 | 857 Ko | 180 Ko | 385 ms | 4 905 ms |
+
+  \* le serveur de test n'envoie pas de brotli et parle HTTP/1.1 : en production (HTTP/2 + brotli) les écarts de requêtes pèsent moins et ceux d'octets (−36 %) comptent davantage.
+- Polices : Manrope n'est plus préchargée ; images d'ambiance et animations d'arrière-plan retirées (`#ambient`), flou limité aux barres.
+- `sw.js` : cache `fp-shell-v13.0.0`, coque = 2 fichiers + polices + icônes.
+
+## Pour modifier le code
+Éditer les fichiers sources (`js/**`, `css/**`, `index.src.html`), puis `cd tools && npm ci && node build.mjs`. Les tests (`tests/ux/*.test.mjs`) servent le site livré ; `FP_DEV=1` les fait tourner sur la page lisible (68 fichiers).
+
+---
+
 # Friendly Pay 12.16.0 — refonte iOS complète + Orange Money (Mali, Côte d'Ivoire)
 
 ## Ajouté
