@@ -7,8 +7,8 @@
    ============================================================ */
 const OpeningArt = (() => {
   const esc = (s) => (typeof escapeHtml === 'function' ? escapeHtml(s) : String(s));
-  const MARK_F = 'M180 388V196a54 54 0 0 1 54-54H372';
-  const MARK_BAR = 'M180 266H326';
+  const MARK_F = 'M190 386V200a66 66 0 0 1 66-66H368';
+  const MARK_BAR = 'M190 264H322';
 
   /* ---------- écran d'ouverture ---------- */
   const SPLASH_TXT = {
@@ -32,13 +32,13 @@ const OpeningArt = (() => {
         '<div class="sp-mark" aria-hidden="true">' +
           '<i class="sp-halo"></i><i class="sp-ring sp-r1"></i><i class="sp-ring sp-r2"></i>' +
           '<svg class="sp-svg" viewBox="0 0 512 512" focusable="false">' +
-            '<defs><linearGradient id="sp-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2DD4BF"/><stop offset="1" stop-color="#0B7F75"/></linearGradient>' +
+            '<defs><linearGradient id="sp-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3CE0CC"/><stop offset=".5" stop-color="#079A8D"/><stop offset="1" stop-color="#00655B"/></linearGradient>' +
             '<clipPath id="sp-clip"><rect width="512" height="512" rx="120"/></clipPath></defs>' +
             '<g class="sp-tile"><rect width="512" height="512" rx="120" fill="url(#sp-g)"/>' +
               '<g clip-path="url(#sp-clip)"><rect class="sp-shine" x="-200" y="-60" width="120" height="640" fill="#fff" opacity=".28"/></g></g>' +
-            '<g transform="translate(-20 -9)" fill="none" stroke="#fff" stroke-width="54" stroke-linecap="round" stroke-linejoin="round">' +
+            '<g transform="translate(-23 -4)" fill="none" stroke="#fff" stroke-width="66" stroke-linecap="round" stroke-linejoin="round">' +
               '<path class="sp-f1" pathLength="1" d="' + MARK_F + '"/><path class="sp-f2" pathLength="1" d="' + MARK_BAR + '"/></g>' +
-            '<circle class="sp-dot" cx="318" cy="369" r="31" fill="#fff"/>' +
+            '<circle class="sp-dot" cx="321" cy="368" r="36" fill="#FFC24B"/>' +
           '</svg>' +
         '</div>' +
         '<div class="sp-word">' + word + '</div>' +
@@ -49,7 +49,7 @@ const OpeningArt = (() => {
 
   /* ---------- illustrations de la présentation ---------- */
   const DEFS = '<svg class="oa-defs" width="0" height="0" aria-hidden="true" focusable="false"><defs>' +
-    '<linearGradient id="oa-teal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2DD4BF"/><stop offset="1" stop-color="#0B7F75"/></linearGradient>' +
+    '<linearGradient id="oa-teal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3CE0CC"/><stop offset=".5" stop-color="#079A8D"/><stop offset="1" stop-color="#00655B"/></linearGradient>' +
     '<linearGradient id="oa-teal-d" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#19B9A8"/><stop offset="1" stop-color="#09665E"/></linearGradient>' +
     '<linearGradient id="oa-amber" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFD77A"/><stop offset="1" stop-color="#F29F1B"/></linearGradient>' +
     '<linearGradient id="oa-card" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#D9F3EF"/></linearGradient>' +
@@ -72,7 +72,7 @@ const OpeningArt = (() => {
       shadow(160, 216, 46) +
       '<g class="oa-float"><rect x="105" y="73" width="110" height="110" rx="30" fill="url(#oa-teal)"/>' +
         '<path clip-path="url(#oa-tile)" d="M105 73h110v36c-38 20-72 20-110 0z" fill="#fff" opacity=".14"/>' +
-        '<g transform="translate(105 73) scale(.215)"><g transform="translate(-20 -9)" fill="none" stroke="#fff" stroke-width="54" stroke-linecap="round" stroke-linejoin="round"><path d="' + MARK_F + '"/><path d="' + MARK_BAR + '"/></g><circle cx="318" cy="369" r="31" fill="#fff"/></g>' +
+        '<g transform="translate(105 73) scale(.215)"><g transform="translate(-23 -4)" fill="none" stroke="#fff" stroke-width="66" stroke-linecap="round" stroke-linejoin="round"><path d="' + MARK_F + '"/><path d="' + MARK_BAR + '"/></g><circle cx="321" cy="368" r="36" fill="#FFC24B"/></g>' +
       '</g>' +
       '<g class="oa-orbit">' +
         chip(160, 32, 'oa-c1', '<circle r="21" fill="url(#oa-amber)"/><circle r="14.5" fill="none" stroke="#fff" stroke-opacity=".65" stroke-width="2"/><path d="M0-7 6 0 0 7-6 0Z" fill="#fff"/>') +

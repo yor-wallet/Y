@@ -11,7 +11,7 @@
 :root{
   --ios-blue:#007AFF;--ios-green:#34C759;--ios-red:#FF3B30;--ios-orange:#FF9500;--ios-yellow:#FFCC00;--ios-teal:#30B0C7;--ios-indigo:#5856D6;--ios-purple:#AF52DE;--ios-pink:#FF2D55;--ios-gray:#8E8E93;
   --ios-bg:#F2F2F7;--ios-bg2:#FFFFFF;--ios-bg3:#F2F2F7;--ios-elev:#FFFFFF;
-  --ios-label:#000;--ios-label2:rgba(60,60,67,.62);--ios-label3:rgba(60,60,67,.38);--ios-label4:rgba(60,60,67,.18);
+  --ios-label:#000;--ios-label2:rgba(60,60,67,.76);--ios-label3:rgba(60,60,67,.5);--ios-label4:rgba(60,60,67,.18);
   --ios-sep:rgba(60,60,67,.22);--ios-fill:rgba(120,120,128,.2);--ios-fill2:rgba(120,120,128,.16);--ios-fill3:rgba(120,120,128,.12);--ios-fill4:rgba(120,120,128,.08);
   --ios-mat:rgba(249,249,249,.78);--ios-mat-thin:rgba(255,255,255,.62);--ios-glass:rgba(255,255,255,.66);--ios-glass-edge:rgba(255,255,255,.75);
   --ios-shadow:0 10px 34px -8px rgba(0,0,0,.18);
@@ -25,7 +25,7 @@
   --bg:var(--ios-bg);--bg-1:var(--ios-bg2);--bg-2:var(--ios-bg3);--bg-3:var(--ios-fill3);
   --glass-1:var(--ios-bg2);--glass-2:var(--ios-fill3);--glass-3:var(--ios-elev);--surf:var(--ios-bg2);--surf-2:var(--ios-fill3);--surf-3:var(--ios-fill2);
   --border:var(--ios-sep);--border-2:var(--ios-sep);--line:var(--ios-sep);
-  --text:var(--ios-label);--text-2:var(--ios-label2);--text-3:rgba(60,60,67,.52);
+  --text:var(--ios-label);--text-2:var(--ios-label2);--text-3:rgba(60,60,67,.74);
   --accent:var(--tint);--accent-600:var(--tint-2);--on-accent:var(--on-tint);--yor-violet:var(--tint);
   --accent-soft:color-mix(in srgb,var(--tint) 13%,transparent);--accent-glow:color-mix(in srgb,var(--tint) 30%,transparent);
   --btn-grad:var(--tint);--btn-glow:color-mix(in srgb,var(--tint) 40%,transparent);
@@ -131,7 +131,7 @@ html:root body .settings-row-chev{color:var(--ios-label3);display:inline-flex}
 html:root body .settings-row-chev svg{width:14px;height:14px;stroke-width:2.6}
 html:root body .item-amount{font:600 17px/22px var(--font);letter-spacing:-.41px}
 html:root body .item-amount.credit{color:var(--ios-green)}
-:root:not([data-theme="dark"]) html:root body .item-amount.credit{color:#1F8F3F}
+:root:not([data-theme="dark"]) html:root body .item-amount.credit{color:#1F7A3B}
 html:root body .item-amount.failed{color:var(--ios-label2);text-decoration:line-through}
 /* app-icon tiles in settings rows (UISettings look): coloured rounded square, white glyph */
 html:root body .settings-row .tile,html:root body .set-cat-ic{width:29px;height:29px;border-radius:7px;flex:0 0 29px;background:var(--ios-gray);color:#fff;display:grid;place-items:center}
@@ -147,7 +147,7 @@ html:root body .settings-row .tile:has([data-i="qr"]),html:root body .settings-r
 /* transaction rows: a round, tinted symbol */
 html:root body .item .tile{width:40px;height:40px;border-radius:50%;flex:0 0 40px;background:var(--ios-fill3);color:var(--ios-label2);display:grid;place-items:center}
 html:root body .item .tile svg{width:19px;height:19px;stroke-width:2}
-html:root body .item.tx-in .tile{background:rgba(52,199,89,.16);color:#1F8F3F}
+html:root body .item.tx-in .tile{background:rgba(52,199,89,.16);color:#1F7A3B}
 :root[data-theme="dark"] html:root body .item.tx-in .tile{color:#30D158}
 html:root body .item.st-pending .tile{background:rgba(255,149,0,.16);color:#B76A00}
 html:root body .item.st-failed .tile{background:rgba(255,59,48,.14);color:var(--ios-red)}
@@ -414,3 +414,11 @@ html:root body .ob-lang,html:root body .ob-langs{background:var(--ios-mat);-webk
 html:root body .summary-v{white-space:nowrap;text-align:end}
 html:root body .summary-k{flex:1;min-width:0}
 html:root body .rv-car{background:transparent!important}
+
+/* wide screens: the segmented control keeps iOS proportions */
+html:root body .set-chips .chips{max-width:380px}
+
+/* touch targets: small controls keep their iOS look but get a 44 pt hit area (HIG minimum) */
+html:root body .chip,html:root body .px-bal .ds-eye,html:root body .px-copy,html:root body .px-chip.id{position:relative}
+html:root body .chip::after,html:root body .px-bal .ds-eye::after,html:root body .px-copy::after,html:root body .px-chip.id::after{content:"";position:absolute;inset:-6px -3px;border-radius:inherit}
+html:root body .px-bal .ds-eye::before{display:none}

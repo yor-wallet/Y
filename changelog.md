@@ -1,3 +1,24 @@
+# Friendly Pay 12.16.0 — refonte iOS complète + Orange Money (Mali, Côte d'Ivoire)
+
+## Ajouté
+- **Orange Money Mali (+223, 8 chiffres) et Orange Money Côte d'Ivoire (+225, 10 chiffres).** Écran « Envoyer » : un sélecteur de destination (Oman / Mali / Côte d'Ivoire) au-dessus du numéro ; Oman reste le choix par défaut et ses règles sont inchangées. Le montant reste saisi en rials ; l'écran du montant et la revue montrent une **estimation** en XOF (`≈ XOF 37 300`, « 1 OMR = 1 492 XOF », « taux indicatif ») issue de la table de taux intégrée (même valeur que `public.fx_rates` côté serveur). La demande envoyée au serveur : `fiat_send_external` avec `p_dest_currency = 'XOF'`, `p_provider = 'Orange Money'`, bénéficiaire `{ phone: '+223…' | '+225…', country: 'ML' | 'CI', identifierType: 'MOBILE_MONEY' }`. Le montant exact est celui du reçu (calculé par le serveur). Module : `js/features/destinations.js`.
+- **Refonte visuelle iOS** (`css/ios.css`, chargée en dernier) : polices système (SF Pro sur Apple, Inter ailleurs, IBM Plex Sans Arabic en arabe), 1 px CSS = 1 pt iOS, couleurs système claires / sombres, grands titres qui se réduisent dans une barre translucide, bouton retour « ‹ Accueil », listes groupées avec icônes colorées, interrupteurs UISwitch 51×31, contrôles segmentés, boutons capsule, barre d'onglets en verre flottante (icône pleine pour l'onglet actif), feuilles à poignée (l'app recule derrière), pavé de code façon écran de verrouillage, services en icônes d'application.
+- **Animations iOS** (`js/ui/ios-motion.js`) : vrais ressorts (oscillateur amorti échantillonné en `linear()`), transitions push / pop avec parallaxe 30 %, assombrissement et ombre de bord, présentation en feuille pour reçu / traitement / formulaires, fondu pour les onglets, **retour par glissement depuis le bord** (le doigt pilote les deux écrans), feuilles qu'on fait glisser vers le bas, **tirer pour actualiser** (indicateur iOS à 12 traits), retour haptique (Taptic Engine via l'interrupteur iOS 17.4+, vibration ailleurs), toucher la barre = remonter en haut, fondu clair / sombre au changement de thème. Tout est coupé sous « réduire les animations » (simple fondu de 120 ms).
+- **Nouveau jeu d'icônes** (`js/ui/ios-icons.js`) dessiné dans l'esprit des SF Symbols (trait unique 1,8 px) ; les cinq icônes d'onglet ont une version pleine.
+- **Nouvelle identité d'icône** (`tools/brand/build-brand.mjs`) : « F » massif et pièce ambrée sur dégradé turquoise (version arabe « ف »), icônes 16 → 512 px + maskable, 24 écrans de démarrage iOS clair / sombre, images de partage EN / FR / AR, favicon.ico, logos (SVG + PNG).
+- Tests (`tests/ux/`) : banc d'essai Playwright avec faux client Supabase ; `orange-money.test.mjs` (charges utiles exactes envoyées au serveur), `ios-motion.test.mjs` (images de transition, glissement de bord, feuille, tirer pour actualiser, mouvement réduit), `smoke.test.mjs` (15 écrans × 3 langues × 2 thèmes : aucune erreur, aucun débordement, aucun contrôle sans nom, sens d'écriture), `shell.test.mjs` (SHELL de `sw.js`).
+
+## Changé (présentation seulement)
+- `js/core/router.js` : ajout de `R.on(écouteur)` et `R.peekBack()` (la navigation se comporte comme avant) ; `js/ui/icons.js` : `data-i="nom"` sur chaque icône (couleurs des pastilles) ; `index.html` : échelle de l'interface (1 px = 1 pt) et couleurs de thème (`#F2F2F7` / `#000`).
+- Contrastes : texte secondaire à 5,3 : 1 sur blanc (4,96 : 1 sur le gris de fond), texte « crédit » vert à 5,4 : 1.
+
+## Limites à connaître
+- Le serveur enregistre le transfert externe et débite les rials (`FIAT_EXTERNAL`, statut `CONFIRMED`) ; **le code lu ici ne contient aucun appel à une API de paiement Orange Money** (c'est le même fonctionnement que pour l'Oman). Le versement au portefeuille Orange Money doit donc être assuré par votre processus d'exploitation, ou par une intégration à ajouter côté serveur. Le serveur ne vérifie pas non plus que le pays, le fournisseur et la devise forment un couple valide.
+- Les numéros du Mali / de la Côte d'Ivoire sont contrôlés sur la longueur (et le zéro initial) ; l'opérateur du numéro n'est pas vérifié.
+- Les écrans (retour par glissement, haptique, feuilles) ont été testés dans Chromium avec des gestes tactiles simulés, **pas sur un iPhone réel** : le Taptic Engine (iOS 17.4+) et le geste de bord sont à valider sur l'appareil.
+
+---
+
 # Friendly Pay 12.15.0 — Face ID OU le code pour les transferts
 
 ## Changé

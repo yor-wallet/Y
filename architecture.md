@@ -1,4 +1,4 @@
-# YOR WALLET 11.3.0 — architecture
+# YOR WALLET 11.3.0 — architecture (complété jusqu'à la 12.16.0)
 
 Même application que la 11.2.1, découpée en fichiers. Aucune logique, aucun texte, aucun style n'a été modifié :
 le contenu des fichiers `css/` et `js/` mis bout à bout est identique au contenu de l'ancien `index.html`
@@ -104,3 +104,14 @@ Les trois fichiers sont dans `SHELL` de `sw.js` ; la CSP n'autorise que `https:/
 - Script `js/features/premium.js` (après `push.js`, avant `wire.js`) : enregistre `home`, `receive`, `profile`, `profile-edit`, `tx-result` (remplace les anciens rendus de `home` et `profile`, qui restent dans le code) ; modules `Premium`, `TxResult`, `PxSearch`, `PxInstall`, `BalanceFx`, aides `maskPhone`, `maskEmail`, `txMatches`. `wire()` appelle `Premium.onScreen(id, root)` ; un `data-nav` sans branche dédiée va vers `R.go(n)` (le routeur refuse les écrans inconnus).
 - Transferts : `TransferEngine.isUncertain(error, status)`, `TransferEngine.checkExternal(req)` (lecture sans autorisation PIN), `ProcessingEngine.run(work, { timeoutMs })` (30 s par défaut, phase `uncertain`, `out.late` = requête toujours en cours), `SendAnim.setPhase('uncertain')`. `PinEngine.change()` → `change_pin`.
 - Historique : objet `HIST` (`q`, `period`, `dir`) dans `history-cards.js`, appliqué par `historyFilter`.
+
+
+## Friendly Pay 12.16.0 (refonte iOS, Orange Money)
+- Ordre CSS : …, `premium`, **`ios`** (dernière : jetons iOS, barres, listes, contrôles, barre d'onglets, feuilles, accueil et écrans). Elle surcharge les couches précédentes ; les jetons historiques (`--bg`, `--text`, `--accent`, `--surf`, `--line`…) pointent maintenant vers les jetons `--ios-*` : changer une couleur se fait là, pas écran par écran.
+- Scripts ajoutés : `js/ui/ios-icons.js` (après `icons.js` : remplace les dessins de `IC`, jeu SF-like), `js/features/destinations.js` (avant `transfer-flow.js` : `Destinations`), `js/ui/ios-motion.js` (avant `wire.js` : `IOS`). Tous dans `SHELL` de `sw.js` (cache `fp-shell-v12.16.0`) ; `tests/ux/shell.test.mjs` le vérifie.
+- `R.on(fn)` : écouteur appelé après chaque rendu d'écran avec `{ id, from, el, prevEl, back, reset, replace, force }` ; `R.peekBack()` : écran où `back()` irait. `IOS` s'y branche pour les transitions et les grands titres ; il ne change jamais la navigation.
+- Transitions : `.screen.ios-leaving / .ios-entering` + animations Web Animations (ressorts `--ios-smooth/snappy/bouncy`, durées `--ios-*-d`). Une écran est opaque (`background:var(--ios-bg)`) pour que deux écrans puissent se croiser. Les écrans de `PRESENT` (reçu, traitement, formulaires d'ajout) s'ouvrent en feuille ; les onglets se fondent.
+- Grands titres : pour `LARGE` (historique, notifications, réglages, profil, cartes, services) `IOS` insère `h1.ios-lt` (ou une barre `.ios-synth` quand l'écran a son propre `h1`) ; `.ios-scrolled` / `.ios-collapsed` sont posées au défilement.
+- Destinations : `Destinations.get() / set(iso) / digits() / format() / validate() / quote()`. Ajouter un pays : une entrée dans `LIST` (indicatif, longueur, regroupement, devise, `serviceId` existant dans `COUNTRY_TRANSFER_CONFIG`), les textes `dst.*`, un drapeau dans `FLAGS`, et une devise présente dans `public.fx_rates` côté serveur.
+- Icônes de marque : `node tools/brand/build-brand.mjs` régénère tout (`assets/icons`, `assets/brand`, `assets/splash`, `assets/share`, `favicon.ico`). Le glyphe est en traits (même structure que l'animation d'ouverture dans `opening-art.js`).
+- Tests : `node tests/ux/<fichier>.test.mjs` (Chromium + Playwright, serveur statique local, faux client Supabase `tests/ux/mock-supabase.js` : aucun réseau externe, aucune donnée réelle).
