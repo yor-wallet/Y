@@ -63,7 +63,7 @@ function svg(name, size){
   const key = name + '|' + size;
   let s = _svgCache.get(key);
   if (s) return s;
-  s = '<svg viewBox="0 0 24 24" width="' + size + '" height="' + size + '" style="width:calc(' + size + 'px*var(--ui));height:calc(' + size + 'px*var(--ui))" class="ic" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + (IC[name] || '') + '</svg>';
+  s = '<svg viewBox="0 0 24 24" width="' + size + '" height="' + size + '" style="width:calc(' + size + 'px*var(--ui));height:calc(' + size + 'px*var(--ui))" class="ic" data-i="' + name + '" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + (IC[name] || '') + '</svg>';
   _svgCache.set(key, s);
   return s;
 }

@@ -5,7 +5,7 @@
    ============================================================ */
 const R = (() => {
   let current = null, curHash = '', token = 0, started = false, bound = false, cleanups = [];
-  const stack = [], overlays = [], SCREENS = {};
+  const stack = [], overlays = [], SCREENS = {}, routeListeners = [];
   const LOCKED = ['processing','tx-network-validation','tx-confirmation','boot'];
   const PUBLIC_SCREENS = ['login','signup','reset'];
   const ADMIN_SCREENS = ['chain'];     /* écrans réservés au rôle admin (masquage d'interface) */
@@ -93,6 +93,7 @@ const R = (() => {
       if (!html) return;
     }
     const from = current;
+    const prevEl = from ? document.getElementById(from) : null;
     if (opts.reset){ stack.length = 0; }
     else if (from && from !== id && !opts.back && !opts.replace){ stack.push(from); if (stack.length > 40) stack.shift(); }
     const container = document.getElementById('screens');
@@ -112,7 +113,20 @@ const R = (() => {
       try { wire(id); } catch(e){ console.error('[R] wire', id, e); }
     }
     try { UIKit.enhanceSync(el); } catch(e){ console.error('[R] enhance', id, e); }
+    /* 12.16.0 : presentation layers (iOS transitions, large titles…) listen here; they never change what navigation does */
+    if (routeListeners.length){
+      const info = { id, from, el, prevEl, back: !!opts.back, reset: !!opts.reset, replace: !!opts.replace, force: !!opts.force };
+      routeListeners.slice().forEach(fn => { try { fn(info); } catch(e){ console.error('[R] route listener', e); } });
+    }
   }
+  /* where back() would go from here (null when back() would do nothing) — used by the interactive swipe-back gesture */
+  function peekBack(){
+    if (overlays.length || LOCKED.includes(current)) return null;
+    if (stack.length) return stack[stack.length - 1];
+    if (PARENT[current]) return PARENT[current];
+    return current && current !== 'home' ? 'home' : null;
+  }
+  function on(fn){ if (typeof fn === 'function') routeListeners.push(fn); }
   function back(){
     if (overlays.length){ closeTop(); return; }
     if (LOCKED.includes(current)) return;
@@ -181,6 +195,6 @@ const R = (() => {
     if (AuthEngine.hasValidContext()) R.go('home', { reset:true });
     else R.go('login', { reset:true });
   }
-  return { go, back, home, start, bind, current: () => current, register, resolve, onLeave, overlay:{ open, close:closeTop, isOpen:() => overlays.length > 0 } };
+  return { go, back, home, start, bind, current: () => current, register, resolve, onLeave, on, peekBack, overlay:{ open, close:closeTop, isOpen:() => overlays.length > 0 } };
 })();
 
