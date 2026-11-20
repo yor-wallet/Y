@@ -489,3 +489,26 @@ html body .yl::before,html body .yl::after{display:none!important}
 html body .logo-lockup .logo-name{font:800 26px/30px var(--font);letter-spacing:-.6px;color:var(--ink)}
 html body .logo-lockup .logo-sub{font:700 11px/14px var(--font);letter-spacing:2.4px;color:var(--tint)}
 html body .logo-mark{filter:drop-shadow(0 8px 14px rgba(47,61,219,.28))!important;border-radius:22%!important}
+
+/* ---------- 14. administrator: payouts and SMS ---------- */
+.po-card{display:flex;flex-direction:column;gap:6px;padding:16px;margin:0 0 12px;background:var(--cell);border-radius:var(--r-cell)}
+.po-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.po-top b{font:700 15px/20px var(--font-num);letter-spacing:.2px}
+.po-st{font:700 11px/14px var(--font);letter-spacing:.2px;padding:3px 8px;border-radius:6px;background:var(--fill-2);color:var(--ink-2)}
+.po-st.po-open{background:var(--st-wait-bg);color:var(--warn)}
+.po-st.po-done{background:var(--st-ok-bg);color:var(--pos)}
+.po-st.po-refunded{background:var(--st-bad-bg);color:var(--neg)}
+.po-amt{font:800 24px/30px var(--font-num);letter-spacing:-.4px}
+.po-amt span{font:600 17px/22px var(--font-num);color:var(--ink-2)}
+.po-line{display:flex;gap:10px;align-items:baseline;font:400 15px/20px var(--font)}
+.po-line small{flex:0 0 74px;color:var(--ink-3);font:600 12px/16px var(--font);text-transform:uppercase;letter-spacing:.6px}
+html[dir="rtl"] .po-line small{letter-spacing:0}
+.po-sms{margin-top:4px;font:600 13px/18px var(--font)}
+.po-sms-none{color:var(--ink-3)}.po-sms-ok{color:var(--pos)}.po-sms-wait{color:var(--warn)}.po-sms-bad{color:var(--neg)}
+.po-act{margin-top:8px;gap:8px}
+.po-sheet{display:flex;flex-direction:column;gap:12px;padding:4px 4px 12px}
+.po-sheet h2{font:800 24px/30px var(--font);letter-spacing:-.4px;margin:0}
+.po-lead{font:400 15px/21px var(--font);color:var(--ink-2);margin:0}
+.po-box{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:var(--r-cell);background:var(--fill-3)}
+.po-box b{font:800 22px/28px var(--font-num);letter-spacing:-.3px}
+.po-box span{font:400 15px/20px var(--font);color:var(--ink-2)}

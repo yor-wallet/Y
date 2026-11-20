@@ -50,7 +50,7 @@ export async function openApp(browser, base, opts = {}){
     }
     if (u.startsWith(base)) return route.continue();
     if (/cdn\.jsdelivr\.net.*supabase/.test(u)){
-      const fx = JSON.stringify({ theme: opts.theme, lang: opts.lang, emptyTx: !!opts.emptyTx, signedOut: !!opts.signedOut });
+      const fx = JSON.stringify({ theme: opts.theme, lang: opts.lang, emptyTx: !!opts.emptyTx, signedOut: !!opts.signedOut, admin: !!opts.admin });
       return route.fulfill({ status: 200, contentType: 'text/javascript', body: 'window.__FX=' + fx + ';' + MOCK });
     }
     return route.abort();

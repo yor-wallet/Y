@@ -6,6 +6,11 @@
   var uid = '00000000-0000-4000-8000-000000000001';
   var profile = { id: uid, user_id: 'USR-TEST0001', yor_id: 'YOR-A1B2C3', email: 'amira.test@example.com', role: 'user', first_name: 'Amira', last_name: 'Al Said',
     phone: '+96891234567', country: 'OM', photo: null, kyc: { status: 'VERIFIED', level: 1, verifiedAt: NOW - 30 * D }, created_at: new Date(NOW - 90 * D).toISOString() };
+  if (FX.admin) profile.role = 'admin';
+  var payouts = [
+    { id: '11111111-1111-4111-8111-111111111111', reference: 'YOR-PAYOUT1', status: 'PROCESSING', created_at: new Date(NOW - 2 * H).toISOString(), user_id: uid, yor_id: 'YOR-A1B2C3', full_name: 'Amira Al Said', phone: '+96891234567', amount: 25, dest_amount: 37300, dest_currency: 'XOF', rate: 1492, beneficiary_name: 'Aminata Traoré', beneficiary_phone: '+22376123456', provider: 'Orange Money', paid_ref: null, paid_at: null, reject_reason: null, notice_status: null, notice_error: null },
+    { id: '22222222-2222-4222-8222-222222222222', reference: 'YOR-PAYOUT2', status: 'COMPLETED', created_at: new Date(NOW - 30 * H).toISOString(), user_id: uid, yor_id: 'YOR-A1B2C3', full_name: 'Amira Al Said', phone: '+96891234567', amount: 10, dest_amount: 14920, dest_currency: 'XOF', rate: 1492, beneficiary_name: 'Moussa Diallo', beneficiary_phone: '+22370112233', provider: 'Orange Money', paid_ref: 'MP221118.1205.C12345', paid_at: new Date(NOW - 29 * H).toISOString(), reject_reason: null, notice_status: 'FAILED', notice_error: 'sms_credits_missing: insufficient credit' }
+  ];
   var tx = function(i, o){ return Object.assign({ id: 'tx-' + i, reference: 'YOR-TX' + (100000 + i), kind: 'FIAT_TRANSFER', direction: 'OUT', status: 'CONFIRMED', asset: 'OMR', amount: 10, fee: 0, total: 10,
     network: null, note: null, created_at: new Date(NOW - i * 7 * H).toISOString(), counterparty_name: 'Salim Al Harthy', counterparty_yor_id: 'YOR-ZZ1122', meta: {} }, o || {}); };
   var txs = FX.emptyTx ? [] : [
@@ -101,6 +106,16 @@
         meta: { provider: a.p_provider, payout: 'MANUAL', destinationCurrency: 'XOF', destinationAmount: dest, rate: rate, beneficiary: { name: b.firstName + ' ' + b.lastName, phone: b.phone, country: a.p_country } } }));
       return { ok: true, transaction_id: 'tx-intl', reference: 'YOR-TXINTL1', status: 'PROCESSING', amount: amt, currency: 'OMR', flow: 'INTL_TRANSFER', destination_currency: 'XOF', destination_amount: dest, payout: 'MANUAL' };
     },
+    admin_payout_list: function(a){ if (!FX.admin) throw { message: 'forbidden', code: '42501' };
+      var out = payouts.map(function(p){ var c = Object.assign({}, p); if (p._q) { p._q--; if (!p._q) p.notice_status = 'SENT'; } return c; }); return out; },
+    admin_payout_confirm: function(a){ if (!FX.admin) throw { message: 'forbidden', code: '42501' };
+      var p = payouts.filter(function(x){ return x.id === a.p_tx; })[0]; if (!p) throw { message: 'not_found', code: 'P0002' };
+      var ref = String(a.p_paid_ref || '').trim(); if (ref.length < 4 || ref.length > 60) throw { message: 'payout_reference_required', code: '22023' };
+      if (p.status !== 'PENDING' && p.status !== 'PROCESSING') throw { message: 'invalid_state', code: '22023' };
+      p.status = 'COMPLETED'; p.paid_ref = ref; p.paid_at = new Date().toISOString(); p.notice_status = 'QUEUED'; p._q = 2; return { ok: true, reference: p.reference }; },
+    admin_payout_resend_notice: function(a){ if (!FX.admin) throw { message: 'forbidden', code: '42501' };
+      var p = payouts.filter(function(x){ return x.id === a.p_tx; })[0]; if (!p || p.status !== 'COMPLETED') throw { message: 'invalid_state', code: '22023' };
+      p.notice_status = 'QUEUED'; p.notice_error = null; p._q = 2; return { ok: true }; },
     get_recipient_notice_status: function(){ return []; },
     get_tx_balance_after: function(){ return null; }
   };

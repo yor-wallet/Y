@@ -1,3 +1,19 @@
+# Friendly Pay 13.1.0 — le bouton administrateur qui déclenche le SMS
+
+## Ajouté
+- **Écran « Versements et SMS »** (`js/screens/admin-payouts.js`), réservé aux administrateurs (`Runtime.ctx.role === 'admin'`) : entrée « Administrateur › Versements et SMS » dans Services. Il liste (via `admin_payout_list`) les transferts Orange Money Mali, avec le destinataire, l'expéditeur, le montant en rials et en FCFA, la référence Orange Money et **l'état du SMS** (partira / envoi en cours / envoyé / échec + raison du fournisseur).
+- **Bouton « Marquer comme versé et envoyer le SMS »** : l'administrateur saisit la référence Orange Money (4 à 60 caractères, imprimée dans le SMS) et confirme → `admin_payout_confirm(tx, référence)`. Le serveur passe le transfert à « Versé », prévient l'expéditeur et appelle `payout-notice`, qui envoie le SMS au destinataire. **Le SMS ne part qu'à ce clic** (la fonction serveur l'indique elle-même : jamais depuis l'application). L'écran relit l'état toutes les 3 s tant que le SMS est « en cours d'envoi ».
+- **Bouton « Renvoyer le SMS »** pour un versement déjà marqué (par exemple si le premier SMS a échoué faute de crédit) : demande une confirmation, puis `admin_payout_resend_notice(tx)`.
+- Aucune modification du serveur : les trois fonctions existaient déjà et vérifient `is_admin()` ; l'écran ne calcule rien et n'écrit rien d'autre. Un utilisateur normal ne voit pas l'entrée, et l'écran le renvoie à l'accueil sans même demander la liste.
+- Test : `tests/ux/admin-payouts.test.mjs` (utilisateur normal / administrateur en 3 langues ; charges utiles exactes ; refus d'une référence trop courte avant tout appel ; l'état du SMS passe de « en cours » à « envoyé » ; « Renvoyer » ne fait rien avant la confirmation). Faux client : aucun SMS réel n'a été envoyé et aucun versement réel n'a été marqué pendant le développement.
+
+## À savoir
+- « Marquer comme versé » est une action réelle et définitive (le transfert passe à COMPLETED) : ne l'utiliser qu'après avoir envoyé l'argent sur le compte Orange Money du destinataire.
+- Pas de bouton « Rejeter et rembourser » dans cet écran (la fonction serveur `admin_payout_reject` existe ; à ajouter si vous voulez tout gérer ici).
+- L'envoi du SMS dépend des secrets du serveur (fournisseur SMS, crédits, nom d'expéditeur) : en cas d'échec, la raison s'affiche sur la carte et « Renvoyer le SMS » permet de réessayer.
+
+---
+
 # Friendly Pay 13.0.0 — nouvelle identité « Ultramarine », livraison en deux fichiers
 
 La 12.16.0 avait la même identité (turquoise) et les mêmes compositions que la 12.15 sous une peau iOS. La 13.0.0 change l'identité et les compositions ; la logique (transferts, code, Face ID, session) n'est pas touchée.
