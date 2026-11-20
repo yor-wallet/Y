@@ -90,6 +90,17 @@
         meta: { provider: a.p_provider, destinationCurrency: a.p_dest_currency, destinationAmount: amt * r, rate: r, beneficiary: a.p_beneficiary } }));
       return res;
     },
+    intl_send: function(a){
+      if (!a.p_pin_grant) throw { message: 'pin_required' };
+      var b = a.p_beneficiary || {};
+      if (!b.firstName || !b.lastName) throw { message: 'missing_field:first_name', code: 'P0001' };
+      if (!/^\+[0-9]{8,15}$/.test(b.phone || '')) throw { message: 'invalid_phone', code: 'P0001' };
+      if (Number(a.p_amount) < 0.5) throw { message: 'invalid_amount', code: 'P0001' };
+      var rate = 1492, amt = Number(a.p_amount), dest = Math.floor(amt * rate);
+      txs.unshift(tx(0, { id: 'tx-intl', reference: 'YOR-TXINTL1', kind: 'FIAT_EXTERNAL', status: 'PROCESSING', amount: amt, total: amt, counterparty_name: b.firstName + ' ' + b.lastName,
+        meta: { provider: a.p_provider, payout: 'MANUAL', destinationCurrency: 'XOF', destinationAmount: dest, rate: rate, beneficiary: { name: b.firstName + ' ' + b.lastName, phone: b.phone, country: a.p_country } } }));
+      return { ok: true, transaction_id: 'tx-intl', reference: 'YOR-TXINTL1', status: 'PROCESSING', amount: amt, currency: 'OMR', flow: 'INTL_TRANSFER', destination_currency: 'XOF', destination_amount: dest, payout: 'MANUAL' };
+    },
     get_recipient_notice_status: function(){ return []; },
     get_tx_balance_after: function(){ return null; }
   };

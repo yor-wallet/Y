@@ -194,13 +194,13 @@ const TxResult = (() => {
     checking = true;
     const note = document.getElementById('txr-note');
     if (btn){ btn.disabled = true; btn.setAttribute('aria-busy', 'true'); btn.querySelector('span').textContent = t('px.checking'); }
-    const r = await TransferEngine.checkExternal(cur.req);
+    const r = await (cur.req.intl ? TransferEngine.checkIntl(cur.req) : TransferEngine.checkExternal(cur.req));
     checking = false;
     if (r.state === 'confirmed'){
       const sv = r.data, q = cur.req;
-      return confirmed({ id: ID.receipt(), transactionId: sv.transactionId, status: 'SUCCESS', amount: sv.amount, currency: 'OMR', fee: sv.fee, vat: sv.vat, total: sv.total,
+      return confirmed({ id: ID.receipt(), transactionId: sv.transactionId, status: /^(PENDING|PROCESSING)$/.test(String(sv.status)) ? sv.status : 'SUCCESS', amount: sv.amount, currency: 'OMR', fee: sv.fee, vat: sv.vat, total: sv.total,
         destinationAmount: sv.destinationAmount, destinationCurrency: sv.destinationCurrency, exchangeRate: sv.exchangeRate,
-        beneficiary: { name: cur.name, phone: q.beneficiary.phone, country: q.beneficiary.country || 'OM', networkName: q.provider || null }, network: q.provider || null,
+        beneficiary: { name: cur.name, phone: q.beneficiary.phone, country: q.intl ? q.country : (q.beneficiary.country || 'OM'), networkName: q.provider || null }, network: q.provider || null,
         reference: sv.reference, createdAt: Date.now() });
     }
     cur.note = r.state === 'not_found' ? 'notFound' : 'unknownYet';

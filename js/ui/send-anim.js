@@ -88,7 +88,7 @@ const SendAnim = (() => {
     if (p === 'process') p = 'send';
     if (!root.classList.contains('sx-view') || !KEYS[p]){ root.setAttribute('data-phase', p); return Promise.resolve(); }
     const label = root.querySelector('#sx-label');
-    const apply = q => { root.setAttribute('data-phase', q); if (label) label.textContent = t(KEYS[q]); };
+    const apply = q => { root.setAttribute('data-phase', q); if (label) label.textContent = t(q === 'success' && root.hasAttribute('data-recorded') ? 'dst.recorded' : KEYS[q]); };   /* 12.16.0 : Orange Money is recorded, not yet paid out */
     if (p === 'send'){ apply('send'); if (!reduced()) startLoop(root); return Promise.resolve(); }
     if (p === 'success'){
       if (reduced() || !run){ stop(); apply('success'); return Promise.resolve(); }

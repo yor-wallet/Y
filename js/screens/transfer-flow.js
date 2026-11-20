@@ -125,6 +125,11 @@ function renderCountrySelect(){
         '<div class="sp-hint" id="sp-hint">' + escapeHtml(t('sp.hint')) + '</div>' +
         '<div class="sp-note" id="sp-note" hidden>' + Destinations.orangeMark() + '<span>' + escapeHtml(t('dst.note.orange')) + '</span></div>' +
         '<div class="field-err" id="sp-err" role="alert"></div></div>' +
+      '<div class="sp-names" id="sp-names" hidden>' +
+        '<div class="field"><label class="field-label" for="sp-first">' + escapeHtml(t('dst.first')) + '</label><div class="field-box"><input id="sp-first" type="text" autocomplete="off" autocapitalize="words" spellcheck="false" maxlength="40" enterkeyhint="next"></div></div>' +
+        '<div class="field"><label class="field-label" for="sp-last">' + escapeHtml(t('dst.last')) + '</label><div class="field-box"><input id="sp-last" type="text" autocomplete="off" autocapitalize="words" spellcheck="false" maxlength="40" enterkeyhint="done"></div></div>' +
+        '<div class="field-err" id="sp-nerr" role="alert"></div>' +
+      '</div>' +
       '<div id="sp-known" aria-live="polite"></div>' +
       '<button class="btn btn-primary" id="sp-next" disabled style="margin-top:calc(14px*var(--ui))">' + t('action.continue') + '</button>' +
     '</div>';
@@ -165,6 +170,7 @@ function renderTxReview(){
              '<div class="summary-row"><span class="summary-k">' + escapeHtml(t('dst.rate')) + '</span><span class="summary-v ltr" dir="ltr">1 OMR = ' + escapeHtml(Number(q.rate).toLocaleString('en-US', { maximumFractionDigits: 4 })) + ' ' + q.cur + '</span></div>' : '') +
       '</div>' +
       (q ? '<p class="dst-estnote">' + escapeHtml(t('dst.estNote')) + '</p>' : '') +
+      (dest.rpc === 'intl' ? '<p class="dst-estnote dst-payout">' + escapeHtml(t('dst.payoutNote')) + '</p>' : '') +
       '<div style="margin-top:var(--sp-4)"><div class="swipe-track" id="swipe" role="presentation"><div class="swipe-fill"></div><div class="swipe-label" id="swipe-label">' + t('transfer.swipe') + '</div><div class="swipe-thumb" id="swipe-thumb" tabindex="0" role="button" aria-label="' + t('transfer.swipe') + '">' + icon('send', 24) + '</div></div>' +
       '<button class="btn btn-primary swipe-kb-confirm" id="swipe-kb-confirm" aria-label="' + t('transfer.swipe') + '">' + icon('send', 20) + '<span>' + t('tx.confirm') + '</span></button></div>' +
     '</div>';
@@ -176,12 +182,13 @@ function renderProcessing(){
   const bd = (TX_STATE.breakdown && TX_STATE.breakdown.amount) ? TX_STATE.breakdown : { amount:0 };
   const b = TX_STATE.beneficiary;
   const amtStr = bd.amount ? CurrencyEngine.format(bd.amount, 'OMR') : (CRYPTO_FLOW.pending && CRYPTO_FLOW.pending.data && CRYPTO_FLOW.pending.data.amount ? CurrencyEngine.formatCrypto(CRYPTO_FLOW.pending.data.amount, (CRYPTO_FLOW.pending.data.asset || {}).symbol || 'CRYPTO') : '');
-  return '<div class="proc-view sx-view" data-phase="secure">' +
+  const pending = !!(b && Destinations.forBeneficiary(b).rpc === 'intl');       /* Orange Money: the server records it as "in progress" (paid out afterwards) */
+  return '<div class="proc-view sx-view" data-phase="secure"' + (pending ? ' data-recorded="1"' : '') + '>' +
     '<div class="sx-stage" aria-hidden="true">' + SendAnim.svg() + '</div>' +
     (amtStr ? '<div class="proc-amount ltr" dir="ltr">' + escapeHtml(amtStr) + '</div>' : '') +
     (b && b.phone && bd.amount ? '<div class="sx-to"><span>' + escapeHtml(t('sp.to')) + '</span> <b class="ltr" dir="ltr">' + escapeHtml(formatPhoneIntl(b.phone)) + '</b></div>' : '') +
     '<div class="proc-label" role="status" aria-live="polite" id="sx-label">' + escapeHtml(t('sx.secure')) + '</div>' +
     '<div class="sx-wait-note" aria-hidden="true">' + escapeHtml(t('sx.wait')) + '</div>' +
-    '<ol class="sx-steps sx4" aria-hidden="true">' + [1, 2, 3, 4].map(n => '<li data-s="' + n + '"><i></i><span>' + escapeHtml(t('sx.st' + n)) + '</span></li>').join('') + '</ol>' +
+    '<ol class="sx-steps sx4" aria-hidden="true">' + [1, 2, 3, 4].map(n => '<li data-s="' + n + '"><i></i><span>' + escapeHtml(t(n === 4 && pending ? 'dst.st4' : 'sx.st' + n)) + '</span></li>').join('') + '</ol>' +
   '</div>';
 }

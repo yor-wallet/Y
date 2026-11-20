@@ -33,6 +33,11 @@ export async function openApp(browser, base, opts = {}){
   const logs = []; page.on('pageerror', e => logs.push('PAGEERROR ' + e.message)); page.on('console', m => { if (m.type() === 'error') logs.push('console.error ' + m.text()); });
   await page.route('**/*', route => {
     const u = route.request().url();
+    if (opts.features && /\/js\/data\/reference-data\.js$/.test(u)){
+      let body = fs.readFileSync(path.join(ROOT, 'js/data/reference-data.js'), 'utf8');
+      for (const k of Object.keys(opts.features)) body = body.replace(new RegExp(k + '\\s*:\\s*(true|false)'), k + ': ' + opts.features[k]);
+      return route.fulfill({ status: 200, contentType: 'text/javascript', body });
+    }
     if (u.startsWith(base)) return route.continue();
     if (/cdn\.jsdelivr\.net.*supabase/.test(u)){
       const fx = JSON.stringify({ theme: opts.theme, lang: opts.lang, emptyTx: !!opts.emptyTx, signedOut: !!opts.signedOut });

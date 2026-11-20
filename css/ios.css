@@ -262,6 +262,9 @@ html body .notif-ios,html body .notif-call{border-radius:22px;background:var(--i
 
 /* ---------- 9. destinations: Oman · Orange Money Mali · Orange Money Côte d'Ivoire ---------- */
 .dst{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 18px}
+.dst.n2{grid-template-columns:repeat(2,1fr)}
+.sp-names{display:flex;flex-direction:column;gap:12px;margin-top:6px}
+.sp-names .field-err{margin-top:-4px}
 .dst-opt{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 6px 12px;min-width:0;min-height:0;border-radius:18px;
   background:var(--surf);border:1.5px solid var(--line);text-align:center;transition:transform .35s cubic-bezier(.32,.72,0,1),border-color .2s ease,background-color .2s ease,box-shadow .25s ease}
 .dst-opt:active{transform:scale(.96)}

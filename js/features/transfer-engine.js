@@ -130,6 +130,57 @@ const TransferEngine = (() => {
       return { ok:false, uncertain:true, error:'errors.UNCERTAIN' };     /* no answer read: the server may have recorded it */
     } finally { setTimeout(() => inflight.delete(idem), 1500); }
   }
-  return { resolveYorId, sendFiat, sendExternal, checkExternal, flushNotices, isUncertain };
+  /* 12.16.0 — International mobile-money transfer (Orange Money). Server function intl_send: it validates the country / method / provider, requires the
+     recipient's first and last name and a +<country code> number, debits the rials and records the transfer as PROCESSING ("awaiting payout"):
+     for Orange Money Mali the payout is then made by an administrator (admin_payout_confirm), which moves the transfer to COMPLETED and notifies the sender.
+     The destination amount is computed by the server (rounded DOWN, never promising more). Same idempotency / uncertainty rules as sendExternal. */
+  const intlShape = data => ({ transactionId: data.transaction_id, reference: data.reference, status: data.status,
+    amount: data.amount, fee: 0, vat: 0, total: data.amount, exchangeRate: data.exchange_rate != null ? data.exchange_rate : null,
+    destinationAmount: data.destination_amount, destinationCurrency: data.destination_currency, payout: data.payout || null });
+  function intlError(error){
+    const m = String(error && error.message || '').toLowerCase();
+    if (m.includes('pin_required')) return 'errors.PIN_REQUIRED';
+    if (m.includes('insufficient')) return 'errors.INSUFFICIENT_BALANCE';
+    if (m.includes('missing_field')) return 'errors.MISSING_FIELD';
+    if (m.includes('invalid_phone')) return 'errors.INVALID_PHONE';
+    if (m.includes('invalid_amount')) return 'errors.MINIMUM_AMOUNT';
+    if (m.includes('limit_')) return 'errors.LIMIT';
+    return 'errors.UNKNOWN_ERROR';
+  }
+  async function sendIntl({ country, method, provider, amount, beneficiary, idemKey, pinGrant }){
+    if (!supabaseReady) return { ok:false, error:'errors.UNKNOWN_ERROR' };
+    const idem = idemKey || uuid();
+    if (inflight.has(idem)) return { ok:false, error:'errors.DUPLICATE' };
+    inflight.add(idem);
+    try {
+      const res0 = await sb.rpc('intl_send', { p_country: country, p_method: method, p_provider: provider, p_amount: Number(amount),
+        p_beneficiary: beneficiary, p_idempotency_key: idem, p_pin_grant: pinGrant || null });
+      const data = res0 && res0.data, error = res0 && res0.error;
+      if (error && isUncertain(error, res0.status)) return { ok:false, uncertain:true, error:'errors.UNCERTAIN' };
+      if (error){ console.error('intl_send', error); return { ok:false, error: intlError(error) }; }
+      if (!data || !data.transaction_id) return { ok:false, error:'errors.DUPLICATE' };
+      flushNotices(data.transaction_id);
+      try { await AuthEngine.hydrateRuntime(); } catch(e){}
+      const sv = intlShape(data);
+      try { const tx = (Runtime.transactions || []).find(x => x.id === sv.transactionId); if (tx && sv.exchangeRate == null && tx.rate != null) sv.exchangeRate = tx.rate; } catch(e){}
+      return { ok:true, data: sv };
+    } catch(e){
+      console.error(e);
+      return { ok:false, uncertain:true, error:'errors.UNCERTAIN' };
+    } finally { setTimeout(() => inflight.delete(idem), 1500); }
+  }
+  /* same safe re-read as checkExternal (no PIN grant: an unknown key ends in pin_required, so this can never create a transfer) */
+  async function checkIntl({ country, method, provider, amount, beneficiary, idemKey }){
+    if (!supabaseReady || !idemKey) return { state:'unknown' };
+    try {
+      const { data, error } = await sb.rpc('intl_send', { p_country: country, p_method: method, p_provider: provider, p_amount: Number(amount),
+        p_beneficiary: beneficiary, p_idempotency_key: idemKey, p_pin_grant: null });
+      if (error) return /pin_required/i.test(String(error.message || '')) ? { state:'not_found' } : { state:'unknown' };
+      if (!data || !data.transaction_id) return { state:'unknown' };
+      try { await AuthEngine.hydrateRuntime(); } catch(e){}
+      return { state:'confirmed', data: intlShape(data) };
+    } catch(e){ return { state:'unknown' }; }
+  }
+  return { resolveYorId, sendFiat, sendExternal, checkExternal, sendIntl, checkIntl, flushNotices, isUncertain };
 })();
 

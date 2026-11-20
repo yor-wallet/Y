@@ -19,7 +19,11 @@ const CONFIG = Object.freeze({
 
 /* 12.12.0 — what the app offers. crypto:false hides the WHOLE crypto section (menu, home, services, settings, links, history filter, banks linked for
    crypto withdrawals). The code stays in place: set it to true to bring the section back. */
-const FEATURES = Object.freeze({ crypto: false });
+const FEATURES = Object.freeze({ crypto: false,
+  /* 12.16.0 : Orange Money Côte d'Ivoire. OFF on purpose: today the server has a real (manual, administrator-confirmed) payout path for Orange Money MALI only
+     (app_private 'orange_mali_manual'); for Côte d'Ivoire intl_send runs the demonstration engine, so a transfer would be debited and never paid. Turn on only once the
+     server has the same manual payout mode for CI (see supabase/proposals/orange_money_ci_manual.md). */
+  orangeMoneyCI: false });
 const CRYPTO_SCREEN_RE = /^(crypto(-|$)|chain$|banks(-|$))/;
 
 const CURRENCY_DEF = Object.freeze({

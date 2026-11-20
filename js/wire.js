@@ -154,6 +154,7 @@ function wire(id){
     /* 12.12.0 — the one question of the send flow: the recipient's mobile number (Oman, +968, 8 digits starting with 7 or 9) */
     const input = document.getElementById('sp-num'), next = document.getElementById('sp-next'), err = document.getElementById('sp-err'), known = document.getElementById('sp-known');
     const own = ownOmDigits();
+    const fn = document.getElementById('sp-first'), ln = document.getElementById('sp-last'), nerr = document.getElementById('sp-nerr');
     const findContact = d => { try { return Destinations.get().iso === 'OM' ? (ContactsEngine.all().find(c => omLocalDigits(c.digits || c.number) === d) || null) : null; } catch(e){ return null; } };
     function check(final){
       const dst = Destinations.get();
@@ -165,8 +166,16 @@ function wire(id){
       if (dst.iso === 'OM' && own && d === own){ err.textContent = t('sp.err_self'); return null; }
       const c = findContact(d);
       if (c) known.innerHTML = '<div class="sp-known glass-subtle">' + icon('check', 18) + '<span>' + escapeHtml(t('sp.known')) + '</span><b>' + escapeHtml(c.fullName || c.name || '') + '</b></div>';
+      /* Orange Money: the server requires the recipient's first and last name */
+      let first = '', last = '';
+      if (dst.names){
+        first = Destinations.cleanName(fn.value); last = Destinations.cleanName(ln.value);
+        const okN = Destinations.validName(first) && Destinations.validName(last);
+        nerr.textContent = (final && (first || last) && !okN) ? t('dst.err_name') : '';
+        if (!okN) return null;
+      } else nerr.textContent = '';
       next.disabled = false;
-      return { d, contact: c, dst };
+      return { d, contact: c, dst, first, last };
     }
     /* 12.16.0 — destination picker: Oman (as before), Orange Money Mali, Orange Money Côte d'Ivoire. Only the prefix, the placeholder, the hint and the rules change. */
     function paintDestination(){
@@ -176,6 +185,7 @@ function wire(id){
       input.placeholder = dst.placeholder;
       document.getElementById('sp-hint').textContent = dst.iso === 'OM' ? t('sp.hint') : t('dst.hint.' + dst.iso);
       document.getElementById('sp-note').hidden = dst.brand !== 'orange';
+      document.getElementById('sp-names').hidden = !dst.names;
       document.querySelectorAll('.dst-opt').forEach(o => { const on = o.getAttribute('data-dst') === dst.iso; o.classList.toggle('on', on); o.setAttribute('aria-checked', on ? 'true' : 'false'); });
     }
     document.querySelectorAll('.dst-opt').forEach(o => {
@@ -183,7 +193,7 @@ function wire(id){
         const iso = o.getAttribute('data-dst');
         if (iso === Destinations.get().iso) return;
         Destinations.set(iso);
-        input.value = '';                                   /* a number of one country is never reused for another */
+        input.value = ''; fn.value = ''; ln.value = ''; nerr.textContent = '';     /* a number of one country is never reused for another */
         paintDestination(); check(false);
         UIKit.haptic('tap');
         try { input.focus({ preventScroll:true }); } catch(e){ /* rien */ }
@@ -193,13 +203,15 @@ function wire(id){
     input.oninput = () => { const dst = Destinations.get(); const f = Destinations.format(Destinations.digits(input.value, dst), dst); if (input.value !== f) input.value = f; check(false); };
     input.onblur = () => { check(true); };
     input.onkeydown = e => { if (e.key === 'Enter' && !next.disabled){ e.preventDefault(); next.click(); } };
+    [fn, ln].forEach(x => { x.oninput = () => check(false); x.onblur = () => check(true); x.onkeydown = e => { if (e.key === 'Enter' && !next.disabled){ e.preventDefault(); next.click(); } }; });
     next.onclick = () => {
       const r = check(true); if (!r) return;
       const dst = r.dst, svc = Destinations.serviceFor(dst);
       TX_STATE.country = CountryTransferEngine.getConfig(dst.iso);
       TX_STATE.serviceId = dst.serviceId;
-      TX_STATE.provider = { id: svc.id, name: svc.name[LANG] || svc.name.en, kind: dst.kind };
-      TX_STATE.beneficiary = { uid:null, name: r.contact ? (r.contact.fullName || r.contact.name || null) : null, phone: Destinations.intl(r.d, dst), identifierType: dst.identifierType, identifierValue: r.d, country: dst.iso };
+      TX_STATE.provider = { id: svc.id, name: dst.provider || (svc.name[LANG] || svc.name.en), kind: dst.kind };
+      TX_STATE.beneficiary = { uid:null, name: dst.names ? Destinations.fullName(r.first, r.last) : (r.contact ? (r.contact.fullName || r.contact.name || null) : null),
+        firstName: r.first, lastName: r.last, phone: Destinations.intl(r.d, dst), identifierType: dst.identifierType, identifierValue: r.d, country: dst.iso };
       TX_STATE.amount = 0; TX_STATE.fx = null;
       R.go('tx-amount');
     };
@@ -251,7 +263,8 @@ function wire(id){
       err.textContent = ''; next.disabled = true;
       paintEstimate(v);
       if (v <= 0) return;
-      if (v < CONFIG.LIMITS.minOMR){ err.textContent = tf('sp.err_min', { n: CurrencyEngine.format(CONFIG.LIMITS.minOMR, 'OMR') }); return; }
+      const minV = Destinations.minOMR(dstQ);                 /* 12.16.0 : 0.100 for Oman, 0.500 for Orange Money (server rule) */
+      if (v < minV){ err.textContent = tf('sp.err_min', { n: CurrencyEngine.format(minV, 'OMR') }); return; }
       if (v > CONFIG.LIMITS.perTxOMR){ err.textContent = tf('sp.err_max', { n: CurrencyEngine.format(CONFIG.LIMITS.perTxOMR, 'OMR') }); return; }
       if (bd.total > acc.availableBalance){ err.textContent = t('errors.INSUFFICIENT_BALANCE'); return; }
       next.disabled = false;
@@ -291,20 +304,23 @@ function wire(id){
       thumb.classList.add('success');
       UIKit.haptic('tap');
       const b = TX_STATE.beneficiary, bd = TX_STATE.breakdown, provider = TX_STATE.provider;
-      const dst = Destinations.forBeneficiary(b);               /* 12.16.0 : Oman (OMR) or Orange Money Mali / Côte d'Ivoire (XOF) */
-      const benReq = Destinations.beneficiaryReq(b.phone, dst);
+      const dst = Destinations.forBeneficiary(b);               /* 12.16.0 : Oman (fiat_send_external) or Orange Money (intl_send) */
+      const benReq = Destinations.beneficiaryReq(b, dst);
+      const viaIntl = dst.rpc === 'intl';
       R.go('processing');
       /* The request starts AT ONCE; the animation shows what really happens (secured -> sending -> confirmed / not completed). */
       const out = await ProcessingEngine.run(async () => {
-        const res = await TransferEngine.sendExternal({
-          amount: bd.amount, destCurrency: Destinations.destCurrency(dst), provider: provider ? provider.name : '',
-          beneficiary: benReq,
-          idemKey: _idemKey, pinGrant: _pin.grant
-        });
+        const res = viaIntl
+          ? await TransferEngine.sendIntl({ country: dst.iso, method: dst.method, provider: dst.provider, amount: bd.amount, beneficiary: benReq, idemKey: _idemKey, pinGrant: _pin.grant })
+          : await TransferEngine.sendExternal({
+              amount: bd.amount, destCurrency: Destinations.destCurrency(dst), provider: provider ? provider.name : '',
+              beneficiary: benReq,
+              idemKey: _idemKey, pinGrant: _pin.grant
+            });
         if (!res.ok) return { ok:false, error: res.error, uncertain: !!res.uncertain };
         const sv = res.data;
         const receipt = {
-          id: ID.receipt(), transactionId: sv.transactionId, status: 'SUCCESS',
+          id: ID.receipt(), transactionId: sv.transactionId, status: viaIntl ? (sv.status || 'PROCESSING') : 'SUCCESS',
           amount: sv.amount, currency: 'OMR', fee: sv.fee, vat: sv.vat, total: sv.total,
           destinationAmount: sv.destinationAmount, destinationCurrency: sv.destinationCurrency, exchangeRate: sv.exchangeRate,
           beneficiary: { name: b.name, phone: b.phone, country: dst.iso, networkName: provider ? provider.name : null },
@@ -317,8 +333,10 @@ function wire(id){
          asks the person to check its status first. Nothing is ever sent again automatically. */
       if (!out.ok){
         TxResult.show({ kind: out.uncertain ? 'uncertain' : 'failed', error: out.error, late: out.late || null,
-          req: { amount: bd.amount, destCurrency: Destinations.destCurrency(dst), provider: provider ? provider.name : '',
-                 beneficiary: benReq, idemKey: _idemKey },
+          req: viaIntl
+            ? { intl: true, country: dst.iso, method: dst.method, provider: dst.provider, amount: bd.amount, beneficiary: benReq, idemKey: _idemKey }
+            : { amount: bd.amount, destCurrency: Destinations.destCurrency(dst), provider: provider ? provider.name : '',
+                beneficiary: benReq, idemKey: _idemKey },
           name: b.name || '', phone: b.phone });
         return;
       }
