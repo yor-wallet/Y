@@ -232,7 +232,8 @@ function wire(id){
       TX_STATE.amount = 0; TX_STATE.fx = null;
       R.go('tx-amount');
     };
-    setTimeout(() => { try { input.focus({ preventScroll:true }); } catch(e){ /* the keyboard opens on the first tap */ } }, 150);
+    /* the number field takes the focus when the screen opens — but never from a field the person has already started to use (that stole the focus, and the typed text, when a name was tapped within 150 ms) */
+    setTimeout(() => { try { const ae = document.activeElement; if (!ae || ae === document.body || ae === input) input.focus({ preventScroll:true }); } catch(e){ /* the keyboard opens on the first tap */ } }, 150);
   }
   if (id === 'contact-add'){
     const num = document.getElementById('ct-number');

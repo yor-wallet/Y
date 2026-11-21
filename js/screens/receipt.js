@@ -223,14 +223,14 @@ function renderReceipt(){
   let rows = '';
   if (fromPhone) rows += rcRow(t('receipt.from'), escapeHtml(typeof formatPhoneIntl === 'function' ? formatPhoneIntl(fromPhone) : fromPhone), { id: 'receipt-from', vcls: 'ltr' });
   if (!isIn && !isCrypto) rows += rcRow(t('receipt.paidFrom'), escapeHtml(t('receipt.paidFromVal') + ' · ' + (r.currency || 'OMR')));
-  rows += rcRow(t(isIn ? 'receipt.amountReceived' : 'receipt.amountSent'), escapeHtml(amtFmt), { vcls: 'ltr' });
+  rows += rcRow(t(isIn ? 'receipt.amountReceived' : 'receipt.amountSent'), moneyHtml(amtFmt), { vcls: 'ltr' });
   if (destFmt) rows += rcRow(t('transfer.receiving'), escapeHtml(destFmt), { vcls: 'ltr acc' });
   if (rateTxt) rows += rcRow(t('transfer.rate'), escapeHtml(rateTxt), { vcls: 'ltr sm' });
   if (!isIn && state !== 'failed'){
-    if (r.fee) rows += rcRow(t('receipt.fees'), escapeHtml(feeFmt), { vcls: 'ltr' });
+    if (r.fee) rows += rcRow(t('receipt.fees'), moneyHtml(feeFmt), { vcls: 'ltr' });
     if (vatFmt) rows += rcRow(t('receipt.vat'), escapeHtml(vatFmt), { vcls: 'ltr' });
     /* 12.12.0: no fees on transfers -> "total debited" would repeat the amount; it is drawn only when it differs (older operations, crypto) */
-    if (hasCost) rows += rcRow(t('receipt.totalDebit'), escapeHtml(totalFmt), { cls: 'total', vcls: 'ltr' });
+    if (hasCost) rows += rcRow(t('receipt.totalDebit'), moneyHtml(totalFmt), { cls: 'total', vcls: 'ltr' });
   }
   /* "Make another transfer": a fiat transfer goes back to the start of the transfer flow, a crypto send to the crypto send flow; never for an incoming operation */
   const anotherNav = isIn ? '' : !isCrypto ? 'country-select' : /SEND/.test(kindStr) ? 'crypto-send' : '';
@@ -249,7 +249,7 @@ function renderReceipt(){
       '<button class="topbar-action" data-action="done" aria-label="' + escapeHtml(t('receipt.back_home')) + '">' + icon('close', 18) + '</button>' +
     '</div>' +
     '<section class="receipt-hero">' + rcBadge(state) +
-      '<div class="rc-amt ltr">' + escapeHtml(amtFmt) + '</div>' +
+      '<div class="rc-amt ltr">' + moneyHtml(amtFmt) + '</div>' +
       (destFmt ? '<div class="rc-dest ltr">≈ ' + escapeHtml(destFmt) + '</div>' : '') +
       '<div class="receipt-title">' + escapeHtml(title) + '</div>' +
       (eyebrow ? '<div class="rc-eyebrow">' + escapeHtml(eyebrow) + '</div>' : '') +

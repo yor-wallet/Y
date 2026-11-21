@@ -71,10 +71,10 @@ const AdminPayouts = (() => {
   function cardHtml(r){
     const st = stateOf(r), sms = smsLine(r);
     const dest = r.dest_amount != null ? money(r.dest_amount, r.dest_currency || 'XOF') : '';
-    const who = (name, phone) => escapeHtml([name, phone ? formatPhoneIntl(phone) : ''].filter(Boolean).join(' · '));
+    const who = (name, phone) => escapeHtml(name || '') + (name && phone ? ' · ' : '') + (phone ? '<span class="nw">' + escapeHtml(formatPhoneIntl(phone)) + '</span>' : '');
     return '<article class="po-card" data-tx="' + escapeHtml(r.id) + '" data-state="' + st + '">' +
       '<div class="po-top"><b class="ltr" dir="ltr">' + escapeHtml(dispId(String(r.reference || ''))) + '</b><span class="po-st po-' + st + '">' + escapeHtml(t('po.st.' + st)) + '</span></div>' +
-      '<div class="po-amt ltr" dir="ltr">' + escapeHtml(money(r.amount, 'OMR')) + (dest ? ' <span>→ ' + escapeHtml(dest) + '</span>' : '') + '</div>' +
+      '<div class="po-amt ltr" dir="ltr">' + moneyHtml(money(r.amount, 'OMR')) + (dest ? ' <span>→ ' + escapeHtml(dest) + '</span>' : '') + '</div>' +
       '<div class="po-line"><small>' + escapeHtml(t('po.to')) + '</small><span class="ltr" dir="ltr">' + who(r.beneficiary_name, r.beneficiary_phone) + '</span></div>' +
       '<div class="po-line"><small>' + escapeHtml(t('po.from')) + '</small><span class="ltr" dir="ltr">' + who(r.full_name, r.phone) + '</span></div>' +
       (r.paid_ref ? '<div class="po-line"><small>' + escapeHtml(t('po.paidRef')) + '</small><span class="ltr" dir="ltr">' + escapeHtml(r.paid_ref) + '</span></div>' : '') +

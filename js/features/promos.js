@@ -13,8 +13,8 @@ const Promos = (() => {
   const AUTO_MS = 6500;
   const ITEMS = [
     { id: 'send', tone: 'send', nav: 'country-select',
-      title: { fr: 'Envoyez à vos proches', en: 'Send to your loved ones', ar: 'أرسل إلى أحبّائك' },
-      body:  { fr: 'Quelques gestes suffisent, depuis votre téléphone.', en: 'A few taps are all it takes, right from your phone.', ar: 'بضع لمسات تكفي، من هاتفك مباشرة.' },
+      title: { fr: 'Transférez de l’argent vite et en sécurité', en: 'Transfer money quickly and securely', ar: 'تحويل الأموال بسرعة وأمان' },
+      body:  { fr: 'En local et à l’international avec OM Wallet', en: 'Locally and internationally with OM Wallet', ar: 'محلياً ودولياً عبر OM Wallet' },
       cta:   { fr: 'Envoyer', en: 'Send', ar: 'إرسال' } },
     { id: 'card', tone: 'card', nav: 'cards',
       title: { fr: 'Vos cartes OM Wallet', en: 'Your OM Wallet cards', ar: 'بطاقاتك من OM Wallet' },

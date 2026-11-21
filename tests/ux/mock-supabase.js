@@ -27,8 +27,8 @@
     accounts: [{ id: 'acc-1', type: 'MAIN', name: 'Main OMR', currency: 'OMR', balance: FX.emptyTx ? 0 : 1284.5, available_balance: FX.emptyTx ? 0 : 1284.5, reserved_balance: 0, status: 'ACTIVE', country: 'OM', created_at: new Date(NOW - 90 * D).toISOString() }],
     crypto_wallets: [],
     notifications: FX.emptyTx ? [] : [
-      { id: 'n-1', type: 'TRANSFER_RECEIVED', title: 'Money received', message: 'You received OMR 120.000 from Khalid Al Rawahi', read: false, transaction_id: 'tx-4', data: {}, created_at: new Date(NOW - 2 * H).toISOString() },
-      { id: 'n-2', type: 'TRANSFER_SENT', title: 'Transfer sent', message: 'OMR 25.500 sent to Salim Al Harthy', read: true, transaction_id: 'tx-1', data: {}, created_at: new Date(NOW - 9 * H).toISOString() }
+      { id: 'n-1', type: 'TRANSFER_RECEIVED', title: 'Money received', message: 'You received OMR 120.000 from Khalid Al Rawahi', read: false, transaction_id: 'tx-4', data: { amount: 120, currency: 'OMR', from: 'Khalid Al Rawahi' }, created_at: new Date(NOW - 2 * H).toISOString() },
+      { id: 'n-2', type: 'TRANSFER_SENT', title: 'Transfer sent', message: 'OMR 25.500 sent to Salim Al Harthy', read: true, transaction_id: 'tx-1', data: { amount: 25.5, currency: 'OMR', to: 'Salim Al Harthy' }, created_at: new Date(NOW - 9 * H).toISOString() }
     ],
     user_docs: [
       { user_id: uid, doc_name: 'preferences', data: { language: FX.lang || 'en', theme: FX.theme || 'light', notifications: true, hideBalances: false, vibration: true } },
@@ -87,6 +87,7 @@
   window.__dyState = dyS;
   var rpcs = {
     dy_status: function(){ return { enabled: dyS.enabled, updatedAt: dyS.updatedAt }; },
+    admin_console_stats: function(){ if (!FX.admin) throw { message: 'forbidden', code: '42501' }; return { users: 21, transfers_total: 220, transactions_today: 2, balance_omr: 1284.5 }; },
     admin_dy_overview: function(){ if (!FX.admin) throw { message: 'forbidden', code: '42501' }; return dyOverview(); },
     admin_dy_set: function(a){ if (!FX.admin) throw { message: 'forbidden', code: '42501' }; if (typeof a.p_enabled !== 'boolean') throw { message: 'invalid_value', code: '22023' };
       if (dyS.enabled !== a.p_enabled){ dyS.enabled = a.p_enabled; dyS.updatedAt = new Date().toISOString(); dyS.updatedBy = 'Amira Al Said'; dyS.history.unshift({ at: dyS.updatedAt, enabled: a.p_enabled, by: 'Amira Al Said' }); }

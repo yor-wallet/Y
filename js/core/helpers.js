@@ -226,5 +226,7 @@ async function copyText(text, okMsg){
    The database keeps its identifiers as YOR-XXXXXX (profiles_yor_id_check) and YOR-TX-… (new_tx_reference): they are NOT
    changed. Users see FRD-… everywhere, and may type FRD-, FRIENDLY- or YOR- when searching for someone.
    ============================================================ */
+/* an amount as HTML: the currency code OMR is wrapped so the stylesheet can draw the rial symbol in its place; the text (OMR) stays in the page, the data and the exports */
+function moneyHtml(text){ return escapeHtml(text).replace('OMR', '<span class="rv-cur" data-cur="OMR">OMR</span>'); }
 function dispId(v){ return String(v == null ? '' : v).replace(/^YOR-/i, 'FRD-'); }
 function normId(v){ return String(v || '').trim().toUpperCase().replace(/^(FRD|FRIENDLY|YOR)[\s-]*/, 'YOR-'); }

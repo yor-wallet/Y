@@ -23,9 +23,11 @@ function txRow(tx, mask){
   /* the REAL status: a completed operation shows no badge (normal case); in progress / failed are always visible and translated */
   const state = txState(tx.status);
   const sub = '<span class="tx-when">' + escapeHtml(timeAgo(tx.createdAt)) + '</span>' + (party && op ? ' · ' + escapeHtml(op) : '');
+  const okLine = state === 'success' ? '<div class="tx-okl">' + escapeHtml(t('tx.st.success')) + '</div>' : '';
+  const dirb = '<span class="dirb ' + (state !== 'success' ? 'dirb-' + state : credit ? 'dirb-in' : 'dirb-out') + '" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">' + (credit ? '<path d="M12 5v14M6 13l6 6 6-6"/>' : '<path d="M12 19V5M6 11l6-6 6 6"/>') + '</svg></span>';
   return '<div class="item tx-row tx-' + (credit ? 'in' : 'out') + ' st-' + state + '" role="button" tabindex="0" data-action="view-tx" data-tx="' + tx.id + '"><div class="tile">' + icon(state === 'failed' ? 'close' : iconName, 20) + '</div>' +
-    '<div class="item-body"><div class="item-title">' + escapeHtml(name) + '</div><div class="item-sub">' + sub + (state !== 'success' ? ' ' + statusPill(state, true) : '') + '</div></div>' +
-    '<div class="item-right"><div class="item-amount ltr ' + (credit && state === 'success' ? 'credit' : '') + (state === 'failed' ? ' failed' : '') + '"' + (mask ? ' aria-label="' + escapeHtml(t('ds.hidden_amt')) + '"' : '') + '>' + (mask ? '••••' : sign + escapeHtml(amt)) + '</div></div></div>';
+    '<div class="item-body"><div class="item-title">' + escapeHtml(name) + '</div>' + okLine + '<div class="item-sub">' + sub + (state !== 'success' ? ' ' + statusPill(state, true) : '') + '</div></div>' +
+    '<div class="item-right"><div class="item-amount ltr ' + (credit && state === 'success' ? 'credit' : '') + (state === 'failed' ? ' failed' : '') + '"' + (mask ? ' aria-label="' + escapeHtml(t('ds.hidden_amt')) + '"' : '') + '>' + (mask ? '••••' : sign + moneyHtml(amt)) + '</div>' + dirb + '</div></div>';
 }
 /* ============================================================
    12.12.0 — SEND MONEY: one screen asks for ONE thing, the recipient's mobile number.
@@ -165,7 +167,7 @@ function renderTxReview(){
           '<div class="receipt-benef-country"><span class="receipt-flag">' + flag(dest.iso) + '</span><span>' + escapeHtml(Destinations.typeLabel(dest)) + '</span></div>' +
         '</div></div>' +
       '</div>' +
-      '<div class="summary"><div class="summary-row total"><span class="summary-k">' + t('receipt.amountSent') + '</span><span class="summary-v">' + CurrencyEngine.format(bd.amount, 'OMR') + '</span></div>' +
+      '<div class="summary"><div class="summary-row total"><span class="summary-k">' + t('receipt.amountSent') + '</span><span class="summary-v">' + moneyHtml(CurrencyEngine.format(bd.amount, 'OMR')) + '</span></div>' +
         (q ? '<div class="summary-row"><span class="summary-k">' + escapeHtml(t('dst.est')) + '</span><span class="summary-v ltr" dir="ltr">≈ ' + escapeHtml(CurrencyEngine.format(q.amount, q.cur)) + '</span></div>' +
              '<div class="summary-row"><span class="summary-k">' + escapeHtml(t('dst.rate')) + '</span><span class="summary-v ltr" dir="ltr">1 OMR = ' + escapeHtml(Number(q.rate).toLocaleString('en-US', { maximumFractionDigits: 4 })) + ' ' + q.cur + '</span></div>' : '') +
       '</div>' +

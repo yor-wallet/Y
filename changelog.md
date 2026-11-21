@@ -21,6 +21,20 @@
 - **Déploiement** : un dossier `public/` à la racine devient le dossier de sortie de Vercel (projet sans framework) : `vercel.json` fixe donc `"outputDirectory": "."`.
 - Le panneau latéral (ordinateur) affiche `FRD-…` au lieu de l'identifiant interne `YOR-…`.
 
+## Réplique de la maquette « OM PAY » (même version 13.2.0)
+- **Éléments graphiques tirés de vos captures** (les images fournies sont la référence) : logo « OM PAY » en version claire et sombre (`assets/brand/om-pay-logo*.png`), paysage d'Oman avec le fort (`assets/ui/oman-hero.jpg`, sous-titre incrusté retiré), tuile « OM PAY » de la carte de solde (`om-glyph.png`, `om-pay-word.png`), illustration de la bannière (`promo-art.svg`), symbole du rial (tracé).
+- **Accueil** : en-tête (profil · logo · notifications avec point bleu), salutation centrée avec le vrai prénom, paysage derrière la salutation, carte de solde en verre avec la tuile « OM PAY » (symbole du rial puis montant), quatre actions en verre (Transférer en bleu, Recevoir, Historique, Plus), bannière « Transférer de l'argent vite et en sécurité », carte unique « Dernières opérations » avec statut vert « Terminé » et pastille d'arrondi vert / rouge selon le sens, barre flottante (Accueil · Opérations · bouton central bleu · Cartes · Compte). La recherche n'est plus dans l'en-tête de l'accueil (elle reste dans l'historique).
+- **Profil et paramètres** (`js/screens/account-hub.js`, écran `account`, dernier onglet de la barre) : carte du profil (vrai nom, numéro, « Compte vérifié » seulement si le serveur dit VERIFIED), carte portefeuille (vrai solde), niveau du compte, liste (sécurité, notifications avec interrupteur réel, langue, aide, à propos, contrôle administrateur pour les administrateurs) et bouton rouge « Se déconnecter ».
+- **Admin Control** : mise en page de la maquette (menu, réglages au centre, état et quatre chiffres réels à droite via la nouvelle fonction `admin_console_stats`, notes en bas), libellés arabe + anglais. Le centre montre l'interrupteur DY et l'**avis réel** montré aux expéditeurs (« Transfert temporairement indisponible »).
+- **Non reproduit** : (1) le reçu « Transfer Completed Successfully » affiché avec une fenêtre « System Error » par-dessus ; (2) le « message d'erreur système » configurable quand DY est actif ; (3) le « Pay by code » (aucun paiement par code n'existe dans l'application : le bouton central de la barre envoie de l'argent).
+
+## Corrections (passe de contrôle)
+- **Cartes virtuelles** : les deux faces d'une carte s'empilaient (régression du thème) → la face arrière réapparaissait sous la carte.
+- **Arabe** : les notifications de transfert s'affichaient en anglais (texte stocké en base) → elles sont construites dans la langue de l'application avec les vraies valeurs (montant, devise, nom) ; un nom latin trop long n'est plus coupé à son début.
+- **Symbole du rial** étendu à l'historique, à la confirmation, au reçu et aux versements administrateur.
+- **Focus volé** : 150 ms après l'ouverture de l'écran « numéro du destinataire », le champ du numéro reprenait le focus même si la personne avait déjà commencé à saisir un prénom — le texte tapé partait dans le mauvais champ. C'était la cause de l'instabilité du test Orange Money (8 exécutions sur 8 réussies après correction).
+- Les en-têtes de la fenêtre administrateur de versements affichaient le numéro de téléphone coupé en deux lignes.
+
 ## Non fait (volontairement)
 - Pas de nouveau reçu « transfert réussi », pas de PDF ni de bouton Partager pour les transferts vers l'Oman, pas de références « OMW… » : ces transferts sont aujourd'hui confirmés immédiatement sans aucun versement réel, et un reçu « réussi » partageable pour un transfert non versé pourrait servir de fausse preuve de paiement.
 - Pas de pages réécrites une à une : l'apparence est portée par le thème et les composants existants. Pas de composants `OMGlassCard`… en React (le projet n'utilise pas de framework).

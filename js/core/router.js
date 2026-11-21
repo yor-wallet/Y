@@ -11,7 +11,7 @@ const R = (() => {
   const ADMIN_SCREENS = ['chain'];     /* écrans réservés au rôle admin (masquage d'interface) */
   const PARENT = {
     'services':'home', 'chain':'services', 'settings':'home', 'banks':'home', 'banks-add':'banks', 'contact-add':'settings',
-    'cards':'home', 'cards-add':'cards', 'card-settings':'cards', 'notifications':'home', 'profile':'home',
+    'cards':'home', 'cards-add':'cards', 'card-settings':'cards', 'notifications':'home', 'profile':'account', 'account':'home', 'settings':'account',
     'crypto-market':'crypto', 'crypto-networks':'crypto', 'crypto-spot':'crypto',
     'crypto-buy':'crypto', 'crypto-buy-amount':'crypto-buy',
     'crypto-sell':'crypto', 'crypto-sell-amount':'crypto-sell',
@@ -23,10 +23,10 @@ const R = (() => {
     'country-select':'home',
     'tx-amount':'country-select', 'tx-review':'tx-amount', 'receipt':'home',
     'receive':'home', 'profile-edit':'profile', 'tx-result':'home',
-    'devices':'settings', 'sessions':'settings', 'privacy':'settings', 'help':'settings', 'about':'settings', 'history':'home'
+    'devices':'settings', 'sessions':'settings', 'privacy':'settings', 'help':'account', 'about':'account', 'history':'home', 'dy-control':'account', 'payouts':'account'
   };
   const NAV_KEYS = {
-    'home':'home','services':'services','chain':'services','history':'history','cards':'cards','cards-add':'cards','card-settings':'cards','country-select':'country-select','service-select':'country-select','identifier-input':'country-select','tx-amount':'country-select','tx-review':'country-select','profile':'profile','settings':'settings','banks':'services','banks-add':'services','privacy':'settings','help':'settings','about':'settings',
+    'home':'home','services':'services','chain':'services','history':'history','cards':'cards','cards-add':'cards','card-settings':'cards','country-select':'country-select','service-select':'country-select','identifier-input':'country-select','tx-amount':'country-select','tx-review':'country-select','profile':'account','settings':'account','account':'account','dy-control':'account','payouts':'account','banks':'services','banks-add':'services','privacy':'settings','help':'settings','about':'settings',
     'notifications':'notifications','crypto':'crypto','crypto-market':'crypto-market','crypto-networks':'crypto-market','crypto-spot':'crypto-market',
     'crypto-buy':'crypto','crypto-buy-amount':'crypto','crypto-sell':'crypto','crypto-sell-amount':'crypto',
     'crypto-swap':'crypto','crypto-swap-to':'crypto','crypto-swap-amount':'crypto',

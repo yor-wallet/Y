@@ -1,10 +1,26 @@
 'use strict';
 
+Object.assign(TR.en, { 'nt.sent':'Transfer sent', 'nt.recv':'Money received', 'nt.sentMsg':'{a} sent to {n}', 'nt.recvMsg':'You received {a} from {n}' });
+Object.assign(TR.fr, { 'nt.sent':'Transfert envoyé', 'nt.recv':'Argent reçu', 'nt.sentMsg':'{a} envoyé à {n}', 'nt.recvMsg':'Vous avez reçu {a} de {n}' });
+Object.assign(TR.ar, { 'nt.sent':'تم إرسال التحويل', 'nt.recv':'تم استلام أموال', 'nt.sentMsg':'تم إرسال {a} إلى {n}', 'nt.recvMsg':'استلمت {a} من {n}' });
+/* The database stores these two notifications in English; the screen shows them in the language of the app, built from the REAL values saved with the event
+   (amount, currency, name). When a value is missing the stored text is shown as it is — nothing is invented. */
+function notifView(n){
+  const d = n.data || {}, amt = Number(d.amount);
+  if ((n.type === 'TRANSFER_SENT' || n.type === 'TRANSFER_RECEIVED') && isFinite(amt) && amt > 0){
+    const who = String(n.type === 'TRANSFER_SENT' ? d.to : d.from || '').trim();
+    if (who){
+      const a = CurrencyEngine.format(amt, String(d.currency || 'OMR'));
+      return { title: t(n.type === 'TRANSFER_SENT' ? 'nt.sent' : 'nt.recv'), message: t(n.type === 'TRANSFER_SENT' ? 'nt.sentMsg' : 'nt.recvMsg').replace('{a}', a).replace('{n}', who) };
+    }
+  }
+  return { title: n.title, message: n.message };
+}
 function renderNotifications(){
   const list = Runtime.notifications;
   return '<div class="topbar"><button class="topbar-back" data-action="back" aria-label="' + t('ui.back') + '"><span class="dir-flip" style="display:inline-flex">' + icon('back', 20) + '</span></button><span class="topbar-title">' + t('ui.notifications') + '</span><button class="topbar-action" data-action="mark-notifs" aria-label="' + t('ui.markRead') + '">' + icon('check', 18) + '</button></div>' +
     '<div class="screen-body" style="padding-top:0">' +
-      (list.length ? '<div class="glass" style="padding:calc(6px*var(--ui)) calc(18px*var(--ui))">' + list.map(n => '<div class="item" style="cursor:default"><div class="tile">' + icon('bell', 20) + '</div><div class="item-body"><div class="item-title">' + escapeHtml(n.title) + '</div><div class="item-sub" style="white-space:normal">' + escapeHtml(n.message) + '</div><div class="caption" style="margin-top:calc(4px*var(--ui))">' + escapeHtml(timeAgo(n.createdAt)) + '</div></div></div>').join('') + '</div>' : '<div class="rv-empty" style="padding-top:12vh"><div style="color:var(--accent)">' + icon('bell', 48) + '</div><div style="font-weight:800;font-size:calc(18px*var(--ui));margin-top:12px">' + V12.vt('notifEmpty') + '</div><div style="color:var(--text-2);margin-top:6px">' + V12.vt('notifEmptyD') + '</div></div>') +
+      (list.length ? '<div class="glass" style="padding:calc(6px*var(--ui)) calc(18px*var(--ui))">' + list.map(n => { const v = notifView(n); return '<div class="item" style="cursor:default"><div class="tile">' + icon('bell', 20) + '</div><div class="item-body"><div class="item-title">' + escapeHtml(v.title) + '</div><div class="item-sub" style="white-space:normal">' + escapeHtml(v.message) + '</div><div class="caption" style="margin-top:calc(4px*var(--ui))">' + escapeHtml(timeAgo(n.createdAt)) + '</div></div></div>'; }).join('') + '</div>' : '<div class="rv-empty" style="padding-top:12vh"><div style="color:var(--accent)">' + icon('bell', 48) + '</div><div style="font-weight:800;font-size:calc(18px*var(--ui));margin-top:12px">' + V12.vt('notifEmpty') + '</div><div style="color:var(--text-2);margin-top:6px">' + V12.vt('notifEmptyD') + '</div></div>') +
     '</div>';
 }
 function infoScreenTop(titleKey){

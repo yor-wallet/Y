@@ -414,28 +414,29 @@ const Premium = (() => {
         (!hide && v.converted ? '<span class="rv-cap ltr">' + escapeHtml(CurrencyEngine.format(v.orig.amount, v.orig.currency)) + '</span>' : '') + '</div>'; }).join('') + '</div></section>' : '';
     return '<div class="rv-home ds-home px-home">' +
       '<header class="px-top">' +
-        '<button class="px-me" data-nav="profile" aria-label="' + escapeHtml(t('px.openProfile')) + '">' + pxAvatar(p) + '</button>' +
-        '<img class="px-logo" src="assets/brand/logo-mark-only.svg" alt="OM Wallet" width="62" height="37" decoding="async">' +
-        '<div class="px-hello"><span>' + escapeHtml(pxGreeting()) + '</span><b>' + escapeHtml(p.firstName || p.displayName || 'OM Wallet') + '</b></div>' +
-        '<button class="rv-circ px-circ" data-px="search" aria-label="' + escapeHtml(t('px.search')) + '">' + icon('search', 20) + '</button>' +
-        '<button class="rv-circ px-circ" data-action="notifications" aria-label="' + escapeHtml(t('px.notifs') + (unread ? ' (' + unread + ')' : '')) + '">' + icon('bell', 20) + (unread ? '<span class="rv-bdg">' + (unread > 9 ? '9+' : unread) + '</span>' : '') + '</button>' +
+        '<button class="px-me" data-nav="account" aria-label="' + escapeHtml(t('px.openProfile')) + '">' + icon('user', 24) + '</button>' +
+        omLogoHtml(96) +
+        '<button class="rv-circ px-circ" data-action="notifications" aria-label="' + escapeHtml(t('px.notifs') + (unread ? ' (' + unread + ')' : '')) + '">' + icon('bell', 24) + (unread ? '<span class="rv-bdg dot" role="status"><span class="sr">' + unread + '</span></span>' : '') + '</button>' +
       '</header>' +
+      '<div class="px-hero-wrap"><div class="px-scene" aria-hidden="true"><img src="assets/ui/oman-hero.jpg" alt="" width="852" height="198" decoding="async"></div>' +
+        '<section class="px-welcome"><h1>' + escapeHtml(tf('hm.welcome', { n: (p.firstName || p.displayName || '') ? (p.firstName || p.displayName) : t('hm.dear') })) + '</h1><p>' + escapeHtml(t('hm.sub')) + '</p></section></div>' +
       '<section class="ds-balance px-bal" aria-label="' + escapeHtml(t('px.available')) + '">' +
         '<i class="px-bal-light" aria-hidden="true"></i><i class="px-bal-grain" aria-hidden="true"></i>' +
         '<div class="ds-bal-top"><span class="ds-bal-label">' + escapeHtml(t('px.available')) + '</span>' + acct +
-          '<button class="ds-eye" data-action="toggle-balance" aria-pressed="' + (hide ? 'true' : 'false') + '" aria-label="' + escapeHtml(t(hide ? 'px.showBal' : 'px.hideBal')) + '">' + icon(hide ? 'eyeOff' : 'eye', 20) + '</button></div>' +
+          '<button class="ds-eye" data-action="toggle-balance" aria-pressed="' + (hide ? 'true' : 'false') + '" aria-label="' + escapeHtml(t(hide ? 'px.showBal' : 'px.hideBal')) + '">' + icon(hide ? 'eyeOff' : 'eye', 22) + '</button></div>' +
         '<div class="ds-bal-amt ltr' + (hide ? ' is-hidden' : '') + '" id="px-bal-amt">' + (hide ? escapeHtml(MASK) : money(dv.amount, dv.currency)) + '</div>' +
         (dv.converted && !hide ? '<div class="ds-bal-orig ltr">' + escapeHtml(CurrencyEngine.format(main.balance, main.currency)) + ' · 1 ' + escapeHtml(main.currency) + ' = ' + dv.rate.toFixed(4) + ' ' + escapeHtml(dv.currency) + '</div>' : '') +
         (showAvail && !hide ? '<div class="ds-bal-sub">' + escapeHtml(t('ds.available')) + ' <b class="ltr">' + money(balanceView(main.availableBalance, main.currency).amount, balanceView(main.availableBalance, main.currency).currency) + '</b></div>' : '') +
+        '<span class="px-bal-tile" aria-hidden="true"><img class="g" src="assets/ui/om-glyph.png" alt="" width="70" height="49"><img class="p" src="assets/ui/om-pay-word.png" alt="" width="50" height="20"></span>' +
         '<div class="px-bal-foot">' + (yid ? '<span class="px-bal-id ltr" dir="ltr">' + escapeHtml(yid) + '</span>' : '<span></span>') +
           '<button class="px-bal-link" data-nav="history"><span>' + escapeHtml(t('px.history')) + '</span>' + '<span class="dir-flip" style="display:inline-flex">' + icon('chev', 16) + '</span></button></div>' +
       '</section>' +
-      '<nav class="rv-acts px-acts" aria-label="' + escapeHtml(t('px.more')) + '">' + act('country-select', 'send', t('px.send'), true) + act('receive', 'receive', t('px.receive')) + act('history', 'history', t('px.history')) + act('services', 'apps', t('px.more')) + '</nav>' +
+      '<nav class="rv-acts px-acts" aria-label="' + escapeHtml(t('px.more')) + '">' + act('country-select', 'send', t('hm.transfer'), true) + act('receive', 'receive', t('px.receive')) + act('history', 'history', t('px.history')) + act('services', 'apps', t('px.more')) + '</nav>' +
       PxInstall.card() +
+      (typeof Promos !== 'undefined' ? Promos.html() : '') +
       '<section class="rv-sec px-sec"><div class="rv-h"><h2>' + escapeHtml(t('px.recent')) + '</h2><button data-nav="history">' + escapeHtml(t('px.seeAll')) + '</button></div>' +
         (txs.length ? txGroupedHtml(txs, hide) : '<div class="rv-list">' + emptyState('history', V12.vt('noTx'), t('ds.nohist_body')) + '</div>') + '</section>' +
       othersHtml +
-      (typeof Promos !== 'undefined' ? Promos.html() : '') +
       cardsHtml +
       '<div style="height:calc(20px + var(--safe-b))"></div></div>';
   }

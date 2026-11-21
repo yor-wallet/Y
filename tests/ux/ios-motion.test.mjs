@@ -63,7 +63,8 @@ const state = (page, id) => page.evaluate(id => { const e = document.getElementB
     await page.evaluate(() => R.go('home', { reset: true })); await wait(700);
   });
   await ok('sheet: opens, app scales back, drag down dismisses', async () => {
-    await page.click('[data-px="search"]'); await wait(700);
+    /* the home header no longer carries a search button (reference layout): the same sheet is opened by its own entry point */
+    await page.evaluate(() => PxSearch.open()); await wait(700);
     assert.ok(await page.evaluate(() => document.body.classList.contains('ios-sheet-open')));
     const box = await page.evaluate(() => { const r = document.querySelector('.ov.is-open .ov-panel').getBoundingClientRect(); return [r.left + r.width / 2, r.top + 7]; });
     await swipe(page, box, [box[0], box[1] + 260], 8); await wait(800);
