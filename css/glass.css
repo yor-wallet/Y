@@ -491,3 +491,88 @@ html:root[data-theme="dark"] .adm-sv{color:#fff}
 }
 html:root body .adm .px-logo{position:static!important;left:auto!important;top:auto!important;transform:none!important;pointer-events:none}
 html:root body .adm-side .px-logo{width:110px}html:root body .adm-brand .px-logo{width:120px}
+
+/* ============================================================
+   19. MODULES PLUS GRANDS (13.3.0) — tuiles, cartes, lignes, barre et boutons agrandis ; tout reste dans la largeur dès 360 px
+   ============================================================ */
+:root{--om-s:1.12}                                       /* un seul facteur : les modules ci-dessous en dépendent */
+/* en-tête */
+html:root body .px-home .px-top,html:root body .hub-top{grid-template-columns:54px 1fr 54px}
+html:root body .px-top .px-me,html:root body .px-top .px-circ,html:root body .hub-circ{width:54px!important;height:54px!important}
+html:root body .px-top .px-me svg,html:root body .px-top .px-circ svg,html:root body .hub-circ svg{width:26px;height:26px}
+html:root body .px-top .px-logo{width:92px}
+html:root body .px-welcome h1{font-size:clamp(28px,8.4vw,34px);line-height:1.25}
+html:root body .px-welcome p{font-size:18px;line-height:26px}
+/* paysage et carte de solde */
+.px-hero-wrap{padding-bottom:112px}
+.px-hero-wrap .px-scene{left:-24px;right:-24px}
+.px-scene img{max-width:720px}
+html:root body .ds-home .ds-balance.px-bal{min-height:172px;padding:24px 22px 24px 26px!important;border-radius:40px!important}
+html:root body .px-bal .ds-bal-label{font-size:19px}
+html:root body .px-bal .ds-bal-amt{font-size:clamp(42px,13.4vw,58px)}
+html:root body .px-bal .ds-eye{width:38px;height:38px}
+html:root body .px-bal .ds-eye svg{width:24px;height:24px}
+html:root body .px-bal-tile{width:min(34vw,140px);height:min(34vw,140px);border-radius:40px}
+html:root body .px-bal-tile .g{width:min(19vw,80px)}html:root body .px-bal-tile .p{width:min(13.5vw,56px)}
+/* actions */
+html:root body .px-acts{gap:12px!important;margin-top:18px!important}
+html:root body .px-acts .rv-act,html:root body .px-acts .rv-act.p{height:clamp(96px,28vw,112px)!important;border-radius:30px!important}
+html:root body .px-acts .rv-act i svg{width:clamp(30px,8.6vw,36px)!important;height:clamp(30px,8.6vw,36px)!important}
+html:root body .px-acts .rv-act span,html:root body .px-acts .rv-act.p span{font-size:clamp(13px,3.7vw,15px);line-height:19px}
+/* bannière */
+html:root body .rv-promo{min-height:108px;padding:14px 18px!important;border-radius:32px!important}
+html:root body .rv-promo h3{font-size:clamp(17px,4.9vw,20px);line-height:1.3}
+html:root body .rv-promo p{font-size:clamp(14px,3.9vw,16px)}
+html:root body .rv-promo-cta{width:46px;height:46px}
+/* opérations : lignes plus hautes, pastilles et montants plus grands */
+html:root body .rv-h h2{font-size:24px;line-height:30px}
+html:root body .rv-list .item,html:root body .ds-list .item,html:root body .glass .item{min-height:80px;padding:12px 14px!important}
+html:root body .item .tile{width:54px;height:54px;flex-basis:54px}
+html:root body .item .tile svg{width:24px;height:24px}
+html:root body .item-title{font-size:18px;line-height:24px}
+html:root body .item-sub,html:root body .tx-okl{font-size:14px;line-height:19px}
+html:root body .item-amount{font-size:19px;line-height:25px}
+html:root body .dirb{width:46px;height:46px}html:root body .dirb svg{width:22px;height:22px}
+/* barre flottante */
+#bottom-nav .nav-dock{height:80px;border-radius:40px}
+#bottom-nav .nav-item{height:66px}
+#bottom-nav .nav-item svg{width:28px;height:28px}
+#bottom-nav .nav-item{font-size:13px}
+#bottom-nav .nav-cta .nav-cta-tile{width:72px!important;height:72px!important;margin-top:-40px!important}
+#bottom-nav .nav-cta .nav-cta-tile svg{width:32px!important;height:32px!important}
+/* hub : profil et paramètres */
+.hub{gap:16px}
+.hub-head h1{font-size:30px;line-height:38px}.hub-head p{font-size:17px}
+.hub-card{border-radius:32px;padding:20px}
+.hub-ava,.hub-ava .px-ava{width:104px;height:104px}
+.hub-who b{font-size:22px;line-height:28px}.hub-who>span{font-size:16px}
+.hub-badge{font-size:12px;padding:4px 9px}
+.hub-wi{width:48px;height:48px}.hub-amt{font-size:17px!important}
+.hub-two b{font-size:17px}.hub-two small{font-size:14px}
+.hub-row{min-height:78px;padding:16px 0}
+.hub-i{width:54px;height:54px;border-radius:18px}.hub-i svg{width:26px;height:26px}
+.hub-t b{font-size:19px;line-height:25px}.hub-t small{font-size:15px;line-height:20px}
+.hub-out{min-height:64px;font-size:19px;border-radius:22px}
+/* admin */
+.adm-card{padding:18px}.adm-ht b,.adm-sl b,.adm-nl b{font-size:19px}.adm-sv{font-size:22px}
+/* boutons et champs de tous les écrans */
+html:root body .btn{min-height:58px;font-size:17px}
+html:root body .field-box{min-height:58px}
+html:root body .chip{min-height:44px}
+html:root body .px-bal .ds-bal-amt{min-width:0;overflow:hidden;white-space:nowrap}
+html:root body .px-bal-tile{width:min(30vw,140px);height:min(30vw,140px)}
+html:root body .px-bal-tile .g{width:min(17vw,80px)}html:root body .px-bal-tile .p{width:min(12vw,56px)}
+html:root body .ds-home .ds-balance.px-bal{padding-inline:20px!important}
+
+/* ---------- 20. corrections de la version 13.3.0 ---------- */
+.px-hero-wrap .px-scene{left:-20px;right:-20px}
+.px-hero-wrap{overflow-x:clip}
+/* the taller floating bar must never sit on top of the last control of a page: every page keeps room for it, so the control can always be scrolled above the bar */
+html:root body .screen .screen-body,html:root body .screen .px-home,html:root body .screen .hub{padding-bottom:calc(124px + env(safe-area-inset-bottom,0px))!important}
+html:root body .screen .hub{padding-bottom:0!important}
+.hub-badges{flex-wrap:wrap!important;gap:4px 0!important;width:auto!important;border-radius:18px!important}
+.hub-two .hub-card{grid-template-columns:1fr auto!important;padding:16px 12px!important}
+.hub-two b,.hub-two small,.hub-level span{overflow-wrap:normal;word-break:keep-all;hyphens:none}
+.hub-two b{font-size:16px!important}
+.hub-wi{width:42px!important;height:42px!important}
+#bottom-nav .nav-item .nav-lb{font-size:12px;letter-spacing:-.1px;white-space:nowrap}

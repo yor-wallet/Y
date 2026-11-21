@@ -54,5 +54,19 @@ for (const lang of ['en', 'ar']){
   await ok('no page errors', async () => assert.deepEqual(logs, []));
   await ctx.close();
 }
+{
+  const { ctx, page, logs } = await openApp(browser, url, { lang: 'ar', width: 360, height: 780, settle: 500 });
+  console.log('\n[solde sur un téléphone étroit (360 px)]');
+  for (const bal of [48.067, 1284.5, 12345678.9]){
+    await ok('le solde ' + bal + ' tient dans sa carte (jamais coupé), sans débordement horizontal', async () => {
+      await page.evaluate(b => { const a = Runtime.accounts.find(x => x.type === 'MAIN'); a.balance = b; a.availableBalance = b; R.go('home', { force: true }); }, bal);
+      await wait(1500);
+      const m = await page.evaluate(() => { const e = document.getElementById('px-bal-amt'), r = document.createRange(); r.selectNodeContents(e); return { w: r.getBoundingClientRect().width, cw: e.clientWidth, ov: document.documentElement.scrollWidth > window.innerWidth + 1 }; });
+      assert.ok(m.w <= m.cw, JSON.stringify(m)); assert.equal(m.ov, false);
+    });
+  }
+  await ok('no page errors', async () => assert.deepEqual(logs, []));
+  await ctx.close();
+}
 await browser.close(); srv.close();
 console.log(failed ? '\n' + failed + ' FAILED' : '\nALL PASSED'); process.exit(failed ? 1 : 0);

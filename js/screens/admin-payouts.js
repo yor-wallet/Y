@@ -132,8 +132,8 @@ const AdminPayouts = (() => {
       const submit = async () => {
         const ref = inp.value.trim();
         if (ref.length < 4 || ref.length > 60){ err.textContent = t('po.refErr'); inp.focus(); return; }
-        /* a reference of OUR OWN transfers (BMCT…, OMW…, FRD-/YOR-…) is never an Orange Money reference: typed by mistake it would be printed in the recipient's SMS */
-        if (/^(BMCT\d|OMW\d|FRD-|YOR-)/i.test(ref)){ err.textContent = t('po.refInternal'); inp.focus(); return; }
+        /* a reference of OUR OWN transfers (OMT…, BMCT…, OMW…, FRD-/YOR-…) is never an Orange Money reference: typed by mistake it would be printed in the recipient's SMS */
+        if (/^(OMT\d|BMCT\d|OMW\d|FRD-|YOR-)/i.test(ref)){ err.textContent = t('po.refInternal'); inp.focus(); return; }
         if (busy) return; busy = true; err.textContent = ''; UIKit.loading(go, true);
         try {
           const { error } = await sb.rpc('admin_payout_confirm', { p_tx: r.id, p_paid_ref: ref });

@@ -7,7 +7,7 @@
    nothing is invented: "Verified account" appears only when the server's KYC status says so.
    ============================================================ */
 Object.assign(TR.en, {
-  'nav.account':'Account','nav.tx':'Transactions','hm.transfer':'Transfer','hm.welcome':'Welcome, {n}','hm.dear':'dear customer','hm.sub':'to your OM Wallet digital wallet',
+  'nav.account':'Account','nav.tx':'Activity','hm.transfer':'Transfer','hm.welcome':'Welcome, {n}','hm.dear':'dear customer','hm.sub':'to your OM Wallet digital wallet',
   'ac.title':'Profile & settings','ac.sub':'Manage your account and app preferences','ac.user':'OM Wallet user','ac.verified':'Verified account','ac.unverified':'Account not verified',
   'ac.wallet':'Wallet','ac.avail':'Available balance','ac.level':'Account level','ac.full':'Fully verified','ac.notyet':'Not verified yet',
   'ac.sec':'Security & protection','ac.secD':'Password, Face ID, app lock','ac.notif':'Notifications','ac.notifD':'Manage alerts and messages','ac.lang':'Language','ac.help':'Help & support','ac.helpD':'Contact the support team',

@@ -382,6 +382,22 @@ const PxInstall = (() => {
 /* ============================================================
    SCREENS
    ============================================================ */
+/* The balance must never be cut: when the amount is wider than its column (a long number on a narrow phone, next to the OM PAY tile) the font shrinks, in steps of 1 px,
+   until it fits (never below 20 px). Re-checked whenever the amount or its box changes size (balance animation, rotation, hide / show). */
+function fitBalance(el){
+  if (!el || el.__fit) return; el.__fit = true;
+  const base = () => { el.style.removeProperty('font-size'); return parseFloat(getComputedStyle(el).fontSize) || 40; };
+  /* width of the content as laid out (a Range sees overflow in both directions; scrollWidth ignores overflow towards the start side of a reversed flex row) */
+  const natural = () => { const r = document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect().width; };
+  const over = () => natural() > el.clientWidth - 2 || el.scrollWidth > el.clientWidth;
+  const fit = () => {
+    if (!el.isConnected) return;
+    let size = base(); if (!over()) return;
+    while (over() && size > 20){ size -= 1; el.style.setProperty('font-size', size + 'px', 'important'); }   /* !important: the stylesheet sets the size with !important */
+  };
+  try { new ResizeObserver(() => { fit(); }).observe(el.parentElement || el); new MutationObserver(() => { fit(); }).observe(el, { childList: true, characterData: true, subtree: true }); } catch(e){ /* no observers: the CSS clamp still applies */ }
+  fit();
+}
 const Premium = (() => {
   const topbar = (title, back) => '<div class="topbar px-topbar">' + (back !== false ? '<button class="topbar-back" data-action="back" aria-label="' + escapeHtml(t('ui.back')) + '"><span class="dir-flip" style="display:inline-flex">' + icon('back', 20) + '</span></button>' : '<span style="width:calc(44px*var(--ui))"></span>') +
     '<span class="topbar-title">' + escapeHtml(title) + '</span><span style="width:calc(44px*var(--ui))"></span></div>';
@@ -580,6 +596,7 @@ const Premium = (() => {
       root.querySelectorAll('[data-px="search"]').forEach(b => { b.onclick = () => PxSearch.open(); });
       const el = document.getElementById('px-bal-amt');
       if (balFrom != null && el){ const from = balFrom; balFrom = null; BalanceFx.run(el, from, mainAccount()); }
+      if (el) fitBalance(el);
     }
     if (id === 'receive') root.querySelectorAll('[data-px="rcv-share"]').forEach(b => { b.onclick = share; });
     if (id === 'profile' || id === 'settings') root.querySelectorAll('[data-px="pin"]').forEach(b => { b.onclick = changePin; });

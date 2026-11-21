@@ -1,3 +1,10 @@
+# OM Wallet 13.3.0 — mise à jour : référence OM PAY, modules agrandis
+
+## Ajouté
+- **Nouvelle référence des transactions** (`supabase/migrations/20261121_om_pay_transaction_reference.sql`, appliquée en production ; retour arrière fourni) : « **OMT** + 8 chiffres » (ex. `OMT89274631`), pour les FUTURES transactions seulement. Séquence dédiée `om_reference_seq` ; la permutation `(n × 48271 + 17317) mod 10^8` est une bijection : aucune collision possible avant 10^8 références, la contrainte UNIQUE de `transactions.reference` reste le dernier garde-fou, et chaque référence correspond à un numéro de séquence (traçable). Testé dans une transaction annulée : 20 000 références distinctes, format correct, aucune collision avec l'existant. Les 243 références historiques `BMCT26…` ne sont pas modifiées ; l'ancien préfixe, qui imitait celui d'une banque, n'est plus utilisé. La fenêtre de versement refuse aussi une référence `OMT…` saisie comme référence Orange Money.
+- **Modules agrandis** (`css/glass.css` section 19) : boutons ronds de l'en-tête, titre de bienvenue, paysage, carte de solde (hauteur, montant, tuile « OM PAY »), quatre actions, bannière, lignes d'opérations (avatar, texte, montant, pastille), barre flottante et bouton central, hub Profil et paramètres, boutons et champs de tous les écrans. Les tailles s'adaptent à la largeur (testé à 360, 390 et 430 px, sans débordement).
+- **Solde jamais coupé** : si le montant est plus large que sa carte (long nombre sur un petit téléphone), la police se réduit jusqu'à ce qu'il tienne (minimum 20 px).
+
 # Friendly Pay 13.2.0 — DY : l'interrupteur « transferts suspendus » (serveur + écran admin)
 
 ## Ajouté
