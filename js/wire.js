@@ -164,6 +164,7 @@ function wire(id){
       const v = Destinations.validate(d, dst, final);
       if (!v.ok){ if (v.key) err.textContent = t(v.key); return null; }
       if (dst.iso === 'OM' && own && d === own){ err.textContent = t('sp.err_self'); return null; }
+      if (dyBlock && dyBlock.key === dst.iso + ':' + d){ known.innerHTML = dyNameCard(dyBlock.name); return null; }   /* DY: stays blocked even when the window closes / the field loses focus */
       const c = findContact(d);
       if (c) known.innerHTML = '<div class="sp-known glass-subtle">' + icon('check', 18) + '<span>' + escapeHtml(t('sp.known')) + '</span><b>' + escapeHtml(c.fullName || c.name || '') + '</b></div>';
       /* Orange Money: the server requires the recipient's first and last name */
@@ -175,7 +176,21 @@ function wire(id){
         if (!okN) return null;
       } else nerr.textContent = '';
       next.disabled = false;
+      dyGate(d, dst);                       /* DY: when transfers are suspended the server's lookup + the notice come here */
       return { d, contact: c, dst, first, last };
+    }
+    /* DY (13.2.0) — once per number: ask the server whether transfers are suspended; if so, look the name up (authorised directory only), show it if
+       it matches, then the bilingual notice. The Continue button stays off. Nothing is debited anywhere in this flow; the server refuses sending anyway. */
+    let dyKey = '', dyBlock = null;
+    const dyNameCard = name => name ? '<div class="sp-known glass-subtle">' + icon('check', 18) + '<span>' + escapeHtml(t('dy.nameFound')) + '</span><b>' + escapeHtml(name) + '</b></div>' : '';
+    async function dyGate(d, dst){
+      const key = dst.iso + ':' + d; if (key === dyKey) return; dyKey = key;
+      const g = await DY.gate(dst, d);
+      if (dyKey !== key) return;                                      /* the number changed while the server was answering */
+      if (!g.blocked){ dyKey = ''; dyBlock = null; return; }
+      dyBlock = { key, name: g.name || '' };
+      next.disabled = true; known.innerHTML = dyNameCard(g.name);
+      setTimeout(() => { if (dyKey === key && R.current() === 'country-select') DY.showUnavailable(); }, 700);   /* the name is readable first */
     }
     /* 12.16.0 — destination picker: Oman (as before), Orange Money Mali, Orange Money Côte d'Ivoire. Only the prefix, the placeholder, the hint and the rules change. */
     function paintDestination(){
@@ -204,8 +219,10 @@ function wire(id){
     input.onblur = () => { check(true); };
     input.onkeydown = e => { if (e.key === 'Enter' && !next.disabled){ e.preventDefault(); next.click(); } };
     [fn, ln].forEach(x => { x.oninput = () => check(false); x.onblur = () => check(true); x.onkeydown = e => { if (e.key === 'Enter' && !next.disabled){ e.preventDefault(); next.click(); } }; });
-    next.onclick = () => {
-      const r = check(true); if (!r) return;
+    next.onclick = async () => {
+      const r = check(true);
+      if (!r){ const dd = Destinations.get(); if (dyBlock && dyBlock.key === dd.iso + ':' + Destinations.digits(input.value, dd)) DY.showUnavailable(); return; }
+      if ((await DY.status(true)).enabled){ next.disabled = true; dyKey = ''; dyGate(r.d, r.dst); return; }
       const dst = r.dst, svc = Destinations.serviceFor(dst);
       TX_STATE.country = CountryTransferEngine.getConfig(dst.iso);
       TX_STATE.serviceId = dst.serviceId;
@@ -295,6 +312,7 @@ function wire(id){
       if (_txConfirmed || _pinBusy) return;
       if (navigator.onLine === false){ resetSwipe(); toast(t('px.offlineSend'), 'error'); return; }   /* certain: nothing was sent */
       _pinBusy = true;
+      if ((await DY.status(true)).enabled){ _pinBusy = false; resetSwipe(); DY.showUnavailable(); return; }   /* DY: no code asked, nothing sent */
       const _pin = await PinEngine.authorize();
       _pinBusy = false;
       if (!_pin.ok){ resetSwipe(); if (_pin.error) toast(t(_pin.error), 'error'); return; }
@@ -317,7 +335,7 @@ function wire(id){
               beneficiary: benReq,
               idemKey: _idemKey, pinGrant: _pin.grant
             });
-        if (!res.ok) return { ok:false, error: res.error, uncertain: !!res.uncertain };
+        if (!res.ok) return { ok:false, error: res.error, uncertain: !!res.uncertain, blocked: !!res.blocked };
         const sv = res.data;
         const receipt = {
           id: ID.receipt(), transactionId: sv.transactionId, status: viaIntl ? (sv.status || 'PROCESSING') : 'SUCCESS',
@@ -331,7 +349,11 @@ function wire(id){
       });
       /* 12.14.0 — never a silent return to the home screen: a refused transfer says why; an UNCERTAIN one (no answer from the server)
          asks the person to check its status first. Nothing is ever sent again automatically. */
+      if (!out.ok && out.blocked){            /* DY switched on after the review screen: the server refused, nothing was recorded or debited, no failure receipt */
+        _txConfirmed = false; R.go('home', { reset: true }); DY.showUnavailable(); return;
+      }
       if (!out.ok){
+        if (out.error === 'errors.UNKNOWN_ERROR') setTimeout(() => DY.showSystemError(), 400);     /* a REAL technical error: the bilingual System Error notice */
         TxResult.show({ kind: out.uncertain ? 'uncertain' : 'failed', error: out.error, late: out.late || null,
           req: viaIntl
             ? { intl: true, country: dst.iso, method: dst.method, provider: dst.provider, amount: bd.amount, beneficiary: benReq, idemKey: _idemKey }

@@ -80,14 +80,26 @@
   };
   var session = FX.signedOut ? null : { access_token: 'x', user: { id: uid, email: profile.email } };
   var listeners = [];
+  /* DY (13.2.0) — behaves like the database functions: the guard answers BEFORE the PIN grant is looked at, records nothing, debits nothing */
+  var dyS = { enabled: !!FX.dy, updatedAt: new Date(NOW - 5 * H).toISOString(), updatedBy: FX.dy ? 'Admin Test' : null, history: FX.dy ? [{ at: new Date(NOW - 5 * H).toISOString(), enabled: true, by: 'Admin Test' }] : [], blocked: 0 };
+  var dyOverview = function(){ return { enabled: dyS.enabled, updatedAt: dyS.updatedAt, updatedBy: dyS.updatedBy, blocked24h: dyS.blocked, blockedTotal: dyS.blocked, history: dyS.history.slice() }; };
+  var dyBlock = function(){ dyS.blocked++; return { ok: false, error: 'TRANSFER_UNAVAILABLE', blocked_by: 'DY' }; };
+  window.__dyState = dyS;
   var rpcs = {
+    dy_status: function(){ return { enabled: dyS.enabled, updatedAt: dyS.updatedAt }; },
+    admin_dy_overview: function(){ if (!FX.admin) throw { message: 'forbidden', code: '42501' }; return dyOverview(); },
+    admin_dy_set: function(a){ if (!FX.admin) throw { message: 'forbidden', code: '42501' }; if (typeof a.p_enabled !== 'boolean') throw { message: 'invalid_value', code: '22023' };
+      if (dyS.enabled !== a.p_enabled){ dyS.enabled = a.p_enabled; dyS.updatedAt = new Date().toISOString(); dyS.updatedBy = 'Amira Al Said'; dyS.history.unshift({ at: dyS.updatedAt, enabled: a.p_enabled, by: 'Amira Al Said' }); }
+      return dyOverview(); },
+    beneficiary_lookup: function(a){ return FX.dyName && a.p_phone === '+96898765432' ? { found: true, name: FX.dyName } : { found: false }; },
     my_transactions: function(){ return txs; },
     pin_status: function(){ return { has_pin: true, locked: false }; },
-    verify_pin: function(){ return { ok: true, grant: 'grant-1' }; },
+    verify_pin: function(){ if (window.__dyFlipOnPin) dyS.enabled = true; return { ok: true, grant: 'grant-1' }; },
     set_pin: function(){ return { ok: true }; },
     find_user_by_yor_id: function(){ return [{ yor_id: 'YOR-ZZ1122', display_name: 'Salim Al Harthy', country: 'OM', photo: null }]; },
-    transfer_fiat: function(){ return { ok: true }; },
+    transfer_fiat: function(){ if (dyS.enabled) return dyBlock(); return { ok: true }; },
     fiat_send_external: function(a){
+      if (dyS.enabled) return dyBlock();
       if (!a.p_pin_grant) throw { message: 'pin_required' };
       var RATES = { OMR: 1, XOF: 1492 }, r = RATES[a.p_dest_currency] || 1, amt = Number(a.p_amount);
       var res = { ok: true, transaction_id: 'tx-new', reference: 'YOR-TXNEW01', status: 'CONFIRMED', amount: amt, fee: 0, vat: 0, total: amt, exchange_rate: r, destination_amount: amt * r, destination_currency: a.p_dest_currency };
@@ -96,6 +108,7 @@
       return res;
     },
     intl_send: function(a){
+      if (dyS.enabled) return dyBlock();
       if (!a.p_pin_grant) throw { message: 'pin_required' };
       var b = a.p_beneficiary || {};
       if (!b.firstName || !b.lastName) throw { message: 'missing_field:first_name', code: 'P0001' };

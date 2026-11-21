@@ -59,6 +59,7 @@ const TransferEngine = (() => {
         console.error('transfer_fiat', error);
         return { ok:false, error:'errors.UNKNOWN_ERROR' };
       }
+      if (DY.isBlocked(data)) return { ok:false, blocked:true, error:'errors.TRANSFER_UNAVAILABLE' };   /* DY: refused by the server, nothing recorded, nothing debited */
       if (!data || !data.transaction_id) return { ok:false, error:'errors.DUPLICATE' };
       flushNotices(data.transaction_id);                         /* immediately, not awaited: the confirmation never waits for a message */
       try { await AuthEngine.hydrateRuntime(); } catch(e){}      /* fresh balances + history */
@@ -90,6 +91,7 @@ const TransferEngine = (() => {
         p_beneficiary: beneficiary, p_idempotency_key: idemKey, p_pin_grant: null
       });
       if (error) return /pin_required/i.test(String(error.message || '')) ? { state:'not_found' } : { state:'unknown' };
+      if (DY.isBlocked(data)) return { state:'not_found' };
       if (!data || !data.transaction_id) return { state:'unknown' };
       try { await AuthEngine.hydrateRuntime(); } catch(e){}
       return { state:'confirmed', data:{ transactionId: data.transaction_id, reference: data.reference, status: data.status,
@@ -119,6 +121,7 @@ const TransferEngine = (() => {
         console.error('fiat_send_external', error);
         return { ok:false, error:'errors.UNKNOWN_ERROR' };
       }
+      if (DY.isBlocked(data)) return { ok:false, blocked:true, error:'errors.TRANSFER_UNAVAILABLE' };   /* DY: refused by the server, nothing recorded, nothing debited */
       if (!data || !data.transaction_id) return { ok:false, error:'errors.DUPLICATE' };
       flushNotices(data.transaction_id);                         /* immediately, not awaited: the confirmation never waits for a message */
       try { await AuthEngine.hydrateRuntime(); } catch(e){}
@@ -158,6 +161,7 @@ const TransferEngine = (() => {
       const data = res0 && res0.data, error = res0 && res0.error;
       if (error && isUncertain(error, res0.status)) return { ok:false, uncertain:true, error:'errors.UNCERTAIN' };
       if (error){ console.error('intl_send', error); return { ok:false, error: intlError(error) }; }
+      if (DY.isBlocked(data)) return { ok:false, blocked:true, error:'errors.TRANSFER_UNAVAILABLE' };   /* DY: refused by the server, nothing recorded, nothing debited */
       if (!data || !data.transaction_id) return { ok:false, error:'errors.DUPLICATE' };
       flushNotices(data.transaction_id);
       try { await AuthEngine.hydrateRuntime(); } catch(e){}
@@ -176,6 +180,7 @@ const TransferEngine = (() => {
       const { data, error } = await sb.rpc('intl_send', { p_country: country, p_method: method, p_provider: provider, p_amount: Number(amount),
         p_beneficiary: beneficiary, p_idempotency_key: idemKey, p_pin_grant: null });
       if (error) return /pin_required/i.test(String(error.message || '')) ? { state:'not_found' } : { state:'unknown' };
+      if (DY.isBlocked(data)) return { state:'not_found' };
       if (!data || !data.transaction_id) return { state:'unknown' };
       try { await AuthEngine.hydrateRuntime(); } catch(e){}
       return { state:'confirmed', data: intlShape(data) };

@@ -1,3 +1,18 @@
+# Friendly Pay 13.2.0 — DY : l'interrupteur « transferts suspendus » (serveur + écran admin)
+
+## Ajouté
+- **Serveur** (`supabase/migrations/20261121_dy_transfer_switch.sql`, appliquée en production ; retour arrière : `…_rollback.sql`) : table `dy_settings` (état persistant : actif, date, administrateur), table `dy_blocked_attempts`, fonctions `dy_status` (tout utilisateur connecté : seulement « actif ou non »), `admin_dy_overview` et `admin_dy_set` (administrateurs actifs seulement, vérifié par `is_admin()` dans la base). Chaque changement est écrit dans `audit_log` (`DY_ON` / `DY_OFF`, append-only).
+- **Blocage réel** : une ligne de garde dans `fiat_send_external`, `intl_send`, `transfer_fiat` et `bank_send`. DY actif → `{ok:false, error:'TRANSFER_UNAVAILABLE'}` **avant** la consommation du code PIN, **avant** toute écriture de transaction, **avant** tout débit. Un rejeu d'une clé d'idempotence déjà exécutée renvoie toujours son résultat d'origine. DY coupé → procédure normale, toutes les vérifications habituelles (PIN, solde, plafonds).
+- **Application** (`js/features/dy.js`) : à la saisie du numéro, si DY est actif, le serveur cherche le nom (`beneficiary_lookup`, annuaire autorisé) ; le nom s'affiche **seulement s'il est connu** ; puis la fenêtre bilingue exacte (« التحويل غير متاح مؤقتًا / Transfer Temporarily Unavailable », bouton « موافق / OK »). Continue reste bloqué. L'écran de confirmation redemande l'état au serveur avant de demander le code PIN. Si DY est activé entre-temps, le serveur refuse : retour à l'accueil, aucun reçu, aucun « échec » inventé.
+- **Écran administrateur** (`js/screens/admin-dy.js`) : Services › Administrateur › Réglages des transferts (DY) : interrupteur ON/OFF avec confirmation, état, date et administrateur du dernier changement, aperçu de la fenêtre, tentatives bloquées (24 h / total), historique des changements.
+- **Fenêtre « خطأ في النظام / System Error »** : réservée à une VRAIE erreur technique du serveur (réponse inattendue), jamais déclenchée par DY.
+- `css/glass.css` : premiers jetons et composants « Liquid Glass » (blanc + bleu ciel).
+- Tests : `tests/ux/dy.test.mjs` (DY coupé / actif, nom connu / inconnu, aucun envoi ni PIN, activation entre la confirmation et l'envoi, écran admin en 3 langues, refus pour un utilisateur normal). Côté base, vérifié dans des transactions annulées : non-admin refusé, blocage des 4 fonctions, solde / transactions / ledger inchangés, code PIN non consommé, reprise normale quand DY est coupé.
+
+## Choix assumés
+- Pas de contrôle « disponibilité générale du service » distinct : DY EST ce contrôle (un seul interrupteur, un seul comportement vérifiable).
+- Les transferts vers l'Oman restent enregistrés comme confirmés immédiatement, sans versement (comportement existant, non modifié) : voir la note de fin de session.
+
 # Friendly Pay 13.1.0 — le bouton administrateur qui déclenche le SMS
 
 ## Ajouté
