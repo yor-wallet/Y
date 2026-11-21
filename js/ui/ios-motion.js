@@ -193,7 +193,7 @@ const IOS = (() => {
     }
     try {
       const ttl = screenTitle(el);
-      D.title = ttl && id !== 'home' ? ttl + ' · ' + ((typeof CONFIG !== 'undefined' && CONFIG.APP && CONFIG.APP.name) || 'Friendly Pay') : ((typeof CONFIG !== 'undefined' && CONFIG.APP && CONFIG.APP.name) || 'Friendly Pay');
+      D.title = ttl && id !== 'home' ? ttl + ' · ' + ((typeof CONFIG !== 'undefined' && CONFIG.APP && CONFIG.APP.name) || 'OM Wallet') : ((typeof CONFIG !== 'undefined' && CONFIG.APP && CONFIG.APP.name) || 'OM Wallet');
     } catch(e){ /* rien */ }
   }
 

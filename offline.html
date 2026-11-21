@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="robots" content="noindex">
-<title>You're offline · Friendly Pay</title>
+<title>You're offline · OM Wallet</title>
 <link rel="icon" href="favicon.ico" sizes="48x48">
 <link rel="icon" type="image/svg+xml" href="assets/icons/icon.svg">
 <style>*{box-sizing:border-box}html,body{margin:0;height:100%}
@@ -26,19 +26,19 @@ a.s{display:block;margin-top:12px;min-height:44px;line-height:44px;color:#3B49E8
 <main role="main">
 <svg class="mk" viewBox="0 0 512 512" width="88" height="88" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6372FF"/><stop offset="1" stop-color="#2A33C9"/></linearGradient><linearGradient id="c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE59A"/><stop offset="1" stop-color="#FFAE2B"/></linearGradient></defs><rect width="512" height="512" rx="114" fill="url(#g)"/><path d="M150 300Q256 410 362 300" fill="none" stroke="#fff" stroke-width="62" stroke-linecap="round"/><circle cx="256" cy="176" r="58" fill="url(#c)"/></svg>
 <h1 id="t">You're offline</h1>
-<p id="p">Friendly Pay needs an internet connection to show your money. Check your connection, then try again.</p>
+<p id="p">OM Wallet needs an internet connection to show your money. Check your connection, then try again.</p>
 <button type="button" id="b">Try again</button>
 </main>
 <script>
 var T={
-en:{t:'You\'re offline',p:'Friendly Pay needs an internet connection to show your money. Check your connection, then try again.',b:'Try again',s:''},
-fr:{t:'Vous êtes hors ligne',p:'Friendly Pay a besoin d\'internet pour afficher votre argent. Vérifiez votre connexion, puis réessayez.',b:'Réessayer',s:''},
-ar:{t:'أنت غير متصل بالإنترنت',p:'يحتاج فرندي باي إلى الإنترنت لعرض أموالك. تحقّق من اتصالك ثم أعد المحاولة.',b:'إعادة المحاولة',s:''}};
+en:{t:'You\'re offline',p:'OM Wallet needs an internet connection to show your money. Check your connection, then try again.',b:'Try again',s:''},
+fr:{t:'Vous êtes hors ligne',p:'OM Wallet a besoin d\'internet pour afficher votre argent. Vérifiez votre connexion, puis réessayez.',b:'Réessayer',s:''},
+ar:{t:'أنت غير متصل بالإنترنت',p:'يحتاج OM Wallet إلى الإنترنت لعرض أموالك. تحقّق من اتصالك ثم أعد المحاولة.',b:'إعادة المحاولة',s:''}};
 (function(){var l='en';try{var L=(navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||'en']);
  for(var i=0;i<L.length;i++){var c=String(L[i]).toLowerCase().slice(0,2);if(T[c]){l=c;break}}
  var st=localStorage.getItem('yor_device_lang');if(T[st])l=st;}catch(e){}
  var d=document.documentElement;d.lang=l;d.dir=l==='ar'?'rtl':'ltr';var x=T[l];
- document.title=x.t+' · '+(l==='ar'?'فرندي باي':'Friendly Pay');
+ document.title=x.t+' · '+(l==='ar'?'OM Wallet':'OM Wallet');
  document.getElementById('t').textContent=x.t;document.getElementById('p').textContent=x.p;
  var b=document.getElementById('b');b.textContent=x.b;var s=document.getElementById('s');if(s)s.textContent=x.s;
 })();

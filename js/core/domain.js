@@ -9,12 +9,12 @@ const CurrencyEngine = Object.freeze({
     c = String(c || 'OMR').toUpperCase();
     const m = CurrencyEngine.meta(c);
     const n = Number(a || 0);
-    if (!locale) locale = LANG === 'en' ? 'en-US' : LANG === 'ar' ? 'ar-OM-u-nu-arab' : 'fr-FR';
+    if (!locale) locale = LANG === 'en' ? 'en-US' : LANG === 'ar' ? 'ar-OM-u-nu-latn' : 'fr-FR';
     const o = { minimumFractionDigits:m.decimals, maximumFractionDigits:m.decimals };
     let num;
     try { num = Math.abs(n).toLocaleString(locale, o); } catch(e){ num = Math.abs(n).toLocaleString('en-US', o); }
     const neg = n < 0 && Math.abs(n) >= Math.pow(10, -m.decimals) / 2;
-    /* EN: "OMR 132,977.000"   FR: "132 977,000 OMR"   AR: Arabic digits, code after the number. The value is never altered. */
+    /* EN: "OMR 132,977.000"   FR: "132 977,000 OMR"   AR: Latin digits (as in the OM Wallet design), code after the number. The value is never altered. */
     if (String(locale).indexOf('en') === 0) return (neg ? '-' : '') + c + ' ' + num;
     return (neg ? '-' : '') + num + ' ' + c;
   },
@@ -333,7 +333,7 @@ const IdentifierEngine = Object.freeze({
         return parts.length === 2 && /^\d{9}$/.test(parts[0]) && /^\d{6,17}$/.test(parts[1]) ? {ok:true} : {ok:false, reason:'Invalid format'};
       }
       case 'EMAIL': return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? {ok:true} : {ok:false, reason:'Invalid email'};
-      case 'YOR_ID': return /^YOR-[A-Z0-9]{6,}$/i.test(normId(v)) ? {ok:true} : {ok:false, reason:'Invalid Friendly ID'};
+      case 'YOR_ID': return /^YOR-[A-Z0-9]{6,}$/i.test(normId(v)) ? {ok:true} : {ok:false, reason:'Invalid Wallet ID'};
       case 'SERVICE_ID': return v.length >= 4 ? {ok:true} : {ok:false, reason:'Invalid identifier'};
       default: return v.length >= 3 ? {ok:true} : {ok:false, reason:'Invalid value'};
     }
@@ -343,7 +343,7 @@ const IdentifierEngine = Object.freeze({
 const INTERNAL_SERVICE_DEF = Object.freeze({
   id: 'yor_internal',
   key: 'INTERNAL',
-  name: { fr: 'Friendly Pay (Envoi interne)', en: 'Friendly Pay (Internal)', ar: 'Friendly Pay (داخلي)' },
+  name: { fr: 'OM Wallet (Envoi interne)', en: 'OM Wallet (Internal)', ar: 'OM Wallet (داخلي)' },
   identifierType: 'YOR_ID',
   icon: 'send',
   primary: false,

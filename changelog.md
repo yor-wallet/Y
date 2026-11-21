@@ -9,6 +9,18 @@
 - `css/glass.css` : premiers jetons et composants « Liquid Glass » (blanc + bleu ciel).
 - Tests : `tests/ux/dy.test.mjs` (DY coupé / actif, nom connu / inconnu, aucun envoi ni PIN, activation entre la confirmation et l'envoi, écran admin en 3 langues, refus pour un utilisateur normal). Côté base, vérifié dans des transactions annulées : non-admin refusé, blocage des 4 fonctions, solde / transactions / ledger inchangés, code PIN non consommé, reprise normale quand DY est coupé.
 
+## Identité OM Wallet · Liquid Glass (même version 13.2.0)
+- **Nouveau logo et nouvelles icônes** (généré par `tools/brand/build-brand.mjs`, aucun élément de l'ancien logo) : monogramme « OM » en dégradé bleu ciel sur tuile de verre blanche translucide. Fichiers dans `public/branding/` : `om-wallet-logo.svg/.png`, `om-wallet-icon-1024/512/192.png`, `om-wallet-favicon.svg`, `apple-touch-icon.png`, `om-wallet-notification.png` (silhouette blanche) et `om-wallet-monochrome.svg/.png`. Mis à jour aussi : `assets/icons/*`, favicon, manifeste PWA (nom « OM Wallet », couleur #F4FAFF), 24 images de lancement iOS, images de partage, logo d'en-tête de l'accueil, écran de lancement et illustrations d'introduction.
+- **Thème Liquid Glass** (`css/glass.css`, chargé après `ui.css`) : blanc + bleu ciel doux avec les jetons officiels (`--om-*`), verre translucide avec flou d'arrière-plan, bordures claires, reflets, ombres diffuses ; carte de solde en verre, actions en verre, listes en blocs arrondis, barre de navigation flottante avec indicateur bleu, fenêtres et feuilles en verre, champs et boutons ciel, cartes virtuelles en dégradés bleu ciel ; mode sombre assorti. Durées : interactions ≈ 110 ms, transitions ≈ 260 ms, fenêtres ≈ 300 ms ; `prefers-reduced-motion` respecté.
+- **Marque** : « Friendly Pay » / « فرندي باي » deviennent « OM Wallet » partout dans l'interface ; « Friendly ID » devient « Wallet ID » (les identifiants FRD-… ne changent pas).
+- **Symbole du rial omanais** : aucun symbole n'existait dans le projet ; il a été **tracé d'après vos captures** (`tools/brand/trace-omr-symbol.py` → `assets/brand/omr-symbol.svg`) et s'affiche à la place du code sur la carte de solde (le texte reste « OMR » dans le DOM, les données et les exports). Appliqué là où le code passe par `.rv-cur` (accueil) ; les autres écrans affichent encore « OMR ».
+- **Montants** : trois décimales partout (déjà le cas) ; en arabe les chiffres sont désormais latins (`1,284.500`), comme sur le design ; la devise d'affichage par défaut est le rial omanais (au lieu du dollar) pour les comptes qui n'ont pas choisi une autre devise.
+- **Écran de lancement** : ≈ 1 s (au lieu de 1,9 s).
+
+## Non fait (volontairement)
+- Pas de nouveau reçu « transfert réussi », pas de PDF ni de bouton Partager pour les transferts vers l'Oman, pas de références « OMW… » : ces transferts sont aujourd'hui confirmés immédiatement sans aucun versement réel, et un reçu « réussi » partageable pour un transfert non versé pourrait servir de fausse preuve de paiement.
+- Pas de pages réécrites une à une : l'apparence est portée par le thème et les composants existants. Pas de composants `OMGlassCard`… en React (le projet n'utilise pas de framework).
+
 ## Choix assumés
 - Pas de contrôle « disponibilité générale du service » distinct : DY EST ce contrôle (un seul interrupteur, un seul comportement vérifiable).
 - Les transferts vers l'Oman restent enregistrés comme confirmés immédiatement, sans versement (comportement existant, non modifié) : voir la note de fin de session.

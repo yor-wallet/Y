@@ -71,7 +71,7 @@ function sparklineSvg(symbol, w, h){
 
 function receiptToText(r){
   const lines = [];
-  lines.push('Friendly Pay — Receipt');
+  lines.push('OM Wallet — Receipt');
   lines.push('─────────────────────');
   lines.push('Reference: ' + (r.reference || r.transactionId || r.id));
   lines.push('Date: ' + fmtDate(r.createdAt) + ' ' + fmtTime(r.createdAt));
@@ -91,7 +91,7 @@ function receiptToText(r){
   if (r.vat) lines.push('VAT: ' + CurrencyEngine.format(r.vat, r.currency || 'OMR'));
   lines.push('Total debited: ' + fmtA(r.total, r.asset));
   lines.push('─────────────────────');
-  lines.push('Friendly Pay');
+  lines.push('OM Wallet');
   return lines.join('\n');
 }
 
@@ -122,15 +122,15 @@ function txState(status){
 const TX_STATE_ICON = { success:'check', pending:'clock', failed:'close' };
 
 /* ============================================================
-   12.6.0 — DISPLAY CURRENCY OF BALANCES (default: US dollar, changeable in Settings › Primary currency)
+   12.6.0 — DISPLAY CURRENCY OF BALANCES (default: Omani rial since 13.2.0 — three decimals; changeable in Settings › Primary currency)
    Only BALANCES are shown converted. Transfers, fees, receipts and history keep the currency they were made in.
    The rate comes from ExchangeEngine.rate (FX_RATES): the omani rial is pegged to the dollar (1 OMR = 2.6008 USD); every other pair
    comes from the built-in INDICATIVE table (FX_META) — the original amount is always shown next to the converted one and the rate is written out.
    Nothing is converted when a rate is missing (the original amount is then shown as is).
    ============================================================ */
 function displayCurrency(){
-  const c = String((typeof Runtime !== 'undefined' && Runtime.settings && Runtime.settings.primaryCurrency) || 'USD').toUpperCase();
-  return (c === 'OMR' || (typeof FX_RATES !== 'undefined' && FX_RATES[c] != null)) ? c : 'USD';
+  const c = String((typeof Runtime !== 'undefined' && Runtime.settings && Runtime.settings.primaryCurrency) || 'OMR').toUpperCase();
+  return (c === 'OMR' || (typeof FX_RATES !== 'undefined' && FX_RATES[c] != null)) ? c : 'OMR';
 }
 function balanceView(amount, cur){
   const from = String(cur || 'OMR').toUpperCase(), to = displayCurrency();
@@ -222,7 +222,7 @@ async function copyText(text, okMsg){
 
 
 /* ============================================================
-   Friendly ID display (12.9.0)
+   Wallet ID display (12.9.0)
    The database keeps its identifiers as YOR-XXXXXX (profiles_yor_id_check) and YOR-TX-… (new_tx_reference): they are NOT
    changed. Users see FRD-… everywhere, and may type FRD-, FRIENDLY- or YOR- when searching for someone.
    ============================================================ */

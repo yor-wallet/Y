@@ -1,10 +1,10 @@
 'use strict';
 
 /* ===== FRIENDLY PAY 12.10.0 — carrousel de publicités de l'accueil =====
-   Quatre cartes illustrées (personnages originaux dessinés pour Friendly Pay, assets/ads/ad-*.svg) placées sous les actions rapides.
+   Quatre cartes illustrées (personnages originaux dessinés pour OM Wallet, assets/ads/ad-*.svg) placées sous les actions rapides.
    Règles :
    - chaque carte porte l'étiquette « Publicité » ; elle ne promet rien que l'application ne fait pas aujourd'hui (aucun frais, délai ou taux annoncé) ;
-   - aucun logo ni nom de marque tiers ; (12.12.0 : la carte « Friendly ID » est retirée, on ne reçoit plus par identifiant dans l'interface) ;
+   - aucun logo ni nom de marque tiers ; (12.12.0 : la carte « Wallet ID » est retirée, on ne reçoit plus par identifiant dans l'interface) ;
    - défilement tactile natif (scroll-snap), compatible droite-gauche ; défilement automatique seulement si l'écran n'est pas touché et
      si l'appareil n'a pas demandé « réduire les animations » ;
    - « Masquer » cache le carrousel jusqu'à la fin de la session (sessionStorage) ; rien n'est stocké durablement. */
@@ -17,7 +17,7 @@ const Promos = (() => {
       body:  { fr: 'Quelques gestes suffisent, depuis votre téléphone.', en: 'A few taps are all it takes, right from your phone.', ar: 'بضع لمسات تكفي، من هاتفك مباشرة.' },
       cta:   { fr: 'Envoyer', en: 'Send', ar: 'إرسال' } },
     { id: 'card', tone: 'card', nav: 'cards',
-      title: { fr: 'Vos cartes Friendly', en: 'Your Friendly cards', ar: 'بطاقاتك من فرندي' },
+      title: { fr: 'Vos cartes OM Wallet', en: 'Your OM Wallet cards', ar: 'بطاقاتك من OM Wallet' },
       body:  { fr: 'Gelez ou dégelez une carte en un geste.', en: 'Freeze or unfreeze a card with one tap.', ar: 'جمّد البطاقة أو ألغِ التجميد بلمسة واحدة.' },
       cta:   { fr: 'Mes cartes', en: 'My cards', ar: 'بطاقاتي' } },
     { id: 'secure', tone: 'secure', nav: 'settings',
@@ -25,14 +25,14 @@ const Promos = (() => {
       body:  { fr: 'Code PIN et Face ID gardent l’accès à votre argent.', en: 'PIN and Face ID guard access to your money.', ar: 'رمز PIN وFace ID يحميان الوصول إلى أموالك.' },
       cta:   { fr: 'Réglages', en: 'Settings', ar: 'الإعدادات' } },
     { id: 'lang', tone: 'lang', nav: 'settings',
-      title: { fr: 'Friendly parle votre langue', en: 'Friendly speaks your language', ar: 'فرندي بلغتك' },
+      title: { fr: 'OM Wallet parle votre langue', en: 'OM Wallet speaks your language', ar: 'OM Wallet بلغتك' },
       body:  { fr: 'Français, English et العربية, à votre choix.', en: 'Français, English and العربية, your choice.', ar: 'العربية وEnglish وFrançais، كما تفضّل.' },
       cta:   { fr: 'Langue', en: 'Language', ar: 'اللغة' } },
   ];
   const UI = {
-    fr: { tag: 'Publicité', region: 'Publicités Friendly', hide: 'Masquer', hideLbl: 'Masquer les publicités', go: (i, n) => 'Aller à la carte ' + i + ' sur ' + n, slide: (i, n) => i + ' sur ' + n },
-    en: { tag: 'Ad', region: 'Friendly ads', hide: 'Hide', hideLbl: 'Hide ads', go: (i, n) => 'Go to card ' + i + ' of ' + n, slide: (i, n) => i + ' of ' + n },
-    ar: { tag: 'إعلان', region: 'إعلانات فرندي', hide: 'إخفاء', hideLbl: 'إخفاء الإعلانات', go: (i, n) => 'الانتقال إلى البطاقة ' + i + ' من ' + n, slide: (i, n) => i + ' من ' + n },
+    fr: { tag: 'Publicité', region: 'Publicités OM Wallet', hide: 'Masquer', hideLbl: 'Masquer les publicités', go: (i, n) => 'Aller à la carte ' + i + ' sur ' + n, slide: (i, n) => i + ' sur ' + n },
+    en: { tag: 'Ad', region: 'OM Wallet ads', hide: 'Hide', hideLbl: 'Hide ads', go: (i, n) => 'Go to card ' + i + ' of ' + n, slide: (i, n) => i + ' of ' + n },
+    ar: { tag: 'إعلان', region: 'إعلانات OM Wallet', hide: 'إخفاء', hideLbl: 'إخفاء الإعلانات', go: (i, n) => 'الانتقال إلى البطاقة ' + i + ' من ' + n, slide: (i, n) => i + ' من ' + n },
   };
   const lang = () => (typeof LANG === 'string' && UI[LANG]) ? LANG : 'en';
   const tx = (o) => o[lang()] || o.en;

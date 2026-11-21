@@ -1,4 +1,4 @@
-/* Friendly Pay service worker (13.2.0) : coquille de l'application hors ligne + réception des notifications push.
+/* OM Wallet service worker (13.2.0) : coquille de l'application hors ligne + réception des notifications push.
    - Il ne met JAMAIS en cache le trafic Supabase / API / chaîne : soldes et transactions viennent toujours du serveur.
    - Réseau d'abord (toujours la dernière version quand on est en ligne), avec repli sur la copie locale si le réseau est absent ou trop lent.
    - Seules les réponses réussies (200) du même site sont gardées : une page d'erreur n'est jamais servie plus tard comme si c'était l'application.
@@ -11,7 +11,7 @@ const SLOW_MS = 4500;      /* au-delà, on sert la copie locale si on en a une *
 const SHELL = [
   './', 'index.html', 'offline.html', 'manifest.webmanifest', 'favicon.ico',
   'css/app.css', 'js/app.js',
-  'assets/brand/logo-mark.svg', 'assets/brand/friendly-letters-white.svg',
+  'assets/brand/logo-mark.svg', 'assets/brand/omr-symbol.svg', 'public/branding/om-wallet-favicon.svg', 'public/branding/apple-touch-icon.png',
   'assets/fonts/inter-latin-var.woff2',
   'assets/fonts/plex-arabic-400.woff2', 'assets/fonts/plex-arabic-500.woff2', 'assets/fonts/plex-arabic-600.woff2', 'assets/fonts/plex-arabic-700.woff2',
   'assets/icons/icon.svg', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/apple-touch-icon.png',
@@ -91,7 +91,7 @@ self.addEventListener('push', e => {
   try { d = e.data ? e.data.json() : {}; }
   catch (err) { try { d = { body: e.data.text() }; } catch (err2) { d = {}; } }
   if (!d || typeof d !== 'object') d = {};
-  const title = String(d.title || 'Friendly Pay').slice(0, 80);
+  const title = String(d.title || 'OM Wallet').slice(0, 80);
   const opts = {
     body: String(d.body || '').slice(0, 200),
     icon: 'assets/icons/icon-192.png',

@@ -12,17 +12,17 @@ const Onboarding = (() => {
   const KEY = 'yor_onboarded';
   const S = {
     en:{ skip:'Skip', next:'Next', create:'Create my account', have:'I already have an account', lang:'Language', page:(a, b) => 'Page ' + a + ' of ' + b, slides:[
-      { title:'Welcome to Friendly Pay', text:'Your money, simple and secure, all in one place.' },
+      { title:'Welcome to OM Wallet', text:'Your money, simple and secure, all in one place.' },
       { title:'Send money in seconds', text:'Enter an Omani mobile number and the amount. That is all it takes.' },
       { title:'A receipt for every transfer', text:'Keep, share or print the receipt of each transfer you make.' },
       { title:'Protected by your PIN and Face ID', text:'Your 6-digit code and Face ID lock your account every time you reopen the app.' } ] },
     fr:{ skip:'Passer', next:'Suivant', create:'Créer mon compte', have:'J\'ai déjà un compte', lang:'Langue', page:(a, b) => 'Page ' + a + ' sur ' + b, slides:[
-      { title:'Bienvenue sur Friendly Pay', text:'Votre argent, simple et sécurisé, au même endroit.' },
+      { title:'Bienvenue sur OM Wallet', text:'Votre argent, simple et sécurisé, au même endroit.' },
       { title:'Envoyez de l\'argent en quelques secondes', text:'Saisissez un numéro de mobile omanais et le montant. C\'est tout.' },
       { title:'Un reçu pour chaque transfert', text:'Conservez, partagez ou imprimez le reçu de chaque transfert effectué.' },
       { title:'Protégé par votre code et Face ID', text:'Votre code à 6 chiffres et Face ID verrouillent votre compte à chaque réouverture de l\'application.' } ] },
     ar:{ skip:'تخطّي', next:'التالي', create:'إنشاء حسابي', have:'لدي حساب بالفعل', lang:'اللغة', page:(a, b) => 'الصفحة ' + a + ' من ' + b, slides:[
-      { title:'مرحباً بك في فرندي باي', text:'أموالك بشكل بسيط وآمن في مكان واحد.' },
+      { title:'مرحباً بك في OM Wallet', text:'أموالك بشكل بسيط وآمن في مكان واحد.' },
       { title:'أرسل الأموال في ثوانٍ', text:'أدخل رقم هاتف عُماني والمبلغ، وهذا كل ما في الأمر.' },
       { title:'إيصال لكل تحويل', text:'احتفظ بإيصال كل تحويل تجريه أو شاركه أو اطبعه.' },
       { title:'محمي برمز PIN وFace ID', text:'يقفل رمزك المكوّن من 6 أرقام وFace ID حسابك في كل مرة تعيد فيها فتح التطبيق.' } ] }
@@ -48,7 +48,7 @@ const Onboarding = (() => {
     function build(){
       const T = S[lang], rtl = lang === 'ar';
       el.setAttribute('dir', rtl ? 'rtl' : 'ltr'); el.setAttribute('lang', lang);
-      el.setAttribute('aria-label', rtl ? 'فرندي باي' : 'Friendly Pay');
+      el.setAttribute('aria-label', rtl ? 'OM Wallet' : 'OM Wallet');
       el.innerHTML = OpeningArt.DEFS +
         '<div class="ob-top">' +
           '<div class="ob-lang" role="group" aria-label="' + escapeHtml(T.lang) + '">' +

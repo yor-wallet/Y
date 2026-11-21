@@ -2,28 +2,30 @@
 
 /* ============================================================
    OPENING ART (13.0.0) — splash + the four illustrations of the introduction.
-   Redrawn for the "Ultramarine" design: one geometric mark (a smile and a coin), flat shapes, the accent colour and ink only.
+   OM Wallet (13.2.0): the OM monogram on a translucent glass tile, sky-blue gradients on white.
    No external image. Animations live in css/ui.css (section 13); with "reduce motion" every drawing is already in its final state.
    API (unchanged): OpeningArt.splash(lang), OpeningArt.hero(i), OpeningArt.DEFS, OpeningArt.count.
    ============================================================ */
 const OpeningArt = (() => {
   const esc = s => (typeof escapeHtml === 'function' ? escapeHtml(s) : String(s));
   const SPLASH_TXT = { en: 'Your money, simple and secure.', fr: 'Votre argent, simple et sécurisé.', ar: 'أموالك، بسيطة وآمنة.' };
-  const SMILE = 'M150 300Q256 410 362 300';
   /* gradients are inlined in each drawing; the prefix keeps ids unique (the hidden splash must never shadow the ones of the introduction) */
-  const defs = p => '<defs><linearGradient id="' + p + '-tile" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6372FF"/><stop offset="1" stop-color="#2F3DDB"/></linearGradient>' +
-    '<linearGradient id="' + p + '-coin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE59A"/><stop offset="1" stop-color="#FFAE2B"/></linearGradient></defs>';
-  /* the mark on its tile (512 grid): used by the splash and the first illustration */
-  const mark = (cls, p) => '<g class="' + (cls || '') + '"><rect width="512" height="512" rx="114" fill="url(#' + p + '-tile)"/>' +
-    '<path class="oa-smile" pathLength="1" d="' + SMILE + '" fill="none" stroke="#fff" stroke-width="62" stroke-linecap="round"/>' +
-    '<circle class="oa-dot" cx="256" cy="176" r="58" fill="url(#' + p + '-coin)"/></g>';
+  const defs = p => '<defs><linearGradient id="' + p + '-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#DCF0FF"/></linearGradient>' +
+    '<radialGradient id="' + p + '-glow" cx=".26" cy=".1" r=".95"><stop offset="0" stop-color="#BFE8FF" stop-opacity=".95"/><stop offset=".72" stop-color="#BFE8FF" stop-opacity="0"/></radialGradient>' +
+    '<linearGradient id="' + p + '-ink" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#78C9F4"/><stop offset=".5" stop-color="#369EDB"/><stop offset="1" stop-color="#1E5F9C"/></linearGradient>' +
+    '<linearGradient id="' + p + '-coin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#BFE8FF"/><stop offset="1" stop-color="#78C9F4"/></linearGradient></defs>';
+  /* the OM mark on its translucent glass tile (512 grid): used by the splash and the first illustration */
+  const mark = (cls, p) => '<g class="' + (cls || '') + '"><rect width="512" height="512" rx="114" fill="url(#' + p + '-bg)"/><rect width="512" height="512" rx="114" fill="url(#' + p + '-glow)"/>' +
+    '<circle class="oa-ring" pathLength="1" cx="170" cy="264" r="68" fill="none" stroke="url(#' + p + '-ink)" stroke-width="46" transform="rotate(-90 170 264)"/>' +
+    '<path class="oa-m" pathLength="1" d="M292 332V198l66 82 66-82v134" fill="none" stroke="url(#' + p + '-ink)" stroke-width="42" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '<rect x="3" y="3" width="506" height="506" rx="111" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="6"/></g>';
 
   function splash(lang){
     lang = lang || (typeof LANG === 'string' ? LANG : 'en');
     const ar = lang === 'ar';
-    return '<div class="sp2" role="img" aria-label="' + (ar ? 'فرندي باي' : 'Friendly Pay') + '">' +
+    return '<div class="sp2" role="img" aria-label="' + (ar ? 'OM Wallet' : 'OM Wallet') + '">' +
       '<svg class="sp2-mark" viewBox="0 0 512 512" focusable="false" aria-hidden="true">' + defs('sp2') + mark('sp2-tile', 'sp2') + '</svg>' +
-      '<div class="sp2-word" aria-hidden="true">' + (ar ? 'فرندي <span>باي</span>' : 'Friendly <span>Pay</span>') + '</div>' +
+      '<div class="sp2-word" aria-hidden="true">' + 'OM <span>Wallet</span>' + '</div>' +
       '<p class="sp2-tag">' + esc(SPLASH_TXT[lang] || SPLASH_TXT.en) + '</p>' +
       '<span class="sp2-bar" aria-hidden="true"><i></i></span></div>';
   }
@@ -34,7 +36,7 @@ const OpeningArt = (() => {
   function heroWelcome(){
     return wrap(
       '<circle class="oa2-ring" cx="160" cy="130" r="104" fill="none" stroke="var(--ink-4)" stroke-width="1.5" stroke-dasharray="2 8" stroke-linecap="round"/>' +
-      '<g class="oa2-orbit"><circle cx="160" cy="26" r="7" fill="var(--tint)"/><circle cx="264" cy="130" r="5" fill="var(--ink)"/><circle cx="56" cy="130" r="5" fill="#FFC24B"/></g>' +
+      '<g class="oa2-orbit"><circle cx="160" cy="26" r="7" fill="var(--tint)"/><circle cx="264" cy="130" r="5" fill="var(--ink)"/><circle cx="56" cy="130" r="5" fill="#78C9F4"/></g>' +
       '<g transform="translate(88 58) scale(.28)" class="oa2-float">' + mark('', 'oa') + '</g>', 'oa2-welcome');
   }
   function heroSend(){
@@ -51,7 +53,7 @@ const OpeningArt = (() => {
     const chip = '<rect x="22" y="34" width="30" height="22" rx="5" fill="rgba(255,255,255,.85)"/>';
     return wrap(
       '<g class="oa2-c2" transform="translate(70 46) rotate(-8 90 56)"><rect width="180" height="112" rx="16" fill="var(--tint)"/>' + chip + '<rect x="22" y="84" width="60" height="7" rx="3.5" fill="rgba(255,255,255,.55)"/></g>' +
-      '<g class="oa2-c1" transform="translate(70 92) rotate(5 90 56)"><rect width="180" height="112" rx="16" fill="var(--ink)"/>' + chip + '<circle cx="146" cy="84" r="11" fill="#FFC24B"/><circle cx="132" cy="84" r="11" fill="rgba(255,255,255,.4)"/><rect x="22" y="84" width="60" height="7" rx="3.5" fill="rgba(255,255,255,.45)"/></g>', 'oa2-cards');
+      '<g class="oa2-c1" transform="translate(70 92) rotate(5 90 56)"><rect width="180" height="112" rx="16" fill="var(--ink)"/>' + chip + '<circle cx="146" cy="84" r="11" fill="#78C9F4"/><circle cx="132" cy="84" r="11" fill="rgba(255,255,255,.4)"/><rect x="22" y="84" width="60" height="7" rx="3.5" fill="rgba(255,255,255,.45)"/></g>', 'oa2-cards');
   }
   function heroSecure(){
     const dot = (x, i) => '<circle class="oa2-pin" style="--i:' + i + '" cx="' + x + '" cy="218" r="7"/>';

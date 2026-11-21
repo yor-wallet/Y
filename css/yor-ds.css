@@ -2,7 +2,7 @@
    YOR DESIGN SYSTEM 12.4.0 — one layer, loaded last.
    1 tokens  2 type  3 controls (buttons, fields, chips)  4 lists + status pills  5 loading + empty states
    6 navigation  7 dashboard  8 virtual cards  9 receipt  10 sheets + toasts  11 forms  12 print  13 reduced motion
-   Identity: Friendly Pay teal green on white (light, default) or deep teal-black (dark); green / amber / red are used ONLY for transaction status.
+   Identity: OM Wallet teal green on white (light, default) or deep teal-black (dark); green / amber / red are used ONLY for transaction status.
    Nothing here imitates another brand: no third-party logo, name, or screen is drawn.
    ========================================================================== */
 
@@ -29,7 +29,7 @@
   --st-bad:#B42318;--st-bad-bg:rgba(220,38,38,.1);
   --text-3:#5C706D;
 }
-/* ---------- 1b. Friendly Pay palette (12.8.0): teal green / white — own identity, nothing copied ----------
+/* ---------- 1b. OM Wallet palette (12.8.0): teal green / white — own identity, nothing copied ----------
    Light (default) = white surfaces + teal accent (#0B7F75, 4.9:1 on white) + deep-teal text. White text on the teal button.
    Dark = deep teal-black surfaces + bright turquoise accent (#2DD4BF) + near-black text ON the accent (9.6:1).
    --btn-grad / --on-accent are the single source for the primary button, so both themes keep readable contrast. */
@@ -336,7 +336,7 @@ html[dir="rtl"] .settings-row[role="switch"][aria-checked="true"] .switch::after
   .ds-balance::before{animation:none}
 }
 
-/* ---------- 14. Friendly Pay colour pass (12.8.0): text on teal surfaces ---------- */
+/* ---------- 14. OM Wallet colour pass (12.8.0): text on teal surfaces ---------- */
 ::selection{background:var(--accent);color:var(--on-accent)}
 .btn-primary,.tile-solid,.chip[aria-pressed="true"],.chip[aria-pressed=true],.nav-cta .nav-cta-tile,.nav-item.nav-cta .nav-cta-tile,
 .progress-step.current .progress-step-dot,.select-check,.contact-avatar,.swipe-thumb,.receipt-row.total .receipt-row-icon,
@@ -436,6 +436,6 @@ html[dir="rtl"] .settings-row[role="switch"][aria-checked="true"] .switch::after
   .rc-badge.st-success::before,.rc-badge.st-success::after{display:none}
 }
 
-/* ---------- 17. Friendly Pay 12.8.0: light splash (the default theme is now light), logo lockup ---------- */
+/* ---------- 17. OM Wallet 12.8.0: light splash (the default theme is now light), logo lockup ---------- */
 .logo-name{letter-spacing:-.025em}
 .logo-sub{letter-spacing:.4em;color:var(--accent)}

@@ -1,7 +1,7 @@
 {
   "id": "./",
-  "name": "Friendly Pay",
-  "short_name": "Friendly Pay",
+  "name": "OM Wallet",
+  "short_name": "OM Wallet",
   "description": "Send money to a mobile number in Oman and manage your cards. Simple and secure.",
   "lang": "en",
   "dir": "auto",
@@ -10,13 +10,14 @@
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
   "orientation": "any",
-  "background_color": "#FFFFFF",
-  "theme_color": "#FFFFFF",
+  "background_color": "#F4FAFF",
+  "theme_color": "#F4FAFF",
   "categories": ["finance", "business"],
   "icons": [
     { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
     { "src": "assets/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "public/branding/om-wallet-icon-1024.png", "sizes": "1024x1024", "type": "image/png" },
     { "src": "assets/icons/icon.svg", "sizes": "any", "type": "image/svg+xml" }
   ],
   "shortcuts": [

@@ -85,7 +85,7 @@ for (const lang of ['en', 'fr', 'ar']){
     await page.click('.dst-opt[data-dst=CI]'); assert.equal(await page.locator('#sp-dial').textContent(), '+225');
     await page.fill('#sp-num', '7123456789'); await page.dispatchEvent('#sp-num', 'input'); assert.ok((await page.locator('#sp-err').textContent()).length > 0);
     await page.fill('#sp-num', '0707070707'); await page.dispatchEvent('#sp-num', 'input'); assert.equal(await page.inputValue('#sp-num'), '07 07 07 07 07');
-    await page.fill('#sp-first', 'Kouassi'); await page.fill('#sp-last', 'Yao'); assert.ok(!(await page.locator('#sp-next').isDisabled())); await page.click('#sp-next');
+    await page.fill('#sp-first', 'Kouassi'); await page.fill('#sp-last', 'Yao'); await page.waitForFunction(() => !document.getElementById('sp-next').disabled, null, { timeout: 3000 }); await wait(500); await page.click('#sp-next');
     await page.waitForSelector('#tx-amount.active #amt-input'); await page.fill('#amt-input', '10'); await page.dispatchEvent('#amt-input', 'input'); await page.click('#amt-next');
     await page.waitForSelector('#tx-review.active'); await page.evaluate(() => { window.__rpcLog = []; });
     await confirm(page); await typePin(page); await page.waitForSelector('#receipt.active', { timeout: 20000 });

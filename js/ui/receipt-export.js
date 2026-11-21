@@ -60,7 +60,7 @@ const ReceiptExport = (() => {
         '<text x="' + xV + '" y="' + (ry - 26) + '" font-size="' + (x[2] === 'bold' ? 36 : fs) + '" font-weight="' + w + '" fill="' + c + '" text-anchor="' + aV + '" direction="ltr"' + (x[2] === 'mono' ? ' font-family="ui-monospace,Menlo,Consolas,monospace"' : '') + '>' + escapeHtml(val) + '</text>' +
         (i < list.length - 1 ? '<line x1="90" x2="' + (W - 90) + '" y1="' + (ry - 4) + '" y2="' + (ry - 4) + '" stroke="#EAEAEA" stroke-width="2"/>' : '');
     }).join('');
-    const BRAND = rtl ? 'فرندي باي' : 'Friendly Pay';      /* reçu exporté en PNG : mot-symbole arabe, sans espacement des lettres */
+    const BRAND = rtl ? 'OM Wallet' : 'OM Wallet';      /* reçu exporté en PNG : mot-symbole arabe, sans espacement des lettres */
     return '<svg xmlns="http://www.w3.org/2000/svg" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" font-family="' + FONT + '">' +
       '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14B8A6"/><stop offset="1" stop-color="#0B7F75"/></linearGradient></defs>' +
       '<rect width="' + W + '" height="' + H + '" fill="' + BG + '"/>' +
@@ -124,7 +124,7 @@ const ReceiptExport = (() => {
       const png = await blobOf(c, 'image/png');
       if (kind === 'png'){ save(png, base + '.png'); toast(t('action.download'), 'success'); return; }
       const file = new File([png], base + '.png', { type:'image/png' });
-      if (navigator.canShare && navigator.canShare({ files:[file] })){ try { await navigator.share({ files:[file], title: (LANG === 'ar' ? 'فرندي باي' : 'Friendly Pay') }); return; } catch(e){ if (e && e.name === 'AbortError') return; } }
+      if (navigator.canShare && navigator.canShare({ files:[file] })){ try { await navigator.share({ files:[file], title: (LANG === 'ar' ? 'OM Wallet' : 'OM Wallet') }); return; } catch(e){ if (e && e.name === 'AbortError') return; } }
       save(png, base + '.png'); toast(t('action.download'), 'success');
     } catch(e){ console.error(e); toast(t('errors.UNKNOWN_ERROR'), 'error'); }
   }
