@@ -17,6 +17,10 @@
 - **Montants** : trois décimales partout (déjà le cas) ; en arabe les chiffres sont désormais latins (`1,284.500`), comme sur le design ; la devise d'affichage par défaut est le rial omanais (au lieu du dollar) pour les comptes qui n'ont pas choisi une autre devise.
 - **Écran de lancement** : ≈ 1 s (au lieu de 1,9 s).
 
+- **Versements Mali** : la fenêtre « Marquer comme versé » refuse une référence qui ressemble à une référence interne (`BMCT…`, `OMW…`, `FRD-…`, `YOR-…`) — saisie par erreur, elle serait imprimée dans le SMS du destinataire comme « Réf. Orange Money » (cas du versement `…243`). Test ajouté.
+- **Déploiement** : un dossier `public/` à la racine devient le dossier de sortie de Vercel (projet sans framework) : `vercel.json` fixe donc `"outputDirectory": "."`.
+- Le panneau latéral (ordinateur) affiche `FRD-…` au lieu de l'identifiant interne `YOR-…`.
+
 ## Non fait (volontairement)
 - Pas de nouveau reçu « transfert réussi », pas de PDF ni de bouton Partager pour les transferts vers l'Oman, pas de références « OMW… » : ces transferts sont aujourd'hui confirmés immédiatement sans aucun versement réel, et un reçu « réussi » partageable pour un transfert non versé pourrait servir de fausse preuve de paiement.
 - Pas de pages réécrites une à une : l'apparence est portée par le thème et les composants existants. Pas de composants `OMGlassCard`… en React (le projet n'utilise pas de framework).

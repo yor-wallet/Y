@@ -18,7 +18,7 @@ Object.assign(TR.en, {
   'po.sms.none':'SMS: will be sent when you mark it as paid','po.sms.notSent':'SMS: not sent','po.sms.sending':'SMS: sending…','po.sms.sent':'SMS: sent','po.sms.failed':'SMS: failed',
   'po.pay':'Mark as paid & send SMS','po.resend':'Send SMS again',
   'po.payT':'Mark as paid','po.payD':'Confirm only after you have sent the money to this Orange Money number. When you confirm, the transfer becomes “Paid”, the sender is notified and an SMS is sent to the recipient.',
-  'po.ref':'Orange Money reference','po.refH':'4 to 60 characters, as shown by Orange Money. It is printed in the SMS.','po.refErr':'Enter the Orange Money reference (4 to 60 characters).',
+  'po.ref':'Orange Money reference','po.refH':'4 to 60 characters, as shown by Orange Money. It is printed in the SMS.','po.refErr':'Enter the Orange Money reference (4 to 60 characters).','po.refInternal':'This looks like an internal transfer reference, not an Orange Money one. Copy the reference shown by Orange Money.',
   'po.confirm':'Confirm and send SMS','po.cancel':'Cancel','po.paying':'Confirming…',
   'po.resendT':'Send the SMS again?','po.resendD':'The recipient will receive another SMS for this payout.','po.resendYes':'Send again',
   'po.ok.pay':'Marked as paid. The SMS is being sent.','po.ok.resend':'SMS requested.','po.e.state':'This payout was already handled. The list has been refreshed.','po.e.forbidden':'Your account is not allowed to do this.','po.e.ref':'The reference is required (4 to 60 characters).','po.e.generic':'It did not work. Nothing was changed; try again.'
@@ -31,7 +31,7 @@ Object.assign(TR.fr, {
   'po.sms.none':'SMS : partira quand vous marquerez le versement','po.sms.notSent':'SMS : non envoyé','po.sms.sending':'SMS : envoi en cours…','po.sms.sent':'SMS : envoyé','po.sms.failed':'SMS : échec',
   'po.pay':'Marquer comme versé et envoyer le SMS','po.resend':'Renvoyer le SMS',
   'po.payT':'Marquer comme versé','po.payD':'Ne confirmez qu’après avoir envoyé l’argent à ce numéro Orange Money. À la confirmation, le transfert passe à « Versé », l’expéditeur est prévenu et un SMS part vers le destinataire.',
-  'po.ref':'Référence Orange Money','po.refH':'De 4 à 60 caractères, telle qu’affichée par Orange Money. Elle figure dans le SMS.','po.refErr':'Saisissez la référence Orange Money (4 à 60 caractères).',
+  'po.ref':'Référence Orange Money','po.refH':'De 4 à 60 caractères, telle qu’affichée par Orange Money. Elle figure dans le SMS.','po.refErr':'Saisissez la référence Orange Money (4 à 60 caractères).','po.refInternal':'Cela ressemble à une référence interne de transfert, pas à une référence Orange Money. Copiez la référence affichée par Orange Money.',
   'po.confirm':'Confirmer et envoyer le SMS','po.cancel':'Annuler','po.paying':'Confirmation…',
   'po.resendT':'Renvoyer le SMS ?','po.resendD':'Le destinataire recevra un nouveau SMS pour ce versement.','po.resendYes':'Renvoyer',
   'po.ok.pay':'Versement marqué. Le SMS part.','po.ok.resend':'SMS demandé.','po.e.state':'Ce versement a déjà été traité. La liste est actualisée.','po.e.forbidden':'Votre compte n’est pas autorisé à faire cela.','po.e.ref':'La référence est obligatoire (4 à 60 caractères).','po.e.generic':'Cela n’a pas fonctionné. Rien n’a été modifié ; réessayez.'
@@ -44,7 +44,7 @@ Object.assign(TR.ar, {
   'po.sms.none':'الرسالة: ستُرسل عند تأكيد الدفع','po.sms.notSent':'الرسالة: لم تُرسل','po.sms.sending':'الرسالة: جارٍ الإرسال…','po.sms.sent':'الرسالة: أُرسلت','po.sms.failed':'الرسالة: فشلت',
   'po.pay':'تأكيد الدفع وإرسال الرسالة','po.resend':'إعادة إرسال الرسالة',
   'po.payT':'تأكيد الدفع','po.payD':'أكّد فقط بعد أن ترسل المبلغ إلى رقم Orange Money هذا. عند التأكيد تصبح الحالة «مدفوعة» ويُشعَر المرسل وتُرسل رسالة SMS إلى المستلم.',
-  'po.ref':'مرجع Orange Money','po.refH':'من 4 إلى 60 حرفاً كما يظهر في Orange Money. يظهر في الرسالة.','po.refErr':'أدخل مرجع Orange Money (من 4 إلى 60 حرفاً).',
+  'po.ref':'مرجع Orange Money','po.refH':'من 4 إلى 60 حرفاً كما يظهر في Orange Money. يظهر في الرسالة.','po.refErr':'أدخل مرجع Orange Money (من 4 إلى 60 حرفاً).','po.refInternal':'يبدو هذا مرجع تحويل داخلي وليس مرجع Orange Money. انسخ المرجع الذي يظهر في Orange Money.',
   'po.confirm':'تأكيد وإرسال الرسالة','po.cancel':'إلغاء','po.paying':'جارٍ التأكيد…',
   'po.resendT':'إعادة إرسال الرسالة؟','po.resendD':'سيستلم المستلم رسالة أخرى لهذه الدفعة.','po.resendYes':'إعادة الإرسال',
   'po.ok.pay':'تم تأكيد الدفع. الرسالة قيد الإرسال.','po.ok.resend':'تم طلب الرسالة.','po.e.state':'تمت معالجة هذه الدفعة مسبقاً. تم تحديث القائمة.','po.e.forbidden':'حسابك غير مخوَّل بهذا الإجراء.','po.e.ref':'المرجع مطلوب (من 4 إلى 60 حرفاً).','po.e.generic':'لم تنجح العملية. لم يتغير شيء؛ حاول مرة أخرى.'
@@ -132,6 +132,8 @@ const AdminPayouts = (() => {
       const submit = async () => {
         const ref = inp.value.trim();
         if (ref.length < 4 || ref.length > 60){ err.textContent = t('po.refErr'); inp.focus(); return; }
+        /* a reference of OUR OWN transfers (BMCT…, OMW…, FRD-/YOR-…) is never an Orange Money reference: typed by mistake it would be printed in the recipient's SMS */
+        if (/^(BMCT\d|OMW\d|FRD-|YOR-)/i.test(ref)){ err.textContent = t('po.refInternal'); inp.focus(); return; }
         if (busy) return; busy = true; err.textContent = ''; UIKit.loading(go, true);
         try {
           const { error } = await sb.rpc('admin_payout_confirm', { p_tx: r.id, p_paid_ref: ref });

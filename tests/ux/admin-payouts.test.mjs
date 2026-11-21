@@ -42,6 +42,12 @@ for (const lang of ['en', 'fr', 'ar']){
       assert.ok((await page.locator('#po-err').textContent()).length > 0);
       assert.equal((await calls(page, 'admin_payout_confirm')).length, 0);
     });
+    await ok('une référence interne (BMCT…) est refusée sur place : aucun appel serveur', async () => {
+      await wait(650);                                   /* the sheet from the previous step is still open */
+      await page.fill('#po-ref', 'BMCT260000000247'); await page.click('#po-go');
+      assert.match(await page.locator('#po-err').textContent(), /internal transfer reference/);
+      assert.equal((await calls(page, 'admin_payout_confirm')).length, 0);
+    });
     await ok('référence valide : admin_payout_confirm exact, puis le SMS passe de « en cours » à « envoyé »', async () => {
       await wait(650);                                   /* the app ignores a second tap on a button within 450 ms (double-tap guard) */
       await page.fill('#po-ref', 'MP221118.1205.C12345'); await page.click('#po-go');
