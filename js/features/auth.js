@@ -55,7 +55,8 @@ const AuthEngine = (() => {
     Runtime.notifications = notifications || []; Runtime.cards = cards || []; Runtime.wallets = wallets || [];
     Runtime.bankAccounts = bankAccounts || []; Runtime.contacts = contacts || []; Runtime.beneficiaries = beneficiaries || [];
     Runtime.devices = devices || []; Runtime.sessions = sessions || [];
-    Runtime.hideBalance = !!Runtime.settings.hideBalances;
+    /* 13.3.1 : every session starts with the balance HIDDEN (••••) — only the eye shows it. Later refreshes (after a transfer, a reload of the data) keep the state the person chose. */
+    if (!Runtime.__balanceInit){ Runtime.hideBalance = true; Runtime.__balanceInit = true; }
     LANG = Runtime.settings.language || DeviceLang.get();
     try { if (typeof Push !== 'undefined') Push.syncBadge(); } catch(e){}      /* 12.13.0 : pastille de l'icône = alertes non lues */
     return Runtime;

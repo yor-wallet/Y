@@ -146,7 +146,7 @@ function renderTxAmount(){
     '<div class="screen-body" style="padding-top:0">' +
       recipientCard(b) +
       '<div class="amount-wrap" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:var(--sp-6) var(--sp-5) var(--sp-3)"><input type="text" id="amt-input" inputmode="decimal" placeholder="0.000" autocomplete="off" aria-label="' + escapeHtml(t('transfer.amount')) + '" style="width:100%;text-align:center;font-family:var(--font-mono);font-weight:700;font-size:clamp(34px,9vw,46px);letter-spacing:-.03em;background:transparent;color:var(--text);padding:0"><span class="amount-cur" style="font-family:var(--font-mono);font-size:calc(14px*var(--ui));font-weight:600;color:var(--text-2);letter-spacing:.12em">OMR</span>' +
-        '<span class="caption" style="margin-top:calc(8px*var(--ui))">' + escapeHtml(t('home.main')) + ' · <span class="ltr" dir="ltr">' + escapeHtml(CurrencyEngine.format(acc.availableBalance, acc.currency)) + '</span></span></div>' +
+        '<span class="caption" style="margin-top:calc(8px*var(--ui))">' + escapeHtml(t('home.main')) + ' · <span class="ltr" dir="ltr">' + escapeHtml(Runtime.hideBalance ? '••••••' : CurrencyEngine.format(acc.availableBalance, acc.currency)) + '</span></span></div>' +
       '<div class="dst-est" id="amt-est" aria-live="polite" hidden></div>' +
       '<div class="field-err" id="amt-err" role="alert"></div>' +
       '<button class="btn btn-primary" id="amt-next" disabled style="margin-top:var(--sp-4)">' + t('action.continue') + '</button>' +

@@ -19,6 +19,9 @@ for (const lang of ['en', 'ar']){
   });
   await ok('le symbole du rial remplace le code (le texte OMR reste) : accueil, historique', async () => {
     await page.evaluate(() => R.go('home', { force: true })); await wait(700);
+    assert.equal(await page.evaluate(() => Runtime.hideBalance), true, 'a session starts with the balance hidden');
+    assert.match(await page.locator('#home .ds-bal-amt').textContent(), /^[•\s]+$/);
+    await page.click('#home [data-action="toggle-balance"]'); await wait(900);                 /* the eye shows it */
     assert.ok(await page.locator('#home .ds-bal-amt .rv-cur[data-cur="OMR"]').count() >= 1);
     assert.match(await page.locator('#home .ds-bal-amt').textContent(), /OMR/);
     await page.evaluate(() => R.go('history', { force: true })); await wait(800);
@@ -45,6 +48,12 @@ for (const lang of ['en', 'ar']){
 {
   const { ctx, page, logs } = await openApp(browser, url, { settle: 500 });
   console.log('\n[confirmation et reçu]');
+  await ok('le solde disponible sous le montant est masqué (••••) tant que l’œil n’a pas été touché', async () => {
+    await page.evaluate(() => { txReset(); R.go('country-select'); }); await page.waitForSelector('#country-select.active #sp-num');
+    await page.fill('#sp-num', '99887766'); await page.dispatchEvent('#sp-num', 'input'); await page.waitForFunction(() => !document.getElementById('sp-next').disabled); await wait(500); await page.click('#sp-next');
+    await page.waitForSelector('#tx-amount.active #amt-input');
+    const cap = await page.locator('#tx-amount .caption').innerText(); assert.match(cap, /••••/); assert.doesNotMatch(cap, /1,284/);
+  });
   await ok('le symbole du rial sur l’écran de confirmation', async () => {
     await page.evaluate(() => { txReset(); R.go('country-select'); }); await page.waitForSelector('#country-select.active #sp-num');
     await page.fill('#sp-num', '99887766'); await page.dispatchEvent('#sp-num', 'input'); await page.waitForFunction(() => !document.getElementById('sp-next').disabled); await wait(500); await page.click('#sp-next');
@@ -59,7 +68,7 @@ for (const lang of ['en', 'ar']){
   console.log('\n[solde sur un téléphone étroit (360 px)]');
   for (const bal of [48.067, 1284.5, 12345678.9]){
     await ok('le solde ' + bal + ' tient dans sa carte (jamais coupé), sans débordement horizontal', async () => {
-      await page.evaluate(b => { const a = Runtime.accounts.find(x => x.type === 'MAIN'); a.balance = b; a.availableBalance = b; R.go('home', { force: true }); }, bal);
+      await page.evaluate(b => { Runtime.hideBalance = false; const a = Runtime.accounts.find(x => x.type === 'MAIN'); a.balance = b; a.availableBalance = b; R.go('home', { force: true }); }, bal);
       await wait(1500);
       const m = await page.evaluate(() => { const e = document.getElementById('px-bal-amt'), r = document.createRange(); r.selectNodeContents(e); return { w: r.getBoundingClientRect().width, cw: e.clientWidth, ov: document.documentElement.scrollWidth > window.innerWidth + 1 }; });
       assert.ok(m.w <= m.cw, JSON.stringify(m)); assert.equal(m.ov, false);

@@ -249,5 +249,6 @@ function resetRuntime(){
   Runtime.devices = [];
   Runtime.sessions = [];
   Runtime.hideBalance = false;
+  Runtime.__balanceInit = false;
 }
 

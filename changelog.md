@@ -1,3 +1,13 @@
+# OM Wallet 13.3.1 — le solde reste masqué tant qu'on ne touche pas l'œil
+
+## Modifié
+- **Chaque session démarre avec le solde masqué (••••)** : accueil, hub Profil et paramètres, et la ligne « Principal · solde » sous le montant de l'écran d'envoi. Seul l'œil l'affiche ; les rafraîchissements ultérieurs (après un transfert, rechargement des données) gardent le choix de la personne. La préférence enregistrée n'impose plus l'état de départ.
+- Aucun faux solde n'est jamais affiché : le solde est soit le vrai montant, soit masqué.
+- Le reçu n'affiche déjà jamais le « solde restant » (règle 12.6.0 : pas de ligne, pas d'appel serveur, ni dans le PNG ni dans le PDF). Test ajouté : le solde est masqué au démarrage et sous le montant d'envoi.
+
+## À savoir
+- Les SMS / e-mails de confirmation envoyés à l'expéditeur par le serveur (`send-notice`) mentionnent encore le solde disponible : ils n'ont pas été modifiés.
+
 # OM Wallet 13.3.0 — mise à jour : référence OM PAY, modules agrandis
 
 ## Ajouté
