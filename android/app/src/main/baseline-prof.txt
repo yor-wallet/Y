@@ -1,0 +1,5 @@
+# OM Wallet start-up profile — HAND-WRITTEN (not generated): it asks ART to pre-compile the app's own code
+# (screens, view models, repositories) at install time. Compose / AndroidX ship their own profiles, merged automatically.
+# A measured profile needs a device or emulator (Baseline Profile Gradle plugin + Macrobenchmark); see android/README.md.
+HSPLcom/omwallet/**;->**(**)**
+Lcom/omwallet/**;

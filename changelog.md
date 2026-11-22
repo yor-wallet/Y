@@ -1,3 +1,11 @@
+# OM Wallet Android 14.2.0 — application native (Kotlin + Jetpack Compose), première version
+
+- **Nouveau dossier `android/`** : application native multi-modules (`app`, `core-design`, `core-ui`, `core-network`, `core-data`, `core-security`, `feature-dashboard`, `-assets`, `-markets`, `-deposit`, `-withdraw`, `-send`, `-history`, `-admin`), branchée sur le même serveur Supabase. Détails, règles et limites : `android/README.md`.
+- Identité OM Glass (jetons du cahier, IBM Plex Sans Arabic embarquée, ressorts, retours haptiques natifs CONFIRM/REJECT dès Android 11), SplashScreen API, edge-to-edge, retour prédictif, langues par application (en / fr / ar, arabe de droite à gauche avec montants de gauche à droite).
+- Écrans : connexion, Accueil (USD / OMR au taux officiel, Dépôt / Retrait / Crypto / Marchés, 3 promotions internes menant à de vrais écrans), Actifs et détail (graphiques réels 1J / 1S / 1M / 1A, réseaux, frais), Marchés en direct (Binance, favoris, signe + / −), Activité (par jour, fiche avec étapes réelles, historique CFA archivé en lecture seule), Dépôt (adresse du serveur uniquement : aujourd'hui « indisponible », sans fausse adresse), Retrait banque OMR et crypto (erreurs sous les champs, récapitulatif, code PIN), **envoi interne par e-mail** (« À confirmer » jusqu'à l'administrateur), Admin Control (un seul bouton Confirmer, idempotent ; retraits crypto et bancaires ; Trust Wallet : information seulement), Compte.
+- Serveur : `find_user_by_email` (nom masqué, comptes actifs, utilisateurs connectés) — migration `20261122_find_user_by_email.sql`, ajout seul.
+- Vérifié : 36 tests (règles, contrat serveur avec serveur HTTP local, écrans sur Android 12 et 13 via Robolectric, en français et en arabe), APK debug, APK et AAB release R8. **Non vérifié** : aucun essai sur téléphone ni émulateur, AAB non signé, pas de Macrobenchmark ; WalletConnect non réalisé.
+
 # OM Wallet 14.2.0 — envoi interne de crypto, confirmé par l'administrateur
 
 - **Nouvel écran « Envoyer à un utilisateur OM Wallet »** (onglet Crypto › Envoyer, et recherche) : crypto vers un autre compte OM Wallet par son Wallet ID. Le destinataire est cherché par le serveur et son nom s'affiche avant l'envoi. Contrôles : identifiant, pas d'envoi à soi-même, solde disponible. Récapitulatif, puis code PIN vérifié par le serveur (`transfer_crypto`).
