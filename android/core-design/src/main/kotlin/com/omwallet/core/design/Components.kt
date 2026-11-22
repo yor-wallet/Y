@@ -3,6 +3,7 @@ package com.omwallet.core.design
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
@@ -162,14 +163,38 @@ fun NetworkLogo(network: String, size: Dp = 28.dp, modifier: Modifier = Modifier
 /* Status chip: colour AND text (colour is never the only indicator). */
 enum class ChipTone { Success, Pending, Failed, Neutral }
 @Composable
-fun StatusChip(text: String, tone: ChipTone, modifier: Modifier = Modifier) {
+fun StatusChip(text: String, tone: ChipTone, modifier: Modifier = Modifier, animated: Boolean = false) {
     val (bg, fg) = when (tone) {
         ChipTone.Success -> Color(0x241FAF72) to Color(0xFF137A4F)
         ChipTone.Pending -> Color(0x29E5A332) to Color(0xFF8A5A00)
         ChipTone.Failed -> Color(0x1FD94F5B) to Color(0xFFB23542)
         ChipTone.Neutral -> Color(0x1F637483) to OmColors.InkSecondary
     }
-    Text(text, modifier.clip(RoundedCornerShape(50)).background(bg).padding(horizontal = 10.dp, vertical = 3.dp), style = MaterialTheme.typography.labelSmall, color = fg)
+    androidx.compose.foundation.layout.Row(
+        modifier.clip(RoundedCornerShape(50)).background(bg).padding(horizontal = 10.dp, vertical = 3.dp),
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(6.dp),
+    ) {
+        if (animated) ProgressDots(fg)
+        Text(text, style = MaterialTheme.typography.labelSmall, color = fg)
+    }
+}
+
+/* « En cours » : three dots that pulse one after the other (alpha + scale in the draw phase only: no layout, no recomposition per frame).
+   With "remove animations" on, the dots stay still. */
+@Composable
+fun ProgressDots(color: Color, modifier: Modifier = Modifier) {
+    val reduced = LocalOmMotion.current.reduced
+    val t = androidx.compose.animation.core.rememberInfiniteTransition(label = "progress")
+    androidx.compose.foundation.layout.Row(modifier, horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(3.dp)) {
+        repeat(3) { i ->
+            val a by t.animateFloat(
+                0.3f, 1f,
+                androidx.compose.animation.core.infiniteRepeatable(androidx.compose.animation.core.tween(700, delayMillis = i * 140, easing = androidx.compose.animation.core.LinearEasing), androidx.compose.animation.core.RepeatMode.Reverse),
+                label = "dot$i",
+            )
+            Box(Modifier.size(5.dp).graphicsLayer { val v = if (reduced) 0.85f else a; alpha = v; scaleX = 0.6f + 0.4f * v; scaleY = 0.6f + 0.4f * v }.clip(CircleShape).background(color))
+        }
+    }
 }
 
 @Composable

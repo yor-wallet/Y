@@ -26,16 +26,22 @@ UI Compose ──► ViewModel (UiState en StateFlow) ──► Repositories ─
 
 - **Pas de transfert ni de CFA dans l'interface.** Les anciennes opérations en XOF restent intactes sur le serveur et apparaissent seulement
   dans « Historique CFA (archivé) », en lecture seule, jamais converties ni comptées dans un solde crypto.
-- **Dépôt :** l'adresse vient uniquement du serveur (`get_receive_address`). Aujourd'hui le serveur répond `deposit_address_unavailable`
-  (aucune adresse de conservation) : l'écran le dit, sans adresse ni QR. Le QR (ZXing) ne s'affiche que pour une adresse réelle validée.
-- **Envoi interne par e-mail :** `find_user_by_email` renvoie seulement un nom masqué ; `transfer_crypto` enregistre l'envoi « À confirmer »
-  avec code PIN (`verify_pin` → jeton à usage unique) et clé d'idempotence réutilisée en cas d'échec réseau. Seul l'administrateur crédite.
+- **Dépôt :** l'adresse vient uniquement du serveur (`get_receive_address`) : l'adresse personnelle du compte pour ce réseau, créée par le
+  serveur (une par réseau, chacune avec sa propre clé) à l'inscription ou à la première demande (`address_pending` → fonction
+  `wallet-addresses` → relecture). Le QR (ZXing) n'est affiché que pour une adresse dont le format est validé ; sans adresse, l'écran le dit.
+  Les dépôts ne sont pas détectés automatiquement : l'administrateur les crédite après vérification sur le réseau.
+- **Envoi interne par e-mail :** `find_user_by_email` renvoie seulement un nom masqué ; `transfer_crypto` enregistre l'envoi avec code PIN
+  (`verify_pin` → jeton à usage unique) et clé d'idempotence réutilisée en cas d'échec réseau. Seul l'administrateur crédite.
+- **Ce que voit l'utilisateur :** uniquement « En cours » (trois points animés, actualisation toutes les 5 s tant qu'une opération est en
+  cours), puis « Transfert confirmé » ou « Refusé ». Aucune mention de l'administrateur ni d'une attente de confirmation.
 - **Admin Control :** rôle lu sur le serveur (`is_admin()`), un seul bouton Confirmer par transaction (`admin_tx_confirm`, idempotent :
-  un second appel répond « already »), la ligne traitée reste en place. Retraits crypto : autoriser → saisir le hash → enregistré.
+  un second appel répond « already »), un bouton Mettre en pause (`admin_tx_pause` : reste en attente, montant réservé) et Refuser ; la
+  ligne traitée reste en place. L'administrateur reçoit aussi un e-mail avec les mêmes trois boutons (liens personnels, 72 h). Retraits crypto : autoriser → saisir le hash → enregistré.
   Retraits bancaires : approuver → marquer payé.
-- **Libellés :** interne « À confirmer → Confirmé par admin → Crédité » ; blockchain « Demande reçue → Autorisé admin → Envoyé · hash
-  enregistré » + lien vers l'explorateur public. L'application n'écrit **pas** « Confirmé blockchain » : le serveur enregistre le hash saisi
-  (format vérifié) mais ne vérifie pas encore les confirmations du réseau.
+- **Libellés vus par l'utilisateur :** « Soumis → En cours → Confirmé » (envoi interne), « Soumis → En cours → Terminé » (retrait) + lien
+  vers l'explorateur public quand un hash est enregistré. L'application n'écrit **pas** « Confirmé blockchain » : le serveur enregistre le
+  hash saisi (format vérifié) mais ne vérifie pas encore les confirmations du réseau. Les libellés « Autorisé admin », « Envoyé · hash
+  enregistré » restent réservés à l'écran Admin Control.
 - **Marchés :** cours réels Binance (USDT ≈ USD ; USDT calculé via USDC/USDT), état visible (direct / actualisé toutes les 20 s / hors
   ligne avec l'heure). Chaque ligne ne se recompose que si son propre cours change ; signe toujours affiché (+ / −).
 - **Cache :** seul le contenu recréable est purgé (fichiers http / graphiques / images par durée de vie, cours de plus de 7 jours).
@@ -48,7 +54,7 @@ UI Compose ──► ViewModel (UiState en StateFlow) ──► Repositories ─
 Prérequis : JDK 17+ et Android SDK 35 (`local.properties` : `sdk.dir=…`).
 
 ```
-./gradlew testDebugUnitTest        # 36 tests (règles, contrat serveur, écrans sur Android 12 et 13 via Robolectric)
+./gradlew testDebugUnitTest        # 38 tests (règles, contrat serveur, écrans sur Android 12 et 13 via Robolectric)
 ./gradlew :app:assembleDebug       # APK de debug / QA (signé avec la clé de debug)
 ./gradlew :app:bundleRelease       # AAB release (R8 + réduction des ressources)
 ```
@@ -60,7 +66,7 @@ Les tests d'écran enregistrent leurs rendus dans `app/build/screenshots/api31-f
 
 ## Ce qui est vérifié — et ce qui ne l'est pas
 
-Vérifié ici : compilation de tous les modules, APK debug, APK et AAB release avec R8, 36 tests verts. Les tests d'écran tournent sur
+Vérifié ici : compilation de tous les modules, APK debug, APK et AAB release avec R8, 38 tests verts. Les tests d'écran tournent sur
 les frameworks Android 12 (API 31) et 13 (API 33) **dans la JVM (Robolectric)** avec un faux serveur local — ce n'est ni un émulateur
 ni un téléphone.
 
@@ -68,6 +74,8 @@ Pas encore fait :
 - essais sur appareil physique ou émulateur (aucun disponible dans cet environnement), donc ni mesure de fluidité réelle (JankStats est
   intégré mais n'a tourné sur aucun appareil), ni Macrobenchmark, ni profil de démarrage généré : `baseline-prof.txt` est écrit à la main ;
 - signature de l'AAB release (clé à fournir) ;
+- notification poussée (FCM) à l'administrateur : non réalisée (il faut un projet Firebase) ; l'administrateur est prévenu par e-mail et par la
+  notification dans l'application (actualisation périodique de l'écran Admin Control) ;
 - Trust Wallet / WalletConnect v2 : non connecté (écran d'information sans bouton) ; il faut un identifiant de projet WalletConnect et
   un parcours de signature vérifié ;
 - vérification on-chain des retraits (TRON « solidified », événements TRC20) : à faire côté serveur ;

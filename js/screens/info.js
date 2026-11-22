@@ -24,9 +24,9 @@ function notifView(n){
   }
   return { title: n.title, message: n.message };
 }
-Object.assign(TR.en, { 'nt.pend':'Transfer awaiting confirmation', 'nt.pendMsg':'{a} to {n} · awaiting confirmation by OM Wallet', 'nt.rej':'Transfer refused', 'nt.rejMsg':'{a} returned to your balance' });
-Object.assign(TR.fr, { 'nt.pend':'Transfert en attente de confirmation', 'nt.pendMsg':'{a} pour {n} · en attente de confirmation par OM Wallet', 'nt.rej':'Transfert refusé', 'nt.rejMsg':'{a} restitué sur votre solde' });
-Object.assign(TR.ar, { 'nt.pend':'تحويل بانتظار التأكيد', 'nt.pendMsg':'{a} إلى {n} · بانتظار تأكيد OM Wallet', 'nt.rej':'تم رفض التحويل', 'nt.rejMsg':'أُعيد {a} إلى رصيدك' });
+Object.assign(TR.en, { 'nt.pend':'Transfer in progress', 'nt.pendMsg':'{a} to {n} · in progress', 'nt.rej':'Transfer refused', 'nt.rejMsg':'{a} returned to your balance' });
+Object.assign(TR.fr, { 'nt.pend':'Transfert en cours', 'nt.pendMsg':'{a} pour {n} · en cours', 'nt.rej':'Transfert refusé', 'nt.rejMsg':'{a} restitué sur votre solde' });
+Object.assign(TR.ar, { 'nt.pend':'تحويل قيد التنفيذ', 'nt.pendMsg':'{a} إلى {n} · قيد التنفيذ', 'nt.rej':'تم رفض التحويل', 'nt.rejMsg':'أُعيد {a} إلى رصيدك' });
 function renderNotifications(){
   const list = Runtime.notifications;
   return '<div class="topbar"><button class="topbar-back" data-action="back" aria-label="' + t('ui.back') + '"><span class="dir-flip" style="display:inline-flex">' + icon('back', 20) + '</span></button><span class="topbar-title">' + t('ui.notifications') + '</span><button class="topbar-action" data-action="mark-notifs" aria-label="' + t('ui.markRead') + '">' + icon('check', 18) + '</button></div>' +

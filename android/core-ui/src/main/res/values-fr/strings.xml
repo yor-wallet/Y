@@ -52,7 +52,7 @@
     <string name="home_no_holdings_t">Pas encore de crypto</string>
     <string name="home_no_holdings_b">Vos soldes crypto apparaissent ici dès qu’ils sont crédités.</string>
     <string name="promo_send_t">Envoyer vers un compte OM Wallet</string>
-    <string name="promo_send_b">Avec son adresse e-mail. OM Wallet confirme avant le crédit.</string>
+    <string name="promo_send_b">Avec son adresse e-mail.</string>
     <string name="promo_send_cta">Envoyer</string>
     <string name="promo_markets_t">Suivez les marchés</string>
     <string name="promo_markets_b">Cours réels Binance, actualisés à chaque mouvement.</string>
@@ -112,7 +112,7 @@
     <string name="tx_swap">Échange</string>
     <string name="tx_bonus">Bonus de bienvenue</string>
     <string name="tx_other">Opération</string>
-    <string name="st_internal_pending">À confirmer</string>
+    <string name="st_internal_pending">En cours</string>
     <string name="st_internal_admin">Confirmé par admin</string>
     <string name="st_internal_credited">Crédité</string>
     <string name="st_failed">Refusé</string>
@@ -123,8 +123,8 @@
     <string name="st_bank_paid">Payé</string>
     <string name="st_pending_generic">En attente</string>
     <string name="st_done_generic">Terminé</string>
-    <string name="explain_internal_pending">Le montant est réservé. OM Wallet confirme le transfert, puis le destinataire est crédité et reçoit un e-mail.</string>
-    <string name="explain_wd_sent">L’administrateur a enregistré le hash de la transaction. Ses confirmations réseau se vérifient sur l’explorateur public.</string>
+    <string name="explain_internal_pending">Le montant est mis de côté pendant le traitement de ce transfert.</string>
+    <string name="explain_wd_sent">Transaction enregistrée. Vous pouvez la consulter sur l’explorateur public.</string>
     <string name="open_explorer">Voir sur l’explorateur</string>
     <string name="deposit_title">Dépôt</string>
     <string name="deposit_choose_asset">Choisissez une crypto</string>
@@ -152,12 +152,12 @@
     <string name="wd_review">Vérifier</string>
     <string name="wd_review_title">Confirmer le retrait</string>
     <string name="wd_submit">Confirmer le retrait</string>
-    <string name="wd_crypto_notice">Le montant est réservé dès maintenant. L’administrateur autorise le retrait et l’envoie depuis le portefeuille de la plateforme ; le hash de la transaction est ensuite enregistré.</string>
+    <string name="wd_crypto_notice">Le montant est mis de côté dès maintenant. Suivez le retrait ici jusqu’à son terme.</string>
     <string name="wd_requests">Vos demandes</string>
     <string name="wd_none">Aucune demande pour le moment.</string>
     <string name="wd_cancel">Annuler la demande</string>
     <string name="wd_sent_t">Demande enregistrée</string>
-    <string name="wd_sent_b">Référence %1$s. Le montant est réservé jusqu’au traitement par l’administrateur.</string>
+    <string name="wd_sent_b">Référence %1$s. Votre demande est en cours.</string>
     <string name="e_address">Cette adresse n’est pas valide pour %1$s.</string>
     <string name="e_amount">Saisissez un montant valide.</string>
     <string name="e_decimals">Trop de décimales (%1$d au maximum).</string>
@@ -179,11 +179,11 @@
     <string name="send_to">À</string>
     <string name="send_submit">Envoyer</string>
     <string name="send_done_t">Envoi enregistré</string>
-    <string name="send_done_b">En attente de confirmation par OM Wallet. Le destinataire est crédité et reçoit un e-mail une fois confirmé.</string>
+    <string name="send_done_b">Votre envoi est en cours.</string>
     <string name="send_another">Nouvel envoi</string>
     <string name="send_no_funds_t">Rien à envoyer</string>
     <string name="send_no_funds_b">Vous n’avez aucun solde crypto disponible.</string>
-    <string name="send_rule">OM Wallet → OM Wallet uniquement. Rien ne part sur une blockchain ; l’administrateur confirme avant le crédit.</string>
+    <string name="send_rule">OM Wallet → OM Wallet uniquement. Le montant est mis de côté pendant le traitement de l’envoi.</string>
     <string name="account_title">Compte</string>
     <string name="acc_id">Identifiant OM Wallet</string>
     <string name="acc_language">Langue</string>
@@ -242,4 +242,12 @@
     <string name="e_forbidden">Non autorisé.</string>
     <string name="e_invalid_state">Cet élément a déjà été traité.</string>
     <string name="e_invalid_hash">Hash de transaction invalide.</string>
+    <string name="st_submitted">Soumis</string>
+    <string name="st_confirmed">Confirmé</string>
+    <string name="st_transfer_confirmed">Transfert confirmé</string>
+    <string name="deposit_personal">Cette adresse appartient à votre compte seulement. Scannez le QR code ou copiez-la.</string>
+    <string name="adm_pause">Mettre en pause</string>
+    <string name="adm_paused">En pause</string>
+    <string name="adm_to_decide">À traiter</string>
+    <string name="adm_pause_toast">Mise en pause. Le montant reste réservé ; vous pourrez encore confirmer ou refuser.</string>
 </resources>

@@ -159,14 +159,16 @@ class ScreensFrTest : ScreenTestBase() {
 
     @Test fun activity_shows_honest_statuses_and_keeps_cfa_archived() {
         compose.setContent { OmTheme(reducedMotion = true) { ActivityScreen(androidx.compose.foundation.layout.PaddingValues()) } }
-        waitText("À confirmer")
-        assertTrue(has("Autorisé admin"))
-        assertTrue(has("Crédité"))
+        waitText("En cours")                                           /* the pending send AND the withdrawal being handled: only « En cours » */
+        assertTrue(has("Transfert confirmé"))                          /* the incoming, confirmed one */
+        assertTrue(!has("Autorisé admin") && !has("À confirmer") && !has("administrateur", substring = true))
         waitText("Historique CFA (archivé)")
         assertTrue(!has("50,000", substring = true) && !has("50000", substring = true))     /* archived rows hidden until asked */
         shot("05_activity")
         click("Sara K.", substring = true)
-        waitText("Confirmé par admin")
+        waitText("Soumis")
+        assertTrue(has("En cours") && has("Confirmé"))
+        assertTrue(!has("Confirmé par admin") && !has("admin", substring = true) && !has("OM Wallet confirme", substring = true))
         shot("06_tx_detail_pending")
     }
 
@@ -180,6 +182,18 @@ class ScreensFrTest : ScreenTestBase() {
         shot("07_deposit_unavailable")
     }
 
+    @Test fun first_deposit_request_creates_the_accounts_own_address_then_shows_it_with_its_qr() {
+        backend.addr = "pending"
+        compose.setContent { OmTheme(reducedMotion = true) { DepositScreen("USDT") {} } }
+        waitText("Choisissez le réseau")
+        click("TRON")
+        waitText("TZ2nw5y4azp1wkY89kPTBqUPtRhCguWhjY")
+        assertTrue(has("Copier l’adresse") && has("Partager"))
+        assertTrue(backend.calls.count { it.first.startsWith("/functions/v1/wallet-addresses") } == 1)   /* created once, on the first request */
+        assertEquals(2, backend.called("get_receive_address"))
+        shot("07b_deposit_address_qr")
+    }
+
     @Test fun crypto_withdrawal_errors_appear_under_the_fields() {
         compose.setContent { OmTheme(reducedMotion = true) { WithdrawScreen("USDT") {} } }
         waitText("Adresse de destination")
@@ -188,7 +202,8 @@ class ScreensFrTest : ScreenTestBase() {
         type("Montant (USDT)", "200")
         waitText("Cette adresse n’est pas valide pour TRON.")
         waitText("Solde disponible insuffisant.")
-        waitText("Autorisé admin")                                  /* the existing ETH request, real status */
+        waitText("Soumis")                                          /* the existing ETH request: submitted → in progress → completed */
+        assertTrue(has("En cours") && !has("Autorisé admin"))
         shot("08_withdraw_errors")
     }
 
@@ -209,7 +224,8 @@ class ScreensFrTest : ScreenTestBase() {
         waitText("Code incorrect. 2 essais restants.")
         "123456".forEach { d -> compose.onAllNodesWithContentDescription(d.toString()).onLast().performClick() }
         waitText("Envoi enregistré")
-        assertTrue(has("À confirmer"))
+        assertTrue(has("En cours") && has("Votre envoi est en cours."))
+        assertTrue(!has("À confirmer") && !has("administrateur", substring = true) && !has("OM Wallet confirme", substring = true) && !has("Confirmé par admin"))
         val body = backend.bodyOf("transfer_crypto")!!
         assertTrue(body, body.contains("\"p_to_yor_id\":\"OM2210\"") && body.contains("\"p_idempotency_key\":\"and-") && body.contains("\"p_pin_grant\":\"7d0e0c1e"))
         assertEquals(1, backend.called("transfer_crypto"))
@@ -221,11 +237,16 @@ class ScreensFrTest : ScreenTestBase() {
         compose.setContent { OmTheme(reducedMotion = true) { AdminScreen {} } }
         waitText("Amina Al Balushi → Sara Khalid")
         shot("11_admin_internal")
+        click("Mettre en pause")                                       /* not final: stays pending, still confirmable and refusable */
+        waitText("En pause")
+        assertEquals(1, backend.called("admin_tx_pause"))
+        assertTrue(!has("Mettre en pause") && has("Refuser"))
+        shot("11b_admin_paused")
         click("Confirmer")
         waitText("12.5 USDT", substring = true)
         shot("12_admin_confirm_dialog")
         click("Confirmer")
-        waitText("Crédité")
+        waitText("Confirmé")
         assertEquals(1, backend.called("admin_tx_confirm"))
         assertTrue(has("Amina Al Balushi → Sara Khalid"))                 /* still in place, no button under the finger */
         assertTrue(!has("Refuser"))

@@ -52,7 +52,7 @@
     <string name="home_no_holdings_t">لا توجد عملات رقمية بعد</string>
     <string name="home_no_holdings_b">تظهر أرصدتك هنا فور إضافتها.</string>
     <string name="promo_send_t">أرسل إلى حساب OM Wallet</string>
-    <string name="promo_send_b">ببريده الإلكتروني. يؤكد OM Wallet العملية قبل الإضافة.</string>
+    <string name="promo_send_b">ببريده الإلكتروني.</string>
     <string name="promo_send_cta">إرسال</string>
     <string name="promo_markets_t">تابع الأسواق</string>
     <string name="promo_markets_b">أسعار Binance الحقيقية، تتحدّث مع كل حركة.</string>
@@ -112,7 +112,7 @@
     <string name="tx_swap">مبادلة</string>
     <string name="tx_bonus">مكافأة ترحيبية</string>
     <string name="tx_other">عملية</string>
-    <string name="st_internal_pending">بانتظار التأكيد</string>
+    <string name="st_internal_pending">قيد التنفيذ</string>
     <string name="st_internal_admin">أكّدها المشرف</string>
     <string name="st_internal_credited">أُضيفت</string>
     <string name="st_failed">مرفوضة</string>
@@ -123,8 +123,8 @@
     <string name="st_bank_paid">مدفوع</string>
     <string name="st_pending_generic">قيد الانتظار</string>
     <string name="st_done_generic">مكتملة</string>
-    <string name="explain_internal_pending">المبلغ محجوز. يؤكد OM Wallet التحويل، ثم يُضاف المبلغ إلى المستلم ويتلقى رسالة بريد واحدة.</string>
-    <string name="explain_wd_sent">سجّل المشرف هاش المعاملة. يمكن التحقق من تأكيدات الشبكة في المستكشف العام.</string>
+    <string name="explain_internal_pending">يُحجز المبلغ أثناء معالجة هذا التحويل.</string>
+    <string name="explain_wd_sent">تم تسجيل المعاملة. يمكنك الاطلاع عليها في المستكشف العام.</string>
     <string name="open_explorer">عرض في المستكشف</string>
     <string name="deposit_title">إيداع</string>
     <string name="deposit_choose_asset">اختر عملة رقمية</string>
@@ -152,12 +152,12 @@
     <string name="wd_review">مراجعة</string>
     <string name="wd_review_title">تأكيد السحب</string>
     <string name="wd_submit">تأكيد السحب</string>
-    <string name="wd_crypto_notice">يُحجز المبلغ الآن. يوافق المشرف على السحب ويرسله من محفظة المنصة، ثم يُسجَّل هاش المعاملة.</string>
+    <string name="wd_crypto_notice">يُحجز المبلغ الآن. تابع السحب هنا حتى اكتماله.</string>
     <string name="wd_requests">طلباتك</string>
     <string name="wd_none">لا توجد طلبات بعد.</string>
     <string name="wd_cancel">إلغاء الطلب</string>
     <string name="wd_sent_t">تم تسجيل الطلب</string>
-    <string name="wd_sent_b">المرجع %1$s. يبقى المبلغ محجوزًا حتى يعالجه المشرف.</string>
+    <string name="wd_sent_b">المرجع %1$s. طلبك قيد التنفيذ.</string>
     <string name="e_address">هذا العنوان غير صالح لشبكة %1$s.</string>
     <string name="e_amount">أدخل مبلغًا صحيحًا.</string>
     <string name="e_decimals">عدد الخانات العشرية كبير (الحد %1$d).</string>
@@ -179,11 +179,11 @@
     <string name="send_to">إلى</string>
     <string name="send_submit">إرسال</string>
     <string name="send_done_t">تم تسجيل الإرسال</string>
-    <string name="send_done_b">بانتظار تأكيد OM Wallet. يُضاف المبلغ إلى المستلم ويتلقى رسالة بريد واحدة بعد التأكيد.</string>
+    <string name="send_done_b">إرسالك قيد التنفيذ.</string>
     <string name="send_another">إرسال جديد</string>
     <string name="send_no_funds_t">لا يوجد ما يُرسل</string>
     <string name="send_no_funds_b">ليس لديك رصيد عملات رقمية متاح.</string>
-    <string name="send_rule">من OM Wallet إلى OM Wallet فقط. لا يُرسل شيء عبر البلوك تشين؛ يؤكد المشرف قبل الإضافة.</string>
+    <string name="send_rule">من OM Wallet إلى OM Wallet فقط. يُحجز المبلغ أثناء معالجة الإرسال.</string>
     <string name="account_title">الحساب</string>
     <string name="acc_id">معرّف OM Wallet</string>
     <string name="acc_language">اللغة</string>
@@ -242,4 +242,12 @@
     <string name="e_forbidden">غير مسموح.</string>
     <string name="e_invalid_state">تمت معالجة هذا العنصر مسبقًا.</string>
     <string name="e_invalid_hash">هاش المعاملة غير صالح.</string>
+    <string name="st_submitted">تم الإرسال</string>
+    <string name="st_confirmed">تم التأكيد</string>
+    <string name="st_transfer_confirmed">تم تأكيد التحويل</string>
+    <string name="deposit_personal">هذا العنوان يخص حسابك وحده. امسح رمز QR أو انسخه.</string>
+    <string name="adm_pause">إيقاف مؤقت</string>
+    <string name="adm_paused">متوقفة مؤقتًا</string>
+    <string name="adm_to_decide">بانتظار القرار</string>
+    <string name="adm_pause_toast">تم الإيقاف المؤقت. يبقى المبلغ محجوزًا ويمكنك التأكيد أو الرفض لاحقًا.</string>
 </resources>

@@ -176,6 +176,7 @@ fun SendScreen(initialAsset: String?, onBack: () -> Unit, onActivity: () -> Unit
                     Text(sent.amount + " → " + sent.to, style = MaterialTheme.typography.headlineSmall, color = OmColors.Ink)
                     sent.reference?.let { Text(stringResource(R.string.detail_reference) + " " + it, style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary) }
                     StatusSteps(internalSteps(s.sentStage ?: Stage.Pending))
+                    if (com.omwallet.core.ui.isInProgress(s.sentStage ?: Stage.Pending)) com.omwallet.core.design.StatusChip(stringResource(R.string.st_internal_pending), com.omwallet.core.design.ChipTone.Pending, animated = true)
                     if ((s.sentStage ?: Stage.Pending) == Stage.Pending) Text(stringResource(R.string.send_done_b), style = MaterialTheme.typography.bodyMedium, color = OmColors.InkSecondary)
                     OmPrimaryButton(stringResource(R.string.nav_activity), onClick = onActivity)
                     OmSecondaryButton(stringResource(R.string.send_another)) { vm.reset(); amount = ""; note = ""; tried = false }

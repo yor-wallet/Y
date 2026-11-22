@@ -53,7 +53,7 @@
     <string name="home_no_holdings_t">No crypto yet</string>
     <string name="home_no_holdings_b">Your crypto balances appear here as soon as they are credited.</string>
     <string name="promo_send_t">Send to an OM Wallet account</string>
-    <string name="promo_send_b">With their e-mail address. OM Wallet confirms it before the credit.</string>
+    <string name="promo_send_b">With their e-mail address.</string>
     <string name="promo_send_cta">Send</string>
     <string name="promo_markets_t">Follow the markets</string>
     <string name="promo_markets_b">Real Binance prices, updated as they move.</string>
@@ -113,7 +113,7 @@
     <string name="tx_swap">Swap</string>
     <string name="tx_bonus">Welcome bonus</string>
     <string name="tx_other">Operation</string>
-    <string name="st_internal_pending">To confirm</string>
+    <string name="st_internal_pending">In progress</string>
     <string name="st_internal_admin">Confirmed by admin</string>
     <string name="st_internal_credited">Credited</string>
     <string name="st_failed">Rejected</string>
@@ -124,8 +124,8 @@
     <string name="st_bank_paid">Paid</string>
     <string name="st_pending_generic">Pending</string>
     <string name="st_done_generic">Completed</string>
-    <string name="explain_internal_pending">The amount is held. OM Wallet confirms the transfer, then the recipient is credited and receives one e-mail.</string>
-    <string name="explain_wd_sent">The administrator recorded the transaction hash. Its network confirmations can be checked on the public explorer.</string>
+    <string name="explain_internal_pending">The amount is set aside while this transfer is in progress.</string>
+    <string name="explain_wd_sent">Transaction recorded. You can look it up on the public explorer.</string>
     <string name="open_explorer">View on explorer</string>
     <string name="deposit_title">Deposit</string>
     <string name="deposit_choose_asset">Choose a crypto</string>
@@ -153,12 +153,12 @@
     <string name="wd_review">Review</string>
     <string name="wd_review_title">Confirm the withdrawal</string>
     <string name="wd_submit">Confirm withdrawal</string>
-    <string name="wd_crypto_notice">The amount is held now. The administrator authorizes the withdrawal and sends it from the platform wallet; the transaction hash is then recorded.</string>
+    <string name="wd_crypto_notice">The amount is set aside now. Follow the withdrawal here until it is completed.</string>
     <string name="wd_requests">Your requests</string>
     <string name="wd_none">No request yet.</string>
     <string name="wd_cancel">Cancel request</string>
     <string name="wd_sent_t">Request recorded</string>
-    <string name="wd_sent_b">Reference %1$s. The amount is held until the administrator processes it.</string>
+    <string name="wd_sent_b">Reference %1$s. Your request is in progress.</string>
     <string name="e_address">This address is not valid for %1$s.</string>
     <string name="e_amount">Enter a valid amount.</string>
     <string name="e_decimals">Too many decimals (%1$d at most).</string>
@@ -180,11 +180,11 @@
     <string name="send_to">To</string>
     <string name="send_submit">Send</string>
     <string name="send_done_t">Send recorded</string>
-    <string name="send_done_b">Waiting for confirmation by OM Wallet. The recipient is credited and receives one e-mail once it is confirmed.</string>
+    <string name="send_done_b">Your sending is in progress.</string>
     <string name="send_another">New send</string>
     <string name="send_no_funds_t">Nothing to send</string>
     <string name="send_no_funds_b">You have no available crypto balance.</string>
-    <string name="send_rule">OM Wallet → OM Wallet only. Nothing leaves on a blockchain; the administrator confirms before the credit.</string>
+    <string name="send_rule">OM Wallet → OM Wallet only. The amount is set aside while the sending is in progress.</string>
     <string name="account_title">Account</string>
     <string name="acc_id">OM Wallet ID</string>
     <string name="acc_language">Language</string>
@@ -243,4 +243,12 @@
     <string name="e_forbidden">Not allowed.</string>
     <string name="e_invalid_state">This item was already processed.</string>
     <string name="e_invalid_hash">Invalid transaction hash.</string>
+    <string name="st_submitted">Submitted</string>
+    <string name="st_confirmed">Confirmed</string>
+    <string name="st_transfer_confirmed">Transfer confirmed</string>
+    <string name="deposit_personal">This address belongs to your account only. Scan the QR code or copy it.</string>
+    <string name="adm_pause">Pause</string>
+    <string name="adm_paused">Paused</string>
+    <string name="adm_to_decide">To decide</string>
+    <string name="adm_pause_toast">Paused. The amount stays held; you can still confirm or refuse.</string>
 </resources>

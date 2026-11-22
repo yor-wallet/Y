@@ -332,3 +332,10 @@ html:root body .tx-row .item-right{flex:none;display:flex;align-items:center;gap
 .si-who svg{color:var(--omx-up);flex:none}.si-who span{color:var(--om-text-2);font-weight:500}.si-who b{unicode-bidi:plaintext}
 .si-steps{grid-template-columns:repeat(3,minmax(0,1fr))}
 .omx-acts.mini .omx-act span{font-size:12px}
+
+/* 14.3 — « en cours » : trois points qui pulsent, sous le titre d'un envoi / retrait dont le traitement n'est pas terminé (colour + scale only, no layout) */
+.omx-prog{display:flex;gap:7px;justify-content:center;margin:12px 0 2px}
+.omx-prog i{width:9px;height:9px;border-radius:50%;background:var(--om-accent,#2E9CD3);animation:omxProg 1.2s ease-in-out infinite}
+.omx-prog i:nth-child(2){animation-delay:.16s}.omx-prog i:nth-child(3){animation-delay:.32s}
+@keyframes omxProg{0%,80%,100%{transform:scale(.55);opacity:.35}40%{transform:scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){.omx-prog i{animation:none;opacity:.75}}

@@ -215,10 +215,20 @@ class MoneyRepository(private val api: SupabaseApi) {
 
     /* Deposit: the address comes ONLY from the server. Today the server answers deposit_address_unavailable (no custody keys) — the app says so. */
     sealed interface DepositAddress { data class Ready(val address: String) : DepositAddress; data object Unavailable : DepositAddress }
-    suspend fun depositAddress(asset: String, network: String): DepositAddress = try {
-        val a = (api.rpc("get_receive_address", buildJsonObject { put("p_asset", asset); put("p_network", network) }) as? JsonPrimitive)?.content?.trim().orEmpty()
-        if (a.isNotEmpty() && Validation.addressOk(network, a)) DepositAddress.Ready(a) else DepositAddress.Unavailable
-    } catch (e: ApiException) { if (e.code == "deposit_address_unavailable") DepositAddress.Unavailable else throw e }
+    suspend fun depositAddress(asset: String, network: String): DepositAddress {
+        suspend fun read(): DepositAddress {
+            val a = (api.rpc("get_receive_address", buildJsonObject { put("p_asset", asset); put("p_network", network) }) as? JsonPrimitive)?.content?.trim().orEmpty()
+            return if (a.isNotEmpty() && Validation.addressOk(network, a)) DepositAddress.Ready(a) else DepositAddress.Unavailable
+        }
+        return try { read() } catch (e: ApiException) {
+            when (e.code) {
+                "deposit_address_unavailable" -> DepositAddress.Unavailable
+                /* first request of this account: the server creates its addresses (one per network, each with its own key), then we read ours */
+                "address_pending" -> { api.ensureWalletAddresses(); try { read() } catch (e2: ApiException) { if (e2.code == "deposit_address_unavailable" || e2.code == "address_pending") DepositAddress.Unavailable else throw e2 } }
+                else -> throw e
+            }
+        }
+    }
 
     suspend fun bankOverview(): BankOverview = Parse.bankOverview(api.rpc("withdraw_overview").obj() ?: JsonObject(emptyMap()))
     suspend fun cryptoOverview(): CryptoOverview = Parse.cryptoOverview(api.rpc("crypto_withdraw_overview").obj() ?: JsonObject(emptyMap()))
@@ -269,6 +279,8 @@ class AdminRepository(private val api: SupabaseApi) {
         return Confirmed(o?.bool("already") ?: false, o?.bool("email") ?: false)
     }
     suspend fun reject(id: String, reason: String) { api.rpc("admin_tx_reject", buildJsonObject { put("p_tx", id); put("p_reason", reason) }) }
+    /* Pause: the transaction stays PENDING (amount still held) and can be confirmed or refused afterwards. Idempotent on the server. */
+    suspend fun pause(id: String) { api.rpc("admin_tx_pause", buildJsonObject { put("p_tx", id) }) }
 
     suspend fun cryptoWithdrawals(status: String?): List<CryptoWithdrawal> =
         api.rpc("admin_crypto_withdrawal_list", buildJsonObject { put("p_status", status); put("p_limit", 200) }).arr().mapNotNull { it.obj() }.map(Parse::cryptoWithdrawal)

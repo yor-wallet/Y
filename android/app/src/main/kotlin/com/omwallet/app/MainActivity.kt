@@ -39,7 +39,9 @@ class MainActivity : AppCompatActivity() {
                 try {
                     while (true) {
                         if (g.auth.state.value is AuthState.SignedIn) g.auth.userId?.let { g.wallet.refresh(it) }
-                        delay(20_000)
+                        /* near real time: every 5 s while a sending or withdrawal is in progress, every 20 s otherwise */
+                        val busy = g.wallet.state.value.transactions.any { com.omwallet.core.data.Status.tx(it).let { s -> s == com.omwallet.core.data.Stage.Pending || s == com.omwallet.core.data.Stage.Approved } }
+                        delay(if (busy) 5_000 else 20_000)
                     }
                 } finally { g.market.stop() }
             }

@@ -120,6 +120,15 @@ class SupabaseApi(
         }
     }
 
+    /* Asks the server to create THIS account's deposit addresses (idempotent; the server never returns a key). */
+    suspend fun ensureWalletAddresses() = withContext(Dispatchers.IO) {
+        ensureFresh()
+        execute(authed("/functions/v1/wallet-addresses").post("{}".toRequestBody(JSON)).build()).use {
+            val text = it.body?.string().orEmpty()
+            if (!it.isSuccessful) throw ApiException("address_creation_failed", text.take(200), it.code)
+        }
+    }
+
     /* ---------- tables (row-level security: each user reads only their own rows) ---------- */
     suspend fun select(table: String, query: String): JsonArray = withContext(Dispatchers.IO) {
         ensureFresh()

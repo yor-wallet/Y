@@ -23,7 +23,7 @@ Object.assign(TR.en, {
   'omx.depErr':'The deposit address could not be read. Try again.',
   'omx.exT':'Exchange','omx.exNoT':'Crypto exchange is unavailable','omx.exNoD':'Exchange is not connected to a real trading service yet. It stays off so that no order is ever executed at an invented price.',
   'omx.netPick':'Select a network','omx.netCompat':'Compatible with {a}','omx.netNo':'Not available for {a}',
-  'omx.depInfo':'OM Wallet only shows a deposit address that really exists on the blockchain. None is ever invented.','omx.share':'Share',
+  'omx.depInfo':'Your personal deposit address for this network: it belongs to your account only. Scan the QR code or copy the address.','omx.qrAlt':'QR code of your deposit address','omx.share':'Share',
   'omx.home':'Home',
   'omx.navCrypto':'Crypto',
   'omx.back':'Back','omx.copy':'Copy','omx.copied':'Copied'
@@ -46,7 +46,7 @@ Object.assign(TR.fr, {
   'omx.depErr':'L’adresse de dépôt n’a pas pu être lue. Réessayez.',
   'omx.exT':'Échange','omx.exNoT':'L’échange crypto est indisponible','omx.exNoD':'L’échange n’est pas encore relié à un vrai service de marché. Il reste désactivé pour qu’aucun ordre ne soit jamais exécuté à un prix inventé.',
   'omx.netPick':'Choisir un réseau','omx.netCompat':'Compatible avec {a}','omx.netNo':'Indisponible pour {a}',
-  'omx.depInfo':'OM Wallet n’affiche qu’une adresse de dépôt qui existe réellement sur la blockchain. Aucune n’est jamais inventée.','omx.share':'Partager',
+  'omx.depInfo':'Votre adresse de dépôt personnelle pour ce réseau : elle appartient à votre compte seulement. Scannez le QR code ou copiez l’adresse.','omx.qrAlt':'QR code de votre adresse de dépôt','omx.share':'Partager',
   'omx.home':'Accueil',
   'omx.navCrypto':'Crypto',
   'omx.back':'Retour','omx.copy':'Copier','omx.copied':'Copié'
@@ -69,7 +69,7 @@ Object.assign(TR.ar, {
   'omx.depErr':'تعذّرت قراءة عنوان الإيداع. حاول مرة أخرى.',
   'omx.exT':'التبادل','omx.exNoT':'تبادل العملات الرقمية غير متاح','omx.exNoD':'التبادل غير مرتبط بعد بخدمة تداول حقيقية. يبقى معطلاً حتى لا يُنفَّذ أي أمر بسعر غير حقيقي.',
   'omx.netPick':'اختر الشبكة','omx.netCompat':'متوافقة مع {a}','omx.netNo':'غير متاحة لـ {a}',
-  'omx.depInfo':'لا يعرض OM Wallet إلا عنوان إيداع موجوداً فعلاً على البلوكشين. لا يُختلق أي عنوان أبداً.','omx.share':'مشاركة',
+  'omx.depInfo':'عنوان الإيداع الشخصي لهذه الشبكة: يخص حسابك وحده. امسح رمز QR أو انسخ العنوان.','omx.qrAlt':'رمز QR لعنوان الإيداع','omx.share':'مشاركة',
   'omx.home':'الرئيسية',
   'omx.navCrypto':'الكريبتو',
   'omx.back':'رجوع','omx.copy':'نسخ','omx.copied':'تم النسخ'
@@ -259,17 +259,32 @@ const OMX = (() => {
     if (d.asset && d.net) body += '<section class="omx-card omx-sec" id="omx-dep-res" aria-live="polite">' + skeletonRows(1) + '</section>';
     return top(t('omx.depT')) + '<div class="screen-body omx-page"><p class="omx-info">' + icon('shield', 18) + '<span>' + escapeHtml(t('omx.depInfo')) + '</span></p>' + body + '</div>';
   }
+  /* the server creates this account's addresses the first time (idempotent), then returns the saved one */
+  async function ensureAddresses(){
+    const s = await sb.auth.getSession(), tok = s && s.data && s.data.session && s.data.session.access_token;
+    if (!tok) throw new Error('unauthenticated');
+    const r = await fetch(SUPABASE_URL + '/functions/v1/wallet-addresses', { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer ' + tok, apikey: SUPABASE_ANON_KEY }, body: '{}' });
+    if (!r.ok) throw new Error('address_creation_failed');
+  }
+  async function readAddress(asset, net){
+    let r = await sb.rpc('get_receive_address', { p_asset: asset, p_network: net });
+    if (r.error && /address_pending/.test(String(r.error.message || ''))){ await ensureAddresses(); r = await sb.rpc('get_receive_address', { p_asset: asset, p_network: net }); }
+    if (r.error) throw r.error;
+    const addr = String(r.data || '');
+    let qr = '';
+    try { const q = await sb.rpc('my_deposit_addresses'); const row = ((q && q.data) || []).find(x => x.network === net && x.address === addr); if (row && typeof row.qr_svg === 'string' && row.qr_svg.indexOf('<svg') === 0) qr = row.qr_svg; } catch(e){ /* the QR is drawn locally if the saved one cannot be read */ }
+    return { addr, qr };
+  }
   async function depAddress(){
     const host = document.getElementById('omx-dep-res'); if (!host) return;
     const d = S.dep, n = OMX_NETWORKS[d.net];
     const warn = '<p class="omx-warn">' + icon('warn', 18) + escapeHtml(tf('omx.depWarn', { a: d.asset, n: n.name })) + (n.memo ? ' ' + escapeHtml(t('omx.depMemo')) : '') + '</p>';
     try {
-      const { data, error } = await sb.rpc('get_receive_address', { p_asset: d.asset, p_network: d.net });
-      if (error) throw error;
-      const addr = String(data || '');
-      /* only reachable once real addresses are configured server-side: the address, copy and share (no QR until a real QR encoder is added) */
+      const { addr, qr } = await readAddress(d.asset, d.net);
+      /* the account's own address for this network (a real key behind it, created by the server) and its saved QR code: shown as an image, never as markup */
       host.innerHTML = '<div class="omx-addr"><small>' + escapeHtml(n.name) + '</small><b class="ltr" dir="ltr">' + escapeHtml(addr) + '</b>' +
-        (typeof OMXQR !== 'undefined' ? '<div class="omx-qr">' + OMXQR.svg(addr) + '</div>' : '') +
+        (qr ? '<div class="omx-qr"><img class="omx-qrsvg" alt="' + escapeHtml(t('omx.qrAlt')) + '" src="data:image/svg+xml;charset=utf-8,' + encodeURIComponent(qr) + '"></div>'
+          : (typeof OMXQR !== 'undefined' ? '<div class="omx-qr">' + OMXQR.svg(addr) + '</div>' : '')) +
         '<div class="omx-btns"><button class="btn btn-secondary" data-omx="dep-copy">' + icon('copy', 18) + '<span>' + escapeHtml(t('omx.copy')) + '</span></button>' +
         (navigator.share ? '<button class="btn btn-secondary" data-omx="dep-share">' + icon('share', 18) + '<span>' + escapeHtml(t('omx.share')) + '</span></button>' : '') + '</div></div>' + warn;
       S.dep.addr = addr;

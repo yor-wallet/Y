@@ -138,33 +138,34 @@ fun txTitle(t: Tx): String = stringResource(
     },
 )
 
+fun isInProgress(s: Stage) = s == Stage.Pending || s == Stage.Approved
 fun stageTone(s: Stage) = when (s) { Stage.Done -> ChipTone.Success; Stage.Failed -> ChipTone.Failed; Stage.Cancelled -> ChipTone.Neutral; else -> ChipTone.Pending }
 
 @Composable
 fun stageText(t: Tx): String {
     val s = Status.tx(t)
     return stringResource(
-        if (t.flow == "CRYPTO_WITHDRAWAL") when (s) { Stage.Pending -> R.string.st_wd_request; Stage.Approved -> R.string.st_wd_approved; Stage.Done -> R.string.st_wd_sent; Stage.Failed -> R.string.st_failed; Stage.Cancelled -> R.string.st_cancelled }
-        else if (t.adminConfirm) when (s) { Stage.Done -> R.string.st_internal_credited; Stage.Failed -> R.string.st_failed; Stage.Cancelled -> R.string.st_cancelled; else -> R.string.st_internal_pending }
+        /* people only ever see « En cours » while anything is being handled; then the final result */
+        if (t.flow == "CRYPTO_WITHDRAWAL") when (s) { Stage.Pending, Stage.Approved -> R.string.st_internal_pending; Stage.Done -> R.string.st_done_generic; Stage.Failed -> R.string.st_failed; Stage.Cancelled -> R.string.st_cancelled }
+        else if (t.adminConfirm) when (s) { Stage.Done -> R.string.st_transfer_confirmed; Stage.Failed -> R.string.st_failed; Stage.Cancelled -> R.string.st_cancelled; else -> R.string.st_internal_pending }
         else when (s) { Stage.Done -> R.string.st_done_generic; Stage.Failed -> R.string.st_failed; Stage.Cancelled -> R.string.st_cancelled; else -> R.string.st_pending_generic },
     )
 }
 
-/* « À confirmer → Confirmé par admin → Crédité » (internal) and « Demande reçue → Autorisé admin → Envoyé · hash enregistré » (blockchain). */
+/* What people see: « Soumis → En cours → Confirmé » (internal send), « Soumis → En cours → Terminé » (withdrawal). Nothing about who handles it. */
 @Composable
 fun internalSteps(stage: Stage): List<Pair<String, StepState>> = when (stage) {
-    Stage.Done -> listOf(stringResource(R.string.st_internal_pending) to StepState.Done, stringResource(R.string.st_internal_admin) to StepState.Done, stringResource(R.string.st_internal_credited) to StepState.Done)
-    Stage.Failed, Stage.Cancelled -> listOf(stringResource(R.string.st_internal_pending) to StepState.Done, stringResource(if (stage == Stage.Failed) R.string.st_failed else R.string.st_cancelled) to StepState.Failed)
-    else -> listOf(stringResource(R.string.st_internal_pending) to StepState.Current, stringResource(R.string.st_internal_admin) to StepState.Todo, stringResource(R.string.st_internal_credited) to StepState.Todo)
+    Stage.Done -> listOf(stringResource(R.string.st_submitted) to StepState.Done, stringResource(R.string.st_internal_pending) to StepState.Done, stringResource(R.string.st_confirmed) to StepState.Done)
+    Stage.Failed, Stage.Cancelled -> listOf(stringResource(R.string.st_submitted) to StepState.Done, stringResource(if (stage == Stage.Failed) R.string.st_failed else R.string.st_cancelled) to StepState.Failed)
+    else -> listOf(stringResource(R.string.st_submitted) to StepState.Done, stringResource(R.string.st_internal_pending) to StepState.Current, stringResource(R.string.st_confirmed) to StepState.Todo)
 }
 
 @Composable
 fun withdrawalSteps(stage: Stage, bank: Boolean): List<Pair<String, StepState>> {
-    val last = stringResource(if (bank) R.string.st_bank_paid else R.string.st_wd_sent)
-    val a = stringResource(R.string.st_wd_request); val b = stringResource(R.string.st_wd_approved)
+    val last = stringResource(if (bank) R.string.st_bank_paid else R.string.st_done_generic)
+    val a = stringResource(R.string.st_submitted); val b = stringResource(R.string.st_internal_pending)
     return when (stage) {
-        Stage.Pending -> listOf(a to StepState.Current, b to StepState.Todo, last to StepState.Todo)
-        Stage.Approved -> listOf(a to StepState.Done, b to StepState.Current, last to StepState.Todo)
+        Stage.Pending, Stage.Approved -> listOf(a to StepState.Done, b to StepState.Current, last to StepState.Todo)
         Stage.Done -> listOf(a to StepState.Done, b to StepState.Done, last to StepState.Done)
         Stage.Failed, Stage.Cancelled -> listOf(a to StepState.Done, stringResource(if (stage == Stage.Failed) R.string.st_failed else R.string.st_cancelled) to StepState.Failed)
     }
@@ -189,7 +190,7 @@ fun TxItem(t: Tx, hidden: Boolean, onClick: () -> Unit, modifier: Modifier = Mod
         }
         Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(Fmt.masked(signedQty(t), hidden), style = MaterialTheme.typography.titleSmall, color = if (t.direction == Direction.IN && Status.tx(t) == Stage.Done) OmColors.Success else OmColors.Ink)
-            StatusChip(stageText(t), stageTone(Status.tx(t)))
+            StatusChip(stageText(t), stageTone(Status.tx(t)), animated = isInProgress(Status.tx(t)))
         }
     }
 }
@@ -214,7 +215,7 @@ fun TxDetailSheet(t: Tx, hidden: Boolean, onDismiss: () -> Unit) {
                 StatusSteps(internalSteps(stage))
                 if (stage == Stage.Pending) Text(stringResource(R.string.explain_internal_pending), style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary)
             }
-            else -> StatusChip(stageText(t), stageTone(stage))
+            else -> StatusChip(stageText(t), stageTone(stage), animated = isInProgress(stage))
         }
         DetailLine(stringResource(R.string.detail_reference), t.reference)
         DetailLine(stringResource(R.string.detail_date), dateTime(t.createdAt))

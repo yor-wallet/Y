@@ -260,8 +260,9 @@ private fun androidx.compose.foundation.lazy.LazyListScope.bankSection(b: BankOv
         GlassCard(Modifier.padding(horizontal = 16.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(String.format(java.util.Locale.US, "%,.3f OMR", w.amount), style = MaterialTheme.typography.titleMedium, color = OmColors.Ink)
-                StatusChip(stringResource(when (st) { com.omwallet.core.data.Stage.Pending -> R.string.st_wd_request; com.omwallet.core.data.Stage.Approved -> R.string.st_wd_approved
-                    com.omwallet.core.data.Stage.Done -> R.string.st_bank_paid; com.omwallet.core.data.Stage.Failed -> R.string.st_failed; com.omwallet.core.data.Stage.Cancelled -> R.string.st_cancelled }), stageTone(st))
+                StatusChip(stringResource(when (st) { com.omwallet.core.data.Stage.Pending, com.omwallet.core.data.Stage.Approved -> R.string.st_internal_pending
+                    com.omwallet.core.data.Stage.Done -> R.string.st_bank_paid; com.omwallet.core.data.Stage.Failed -> R.string.st_failed; com.omwallet.core.data.Stage.Cancelled -> R.string.st_cancelled }), stageTone(st),
+                    animated = com.omwallet.core.ui.isInProgress(st))
             }
             Text(listOfNotNull(w.reference, w.bankName, dateTime(w.createdAt)).joinToString(" · "), style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary)
             StatusSteps(withdrawalSteps(st, bank = true))

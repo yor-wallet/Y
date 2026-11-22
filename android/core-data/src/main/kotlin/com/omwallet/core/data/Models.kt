@@ -55,7 +55,7 @@ data class CryptoOverview(val enabled: Boolean, val kycRequired: Boolean, val ne
 
 data class AdminTx(val id: String, val reference: String?, val kind: String, val asset: String?, val network: String?, val amount: Double, val status: String,
                    val createdAt: Long, val confirmedAt: Long, val note: String?, val senderName: String?, val senderId: String?,
-                   val receiverName: String?, val receiverId: String?, val receiverHasEmail: Boolean, val emailStatus: String?)
+                   val receiverName: String?, val receiverId: String?, val receiverHasEmail: Boolean, val emailStatus: String?, val paused: Boolean = false)
 
 /* ---------- parsing ---------- */
 object Parse {
@@ -94,6 +94,6 @@ object Parse {
     fun adminTx(o: JsonObject): AdminTx {
         val s = o["sender"].obj(); val r = o["receiver"].obj(); val e = o["email"].obj()
         return AdminTx(o.str("id") ?: "", o.str("reference"), o.str("kind") ?: "", o.str("asset"), o.str("network"), o.num("amount"), o.str("status") ?: "PENDING",
-            o.time("created_at"), o.time("confirmed_at"), o.str("note"), s?.str("name"), s?.str("yor_id"), r?.str("name"), r?.str("yor_id"), r?.bool("has_email") ?: false, e?.str("status"))
+            o.time("created_at"), o.time("confirmed_at"), o.str("note"), s?.str("name"), s?.str("yor_id"), r?.str("name"), r?.str("yor_id"), r?.bool("has_email") ?: false, e?.str("status"), o.bool("paused"))
     }
 }

@@ -14,6 +14,10 @@ class FakeBackend : Dispatcher() {
     val calls: MutableList<Pair<String, String>> = Collections.synchronizedList(mutableListOf())
     @Volatile var admin = true
     @Volatile var confirmed = false
+    @Volatile var paused = false
+    /* deposit address: "unavailable" (server has none) · "pending" (created on first request) · "ok" */
+    @Volatile var addr = "unavailable"
+    @Volatile var addrCreated = false
     private fun ago(minutes: Long) = Instant.now().minus(minutes, ChronoUnit.MINUTES).toString()
     private fun ok(body: String) = MockResponse().setHeader("Content-Type", "application/json").setBody(body)
     private fun err(code: Int, msg: String) = MockResponse().setResponseCode(code).setHeader("Content-Type", "application/json").setBody("""{"code":"P0001","message":"$msg"}""")
@@ -40,7 +44,12 @@ class FakeBackend : Dispatcher() {
                 {"id":"tx-in","reference":"OMW-23F0","kind":"CRYPTO_TRANSFER","direction":"IN","asset":"BTC","network":"bitcoin","amount":"0.002","fee":"0","total":"0.002","status":"CONFIRMED","meta":{"confirm":"ADMIN"},"counterparty_name":"Yusuf R.","created_at":"${ago(60 * 26)}"},
                 {"id":"tx-wd","reference":"OMW-22C9","kind":"CRYPTO_SEND","direction":"OUT","asset":"ETH","network":"ethereum","amount":"0.1","fee":"0.002","total":"0.102","status":"PROCESSING","meta":{"flow":"CRYPTO_WITHDRAWAL","address":"0x52908400098527886E0F7030069857D2E4169EE7"},"created_at":"${ago(60 * 30)}"},
                 {"id":"tx-cfa","reference":"FP-0009","kind":"FIAT_TRANSFER","direction":"IN","asset":"XOF","amount":"50000","fee":"0","total":"50000","status":"CONFIRMED","meta":{},"created_at":"2025-03-02T09:00:00+00:00"}]""")
-            fn == "get_receive_address" -> err(400, "deposit_address_unavailable")
+            path.startsWith("/functions/v1/wallet-addresses") -> { addrCreated = true; ok("""{"ok":true,"addresses":[]}""") }
+            fn == "get_receive_address" -> when {
+                addr == "ok" || (addr == "pending" && addrCreated) -> ok("\"TZ2nw5y4azp1wkY89kPTBqUPtRhCguWhjY\"")
+                addr == "pending" -> err(400, "address_pending")
+                else -> err(400, "deposit_address_unavailable")
+            }
             fn == "crypto_withdraw_overview" -> ok("""{"enabled":true,"kyc_required":false,
                 "networks":[{"asset":"USDT","network":"tron","fee":1},{"asset":"USDT","network":"ethereum","fee":4},{"asset":"BTC","network":"bitcoin","fee":0.0002},{"asset":"ETH","network":"ethereum","fee":0.002}],
                 "balances":{"USDT":137.75,"BTC":0.0123,"ETH":0.4},
@@ -50,7 +59,8 @@ class FakeBackend : Dispatcher() {
             fn == "find_user_by_email" -> if (body.contains("sara@example.com")) ok("""[{"yor_id":"OM2210","display_name":"Sara K.","self":false}]""") else ok("[]")
             fn == "verify_pin" -> if (body.contains("\"123456\"")) ok("""{"ok":true,"grant":"7d0e0c1e-0000-4000-8000-000000000001"}""") else ok("""{"ok":false,"error":"wrong_pin","remaining":2}""")
             fn == "transfer_crypto" -> ok("""{"ok":true,"transaction_id":"tx-new","reference":"OMW-25B7","status":"PENDING","amount":5,"asset":"USDT","network":"tron","receiver":{"yor_id":"OM2210","name":"Sara K."}}""")
-            fn == "admin_tx_list" -> if (!admin) err(403, "forbidden") else ok(if (confirmed) "[]" else """[{"id":"atx-1","reference":"OMW-24A1","kind":"CRYPTO_TRANSFER","asset":"USDT","network":"tron","amount":12.5,"status":"PENDING","created_at":"${ago(12)}","note":"Loyer","sender":{"name":"Amina Al Balushi","yor_id":"OM7731"},"receiver":{"name":"Sara Khalid","yor_id":"OM2210","has_email":true},"email":null}]""")
+            fn == "admin_tx_list" -> if (!admin) err(403, "forbidden") else ok(if (confirmed) "[]" else """[{"id":"atx-1","reference":"OMW-24A1","kind":"CRYPTO_TRANSFER","asset":"USDT","network":"tron","amount":12.5,"status":"PENDING","created_at":"${ago(12)}","note":"Loyer","paused":$paused,"sender":{"name":"Amina Al Balushi","yor_id":"OM7731"},"receiver":{"name":"Sara Khalid","yor_id":"OM2210","has_email":true},"email":null}]""")
+            fn == "admin_tx_pause" -> { paused = true; ok("""{"ok":true,"status":"PENDING","paused":true}""") }
             fn == "admin_tx_confirm" -> { val already = confirmed; confirmed = true; ok(if (already) """{"ok":true,"already":true,"id":"atx-1"}""" else """{"ok":true,"id":"atx-1","status":"CONFIRMED","email":true}""") }
             fn == "admin_crypto_withdrawal_list" -> ok("""[{"id":"cw-1","reference":"OMW-22C9","asset":"ETH","network":"ethereum","address":"0x52908400098527886E0F7030069857D2E4169EE7","amount":0.1,"fee":0.002,"status":"PROCESSING","created_at":"${ago(60 * 30)}","full_name":"Amina Al Balushi","yor_id":"OM7731"}]""")
             fn == "admin_withdrawal_list" -> ok("[]")

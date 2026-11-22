@@ -26,7 +26,7 @@ textarea{width:100%;min-height:76px;margin:0 0 12px;padding:12px;border:1px soli
 button.go{display:block;width:100%;min-height:52px;border:0;border-radius:16px;color:#fff;font:inherit;font-weight:800;font-size:17px;cursor:pointer;background:var(--sky);transition:transform .12s,opacity .12s}
 button.go:active{transform:scale(.975);opacity:.9}
 button.go[disabled]{opacity:.55;cursor:default;transform:none}
-.CONFIRM{background:var(--ok)}.REJECT{background:var(--bad)}.PAUSE{background:var(--warn)}
+button.go.CONFIRM{background:var(--ok)}button.go.REJECT{background:var(--bad)}button.go.PAUSE{background:var(--warn)}
 .msg{margin:14px 0 0;padding:12px 14px;border-radius:14px;font-weight:700}
 .msg.ok{background:#E6F8F0;color:#0F7A4E}.msg.err{background:#FDECEE;color:#A32B37}.msg.info{background:#EAF6FF;color:#1E6A93}
 a.app{display:block;margin-top:16px;text-align:center;color:var(--sky);font-weight:700;text-decoration:none}
@@ -81,7 +81,7 @@ a.app{display:block;margin-top:16px;text-align:center;color:var(--sky);font-weig
   function fmt(n, a) { var x = Number(n); return (isFinite(x) ? x.toLocaleString(lang === 'ar' ? 'ar-OM-u-nu-latn' : lang, { maximumFractionDigits: 8 }) : '') + ' ' + esc(a || ''); }
   function rows(t) {
     var d = [[T.f.ref, t.reference], [T.f.amount, fmt(t.amount, t.asset)], [T.f.from, t.sender], [T.f.to, t.receiver]];
-    if (t.network) d.push([T.f.net, t.network]);
+    if (t.network) d.push([T.f.net, ({ bitcoin: 'Bitcoin', litecoin: 'Litecoin', ethereum: 'Ethereum (ERC20)', bsc: 'BNB Smart Chain (BEP20)', polygon: 'Polygon', tron: 'TRON (TRC20)', solana: 'Solana', xrp: 'XRP Ledger' })[t.network] || t.network]);
     if (t.note) d.push([T.f.note, t.note]);
     if (t.created_at) { try { d.push([T.f.date, new Date(t.created_at).toLocaleString(lang === 'ar' ? 'ar-OM-u-nu-latn' : lang, { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Muscat' }) + ' (UTC+4)']); } catch (e) { /* ignore */ } }
     return '<dl>' + d.map(function (r) { return '<dt>' + esc(r[0]) + '</dt><dd dir="auto">' + (r[0] === T.f.amount ? r[1] : esc(r[1])) + '</dd>'; }).join('') + '</dl>';

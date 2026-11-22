@@ -39,18 +39,18 @@ Object.assign(TR.ar, { 'ad.search':'الاسم أو الهاتف أو البري
   'ad.e.invalid_tx_hash':'المعرّف لا يطابق صيغة الشبكة.','ad.e.tx_hash_already_used':'هذا المعرّف مستخدم في عملية سحب أخرى.','ad.e.reason_required':'اذكر سبباً (3 أحرف أو أكثر).','ad.e.generic':'فشل الإجراء.',
   'ad.wdOn':'السحب مفعّل','ad.wdOnD':'عند الإيقاف لا يُقبل أي طلب سحب جديد (مصرفي أو رقمي). لا تتغير الطلبات السابقة.','ad.dep':'عنوان الإيداع','ad.depNo':'غير مُعدّ — الإيداع مرفوض','ad.fee':'رسوم السحب',
   'ad.dyArchive':'DY (أرشيف)','ad.dyArchiveD':'مفتاح إيقاف التحويلات، أُزيل مع التحويلات. يُحتفظ بسجله.','ad.audit':'يُسجَّل كل إجراء في سجل التدقيق.' });
-Object.assign(TR.en, { 'tx.confAt':'Confirmed at','tx.new':'New transactions ({n}) — refresh','tx.confirm':'Confirm the transaction','tx.reject':'Refuse','tx.pending':'Pending','tx.confirmed':'Confirmed','tx.rejected':'Refused','tx.none':'No transaction waiting.',
+Object.assign(TR.en, { 'tx.confAt':'Confirmed at','tx.new':'New transactions ({n}) — refresh','tx.confirm':'Confirm the transaction','tx.reject':'Refuse','tx.pause':'Pause','tx.paused':'Paused','tx.pausedDone':'Transaction paused — still held, you can confirm or refuse it later','tx.pending':'Pending','tx.confirmed':'Confirmed','tx.rejected':'Refused','tx.none':'No transaction waiting.',
   'tx.from':'From','tx.to':'To','tx.at':'Confirmed on {t}','tx.done':'Transaction confirmed — recipient credited','tx.already':'Already confirmed — nothing was credited twice',
   'tx.mail.SENT':'E-mail sent {t}','tx.mail.wait':'E-mail queued: sent as soon as the e-mail service accepts it','tx.mail.none':'No e-mail address for the recipient','tx.mail.SKIPPED':'E-mail not sent',
-  'tx.rule':'One click: the recipient is credited, the exact time is recorded and ONE e-mail is sent to the recipient.' });
-Object.assign(TR.fr, { 'tx.confAt':'Heure de confirmation','tx.new':'Nouvelles transactions ({n}) — actualiser','tx.confirm':'Confirmer la transaction','tx.reject':'Refuser','tx.pending':'En attente','tx.confirmed':'Confirmées','tx.rejected':'Refusées','tx.none':'Aucune transaction en attente.',
+  'tx.rule':'One click: confirm, refuse or pause. Confirming credits the recipient, records the exact time and sends the confirmation e-mails. The same three buttons arrive in the e-mail sent to you for each new sending.' });
+Object.assign(TR.fr, { 'tx.confAt':'Heure de confirmation','tx.new':'Nouvelles transactions ({n}) — actualiser','tx.confirm':'Confirmer la transaction','tx.reject':'Refuser','tx.pause':'Mettre en pause','tx.paused':'En pause','tx.pausedDone':'Transaction mise en pause — le montant reste réservé, vous pourrez la confirmer ou la refuser','tx.pending':'En attente','tx.confirmed':'Confirmées','tx.rejected':'Refusées','tx.none':'Aucune transaction en attente.',
   'tx.from':'De','tx.to':'À','tx.at':'Confirmée le {t}','tx.done':'Transaction confirmée — destinataire crédité','tx.already':'Déjà confirmée — rien n’a été crédité deux fois',
   'tx.mail.SENT':'E-mail envoyé {t}','tx.mail.wait':'E-mail en file : envoyé dès que le service d’e-mail l’accepte','tx.mail.none':'Le destinataire n’a pas d’adresse e-mail','tx.mail.SKIPPED':'E-mail non envoyé',
-  'tx.rule':'Un clic : le destinataire est crédité, l’heure exacte est enregistrée et UN e-mail est envoyé au destinataire.' });
-Object.assign(TR.ar, { 'tx.confAt':'وقت التأكيد','tx.new':'معاملات جديدة ({n}) — تحديث','tx.confirm':'تأكيد المعاملة','tx.reject':'رفض','tx.pending':'قيد الانتظار','tx.confirmed':'المؤكدة','tx.rejected':'المرفوضة','tx.none':'لا توجد معاملات بانتظار التأكيد.',
+  'tx.rule':'Un clic : confirmer, refuser ou mettre en pause. Confirmer crédite le destinataire, enregistre l’heure exacte et envoie les e-mails de confirmation. Les trois mêmes boutons arrivent dans l’e-mail qui vous est envoyé pour chaque nouvel envoi.' });
+Object.assign(TR.ar, { 'tx.confAt':'وقت التأكيد','tx.new':'معاملات جديدة ({n}) — تحديث','tx.confirm':'تأكيد المعاملة','tx.reject':'رفض','tx.pause':'إيقاف مؤقت','tx.paused':'متوقفة مؤقتاً','tx.pausedDone':'تم إيقاف المعاملة مؤقتاً — يبقى المبلغ محجوزاً ويمكنك تأكيدها أو رفضها لاحقاً','tx.pending':'قيد الانتظار','tx.confirmed':'المؤكدة','tx.rejected':'المرفوضة','tx.none':'لا توجد معاملات بانتظار التأكيد.',
   'tx.from':'من','tx.to':'إلى','tx.at':'أُكدت في {t}','tx.done':'تم تأكيد المعاملة — أُضيف المبلغ للمستلم','tx.already':'مؤكدة مسبقاً — لم يُضف أي مبلغ مرتين',
   'tx.mail.SENT':'أُرسل البريد {t}','tx.mail.wait':'البريد في قائمة الانتظار: يُرسل فور قبول خدمة البريد له','tx.mail.none':'لا يملك المستلم بريداً إلكترونياً','tx.mail.SKIPPED':'لم يُرسل البريد',
-  'tx.rule':'نقرة واحدة: يُضاف المبلغ للمستلم ويُسجَّل الوقت الدقيق ويُرسل بريد واحد للمستلم.' });
+  'tx.rule':'نقرة واحدة: تأكيد أو رفض أو إيقاف مؤقت. التأكيد يُضيف المبلغ للمستلم ويسجّل الوقت الدقيق ويرسل رسائل التأكيد. الأزرار الثلاثة نفسها تصلك في البريد عن كل إرسال جديد.' });
 /* Admin Control is bilingual like the reference: Arabic first, English under it, whatever the language of the app */
 const bi = k => '<b>' + escapeHtml(TR.ar[k] || k) + '</b><small>' + escapeHtml(TR.en[k] || k) + '</small>';
 
@@ -139,12 +139,13 @@ const AdminDY = (() => {
   function txItem(x){
     const pending = x.status === 'PENDING';
     return '<article class="ad-item tx-item" data-tx-item="' + x.id + '"><div class="ad-row"><div class="ad-who"><b>' + escapeHtml(t('tx.from')) + ' ' + party(x.sender) + '</b><b>' + escapeHtml(t('tx.to')) + ' ' + party(x.receiver) + '</b></div>' +
-      '<div class="ad-amt ltr">' + amtOf(x) + chipSt(x.status) + '</div></div>' +
+      '<div class="ad-amt ltr">' + amtOf(x) + chipSt(x.status) + (pending && x.paused ? ' <span class="wd-chip s-pending">' + escapeHtml(t('tx.paused')) + '</span>' : '') + '</div></div>' +
       '<dl class="ad-dl"><div><dt>' + escapeHtml(t('wd.ref')) + '</dt><dd class="ltr">' + escapeHtml(x.reference || '') + '</dd></div><div><dt>' + escapeHtml(t('wd.date')) + '</dt><dd>' + escapeHtml(exact(x.created_at)) + '</dd></div>' +
       (x.network ? '<div><dt>' + escapeHtml(t('wd.network')) + '</dt><dd>' + escapeHtml((OMX_NETWORKS[x.network] || { name: x.network }).name) + '</dd></div>' : '') +
       (x.confirmed_at ? '<div><dt>' + escapeHtml(t('tx.confAt')) + '</dt><dd class="ltr">' + escapeHtml(exact(x.confirmed_at)) + '</dd></div>' : '') + '</dl>' +
       mailLine(x) +
       (pending ? '<div class="omx-btns"><button type="button" class="btn btn-primary tx-go" data-ad="t-confirm" data-id="' + x.id + '">' + icon('check', 18) + '<span>' + escapeHtml(t('tx.confirm')) + '</span></button>' +
+        (x.paused ? '' : '<button type="button" class="btn btn-secondary" data-ad="t-pause" data-id="' + x.id + '">' + escapeHtml(t('tx.pause')) + '</button>') +
         '<button type="button" class="btn btn-ghost" data-ad="t-reject" data-id="' + x.id + '">' + escapeHtml(t('tx.reject')) + '</button></div>' : '') + '</article>';
   }
   function secTxs(){
@@ -259,6 +260,7 @@ const AdminDY = (() => {
   async function act(a, id, b){
     const reload = async k => { await loadTab(k, true); if (S.tab === 'dash') await loadTab('dash', true); };
     if (a === 't-confirm') return confirmTx(id, b);
+    if (a === 't-pause'){ try { await rpc('admin_tx_pause', { p_tx: id }); toast(t('tx.pausedDone'), 'success'); } catch(e){ console.warn('[admin] pause refused', e); toast(errText(e), 'error'); } return reload('txs'); }
     if (a === 't-reject') return ask(t('tx.reject'), { label: t('ad.reason'), min: 3 }, async v => { await rpc('admin_tx_reject', { p_tx: id, p_reason: v }); await reload('txs'); });
     if (a === 'b-approve') ask(t('ad.approve'), null, async () => { await rpc('admin_withdrawal_decide', { p_id: id, p_approve: true, p_note: null }); await reload('wdBank'); });
     else if (a === 'b-reject') ask(t('ad.reject'), { label: t('ad.reason'), min: 3 }, async v => { await rpc('admin_withdrawal_decide', { p_id: id, p_approve: false, p_note: v }); await reload('wdBank'); });

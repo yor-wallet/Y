@@ -7,34 +7,34 @@
    L'écran ne montre jamais « reçu » ou « crédité » avant que le serveur l'ait fait ; il suit le statut réel (PENDING → CONFIRMED / REJECTED).
    ============================================================ */
 Object.assign(TR.en, {
-  'si.short':'Send','si.title':'Send to an OM Wallet user','si.lead':'Crypto to another OM Wallet account. Credited after confirmation by OM Wallet.',
+  'si.short':'Send','si.title':'Send to an OM Wallet user','si.lead':'Crypto to another OM Wallet account.',
   'si.to':'Recipient’s Wallet ID','si.toPh':'e.g. FRD-A1B2C3','si.found':'Recipient','si.nf':'No active OM Wallet account has this ID.','si.self':'This is your own Wallet ID.','si.looking':'Searching…',
   'si.asset':'Crypto to send','si.none':'No crypto balance to send','si.noneD':'You need an available crypto balance to send.','si.note':'Note (optional)',
-  'si.review':'Check your sending','si.go':'Send','si.rule':'The amount is reserved now and credited to the recipient only when OM Wallet confirms the transaction.',
-  'si.s.SUBMIT':'Recording your sending…','si.s.PENDING':'Awaiting confirmation by OM Wallet','si.s.CONFIRMED':'Credited to the recipient','si.s.REJECTED':'Refused — the amount was returned to your balance','si.s.FAILED':'Not sent',
-  'si.st.rec':'Recorded','si.st.wait':'Confirmation','si.st.done':'Credited','si.again':'Back to the form','si.done':'Back to Crypto',
+  'si.review':'Check your sending','si.go':'Send','si.rule':'The amount is set aside for this sending while it is in progress.',
+  'si.s.SUBMIT':'Recording your sending…','si.s.PENDING':'In progress','si.s.CONFIRMED':'Transfer confirmed','si.s.REJECTED':'Refused — the amount was returned to your balance','si.s.FAILED':'Not sent',
+  'si.st.rec':'Submitted','si.st.wait':'In progress','si.st.done':'Confirmed','si.again':'Back to the form','si.done':'Back to Crypto',
   'si.e.recipient_not_found':'No active OM Wallet account has this ID.','si.e.self_transfer':'You cannot send to yourself.','si.e.insufficient_balance':'Insufficient available balance.',
   'si.e.unsupported_asset_network':'This crypto is not available on this network.','si.e.pin_required':'Confirm with your code.','si.e.sender_inactive':'Your account cannot send.',
   'si.e.invalid_amount':'The amount is not valid.','si.e.unknown':'The sending could not be recorded.','si.e.uncertain':'No answer from the server. Check Activity before trying again: the same sending is never counted twice.'
 });
 Object.assign(TR.fr, {
-  'si.short':'Envoyer','si.title':'Envoyer à un utilisateur OM Wallet','si.lead':'Crypto vers un autre compte OM Wallet. Créditée après confirmation par OM Wallet.',
+  'si.short':'Envoyer','si.title':'Envoyer à un utilisateur OM Wallet','si.lead':'Crypto vers un autre compte OM Wallet.',
   'si.to':'Wallet ID du destinataire','si.toPh':'ex. FRD-A1B2C3','si.found':'Destinataire','si.nf':'Aucun compte OM Wallet actif n’a cet identifiant.','si.self':'C’est votre propre Wallet ID.','si.looking':'Recherche…',
   'si.asset':'Crypto à envoyer','si.none':'Aucun solde crypto à envoyer','si.noneD':'Un envoi nécessite un solde crypto disponible.','si.note':'Note (facultatif)',
-  'si.review':'Vérifiez votre envoi','si.go':'Envoyer','si.rule':'Le montant est réservé maintenant et crédité au destinataire seulement quand OM Wallet confirme la transaction.',
-  'si.s.SUBMIT':'Enregistrement de votre envoi…','si.s.PENDING':'En attente de confirmation par OM Wallet','si.s.CONFIRMED':'Crédité au destinataire','si.s.REJECTED':'Refusé — le montant est revenu sur votre solde','si.s.FAILED':'Non envoyé',
-  'si.st.rec':'Enregistré','si.st.wait':'Confirmation','si.st.done':'Crédité','si.again':'Retour au formulaire','si.done':'Retour à Crypto',
+  'si.review':'Vérifiez votre envoi','si.go':'Envoyer','si.rule':'Le montant est mis de côté pendant le traitement de cet envoi.',
+  'si.s.SUBMIT':'Enregistrement de votre envoi…','si.s.PENDING':'En cours','si.s.CONFIRMED':'Transfert confirmé','si.s.REJECTED':'Refusé — le montant est revenu sur votre solde','si.s.FAILED':'Non envoyé',
+  'si.st.rec':'Soumis','si.st.wait':'En cours','si.st.done':'Confirmé','si.again':'Retour au formulaire','si.done':'Retour à Crypto',
   'si.e.recipient_not_found':'Aucun compte OM Wallet actif n’a cet identifiant.','si.e.self_transfer':'Vous ne pouvez pas vous envoyer à vous-même.','si.e.insufficient_balance':'Solde disponible insuffisant.',
   'si.e.unsupported_asset_network':'Cette crypto n’est pas disponible sur ce réseau.','si.e.pin_required':'Confirmez avec votre code.','si.e.sender_inactive':'Votre compte ne peut pas envoyer.',
   'si.e.invalid_amount':'Le montant n’est pas valide.','si.e.unknown':'L’envoi n’a pas pu être enregistré.','si.e.uncertain':'Aucune réponse du serveur. Vérifiez l’Activité avant de réessayer : le même envoi n’est jamais compté deux fois.'
 });
 Object.assign(TR.ar, {
-  'si.short':'إرسال','si.title':'إرسال إلى مستخدم OM Wallet','si.lead':'عملات رقمية إلى حساب OM Wallet آخر. تُضاف بعد تأكيد OM Wallet.',
+  'si.short':'إرسال','si.title':'إرسال إلى مستخدم OM Wallet','si.lead':'عملات رقمية إلى حساب OM Wallet آخر.',
   'si.to':'معرّف Wallet ID للمستلم','si.toPh':'مثال FRD-A1B2C3','si.found':'المستلم','si.nf':'لا يوجد حساب OM Wallet نشط بهذا المعرّف.','si.self':'هذا معرّفك أنت.','si.looking':'جارٍ البحث…',
   'si.asset':'العملة المراد إرسالها','si.none':'لا يوجد رصيد رقمي للإرسال','si.noneD':'يتطلب الإرسال رصيداً رقمياً متاحاً.','si.note':'ملاحظة (اختياري)',
-  'si.review':'راجع عملية الإرسال','si.go':'إرسال','si.rule':'يُحجز المبلغ الآن ولا يُضاف إلى المستلم إلا بعد أن يؤكد OM Wallet المعاملة.',
-  'si.s.SUBMIT':'جارٍ تسجيل الإرسال…','si.s.PENDING':'بانتظار تأكيد OM Wallet','si.s.CONFIRMED':'أُضيف إلى حساب المستلم','si.s.REJECTED':'مرفوض — أُعيد المبلغ إلى رصيدك','si.s.FAILED':'لم يُرسل',
-  'si.st.rec':'تم التسجيل','si.st.wait':'التأكيد','si.st.done':'أُضيف','si.again':'العودة إلى النموذج','si.done':'العودة إلى العملات',
+  'si.review':'راجع عملية الإرسال','si.go':'إرسال','si.rule':'يُحجز المبلغ لهذا الإرسال أثناء المعالجة.',
+  'si.s.SUBMIT':'جارٍ تسجيل الإرسال…','si.s.PENDING':'قيد التنفيذ','si.s.CONFIRMED':'تم تأكيد التحويل','si.s.REJECTED':'مرفوض — أُعيد المبلغ إلى رصيدك','si.s.FAILED':'لم يُرسل',
+  'si.st.rec':'تم الإرسال','si.st.wait':'قيد التنفيذ','si.st.done':'تم التأكيد','si.again':'العودة إلى النموذج','si.done':'العودة إلى العملات',
   'si.e.recipient_not_found':'لا يوجد حساب OM Wallet نشط بهذا المعرّف.','si.e.self_transfer':'لا يمكنك الإرسال إلى نفسك.','si.e.insufficient_balance':'الرصيد المتاح غير كافٍ.',
   'si.e.unsupported_asset_network':'هذه العملة غير متاحة على هذه الشبكة.','si.e.pin_required':'أكّد برمزك.','si.e.sender_inactive':'لا يمكن لحسابك الإرسال.',
   'si.e.invalid_amount':'المبلغ غير صحيح.','si.e.unknown':'تعذّر تسجيل الإرسال.','si.e.uncertain':'لا يوجد رد من الخادم. تحقق من النشاط قبل إعادة المحاولة: لن يُحتسب الإرسال نفسه مرتين أبداً.'
@@ -145,7 +145,7 @@ const OMXSend = (() => {
       return '<li class="wd-step ' + c + '"' + (c === 'now' ? ' aria-current="step"' : '') + '><i aria-hidden="true"></i><span>' + escapeHtml(t(s)) + '</span></li>'; }).join('');
     const amt = r.asset ? omxQty(r.amount, r.asset) : '';
     return top(t('si.title')) + '<div class="screen-body omx-page wd-track"><section class="omx-card wd-hero s-' + (st === 'CONFIRMED' ? 'success' : fail ? 'failed' : 'pending') + '" aria-live="polite">' +
-        '<div class="wd-anim k-' + k + '" aria-hidden="true"><svg viewBox="0 0 80 80" width="96" height="96">' + g + '</svg></div><div class="wd-hamt ltr">' + escapeHtml(amt) + '</div><b>' + escapeHtml(t('si.s.' + st)) + '</b>' +
+        '<div class="wd-anim k-' + k + '" aria-hidden="true"><svg viewBox="0 0 80 80" width="96" height="96">' + g + '</svg></div><div class="wd-hamt ltr">' + escapeHtml(amt) + '</div><b>' + escapeHtml(t('si.s.' + st)) + '</b>' + (st === 'PENDING' || st === 'SUBMIT' ? '<div class="omx-prog" aria-hidden="true"><i></i><i></i><i></i></div>' : '') +
         (d.error ? '<p class="wd-msg">' + escapeHtml(d.error) + '</p>' : '') + '</section>' +
       (d.uncertain ? '' : '<ol class="wd-steps si-steps">' + steps + '</ol>') +
       '<section class="omx-card"><dl class="wd-sum">' + (r.name ? '<div><dt>' + escapeHtml(t('si.found')) + '</dt><dd dir="auto">' + escapeHtml(r.name) + ' <small class="ltr">' + escapeHtml(dispId(r.to)) + '</small></dd></div>' : '') +
@@ -172,7 +172,7 @@ const OMXSend = (() => {
           if (document.visibilityState === 'hidden' || R.current() !== 'send-internal-done') return;
           const before = liveStatus(); try { await AuthEngine.hydrateRuntime(); } catch(e){ return; }
           if (liveStatus() !== before && R.current() === 'send-internal-done') R.go('send-internal-done', { force: true });
-        }, 15000);
+        }, 5000);
         R.onLeave(() => clearInterval(S.pollT));
       }
     }

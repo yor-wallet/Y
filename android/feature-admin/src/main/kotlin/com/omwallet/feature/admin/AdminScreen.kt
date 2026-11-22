@@ -115,6 +115,15 @@ class AdminViewModel(private val g: OmGraph) : ViewModel() {
         _s.update { it.copy(toast = if (r.already) R.string.adm_already else R.string.adm_confirmed_toast) }
     }
     fun reject(t: AdminTx, reason: String) = act(t.id, "REJECTED", null) { g.admin.reject(t.id, reason) }
+    /* Pause is not final: the row stays actionable (Confirm / Refuse), only marked as paused */
+    fun pause(t: AdminTx) {
+        if (_s.value.busy != null) return
+        _s.update { it.copy(busy = t.id, actionError = null) }
+        viewModelScope.launch {
+            try { g.admin.pause(t.id); _s.update { st -> st.copy(busy = null, internal = st.internal.map { if (it.id == t.id) it.copy(paused = true) else it }, toast = R.string.adm_pause_toast) } }
+            catch (e: ApiException) { _s.update { it.copy(busy = null, actionError = t.id to e.code) } }
+        }
+    }
     fun cryptoProcess(w: CryptoWithdrawal) = act(w.id, "PROCESSING", null) { g.admin.cryptoProcess(w.id); reloadLater() }
     fun cryptoComplete(w: CryptoWithdrawal, hash: String) = act(w.id, "COMPLETED", null) { g.admin.cryptoComplete(w.id, hash) }
     fun cryptoReject(w: CryptoWithdrawal, reason: String) = act(w.id, "REJECTED", null) { g.admin.cryptoReject(w.id, reason) }
@@ -166,7 +175,7 @@ fun AdminScreen(onBack: () -> Unit) {
                                 AssetLogo(t.asset ?: "", 30.dp)
                                 Text(amountOf(t.amount, t.asset), style = MaterialTheme.typography.titleMedium, color = OmColors.Ink)
                             }
-                            StatusChip(stringResource(if (done == "CONFIRMED") R.string.st_internal_credited else if (done == "REJECTED") R.string.st_failed else R.string.st_internal_pending),
+                            StatusChip(stringResource(if (done == "CONFIRMED") R.string.st_confirmed else if (done == "REJECTED") R.string.st_failed else if (t.paused) R.string.adm_paused else R.string.adm_to_decide),
                                 if (done == "CONFIRMED") ChipTone.Success else if (done == "REJECTED") ChipTone.Failed else ChipTone.Pending)
                         }
                         Text(stringResource(R.string.adm_from_to, t.senderName ?: t.senderId ?: "—", t.receiverName ?: t.receiverId ?: "—"), style = MaterialTheme.typography.bodyMedium, color = OmColors.Ink)
@@ -174,9 +183,12 @@ fun AdminScreen(onBack: () -> Unit) {
                         t.note?.let { Text("“$it”", style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary) }
                         if (!t.receiverHasEmail) Text(stringResource(R.string.adm_no_email), style = MaterialTheme.typography.bodySmall, color = OmColors.Warning)
                         s.actionError?.takeIf { it.first == t.id }?.let { FieldError(errorText(it.second)) }
-                        if (done == null) Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                            OmPrimaryButton(stringResource(R.string.adm_confirm), Modifier.weight(1f), loading = s.busy == t.id, enabled = s.busy == null) { confirmTx = t }
-                            OmSecondaryButton(stringResource(R.string.adm_reject), Modifier.weight(1f), enabled = s.busy == null) { reasonFor = t.id to { r -> vm.reject(t, r) } }
+                        if (done == null) Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                            OmPrimaryButton(stringResource(R.string.adm_confirm), Modifier.fillMaxWidth(), loading = s.busy == t.id, enabled = s.busy == null) { confirmTx = t }
+                            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                if (!t.paused) OmSecondaryButton(stringResource(R.string.adm_pause), Modifier.weight(1f), enabled = s.busy == null) { vm.pause(t) }
+                                OmSecondaryButton(stringResource(R.string.adm_reject), Modifier.weight(1f), enabled = s.busy == null) { reasonFor = t.id to { r -> vm.reject(t, r) } }
+                            }
                         }
                     }
                 }

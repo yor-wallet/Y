@@ -65,6 +65,15 @@ const tab = (page, k) => page.click('#dy-control .adm-tabs [data-adm="' + k + '"
     await page.evaluate(() => sb.rpc('admin_tx_confirm', { p_tx: 'atx-1' }));          /* a late second confirmation */
     assert.equal(await page.evaluate(() => window.__txCredits['atx-1']), 12.5); assert.equal(await page.evaluate(() => window.__txMails['atx-1']), 1);
   });
+  await ok('transactions : « Mettre en pause » garde la transaction en attente (montant réservé) ; elle reste confirmable et refusable', async () => {
+    await page.click('#dy-control [data-ad-f="tx:PENDING"]'); await page.waitForSelector('#adm-main [data-tx-item="atx-2"] [data-ad="t-pause"]');
+    await page.click('#adm-main [data-tx-item="atx-2"] [data-ad="t-pause"]'); await wait(900);
+    assert.equal((await calls(page, 'admin_tx_pause')).length, 1);
+    assert.equal(await page.evaluate(() => window.__txAdm[1].status), 'PENDING'); assert.equal(await page.evaluate(() => window.__txAdm[1].paused), true);
+    const it = page.locator('#adm-main [data-tx-item="atx-2"]');
+    assert.match(await it.innerText(), /Paused|En pause/);
+    assert.equal(await it.locator('[data-ad="t-pause"]').count(), 0); assert.equal(await it.locator('[data-ad="t-confirm"]').count(), 1); assert.equal(await it.locator('[data-ad="t-reject"]').count(), 1);
+  });
   await ok('transactions : refus avec motif obligatoire', async () => {
     await page.click('#dy-control [data-ad-f="tx:PENDING"]'); await page.waitForSelector('#adm-main [data-tx-item="atx-2"] [data-ad="t-reject"]');
     await page.click('#adm-main [data-tx-item="atx-2"] [data-ad="t-reject"]'); await confirmSheet(page, 'Montant non justifié');

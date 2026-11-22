@@ -158,7 +158,15 @@
       p.notice_status = 'QUEUED'; p.notice_error = null; p._q = 2; return { ok: true }; },
     get_recipient_notice_status: function(){ return []; },
     /* 14.0.0 — withdrawals, behaving like the database functions */
-    get_receive_address: function(){ throw { message: 'deposit_address_unavailable', code: '22023' }; },
+    /* 14.3 — each account has its own real address per network (created by the server) + its saved QR code */
+    get_receive_address: function(a){
+      if (window.__noAddr) throw { message: 'deposit_address_unavailable', code: '22023' };
+      if (window.__addrPending && !window.__addrCreated) throw { message: 'address_pending', code: '22023' };
+      var m = { tron: 'TZ2nw5y4azp1wkY89kPTBqUPtRhCguWhjY', ethereum: '0x4d47e11a28A91C2F10da1d598EB1aA68E4a091E9', bsc: '0xa23b10Fb739c2840bbfb46BfAE32f899ACD5305c', polygon: '0x934Eb559c2D6A30988d71E9da900B178Fc4FBcbD', bitcoin: 'bc1qtnelzndaatzx2xna7a0jkzpcd852c0x2hej5s3', solana: 'E3ULfuYpNzLa6bKcBGCBH3fyxHSbRYHJAPFRqDfsyy4J', xrp: 'raKSBh4eAB42hQaUs5pGiG1eQQpNhGNtaC', litecoin: 'ltc1qjkr585rnlm9zydgkw699a2fc748gl99vpes2y7' };
+      return m[a.p_network] || null; },
+    my_deposit_addresses: function(){ return [{ network: 'tron', address: 'TZ2nw5y4azp1wkY89kPTBqUPtRhCguWhjY', qr_svg: '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><rect width="100%" height="100%" fill="white"/><rect x="2" y="2" width="6" height="6" fill="black"/></svg>' }]; },
+    admin_tx_pause: function(a){ adm(); var x = txAdm.filter(function(t){ return t.id === a.p_tx; })[0]; if (!x) throw { message: 'not_found' }; if (x.status !== 'PENDING') throw { message: 'invalid_state' };
+      if (x.paused) return { ok: true, already: true, status: 'PENDING', paused: true }; x.paused = true; window.__txPauses = (window.__txPauses || 0) + 1; return { ok: true, status: 'PENDING', paused: true }; },
     withdraw_overview: function(){ return { items: wdB.slice(), banks: [{ code: 'BMCT', en: 'Bank Muscat', fr: 'Bank Muscat', ar: 'بنك مسقط' }, { code: 'NBO', en: 'National Bank of Oman', fr: 'National Bank of Oman', ar: 'البنك الوطني العماني' }],
       available: acc().available_balance, reserved: acc().reserved_balance, min: 10, enabled: wdEnabled }; },
     withdraw_request: function(a){

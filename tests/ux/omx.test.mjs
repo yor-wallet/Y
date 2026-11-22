@@ -51,8 +51,19 @@ async function pin(page){ await page.waitForSelector('.ps #ps-dots', { timeout: 
     await page.evaluate(() => { OMX.state.cur = 'USDT'; R.go('asset', { force: true }); }); await wait(900);
     assert.match(await page.locator('#asset .omx-nets').innerText(), /0xdAC17F…831ec7/);
   });
-  await ok('dépôt : le serveur est interrogé ; sans adresse réelle -> message clair, aucune adresse, aucun QR', async () => {
+  await ok('dépôt : l’adresse personnelle du compte et son QR enregistré s’affichent (image, jamais du balisage)', async () => {
     await page.evaluate(() => { OMX.state.dep = { asset: null, net: null }; R.go('deposit'); }); await wait(800);
+    await page.click('#deposit [data-dep-asset="USDT"]'); await wait(400);
+    await page.click('#deposit [data-omx="dep-net"]'); await page.waitForSelector('.omx-sheet [data-net="tron"]');
+    await page.click('.omx-sheet [data-net="tron"]'); await wait(900);
+    assert.deepEqual((await calls(page, 'get_receive_address')).pop().args, { p_asset: 'USDT', p_network: 'tron' });
+    const txt = await page.locator('#omx-dep-res').innerText();
+    assert.match(txt, /TZ2nw5y4azp1wkY89kPTBqUPtRhCguWhjY/);
+    assert.equal(await page.locator('#omx-dep-res img.omx-qrsvg[src^="data:image/svg+xml"]').count(), 1);
+    assert.equal(await page.locator('#omx-dep-res .omx-qr svg').count(), 0);
+  });
+  await ok('dépôt : si le serveur n’a pas d’adresse -> message clair, aucune adresse, aucun QR', async () => {
+    await page.evaluate(() => { window.__noAddr = true; OMX.state.dep = { asset: null, net: null }; R.go('deposit', { force: true }); }); await wait(800);
     await page.click('#deposit [data-dep-asset="USDT"]'); await wait(400);
     await page.click('#deposit [data-omx="dep-net"]'); await page.waitForSelector('.omx-sheet [data-net="tron"]');
     await page.click('.omx-sheet [data-net="tron"]'); await wait(900);
@@ -60,6 +71,7 @@ async function pin(page){ await page.waitForSelector('.ps #ps-dots', { timeout: 
     const txt = await page.locator('#omx-dep-res').innerText();
     assert.match(txt, /Aucune adresse de dépôt/); assert.match(txt, /N’envoyez AUCUN fonds/);
     assert.equal(await page.locator('#deposit .omx-qr, #deposit .omx-addr').count(), 0);
+    await page.evaluate(() => { window.__noAddr = false; });
   });
   await ok('échange : indisponible, expliqué, aucun ordre possible', async () => {
     await page.evaluate(() => R.go('exchange')); await wait(400);
@@ -111,9 +123,9 @@ async function pin(page){ await page.waitForSelector('.ps #ps-dots', { timeout: 
     const c = (await calls(page, 'crypto_withdraw_request'))[0].args;
     assert.equal(c.p_pin_grant, 'grant-1'); assert.equal(c.p_amount, 50); assert.equal(c.p_network, 'tron'); assert.ok(c.p_idempotency_key && c.p_idempotency_key.length >= 16);
   });
-  await ok('suivi : statut réel « En attente », étape de vérification en cours, rien de « confirmé »', async () => {
+  await ok('suivi : l’utilisateur voit seulement « En cours » (animé), rien sur l’administrateur, rien de « confirmé »', async () => {
     const txt = await page.locator('#withdraw-track').innerText();
-    assert.match(txt, /En attente de vérification/); assert.doesNotMatch(txt, /Confirmé sur la blockchain/);
+    assert.match(txt, /En cours/); assert.doesNotMatch(txt, /Confirmé sur la blockchain|vérification|administrateur|équipe/i); assert.equal(await page.locator('#withdraw-track .omx-prog i').count(), 3);
     assert.equal(await page.locator('#withdraw-track .wd-step.now').count(), 1);
     assert.equal(await page.locator('#withdraw-track .wd-step.ok').count(), 1);
     assert.equal(await page.locator('#withdraw-track .wd-anim.k-wait').count(), 1);
@@ -174,11 +186,11 @@ async function pin(page){ await page.waitForSelector('.ps #ps-dots', { timeout: 
     const c = (await calls(page, 'transfer_crypto'))[0].args;
     assert.equal(c.p_to_yor_id, 'YOR-ZZ1122'); assert.equal(c.p_asset, 'USDT'); assert.equal(c.p_network, 'tron'); assert.equal(c.p_amount, 10); assert.equal(c.p_pin_grant, 'grant-1'); assert.ok(c.p_idempotency_key.length >= 16);
     const txt = await page.locator('#send-internal-done').innerText();
-    assert.match(txt, /En attente de confirmation par OM Wallet/); assert.match(txt, /OMT48215555/); assert.doesNotMatch(txt, /Crédité au destinataire/);
+    assert.match(txt, /En cours/); assert.match(txt, /OMT48215555/); assert.doesNotMatch(txt, /Transfert confirmé|Crédité|confirmation|administrateur|OM Wallet confirme/i); assert.equal(await page.locator('#send-internal-done .omx-prog i').count(), 3);
   });
-  await ok('confirmation par l’administrateur : l’écran et l’historique passent à « crédité »', async () => {
+  await ok('quand l’administrateur confirme : l’écran et l’historique passent à « Transfert confirmé »', async () => {
     await page.evaluate(async () => { window.__txs()[0].status = 'CONFIRMED'; await AuthEngine.hydrateRuntime(); R.go('send-internal-done', { force: true }); }); await wait(600);
-    assert.match(await page.locator('#send-internal-done').innerText(), /Crédité au destinataire/);
+    assert.match(await page.locator('#send-internal-done').innerText(), /Transfert confirmé/); assert.equal(await page.locator('#send-internal-done .omx-prog').count(), 0);
     await page.evaluate(() => R.go('history', { force: true })); await wait(700);
     assert.match(await page.locator('#history').innerText(), /Salim Al Harthy/);
   });

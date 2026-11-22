@@ -22,8 +22,8 @@ Object.assign(TR.en, {
   'wd.e.insufficient_balance':'Insufficient available balance.','wd.e.invalid_address':'This address is not valid for the network.','wd.e.internal_address_not_allowed':'This address belongs to OM Wallet. Choose an external address.','wd.e.invalid_memo':'The tag is not valid.',
   'wd.e.invalid_amount':'The amount is not valid.','wd.e.unsupported_asset_network':'This crypto is not available on this network.','wd.e.sender_inactive':'Your account cannot make withdrawals.','wd.e.pin_required':'Confirm with your code.','wd.e.invalid_state':'This request can no longer be changed.',
   'wd.e.unknown':'The withdrawal could not be sent.','wd.e.uncertain':'No answer from the server. Check your withdrawals before trying again: the same request will never be counted twice.',
-  'wd.st.prep':'Preparation','wd.st.verif':'Verification','wd.st.proc':'Processing','wd.st.wait':'Pending','wd.st.done':'Confirmation','wd.st.fail':'Failed','wd.st.cancel':'Cancelled',
-  'wd.s.SUBMIT':'Preparing your request…','wd.s.PENDING':'Pending verification by our team','wd.s.APPROVED':'Approved — bank transfer in progress','wd.s.PROCESSING':'Processing — the payment is being sent on the blockchain',
+  'wd.st.prep':'Submitted','wd.st.verif':'','wd.st.proc':'In progress','wd.st.wait':'In progress','wd.st.done':'Completed','wd.st.fail':'Failed','wd.st.cancel':'Cancelled',
+  'wd.s.SUBMIT':'Preparing your request…','wd.s.PENDING':'In progress','wd.s.APPROVED':'In progress','wd.s.PROCESSING':'In progress',
   'wd.s.PAID':'Paid to your bank account','wd.s.COMPLETED':'Confirmed on the blockchain','wd.s.REJECTED':'Refused — the amount was returned to your balance','wd.s.CANCELLED':'Cancelled — the amount was returned to your balance','wd.s.FAILED':'Not sent','wd.s.UNKNOWN':'Status unknown',
   'wd.ref':'Reference','wd.date':'Date','wd.hash':'Blockchain hash','wd.explorer':'View on the explorer','wd.bankRef':'Bank reference','wd.note':'Reason','wd.cancel':'Cancel the withdrawal','wd.cancelQ':'Cancel this withdrawal? The amount returns to your available balance.','wd.cancelled':'Withdrawal cancelled',
   'wd.receipt':'Receipt (PDF)','wd.share':'Share','wd.back':'Back to withdrawals','wd.again':'Try again','wd.title.bank':'Bank withdrawal','wd.title.crypto':'Crypto withdrawal','wd.yes':'Yes, cancel','wd.no':'Keep it',
@@ -45,8 +45,8 @@ Object.assign(TR.fr, {
   'wd.e.insufficient_balance':'Solde disponible insuffisant.','wd.e.invalid_address':'Cette adresse n’est pas valide pour le réseau.','wd.e.internal_address_not_allowed':'Cette adresse appartient à OM Wallet. Choisissez une adresse externe.','wd.e.invalid_memo':'Le tag n’est pas valide.',
   'wd.e.invalid_amount':'Le montant n’est pas valide.','wd.e.unsupported_asset_network':'Cette crypto n’est pas disponible sur ce réseau.','wd.e.sender_inactive':'Votre compte ne peut pas effectuer de retrait.','wd.e.pin_required':'Confirmez avec votre code.','wd.e.invalid_state':'Cette demande ne peut plus être modifiée.',
   'wd.e.unknown':'Le retrait n’a pas pu être envoyé.','wd.e.uncertain':'Aucune réponse du serveur. Vérifiez vos retraits avant de réessayer : la même demande ne sera jamais comptée deux fois.',
-  'wd.st.prep':'Préparation','wd.st.verif':'Vérification','wd.st.proc':'Traitement','wd.st.wait':'En attente','wd.st.done':'Confirmation','wd.st.fail':'Échec','wd.st.cancel':'Annulé',
-  'wd.s.SUBMIT':'Préparation de votre demande…','wd.s.PENDING':'En attente de vérification par notre équipe','wd.s.APPROVED':'Approuvé — virement bancaire en cours','wd.s.PROCESSING':'Traitement — le paiement est en cours d’envoi sur la blockchain',
+  'wd.st.prep':'Soumis','wd.st.verif':'','wd.st.proc':'En cours','wd.st.wait':'En cours','wd.st.done':'Terminé','wd.st.fail':'Échec','wd.st.cancel':'Annulé',
+  'wd.s.SUBMIT':'Préparation de votre demande…','wd.s.PENDING':'En cours','wd.s.APPROVED':'En cours','wd.s.PROCESSING':'En cours',
   'wd.s.PAID':'Payé sur votre compte bancaire','wd.s.COMPLETED':'Confirmé sur la blockchain','wd.s.REJECTED':'Refusé — le montant a été restitué sur votre solde','wd.s.CANCELLED':'Annulé — le montant a été restitué sur votre solde','wd.s.FAILED':'Non envoyé','wd.s.UNKNOWN':'Statut inconnu',
   'wd.ref':'Référence','wd.date':'Date','wd.hash':'Hash blockchain','wd.explorer':'Voir sur l’explorateur','wd.bankRef':'Référence bancaire','wd.note':'Motif','wd.cancel':'Annuler le retrait','wd.cancelQ':'Annuler ce retrait ? Le montant revient sur votre solde disponible.','wd.cancelled':'Retrait annulé',
   'wd.receipt':'Reçu (PDF)','wd.share':'Partager','wd.back':'Retour aux retraits','wd.again':'Réessayer','wd.title.bank':'Retrait bancaire','wd.title.crypto':'Retrait crypto','wd.yes':'Oui, annuler','wd.no':'Le garder',
@@ -68,8 +68,8 @@ Object.assign(TR.ar, {
   'wd.e.insufficient_balance':'الرصيد المتاح غير كافٍ.','wd.e.invalid_address':'هذا العنوان غير صالح لهذه الشبكة.','wd.e.internal_address_not_allowed':'هذا العنوان تابع لـ OM Wallet. اختر عنواناً خارجياً.','wd.e.invalid_memo':'الوسم غير صحيح.',
   'wd.e.invalid_amount':'المبلغ غير صحيح.','wd.e.unsupported_asset_network':'هذه العملة غير متاحة على هذه الشبكة.','wd.e.sender_inactive':'لا يمكن لحسابك إجراء عمليات سحب.','wd.e.pin_required':'أكّد برمزك.','wd.e.invalid_state':'لم يعد بالإمكان تعديل هذا الطلب.',
   'wd.e.unknown':'تعذّر إرسال طلب السحب.','wd.e.uncertain':'لا يوجد رد من الخادم. تحقق من عمليات السحب قبل إعادة المحاولة: لن يُحتسب الطلب نفسه مرتين أبداً.',
-  'wd.st.prep':'التحضير','wd.st.verif':'التحقق','wd.st.proc':'المعالجة','wd.st.wait':'قيد الانتظار','wd.st.done':'التأكيد','wd.st.fail':'فشل','wd.st.cancel':'أُلغي',
-  'wd.s.SUBMIT':'جارٍ تحضير طلبك…','wd.s.PENDING':'بانتظار تحقق فريقنا','wd.s.APPROVED':'تمت الموافقة — التحويل المصرفي جارٍ','wd.s.PROCESSING':'قيد المعالجة — يُرسل الدفع على البلوكشين',
+  'wd.st.prep':'تم الإرسال','wd.st.verif':'','wd.st.proc':'قيد التنفيذ','wd.st.wait':'قيد التنفيذ','wd.st.done':'مكتمل','wd.st.fail':'فشل','wd.st.cancel':'أُلغي',
+  'wd.s.SUBMIT':'جارٍ تحضير طلبك…','wd.s.PENDING':'قيد التنفيذ','wd.s.APPROVED':'قيد التنفيذ','wd.s.PROCESSING':'قيد التنفيذ',
   'wd.s.PAID':'تم الدفع إلى حسابك المصرفي','wd.s.COMPLETED':'مؤكد على البلوكشين','wd.s.REJECTED':'مرفوض — أُعيد المبلغ إلى رصيدك','wd.s.CANCELLED':'أُلغي — أُعيد المبلغ إلى رصيدك','wd.s.FAILED':'لم يُرسل','wd.s.UNKNOWN':'الحالة غير معروفة',
   'wd.ref':'المرجع','wd.date':'التاريخ','wd.hash':'معرّف المعاملة على البلوكشين','wd.explorer':'عرض في المستكشف','wd.bankRef':'المرجع المصرفي','wd.note':'السبب','wd.cancel':'إلغاء السحب','wd.cancelQ':'إلغاء هذا السحب؟ يعود المبلغ إلى رصيدك المتاح.','wd.cancelled':'أُلغي السحب',
   'wd.receipt':'الإيصال (PDF)','wd.share':'مشاركة','wd.back':'العودة إلى عمليات السحب','wd.again':'إعادة المحاولة','wd.title.bank':'سحب مصرفي','wd.title.crypto':'سحب رقمي','wd.yes':'نعم، إلغاء','wd.no':'الإبقاء عليه',
@@ -279,16 +279,16 @@ const OMXWithdraw = (() => {
   }
   function stages(kind, st){
     /* the steps of a withdrawal and where the REAL status is; nothing advances by itself */
-    const steps = ['prep', 'verif', 'proc', 'done'];
-    const at = { SUBMIT: 0, PENDING: 1, APPROVED: 2, PROCESSING: 2, PAID: 3, COMPLETED: 3 }[st];
+    const steps = ['prep', 'wait', 'done'];                  /* what the person sees: submitted → in progress → completed (nothing about who handles it) */
+    const at = { SUBMIT: 0, PENDING: 1, APPROVED: 1, PROCESSING: 1, PAID: 2, COMPLETED: 2 }[st];
     const fail = st === 'REJECTED' || st === 'CANCELLED' || st === 'FAILED';
     const failAt = st === 'FAILED' ? 0 : 1;
     return '<ol class="wd-steps" aria-label="' + escapeHtml(t('wd.mine')) + '">' + steps.map((s, i) => {
       let c = 'todo';
       if (fail){ c = i < failAt ? 'ok' : i === failAt ? 'ko' : 'todo'; }
-      else if (at != null){ c = i < at ? 'ok' : i === at ? (i === 3 ? 'ok' : 'now') : 'todo'; }
-      const lbl = fail && i === failAt ? (st === 'CANCELLED' ? 'wd.st.cancel' : 'wd.st.fail') : (i === 1 && c === 'now' ? 'wd.st.wait' : 'wd.st.' + s);
-      return '<li class="wd-step ' + c + '"' + (c === 'now' ? ' aria-current="step"' : '') + '><i aria-hidden="true"></i><span>' + escapeHtml(t(lbl)) + (i === 1 && c === 'now' ? '<small>' + escapeHtml(t('wd.st.verif')) + '</small>' : '') + '</span></li>';
+      else if (at != null){ c = i < at ? 'ok' : i === at ? (i === 2 ? 'ok' : 'now') : 'todo'; }
+      const lbl = fail && i === failAt ? (st === 'CANCELLED' ? 'wd.st.cancel' : 'wd.st.fail') : 'wd.st.' + s;
+      return '<li class="wd-step ' + c + '"' + (c === 'now' ? ' aria-current="step"' : '') + '><i aria-hidden="true"></i><span>' + escapeHtml(t(lbl)) + '</span></li>';
     }).join('') + '</ol>';
   }
   function anim(st){
@@ -334,7 +334,7 @@ const OMXWithdraw = (() => {
     const exp = !bank && it.tx_hash && OMX_NETWORKS[it.network] && OMX_NETWORKS[it.network].tx ? OMX_NETWORKS[it.network].tx.replace('{h}', encodeURIComponent(it.tx_hash)) : null;
     const upd = S.at ? new Date(S.at).toLocaleTimeString(LANG === 'ar' ? 'ar-OM-u-nu-latn' : LANG === 'fr' ? 'fr-FR' : 'en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '';
     return top(t(bank ? 'wd.title.bank' : 'wd.title.crypto')) + '<div class="screen-body omx-page wd-track">' +
-      '<section class="omx-card wd-hero s-' + stateOf(st) + '" aria-live="polite">' + anim(st) + '<div class="wd-hamt ltr">' + amt + '</div><b>' + escapeHtml(t('wd.s.' + st) || st) + '</b>' + (upd ? '<small class="ltr">' + escapeHtml(tf('wd.updated', { t: upd })) + '</small>' : '') + '</section>' +
+      '<section class="omx-card wd-hero s-' + stateOf(st) + '" aria-live="polite">' + anim(st) + '<div class="wd-hamt ltr">' + amt + '</div><b>' + escapeHtml(t('wd.s.' + st) || st) + '</b>' + (st === 'PENDING' || st === 'APPROVED' || st === 'PROCESSING' ? '<div class="omx-prog" aria-hidden="true"><i></i><i></i><i></i></div>' : '') + (upd ? '<small class="ltr">' + escapeHtml(tf('wd.updated', { t: upd })) + '</small>' : '') + '</section>' +
       stages(tr.kind, st) + '<section class="omx-card"><dl class="wd-sum">' + rows + '</dl></section>' +
       '<div class="omx-btns">' + (exp ? '<a class="btn btn-secondary" href="' + escapeHtml(exp) + '" target="_blank" rel="noopener noreferrer">' + icon('globe', 18) + '<span>' + escapeHtml(t('wd.explorer')) + '</span></a>' : '') +
         '<button class="btn btn-secondary" data-wd="pdf">' + icon('download', 18) + '<span>' + escapeHtml(t('wd.receipt')) + '</span></button><button class="btn btn-secondary" data-wd="share">' + icon('share', 18) + '<span>' + escapeHtml(t('wd.share')) + '</span></button></div>' +
