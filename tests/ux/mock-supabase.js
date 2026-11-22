@@ -101,7 +101,7 @@
     { id: 'atx-2', reference: 'OMT48214001', kind: 'CRYPTO_TRANSFER', asset: 'USDT', network: 'tron', amount: 40, status: 'PENDING', created_at: new Date(NOW - 5 * 60e3).toISOString(), confirmed_at: null,
       sender: { name: 'Khalid Al Rawahi', yor_id: 'YOR-KK5566', phone: null }, receiver: { name: 'Noor Al Lawati', yor_id: 'YOR-NN7788', phone: null, has_email: false }, email: null }
   ];
-  window.__txAdm = txAdm; window.__txCredits = {}; window.__txMails = {};
+  window.__txAdm = txAdm; window.__txs = function(){ return txs; }; window.__txCredits = {}; window.__txMails = {};
   var rpcs = {
     dy_status: function(){ return { enabled: dyS.enabled, updatedAt: dyS.updatedAt }; },
     admin_console_stats: function(){ if (!FX.admin) throw { message: 'forbidden', code: '42501' }; return { users: 21, transfers_total: 220, transactions_today: 2, balance_omr: 1284.5 }; },
@@ -114,7 +114,16 @@
     pin_status: function(){ return { has_pin: true, locked: false }; },
     verify_pin: function(){ if (window.__dyFlipOnPin) dyS.enabled = true; return { ok: true, grant: 'grant-1' }; },
     set_pin: function(){ return { ok: true }; },
-    find_user_by_yor_id: function(){ return [{ yor_id: 'YOR-ZZ1122', display_name: 'Salim Al Harthy', country: 'OM', photo: null }]; },
+    find_user_by_yor_id: function(a){ return String(a && a.p_yor_id || '').toUpperCase() === 'YOR-ZZ1122' ? [{ yor_id: 'YOR-ZZ1122', display_name: 'Salim Al Harthy', country: 'OM', photo: null }] : []; },
+    /* 14.2 — internal crypto send: recorded PENDING (amount reserved), credited only when the administrator confirms */
+    transfer_crypto: function(a){
+      if (!a.p_pin_grant) throw { message: 'pin_required', code: '42501' };
+      if (String(a.p_to_yor_id).toUpperCase() !== 'YOR-ZZ1122') throw { message: 'recipient_not_found', code: 'P0002' };
+      var w = tables.crypto_wallets.filter(function(x){ return x.asset === a.p_asset && x.network === a.p_network; })[0];
+      if (!w || w.available_balance < Number(a.p_amount)) throw { message: 'insufficient_balance', code: '23514' };
+      w.available_balance -= Number(a.p_amount); w.locked_balance = (w.locked_balance || 0) + Number(a.p_amount);
+      txs.unshift(tx(0, { id: 'tx-si1', reference: 'OMT48215555', kind: 'CRYPTO_TRANSFER', direction: 'OUT', status: 'PENDING', asset: a.p_asset, network: a.p_network, amount: Number(a.p_amount), total: Number(a.p_amount), counterparty_name: 'Salim Al Harthy', meta: { confirm: 'ADMIN' } }));
+      return { ok: true, transaction_id: 'tx-si1', reference: 'OMT48215555', status: 'PENDING', amount: Number(a.p_amount), asset: a.p_asset, network: a.p_network, receiver: { yor_id: 'YOR-ZZ1122', name: 'Salim Al Harthy' } }; },
     transfer_fiat: function(){ if (dyS.enabled) return dyBlock(); return { ok: true }; },
     fiat_send_external: function(a){
       if (dyS.enabled) return dyBlock();

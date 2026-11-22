@@ -77,7 +77,7 @@ const AuthEngine = (() => {
     } catch(e){ console.warn('realtime unavailable', e); }
   }
   function onLive(n){
-    if (n && (n.type === 'TRANSFER_RECEIVED' || n.type === 'DEPOSIT') && Runtime.settings && Runtime.settings.notifications !== false){
+    if (n && (n.type === 'TRANSFER_RECEIVED' || n.type === 'CRYPTO_RECEIVED' || n.type === 'DEPOSIT') && Runtime.settings && Runtime.settings.notifications !== false){
       InAppNotif.showCall({ title: n.title, message: n.message, status:'success' });
     }
     clearTimeout(refreshTimer);
@@ -85,7 +85,7 @@ const AuthEngine = (() => {
       try {
         await hydrateRuntime();
         const cur = R.current();
-        if (['home','history','notifications'].indexOf(cur) !== -1) R.go(cur, { force:true });
+        if (['home','history','notifications','wallet','send-internal-done'].indexOf(cur) !== -1) R.go(cur, { force:true });   /* 14.2: balances and history refresh at once when OM Wallet confirms */
       } catch(e){}
     }, 350);
   }

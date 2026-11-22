@@ -173,7 +173,7 @@ const OMX = (() => {
     const hs = holdings(), held = new Set(hs.map(h => h.sym)), hide = !!Runtime.hideBalance, tt = totals();
     return top(t('omx.crypto'), false) + '<div class="screen-body omx-page">' +
       '<section class="omx-card omx-total sm"><div class="omx-tl"><span>' + escapeHtml(t('omx.total')) + '</span></div><div class="omx-tv ltr">' + escapeHtml(hide ? '••••••' : omxUsd(tt.usd, { dp: 2 })) + '</div>' +
-        '<div class="omx-acts mini">' + ['deposit:receive:omx.deposit', 'withdraw:download:omx.withdraw', 'exchange:swap:omx.exchange'].map(x => { const s = x.split(':'); return '<button class="omx-act" data-nav="' + s[0] + '"><i>' + icon(s[1], 22) + '</i><span>' + escapeHtml(t(s[2])) + '</span></button>'; }).join('') + '</div></section>' +
+        '<div class="omx-acts mini">' + ['deposit:receive:omx.deposit', 'send-internal:send:si.short', 'withdraw:download:omx.withdraw', 'exchange:swap:omx.exchange'].map(x => { const s = x.split(':'); return '<button class="omx-act" data-nav="' + s[0] + '"><i>' + icon(s[1], 22) + '</i><span>' + escapeHtml(t(s[2])) + '</span></button>'; }).join('') + '</div></section>' +
       '<section class="omx-card omx-sec"><div class="omx-sh"><h2>' + escapeHtml(t('omx.yourAssets')) + '</h2></div>' +
         (hs.length ? '<div class="omx-list">' + hs.map(h => assetRow(omxAsset(h.sym) || { sym: h.sym, name: h.sym }, { qty: h.qty, mask: hide })).join('') + '</div>'
           : '<div class="omx-empty">' + icon('crypto', 30) + '<b>' + escapeHtml(t('omx.noAssets')) + '</b><p>' + escapeHtml(t('omx.noAssetsD')) + '</p></div>') + '</section>' +

@@ -42,7 +42,7 @@ html[dir="rtl"] .omx-tv{text-align:right}
 
 /* ---------- actions ---------- */
 .omx-acts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-.omx-acts.mini{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:12px}
+.omx-acts.mini{grid-template-columns:repeat(4,minmax(0,1fr));margin-top:12px;gap:8px}
 .omx-acts.two{grid-template-columns:repeat(2,minmax(0,1fr))}
 .omx-act{display:flex;flex-direction:column;align-items:center;gap:7px;padding:12px 4px;border-radius:22px;background:var(--om-glass);-webkit-backdrop-filter:var(--om-blur);backdrop-filter:var(--om-blur);border:1px solid var(--om-border-glass);box-shadow:var(--om-shadow);color:var(--om-text);font:600 13px/17px var(--font);cursor:pointer;min-height:92px;transition:transform var(--om-t-tap) var(--om-ease),background-color var(--om-t-move) var(--om-ease)}
 .omx-act i{display:grid;place-items:center;width:48px;height:48px;border-radius:17px;background:linear-gradient(145deg,#BFE8FF,#78C9F4);color:#102A43;font-style:normal}
@@ -327,3 +327,8 @@ html:root body .tx-row .item-right{flex:none;display:flex;align-items:center;gap
 .tx-mail.ok{color:var(--omx-up)}.tx-mail.wait{color:#B07300}.tx-mail.no{color:var(--om-text-2)}
 .tx-go{min-height:50px}
 .tx-new{display:block;width:100%;min-height:44px;margin:0 0 4px;border:1px solid rgba(54,158,219,.35);border-radius:16px;background:rgba(120,201,244,.18);color:var(--om-sky-accent);font:700 14px/20px var(--font);cursor:pointer}
+/* 14.2 — internal send: the recipient found by the server */
+.si-who{display:flex;align-items:center;gap:8px;margin-top:8px;padding:10px 12px;border-radius:14px;background:rgba(20,166,96,.1);color:var(--om-text);font:600 14px/19px var(--font)}
+.si-who svg{color:var(--omx-up);flex:none}.si-who span{color:var(--om-text-2);font-weight:500}.si-who b{unicode-bidi:plaintext}
+.si-steps{grid-template-columns:repeat(3,minmax(0,1fr))}
+.omx-acts.mini .omx-act span{font-size:12px}

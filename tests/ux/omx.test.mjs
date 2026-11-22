@@ -152,5 +152,38 @@ async function pin(page){ await page.waitForSelector('.ps #ps-dots', { timeout: 
   await ok('no page errors', async () => assert.deepEqual(logs, []));
   await ctx.close();
 }
+{
+  const { ctx, page, logs } = await openApp(browser, url, { lang: 'fr', settle: 900 });
+  console.log('\n[envoi interne — confirmé par l’administrateur]');
+  await ok('envoi : destinataire trouvé par le serveur, contrôles, code PIN, enregistré EN ATTENTE (jamais « crédité »)', async () => {
+    await page.evaluate(() => R.go('wallet')); await wait(700);
+    await page.click('#wallet [data-nav="send-internal"]'); await page.waitForSelector('#send-internal.active #si-to');
+    await page.fill('#si-to', 'FRD-NOBODY'); await page.dispatchEvent('#si-to', 'blur'); await wait(700);
+    assert.match(await page.locator('#si-e-to').innerText(), /Aucun compte OM Wallet/);
+    await page.fill('#si-to', 'FRD-ZZ1122'); await page.dispatchEvent('#si-to', 'blur'); await wait(700);
+    assert.match(await page.locator('#si-who').innerText(), /Salim Al Harthy/);
+    await page.click('[data-si-src="USDT/tron"]'); await wait(500);
+    await page.fill('#si-to', 'FRD-ZZ1122'); await page.dispatchEvent('#si-to', 'blur'); await wait(600);
+    await page.fill('#si-amt', '300'); await page.click('#si-next'); await wait(500);
+    assert.match(await page.locator('#si-e-amt').innerText(), /dépassent/);
+    await page.fill('#si-amt', '10'); await wait(900); await page.click('#si-next');
+    await page.waitForSelector('#send-internal-review.active #si-go');
+    assert.match(await page.locator('#send-internal-review').innerText(), /Salim Al Harthy[\s\S]*FRD-ZZ1122/);
+    await page.click('#si-go'); await pin(page);
+    await page.waitForSelector('#send-internal-done.active .si-steps', { timeout: 8000 }); await wait(700);
+    const c = (await calls(page, 'transfer_crypto'))[0].args;
+    assert.equal(c.p_to_yor_id, 'YOR-ZZ1122'); assert.equal(c.p_asset, 'USDT'); assert.equal(c.p_network, 'tron'); assert.equal(c.p_amount, 10); assert.equal(c.p_pin_grant, 'grant-1'); assert.ok(c.p_idempotency_key.length >= 16);
+    const txt = await page.locator('#send-internal-done').innerText();
+    assert.match(txt, /En attente de confirmation par OM Wallet/); assert.match(txt, /OMT48215555/); assert.doesNotMatch(txt, /Crédité au destinataire/);
+  });
+  await ok('confirmation par l’administrateur : l’écran et l’historique passent à « crédité »', async () => {
+    await page.evaluate(async () => { window.__txs()[0].status = 'CONFIRMED'; await AuthEngine.hydrateRuntime(); R.go('send-internal-done', { force: true }); }); await wait(600);
+    assert.match(await page.locator('#send-internal-done').innerText(), /Crédité au destinataire/);
+    await page.evaluate(() => R.go('history', { force: true })); await wait(700);
+    assert.match(await page.locator('#history').innerText(), /Salim Al Harthy/);
+  });
+  await ok('no page errors', async () => assert.deepEqual(logs, []));
+  await ctx.close();
+}
 await browser.close(); srv.close();
 console.log(failed ? '\n' + failed + ' FAILED' : '\nALL PASSED'); process.exit(failed ? 1 : 0);

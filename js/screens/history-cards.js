@@ -7,7 +7,7 @@
 const isCryptoTx = x => !!(x.asset || String(x.type || '').startsWith('CRYPTO'));
 /* 12.12.0 : with the crypto section hidden, crypto operations are not listed (home, history). Money transfers only. */
 /* 14.0.0: the real crypto withdrawals (flow CRYPTO_WITHDRAWAL, paid by an administrator) are listed; the old simulated crypto operations stay hidden */
-function visibleTransactions(txs){ return FEATURES.crypto ? txs : (txs || []).filter(x => !isCryptoTx(x) || x.flow === 'CRYPTO_WITHDRAWAL'); }
+function visibleTransactions(txs){ return FEATURES.crypto ? txs : (txs || []).filter(x => !isCryptoTx(x) || x.flow === 'CRYPTO_WITHDRAWAL' || x.confirm === 'ADMIN'); }   /* 14.2: internal crypto sends (confirmed by OM Wallet) */
 /* 12.14.0 — search + period + direction, combined with the status chips. Memory only (reset when the app restarts). */
 const HIST = { q:'', period:'all', dir:'all' };
 function histPeriodStart(p){

@@ -1,3 +1,11 @@
+# OM Wallet 14.2.0 — envoi interne de crypto, confirmé par l'administrateur
+
+- **Nouvel écran « Envoyer à un utilisateur OM Wallet »** (onglet Crypto › Envoyer, et recherche) : crypto vers un autre compte OM Wallet par son Wallet ID. Le destinataire est cherché par le serveur et son nom s'affiche avant l'envoi. Contrôles : identifiant, pas d'envoi à soi-même, solde disponible. Récapitulatif, puis code PIN vérifié par le serveur (`transfer_crypto`).
+- L'envoi est **enregistré en attente** : le montant est réservé, le destinataire n'est pas crédité. L'écran de suivi montre le statut réel (Enregistré → Confirmation → Crédité, ou Refusé et montant restitué) et ne dit jamais « crédité » avant la confirmation de l'administrateur (Admin Control › Transactions à confirmer : un bouton, crédit, heure exacte, un seul e-mail « Fonds reçus » dans la langue du destinataire).
+- **Actualisation immédiate** : à la confirmation, la notification temps réel recharge les soldes et l'historique (Accueil, Crypto, Activité, suivi de l'envoi) ; une vérification toutes les 15 s prend le relais.
+- Activité : les envois internes y figurent (expéditeur et destinataire).
+- Tests : envoi (destinataire introuvable / trouvé, solde, PIN, paramètres exacts, statut en attente, passage à « crédité ») ; balayage de 23 écrans × 3 langues × 2 thèmes.
+
 # OM Wallet 14.1.2 (serveur) — e-mails en service
 
 - Nouvelle clé Brevo enregistrée **chiffrée dans Supabase Vault** (nom `brevo_api_key`), lisible uniquement par la fonction d'envoi (rôle service ; ni les utilisateurs ni le navigateur). Elle n'est pas dans le dépôt. `send-email` v55 lit la clé du coffre en priorité (relue toutes les 5 minutes), puis les secrets de la fonction.

@@ -251,7 +251,7 @@ const TxResult = (() => {
    ============================================================ */
 const PxSearch = (() => {
   const SCREENS = () => [
-    ['wallet', 'crypto', t('omx.crypto')], ['markets', 'chart', t('omx.markets')], ['deposit', 'receive', t('omx.deposit')], ['withdraw', 'download', t('omx.withdraw')], ['exchange', 'swap', t('omx.exchange')],
+    ['wallet', 'crypto', t('omx.crypto')], ['send-internal', 'send', t('si.title')], ['markets', 'chart', t('omx.markets')], ['deposit', 'receive', t('omx.deposit')], ['withdraw', 'download', t('omx.withdraw')], ['exchange', 'swap', t('omx.exchange')],
     ['history', 'history', t('px.history')], ['cards', 'cards', V12.vt('cards')],
     ['profile', 'user', t('px.profile')], ['profile-edit', 'user', t('px.edit')], ['settings', 'settings', t('settings.title')], ['notifications', 'bell', t('px.notifs')],
     ['settings', 'globe', t('px.language')], ['settings', 'sparkle', t('px.theme')], ['settings', 'banknote', t('px.dispCur')], ['settings', 'bell', t('settings.notifs')],
