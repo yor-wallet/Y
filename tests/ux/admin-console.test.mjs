@@ -49,6 +49,28 @@ const tab = (page, k) => page.click('#dy-control .adm-tabs [data-adm="' + k + '"
     assert.match(txt, /Bank withdrawals/); assert.match(txt, /Crypto withdrawals/);
     assert.ok((await calls(page, 'admin_withdrawal_list')).length >= 1 && (await calls(page, 'admin_crypto_withdrawal_list')).length >= 1);
   });
+  await ok('transactions : un seul clic crédite, enregistre l’heure exacte, un seul e-mail ; un double-clic ne fait rien de plus', async () => {
+    await tab(page, 'txs'); await page.waitForSelector('#adm-main [data-ad="t-confirm"]');
+    assert.equal(await page.locator('#adm-main .tx-item').count(), 2);
+    await page.dblclick('#adm-main [data-tx-item="atx-1"] [data-ad="t-confirm"]'); await wait(900);
+    assert.equal((await calls(page, 'admin_tx_confirm')).length, 1, 'one call for a double click');
+    assert.equal((await calls(page, 'admin_tx_confirm'))[0].args.p_tx, 'atx-1');
+    const st = await page.evaluate(() => ({ s: window.__txAdm[0].status, at: window.__txAdm[0].confirmed_at, credit: window.__txCredits['atx-1'], mails: window.__txMails['atx-1'] }));
+    assert.equal(st.s, 'CONFIRMED'); assert.ok(st.at); assert.equal(st.credit, 12.5); assert.equal(st.mails, 1);
+    assert.match(await page.locator('#adm-main [data-tx-item="atx-1"]').innerText(), /CONFIRMED/, 'it stays in place, shown as confirmed');
+    assert.equal(await page.evaluate(() => window.__txAdm[1].status), 'PENDING', 'the next transaction was not touched');
+    await page.click('#dy-control [data-ad-f="tx:CONFIRMED"]'); await page.waitForSelector('#adm-main [data-tx-item="atx-1"]');
+    const txt = await page.locator('#adm-main [data-tx-item="atx-1"]').innerText();
+    assert.match(txt, /OMT48213999/); assert.match(txt, /\d{2}:\d{2}:\d{2}/, 'exact time with seconds'); assert.match(txt, /queued|file/i);
+    await page.evaluate(() => sb.rpc('admin_tx_confirm', { p_tx: 'atx-1' }));          /* a late second confirmation */
+    assert.equal(await page.evaluate(() => window.__txCredits['atx-1']), 12.5); assert.equal(await page.evaluate(() => window.__txMails['atx-1']), 1);
+  });
+  await ok('transactions : refus avec motif obligatoire', async () => {
+    await page.click('#dy-control [data-ad-f="tx:PENDING"]'); await page.waitForSelector('#adm-main [data-tx-item="atx-2"] [data-ad="t-reject"]');
+    await page.click('#adm-main [data-tx-item="atx-2"] [data-ad="t-reject"]'); await confirmSheet(page, 'Montant non justifié');
+    assert.equal(await page.evaluate(() => window.__txAdm[1].status), 'REJECTED');
+    assert.equal(await page.evaluate(() => window.__txMails['atx-2'] || 0), 0);
+  });
   await ok('DY : historique lisible (archives), aucun interrupteur, aucun appel de changement', async () => {
     await tab(page, 'logs'); await page.waitForSelector('#adm-main .dy-hist li');
     assert.equal(await page.locator('#dy-control #dy-switch, #dy-control [data-dy="toggle"]').count(), 0);

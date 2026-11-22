@@ -319,3 +319,11 @@ html:root body .tx-row .item-right{flex:none;display:flex;align-items:center;gap
 .omx-chip.up{background:rgba(255,255,255,.92);color:#0E7A47}
 .omx-chip.down{background:rgba(255,255,255,.92);color:#C2303B}
 .omx-total::before{opacity:.35}
+
+/* Admin Control — transactions to confirm (14.1.0) */
+.tx-item .ad-who b{font-size:14px}
+.tx-item .ad-who small{font:600 12px/16px var(--font-num,var(--font));color:var(--om-text-2)}
+.tx-mail{display:flex;align-items:center;gap:6px;margin:0;font:600 12px/17px var(--font)}
+.tx-mail.ok{color:var(--omx-up)}.tx-mail.wait{color:#B07300}.tx-mail.no{color:var(--om-text-2)}
+.tx-go{min-height:50px}
+.tx-new{display:block;width:100%;min-height:44px;margin:0 0 4px;border:1px solid rgba(54,158,219,.35);border-radius:16px;background:rgba(120,201,244,.18);color:var(--om-sky-accent);font:700 14px/20px var(--font);cursor:pointer}

@@ -94,6 +94,14 @@
   var acc = function(){ return tables.accounts[0]; };
   var adm = function(){ if (!FX.admin) throw { message: 'forbidden', code: '42501' }; };
   window.__wd = { bank: wdB, crypto: wdC };
+  /* 14.1.0 — transactions waiting for the administrator (like admin_tx_list / admin_tx_confirm: one credit, one e-mail, never twice) */
+  var txAdm = [
+    { id: 'atx-1', reference: 'OMT48213999', kind: 'FIAT_TRANSFER', asset: 'OMR', network: null, amount: 12.5, status: 'PENDING', created_at: new Date(NOW - 20 * 60e3).toISOString(), confirmed_at: null,
+      sender: { name: 'Salim Al Harthy', yor_id: 'YOR-ZZ1122', phone: '+96899112233' }, receiver: { name: 'Maryam Al Balushi', yor_id: 'YOR-MM3344', phone: '+96898445566', has_email: true }, email: null },
+    { id: 'atx-2', reference: 'OMT48214001', kind: 'CRYPTO_TRANSFER', asset: 'USDT', network: 'tron', amount: 40, status: 'PENDING', created_at: new Date(NOW - 5 * 60e3).toISOString(), confirmed_at: null,
+      sender: { name: 'Khalid Al Rawahi', yor_id: 'YOR-KK5566', phone: null }, receiver: { name: 'Noor Al Lawati', yor_id: 'YOR-NN7788', phone: null, has_email: false }, email: null }
+  ];
+  window.__txAdm = txAdm; window.__txCredits = {}; window.__txMails = {};
   var rpcs = {
     dy_status: function(){ return { enabled: dyS.enabled, updatedAt: dyS.updatedAt }; },
     admin_console_stats: function(){ if (!FX.admin) throw { message: 'forbidden', code: '42501' }; return { users: 21, transfers_total: 220, transactions_today: 2, balance_omr: 1284.5 }; },
@@ -180,6 +188,15 @@
     admin_crypto_withdrawal_complete: function(a){ adm(); var w = wdC.filter(function(x){ return x.id === a.p_id; })[0]; if (!w || (w.status !== 'PENDING' && w.status !== 'PROCESSING')) throw { message: 'invalid_state' };
       if (w.network === 'tron' && !/^[0-9a-fA-F]{64}$/.test(a.p_tx_hash)) throw { message: 'invalid_tx_hash' }; w.status = 'COMPLETED'; w.tx_hash = a.p_tx_hash; return { ok: true }; },
     admin_crypto_withdrawal_reject: function(a){ adm(); var w = wdC.filter(function(x){ return x.id === a.p_id; })[0]; if (!w) throw { message: 'not_found' }; if (String(a.p_reason || '').trim().length < 3) throw { message: 'reason_required' }; w.status = 'REJECTED'; w.admin_note = a.p_reason; return { ok: true }; },
+    admin_tx_list: function(a){ adm(); var st = a && a.p_status; return txAdm.filter(function(x){ return !st || x.status === st; }).map(function(x){ return JSON.parse(JSON.stringify(x)); }); },
+    admin_tx_confirm: function(a){ adm(); var x = txAdm.filter(function(t){ return t.id === a.p_tx; })[0]; if (!x) throw { message: 'not_found' };
+      if (x.status === 'CONFIRMED') return { ok: true, already: true, reference: x.reference, confirmed_at: x.confirmed_at };
+      if (x.status !== 'PENDING') throw { message: 'invalid_state' };
+      x.status = 'CONFIRMED'; x.confirmed_at = new Date().toISOString(); window.__txCredits[x.id] = (window.__txCredits[x.id] || 0) + x.amount;
+      if (x.receiver.has_email){ window.__txMails[x.id] = (window.__txMails[x.id] || 0) + 1; x.email = { status: 'PENDING', sent_at: null }; }
+      return { ok: true, id: x.id, reference: x.reference, amount: x.amount, asset: x.asset, status: 'CONFIRMED', confirmed_at: x.confirmed_at }; },
+    admin_tx_reject: function(a){ adm(); if (String(a.p_reason || '').trim().length < 3) throw { message: 'reason_required' }; var x = txAdm.filter(function(t){ return t.id === a.p_tx; })[0];
+      if (!x || x.status !== 'PENDING') throw { message: 'invalid_state' }; x.status = 'REJECTED'; return { ok: true, status: 'REJECTED' }; },
     admin_recent_users: function(){ adm(); return [{ yor_id: 'YOR-A1B2C3', first_name: 'Amira', last_name: 'Al Said', email: profile.email, phone: profile.phone, country: 'OM', status: 'active', role: profile.role, created_at: profile.created_at, email_confirmed: true }]; },
     admin_search_users: function(a){ adm(); return /amira/i.test(a.p_query || '') ? rpcs.admin_recent_users() : []; },
     admin_set_setting: function(a){ adm(); if (a.p_key === 'withdraw_enabled'){ if (typeof a.p_value !== 'boolean') throw { message: 'invalid_value' }; wdEnabled = a.p_value; } return {}; },

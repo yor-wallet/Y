@@ -1,3 +1,27 @@
+# OM Wallet 14.1.0 — confirmation des transactions par l'administrateur, e-mail « Fonds reçus »
+
+## Serveur (`supabase/migrations/20261122_admin_tx_confirmation.sql`, appliquée ; retour arrière : `…_rollback.sql`)
+- **Seul l'administrateur confirme.** Un transfert interne (monnaie ou crypto) est enregistré **en attente** : le montant de l'expéditeur est mis en réserve, le destinataire n'est pas crédité, aucun e-mail n'est créé.
+- **Un bouton** (`admin_tx_confirm`) : dans une seule transaction de base de données, débit réel de l'expéditeur, crédit du destinataire, écritures du grand livre, statut `CONFIRMED`, **heure exacte** (`confirmed_at`, `clock_timestamp()`), administrateur (`confirmed_by`), journal d'audit, notifications, et **un seul e-mail** `FUNDS_RECEIVED` au destinataire. Pas d'autre autorisation, pas de second administrateur.
+- **Jamais en double** : verrou de ligne + statut (un second clic répond « déjà confirmée » sans rien créditer), clé d'idempotence `FUNDS_RECEIVED:<transaction>` (un second e-mail est impossible). **Jamais d'e-mail avant le crédit** : il est créé dans la même transaction, et la fonction d'envoi revérifie le statut, l'heure de confirmation et l'écriture de crédit.
+- Refus (`admin_tx_reject`, motif obligatoire) : la réserve revient à l'expéditeur, aucun e-mail. Liste du centre de contrôle : `admin_tx_list` (avec l'état réel de l'e-mail).
+- Les anciens e-mails automatiques « expéditeur / destinataire » ne sont plus créés (un seul e-mail par transaction).
+- **Blockchain externe** : l'approbation déclenche l'exécution ; le statut final et l'e-mail `CRYPTO_WITHDRAWAL_CONFIRMED` attendent le **hash réel** du réseau.
+- Testé sur de vrais comptes dans un bloc annulé (rien d'enregistré) : réserve, refus d'un utilisateur, crédit exact, un e-mail, second clic sans effet, refus et restitution, crypto.
+- Sauvegarde exacte des 4 fonctions remplacées dans `public.function_backups` (le retour arrière les ré-exécute). Aucune donnée supprimée.
+
+## E-mails (`supabase/functions/send-email`, version 53)
+- **Plusieurs fournisseurs** : Brevo (`BREVO_API_KEY`), puis SMTP en TLS (`SMTP_HOST`, `SMTP_PORT` 465, `SMTP_USER`, `SMTP_PASS`, ex. Gmail avec mot de passe d'application), puis Resend (`RESEND_API_KEY`, `RESEND_FROM`). Si l'un refuse (clé, expéditeur), le suivant est essayé. Expéditeur réglable : `EMAIL_FROM`.
+- Gabarit « **OM Wallet — Fonds reçus** » exact (« Vous avez reçu [MONTANT] [CRYPTO] sur votre compte OM Wallet. » · Référence · Date et heure (heure d'Oman, secondes) · « Statut : Crédité avec succès. »), en français, anglais ou arabe selon la langue du destinataire, avec version texte.
+- Marque OM Wallet (bleu ciel) sur tous les e-mails (l'ancienne marque « Sanad Pay » est retirée).
+- Mode de contrôle sans secret (`{"check": true}`) : clé Brevo acceptée ou non, expéditeur vérifié ou non.
+- **État actuel** : la clé Brevo enregistrée est refusée (401 « Key not found ») ; aucun autre fournisseur n'est configuré. Les e-mails restent en file sans perdre leurs essais jusqu'à ce qu'une clé valide soit enregistrée.
+
+## Admin Control
+- Onglet **Transactions à confirmer** (et compteur sur le tableau de bord) : expéditeur, destinataire, montant, référence, date ; **un bouton « Confirmer la transaction »** ; heure exacte de confirmation et état de l'e-mail (envoyé / en file / pas d'adresse) ; filtres En attente / Confirmées / Refusées.
+- La transaction confirmée **reste à sa place** (affichée « confirmée ») : un double-clic ne peut jamais confirmer la suivante. Les nouvelles transactions sont annoncées par un bandeau « Actualiser », jamais insérées sous le doigt.
+- Notifications « Transfert en attente de confirmation » et « Transfert refusé » traduites (fr / en / ar).
+
 # OM Wallet 14.0.0 — portefeuille crypto premium : marchés réels, retraits réels, transferts retirés
 
 ## Données conservées (aucune suppression)

@@ -14,8 +14,19 @@ function notifView(n){
       return { title: t(n.type === 'TRANSFER_SENT' ? 'nt.sent' : 'nt.recv'), message: t(n.type === 'TRANSFER_SENT' ? 'nt.sentMsg' : 'nt.recvMsg').replace('{a}', a).replace('{n}', who) };
     }
   }
+  /* 14.1.0 — a transfer waits for the administrator, or was refused (its amount is back on the balance) */
+  if ((n.type === 'TRANSFER_PENDING' || n.type === 'TRANSFER_REJECTED') && isFinite(amt) && amt > 0){
+    const cur = String(d.currency || d.asset || 'OMR').toUpperCase();
+    const a = /^(OMR|USD|AED|XOF|SAR)$/.test(cur) ? CurrencyEngine.format(amt, cur) : omxQty(amt, cur);
+    return n.type === 'TRANSFER_PENDING'
+      ? { title: t('nt.pend'), message: t('nt.pendMsg').replace('{a}', a).replace('{n}', String(d.to || '').trim()) }
+      : { title: t('nt.rej'), message: t('nt.rejMsg').replace('{a}', a) };
+  }
   return { title: n.title, message: n.message };
 }
+Object.assign(TR.en, { 'nt.pend':'Transfer awaiting confirmation', 'nt.pendMsg':'{a} to {n} · awaiting confirmation by OM Wallet', 'nt.rej':'Transfer refused', 'nt.rejMsg':'{a} returned to your balance' });
+Object.assign(TR.fr, { 'nt.pend':'Transfert en attente de confirmation', 'nt.pendMsg':'{a} pour {n} · en attente de confirmation par OM Wallet', 'nt.rej':'Transfert refusé', 'nt.rejMsg':'{a} restitué sur votre solde' });
+Object.assign(TR.ar, { 'nt.pend':'تحويل بانتظار التأكيد', 'nt.pendMsg':'{a} إلى {n} · بانتظار تأكيد OM Wallet', 'nt.rej':'تم رفض التحويل', 'nt.rejMsg':'أُعيد {a} إلى رصيدك' });
 function renderNotifications(){
   const list = Runtime.notifications;
   return '<div class="topbar"><button class="topbar-back" data-action="back" aria-label="' + t('ui.back') + '"><span class="dir-flip" style="display:inline-flex">' + icon('back', 20) + '</span></button><span class="topbar-title">' + t('ui.notifications') + '</span><button class="topbar-action" data-action="mark-notifs" aria-label="' + t('ui.markRead') + '">' + icon('check', 18) + '</button></div>' +
