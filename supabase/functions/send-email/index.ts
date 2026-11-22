@@ -1,7 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 // ============================================================
-// OM Wallet — send-email (14.1.0)
+// OM Wallet — send-email (14.1.2) — clés des fournisseurs : Supabase Vault (prioritaire) ou secrets de la fonction
 // File d'attente : public.email_logs (créée par la base, jamais par le navigateur). Authentification : secret partagé gardé en base.
 //
 // FOURNISSEURS (le premier configuré qui accepte l'envoi gagne ; un refus de configuration passe au suivant) :
@@ -20,15 +20,29 @@ const FROM_EMAIL = (Deno.env.get("EMAIL_FROM") || "yordigitalefinance@gmail.com"
 const FROM_NAME = "OM Wallet";
 const REPLY_TO = FROM_EMAIL;
 const APP_URL = (Deno.env.get("APP_URL") || "https://yor-wallet.vercel.app").trim();
-const BREVO_KEY = (Deno.env.get("BREVO_API_KEY") ?? "").trim();
+let BREVO_KEY = (Deno.env.get("BREVO_API_KEY") ?? "").trim();
 const SMTP = {
   host: (Deno.env.get("SMTP_HOST") ?? "").trim(), port: Number(Deno.env.get("SMTP_PORT") || 465),
   user: (Deno.env.get("SMTP_USER") ?? "").trim(), pass: Deno.env.get("SMTP_PASS") ?? "",
 };
-const RESEND_KEY = (Deno.env.get("RESEND_API_KEY") ?? "").trim();
+let RESEND_KEY = (Deno.env.get("RESEND_API_KEY") ?? "").trim();
+let KEY_SOURCE = BREVO_KEY ? "env" : "none";
 const RESEND_FROM = (Deno.env.get("RESEND_FROM") || FROM_EMAIL).trim();
 
 const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
+
+/* 14.1.2 — provider keys kept in Supabase Vault (encrypted) take precedence over the Edge Function secrets; read by the service role only
+   (public.get_email_provider_secret), re-read at most every 5 minutes, never returned or logged. */
+let keysAt = 0;
+async function loadKeys(): Promise<void> {
+  if (Date.now() - keysAt < 300000) return;
+  keysAt = Date.now();
+  const read = async (name: string) => { try { const { data } = await sb.rpc("get_email_provider_secret", { p_name: name }); return data ? String(data).trim() : ""; } catch { return ""; } };
+  const [b, sp, rs] = await Promise.all([read("brevo_api_key"), read("smtp_pass"), read("resend_api_key")]);
+  if (b){ BREVO_KEY = b; KEY_SOURCE = "vault"; }
+  if (sp) SMTP.pass = sp;
+  if (rs) RESEND_KEY = rs;
+}
 
 type Lang = "fr" | "en" | "ar";
 // deno-lint-ignore no-explicit-any
@@ -287,7 +301,7 @@ async function build(log: Row, lang: Lang): Promise<Built> {
 type Mail = { to: string; subject: string; html: string; text?: string; tag: string };
 type Sent = { ok: true; provider: string; id: string | null } | { ok: false; provider: string; config: boolean; error: string };
 
-let brevoFrom: string | null = null;           // the sender actually accepted by the Brevo account (cached for this instance)
+let brevoFrom: string | null = null, brevoFromAt = 0;   // the sender actually accepted by the Brevo account (re-checked every 30 min)
 async function brevoVerifiedSender(): Promise<string | null> {
   try {
     const s = await fetch("https://api.brevo.com/v3/senders", { headers: { "api-key": BREVO_KEY, accept: "application/json" } });
@@ -304,11 +318,12 @@ async function viaBrevo(m: Mail): Promise<Sent> {
     body: JSON.stringify({ sender: { name: FROM_NAME, email: from }, replyTo: { name: FROM_NAME, email: REPLY_TO }, to: [{ email: m.to }],
       subject: m.subject, htmlContent: m.html, textContent: m.text, tags: [m.tag] }),
   });
+  if (brevoFrom && Date.now() - brevoFromAt > 1800000) brevoFrom = null;     // the configured address may have been verified since
   let res = await post(brevoFrom || FROM_EMAIL);
   let text = await res.text();
   if (res.status === 400 && /sender/i.test(text)) {        // the address is not a verified sender of this account: use the verified one, once
     const v = await brevoVerifiedSender();
-    if (v && v !== (brevoFrom || FROM_EMAIL)) { brevoFrom = v; res = await post(v); text = await res.text(); }
+    if (v && v !== (brevoFrom || FROM_EMAIL)) { brevoFrom = v; brevoFromAt = Date.now(); res = await post(v); text = await res.text(); }
   }
   if (res.ok) { let b: Row = {}; try { b = JSON.parse(text); } catch { /* */ } return { ok: true, provider: "brevo", id: b.messageId ?? null }; }
   return { ok: false, provider: "brevo", config: res.status === 401 || res.status === 403 || (res.status === 400 && /sender/i.test(text)), error: `brevo ${res.status}: ${text}`.slice(0, 300) };
@@ -375,14 +390,14 @@ async function viaSmtp(m: Mail): Promise<Sent> {
   } finally { clearTimeout(timer); try { conn?.close(); } catch { /* */ } }
 }
 
-const PROVIDERS: { name: string; on: boolean; send: (m: Mail) => Promise<Sent> }[] = [
-  { name: "brevo", on: !!BREVO_KEY, send: viaBrevo },
-  { name: "smtp", on: !!(SMTP.host && SMTP.user && SMTP.pass), send: viaSmtp },
-  { name: "resend", on: !!RESEND_KEY, send: viaResend },
+const PROVIDERS: { name: string; on: () => boolean; send: (m: Mail) => Promise<Sent> }[] = [
+  { name: "brevo", on: () => !!BREVO_KEY, send: viaBrevo },
+  { name: "smtp", on: () => !!(SMTP.host && SMTP.user && SMTP.pass), send: viaSmtp },
+  { name: "resend", on: () => !!RESEND_KEY, send: viaResend },
 ];
 async function deliver(m: Mail): Promise<{ sent?: Sent; errors: string[]; allConfig: boolean }> {
   const errors: string[] = []; let allConfig = true;
-  for (const p of PROVIDERS.filter((x) => x.on)) {
+  for (const p of PROVIDERS.filter((x) => x.on())) {
     let r: Sent;
     try { r = await p.send(m); } catch (e) { r = { ok: false, provider: p.name, config: false, error: String(e).slice(0, 300) }; }
     if (r.ok) return { sent: r, errors, allConfig: false };
@@ -432,7 +447,7 @@ async function process(log: Row, dryRun = false): Promise<Row> {
 /* configuration check for the administrator: which providers are set and whether Brevo accepts the key and the sender. No secret is returned. */
 async function check(): Promise<Row> {
   const out: Row = { from: FROM_EMAIL, providers: {} };
-  out.providers.brevo = { configured: !!BREVO_KEY };
+  out.providers.brevo = { configured: !!BREVO_KEY, source: KEY_SOURCE };
   if (BREVO_KEY) {
     try {
       const a = await fetch("https://api.brevo.com/v3/account", { headers: { "api-key": BREVO_KEY, accept: "application/json" } });
@@ -466,6 +481,7 @@ Deno.serve(async (req: Request) => {
   if (!given || !secret || !safeEqual(given, String(secret))) return json({ error: "unauthorized" }, 401);
   let body: Row = {};
   try { body = await req.json(); } catch { /* empty body = sweep */ }
+  await loadKeys();
 
   if (body.check) return json(await check());
   if (body.dry_run && body.log_id) {

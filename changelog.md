@@ -1,3 +1,9 @@
+# OM Wallet 14.1.2 (serveur) — e-mails en service
+
+- Nouvelle clé Brevo enregistrée **chiffrée dans Supabase Vault** (nom `brevo_api_key`), lisible uniquement par la fonction d'envoi (rôle service ; ni les utilisateurs ni le navigateur). Elle n'est pas dans le dépôt. `send-email` v55 lit la clé du coffre en priorité (relue toutes les 5 minutes), puis les secrets de la fonction.
+- Contrôle : clé acceptée par Brevo (compte « DOoM », offre gratuite 300 e-mails/jour) ; premier e-mail accepté par Brevo le 22/11 à 18:20 UTC ; la file d'attente part automatiquement toutes les 5 minutes.
+- Expéditeur : `yordigitalefinance@gmail.com` ajouté comme expéditeur dans ce compte Brevo (lien de vérification envoyé à cette boîte). Tant qu'il n'est pas vérifié, l'envoi utilise l'expéditeur déjà vérifié du compte, puis repasse automatiquement sur l'adresse Gmail (contrôle toutes les 30 minutes).
+
 # OM Wallet 14.1.1 (serveur) — e-mails dans la langue de chaque personne, plus aucune confirmation automatique
 
 ## E-mails (`send-email`, version 54)
