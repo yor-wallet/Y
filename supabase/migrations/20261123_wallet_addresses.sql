@@ -1,6 +1,5 @@
 -- OM Wallet 14.3 — adresses de dépôt RÉELLES, uniques par utilisateur et par réseau, avec QR enregistré.
--- ÉTAT : NON APPLIQUÉE sur le projet au moment de ce commit (la confirmation de l'outil de migration est restée sans réponse) ;
--- la fonction wallet-addresses n'est pas non plus déployée. get_receive_address répond donc encore « deposit_address_unavailable ».
+-- ÉTAT : appliquée sur le projet le 2026-11-23 (sans les lignes « drop … if exists » des premières versions de ce fichier, inutiles sur des objets neufs).
 -- Ajouts seulement : aucune ligne n'est supprimée ni modifiée (les anciennes valeurs de crypto_wallets.address restent telles quelles, jamais affichées).
 --
 -- Chaque adresse provient d'une clé privée générée par la fonction wallet-addresses (secp256k1 / ed25519) : les fonds envoyés à une telle adresse
@@ -21,7 +20,6 @@ create table if not exists public.wallet_addresses (
 alter table public.wallet_addresses enable row level security;
 revoke all on public.wallet_addresses from anon, authenticated;
 grant select on public.wallet_addresses to authenticated;
-drop policy if exists wallet_addresses_own on public.wallet_addresses;
 create policy wallet_addresses_own on public.wallet_addresses for select to authenticated using (user_id = (select auth.uid()));
 
 create table if not exists public.wallet_keys (
@@ -118,6 +116,5 @@ begin
 exception when others then
   return new;      -- ne bloque jamais l'inscription
 end $$;
-drop trigger if exists profiles_wallet_addresses on public.profiles;
 create trigger profiles_wallet_addresses after insert on public.profiles for each row execute function public.trg_wallet_addresses();
 revoke all on function public.trg_wallet_addresses() from public, anon, authenticated;

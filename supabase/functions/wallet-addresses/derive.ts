@@ -29,30 +29,20 @@ function evmAddress(priv: Uint8Array): string {
 // re-encodes a base58 string written with the standard alphabet into another alphabet (same digits, different symbols)
 const remap = (s: string, to: string) => [...s].map((c) => to[STD.indexOf(c)]).join("");
 
-export function derive(network: Network): Derived {
+// the address that belongs to a private key (used both to create an address and to audit a stored key against its stored address)
+export function addressFromKey(network: Network, priv: Uint8Array): string {
   switch (network) {
-    case "bitcoin": case "litecoin": {
-      const priv = secpKey(), h = hash160(secp256k1.getPublicKey(priv, true));
-      const hrp = network === "bitcoin" ? "bc" : "ltc";
-      return { network, address: bech32.encode(hrp, [0, ...bech32.toWords(h)]), privateKeyHex: bytesToHex(priv), format: "secp256k1-hex" };
-    }
-    case "ethereum": case "bsc": case "polygon": {
-      const priv = secpKey();
-      return { network, address: evmAddress(priv), privateKeyHex: bytesToHex(priv), format: "secp256k1-hex" };
-    }
-    case "tron": {
-      const priv = secpKey(), pub = secp256k1.getPublicKey(priv, false).slice(1);
-      return { network, address: b58check.encode(concat(new Uint8Array([0x41]), keccak_256(pub).slice(-20))), privateKeyHex: bytesToHex(priv), format: "secp256k1-hex" };
-    }
-    case "xrp": {
-      const priv = secpKey(), h = hash160(secp256k1.getPublicKey(priv, true));
-      return { network, address: remap(b58check.encode(concat(new Uint8Array([0x00]), h)), RIPPLE), privateKeyHex: bytesToHex(priv), format: "secp256k1-hex" };
-    }
-    case "solana": {
-      const seed = crypto.getRandomValues(new Uint8Array(32)), pub = ed25519.getPublicKey(seed);
-      return { network, address: b58encode(pub), privateKeyHex: bytesToHex(seed), format: "ed25519-seed-hex" };
-    }
+    case "bitcoin": case "litecoin": return bech32.encode(network === "bitcoin" ? "bc" : "ltc", [0, ...bech32.toWords(hash160(secp256k1.getPublicKey(priv, true)))]);
+    case "ethereum": case "bsc": case "polygon": return evmAddress(priv);
+    case "tron": return b58check.encode(concat(new Uint8Array([0x41]), keccak_256(secp256k1.getPublicKey(priv, false).slice(1)).slice(-20)));
+    case "xrp": return remap(b58check.encode(concat(new Uint8Array([0x00]), hash160(secp256k1.getPublicKey(priv, true)))), RIPPLE);
+    case "solana": return b58encode(ed25519.getPublicKey(priv));
   }
+}
+export function derive(network: Network): Derived {
+  const solana = network === "solana";
+  const priv = solana ? crypto.getRandomValues(new Uint8Array(32)) : secpKey();
+  return { network, address: addressFromKey(network, priv), privateKeyHex: bytesToHex(priv), format: solana ? "ed25519-seed-hex" : "secp256k1-hex" };
 }
 function b58encode(b: Uint8Array): string {
   let n = 0n; for (const x of b) n = (n << 8n) | BigInt(x);

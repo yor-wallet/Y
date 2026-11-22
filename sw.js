@@ -77,6 +77,7 @@ self.addEventListener('fetch', e => {
   const req = e.request, url = new URL(req.url);
   if (req.method !== 'GET') return;
   if (url.origin !== self.location.origin) return;                                     /* Supabase (API et client), WalletConnect, chaîne : jamais touchés */
+  if (url.pathname === '/admin-action' || url.pathname === '/admin-action.html') return;                   /* page de confirmation des liens e-mail : toujours le réseau, jamais la coquille de l'application */
   if (url.pathname.endsWith('/sw.js')) return;                                         /* le service worker se met à jour lui-même, sans copie intermédiaire */
   if (req.headers.has('range')) return;
   e.respondWith(networkFirst(req));

@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#F7FBFF">
+<title>OM Wallet · Admin</title>
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon.svg">
+<style>
+:root{--ink:#102333;--ink2:#637483;--sky:#2E9CD3;--ok:#1FAF72;--bad:#D94F5B;--warn:#E5A332;--bg:#F7FBFF;--card:#fff;--line:#DDF4FF}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{font:16px/1.55 -apple-system,"Segoe UI",Roboto,"IBM Plex Sans Arabic","Noto Sans Arabic",system-ui,sans-serif;color:var(--ink);background:radial-gradient(900px 500px at 15% -10%,#DDF4FF,transparent 60%),var(--bg);padding:24px 16px;display:flex;justify-content:center}
+main{width:100%;max-width:460px}
+.brand{display:flex;align-items:center;gap:10px;margin:8px 0 18px;font-weight:800;font-size:20px}
+.brand img{width:36px;height:36px;border-radius:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:0 18px 40px rgba(25,64,90,.10)}
+h1{margin:0 0 6px;font-size:22px;line-height:1.25}
+p{margin:0 0 14px;color:var(--ink2)}
+dl{margin:16px 0;display:grid;grid-template-columns:auto 1fr;gap:8px 14px}
+dt{color:var(--ink2);font-size:14px}
+dd{margin:0;font-weight:700;font-size:14px;text-align:end;overflow-wrap:anywhere}
+textarea{width:100%;min-height:76px;margin:0 0 12px;padding:12px;border:1px solid #A8DFFF;border-radius:14px;font:inherit;color:var(--ink);background:#fff;resize:vertical}
+button.go{display:block;width:100%;min-height:52px;border:0;border-radius:16px;color:#fff;font:inherit;font-weight:800;font-size:17px;cursor:pointer;background:var(--sky);transition:transform .12s,opacity .12s}
+button.go:active{transform:scale(.975);opacity:.9}
+button.go[disabled]{opacity:.55;cursor:default;transform:none}
+.CONFIRM{background:var(--ok)}.REJECT{background:var(--bad)}.PAUSE{background:var(--warn)}
+.msg{margin:14px 0 0;padding:12px 14px;border-radius:14px;font-weight:700}
+.msg.ok{background:#E6F8F0;color:#0F7A4E}.msg.err{background:#FDECEE;color:#A32B37}.msg.info{background:#EAF6FF;color:#1E6A93}
+a.app{display:block;margin-top:16px;text-align:center;color:var(--sky);font-weight:700;text-decoration:none}
+.spin{display:inline-block;width:18px;height:18px;border:3px solid #A8DFFF;border-top-color:var(--sky);border-radius:50%;animation:r .8s linear infinite;vertical-align:middle}
+@keyframes r{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}button.go{transition:none}}
+@media (prefers-color-scheme:dark){:root{--ink:#EAF4FB;--ink2:#9FB3C2;--bg:#0B1620;--card:#12212D;--line:#1E3342}textarea{background:#0B1620;border-color:#2B4659}.msg.ok{background:#12372A;color:#7FE0B4}.msg.err{background:#3A1A1F;color:#F2A2AB}.msg.info{background:#10293A;color:#8CCBEA}}
+</style>
+</head>
+<body>
+<main>
+  <div class="brand"><img src="/assets/icons/icon-192.png" alt="" width="36" height="36"><span>OM Wallet</span></div>
+  <section class="card" id="card" aria-live="polite"><span class="spin" role="status"></span></section>
+</main>
+<script>
+(function () {
+  'use strict';
+  var API = 'https://gebjmguoauvutiqvoswl.supabase.co/functions/v1/admin-action';
+  var L = {
+    fr: { CONFIRM: ['Confirmer ce transfert ?', 'Le destinataire est crédité immédiatement et reçoit un e-mail. Action irréversible.', 'Confirmer'],
+          REJECT: ['Refuser ce transfert ?', 'Le montant est rendu à l’expéditeur.', 'Refuser'], PAUSE: ['Mettre ce transfert en pause ?', 'Le montant reste réservé. Vous pourrez ensuite le confirmer ou le refuser.', 'Mettre en pause'],
+          done: { CONFIRM: 'Transfert confirmé. Le destinataire est crédité.', REJECT: 'Transfert refusé. Le montant est rendu à l’expéditeur.', PAUSE: 'Transfert mis en pause.' },
+          already: { CONFIRMED: 'Ce transfert est déjà confirmé. Rien n’a été crédité deux fois.', REJECTED: 'Ce transfert est déjà refusé.' }, paused: 'Ce transfert est déjà en pause.',
+          f: { ref: 'Référence', amount: 'Montant', from: 'De', to: 'À', net: 'Réseau', note: 'Note', date: 'Date et heure' }, reason: 'Motif (visible par le client, facultatif)',
+          e: { invalid_link: 'Lien invalide.', expired: 'Lien expiré (72 h). Utilisez Admin Control dans l’application.', network: 'Connexion impossible. Réessayez.', forbidden: 'Ce compte n’est plus administrateur.', invalid_state: 'Ce transfert a déjà été traité.', server_error: 'Erreur du serveur. Réessayez.' }, open: 'Ouvrir Admin Control' },
+    en: { CONFIRM: ['Confirm this transfer?', 'The recipient is credited at once and receives one e-mail. This cannot be undone.', 'Confirm'],
+          REJECT: ['Refuse this transfer?', 'The amount goes back to the sender.', 'Refuse'], PAUSE: ['Pause this transfer?', 'The amount stays held. You can still confirm or refuse it afterwards.', 'Pause'],
+          done: { CONFIRM: 'Transfer confirmed. The recipient is credited.', REJECT: 'Transfer refused. The amount went back to the sender.', PAUSE: 'Transfer paused.' },
+          already: { CONFIRMED: 'This transfer is already confirmed. Nothing was credited twice.', REJECTED: 'This transfer is already refused.' }, paused: 'This transfer is already paused.',
+          f: { ref: 'Reference', amount: 'Amount', from: 'From', to: 'To', net: 'Network', note: 'Note', date: 'Date and time' }, reason: 'Reason (shown to the customer, optional)',
+          e: { invalid_link: 'Invalid link.', expired: 'Link expired (72 h). Use Admin Control in the app.', network: 'Could not connect. Try again.', forbidden: 'This account is no longer an administrator.', invalid_state: 'This transfer was already processed.', server_error: 'Server error. Try again.' }, open: 'Open Admin Control' },
+    ar: { CONFIRM: ['تأكيد هذا التحويل؟', 'يُضاف المبلغ إلى المستلم فورًا ويتلقى رسالة بريد واحدة. لا يمكن التراجع.', 'تأكيد'],
+          REJECT: ['رفض هذا التحويل؟', 'يعود المبلغ إلى المرسل.', 'رفض'], PAUSE: ['إيقاف هذا التحويل مؤقتًا؟', 'يبقى المبلغ محجوزًا. يمكنك لاحقًا تأكيده أو رفضه.', 'إيقاف مؤقت'],
+          done: { CONFIRM: 'تم تأكيد التحويل. أُضيف المبلغ إلى المستلم.', REJECT: 'تم رفض التحويل. عاد المبلغ إلى المرسل.', PAUSE: 'تم إيقاف التحويل مؤقتًا.' },
+          already: { CONFIRMED: 'هذا التحويل مؤكد مسبقًا. لم يُضف أي مبلغ مرتين.', REJECTED: 'هذا التحويل مرفوض مسبقًا.' }, paused: 'هذا التحويل متوقف مؤقتًا بالفعل.',
+          f: { ref: 'المرجع', amount: 'المبلغ', from: 'من', to: 'إلى', net: 'الشبكة', note: 'ملاحظة', date: 'التاريخ والوقت' }, reason: 'السبب (يظهر للعميل، اختياري)',
+          e: { invalid_link: 'رابط غير صالح.', expired: 'انتهت صلاحية الرابط (72 ساعة). استخدم لوحة المشرف في التطبيق.', network: 'تعذّر الاتصال. حاول مجددًا.', forbidden: 'هذا الحساب لم يعد مشرفًا.', invalid_state: 'تمت معالجة هذا التحويل مسبقًا.', server_error: 'خطأ في الخادم. حاول مجددًا.' }, open: 'فتح لوحة المشرف' }
+  };
+  var lang = (new URLSearchParams(location.search).get('lang') || navigator.language || 'fr').slice(0, 2);
+  var T = L[lang] || L.fr;
+  document.documentElement.lang = L[lang] ? lang : 'fr';
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  var card = document.getElementById('card');
+  var m = /[#&]t=([0-9a-f]{64})/.exec(location.hash);
+  var token = m ? m[1] : '';
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function msg(kind, text) { return '<div class="msg ' + kind + '" role="alert">' + esc(text) + '</div>'; }
+  function post(body) {
+    return fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), cache: 'no-store', referrerPolicy: 'no-referrer' })
+      .then(function (r) { return r.json(); }).catch(function () { return { error: 'network' }; });
+  }
+  function fmt(n, a) { var x = Number(n); return (isFinite(x) ? x.toLocaleString(lang === 'ar' ? 'ar-OM-u-nu-latn' : lang, { maximumFractionDigits: 8 }) : '') + ' ' + esc(a || ''); }
+  function rows(t) {
+    var d = [[T.f.ref, t.reference], [T.f.amount, fmt(t.amount, t.asset)], [T.f.from, t.sender], [T.f.to, t.receiver]];
+    if (t.network) d.push([T.f.net, t.network]);
+    if (t.note) d.push([T.f.note, t.note]);
+    if (t.created_at) { try { d.push([T.f.date, new Date(t.created_at).toLocaleString(lang === 'ar' ? 'ar-OM-u-nu-latn' : lang, { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Muscat' }) + ' (UTC+4)']); } catch (e) { /* ignore */ } }
+    return '<dl>' + d.map(function (r) { return '<dt>' + esc(r[0]) + '</dt><dd dir="auto">' + (r[0] === T.f.amount ? r[1] : esc(r[1])) + '</dd>'; }).join('') + '</dl>';
+  }
+  var appLink = '<a class="app" href="/">' + esc(T.open) + '</a>';
+  function fail(code) { card.innerHTML = msg('err', T.e[code] || T.e.server_error) + appLink; }
+
+  if (!token) { fail('invalid_link'); return; }
+  post({ op: 'info', token: token }).then(function (info) {
+    if (info.error) { fail(info.error); return; }
+    var act = info.action, tx = info.transaction || {}, txt = T[act];
+    var head = '<h1>' + esc(txt[0]) + '</h1>' + rows(tx);
+    if (tx.status === 'CONFIRMED') { card.innerHTML = head + msg('info', T.already.CONFIRMED) + appLink; return; }
+    if (tx.status === 'REJECTED') { card.innerHTML = head + msg('info', T.already.REJECTED) + appLink; return; }
+    if (act === 'PAUSE' && tx.paused) { card.innerHTML = head + msg('info', T.paused) + appLink; return; }
+    card.innerHTML = head + '<p>' + esc(txt[1]) + '</p>' + (act === 'REJECT' ? '<textarea id="why" maxlength="300" aria-label="' + esc(T.reason) + '" placeholder="' + esc(T.reason) + '"></textarea>' : '') +
+      '<button class="go ' + act + '" id="go" type="button">' + esc(txt[2]) + '</button><div id="out"></div>';
+    var go = document.getElementById('go');
+    go.addEventListener('click', function () {
+      if (go.disabled) return;
+      go.disabled = true;                                   // one click, one request
+      var why = document.getElementById('why');
+      post({ op: 'apply', token: token, reason: why ? why.value : null }).then(function (r) {
+        var out = document.getElementById('out');
+        if (r && r.ok) {
+          go.style.display = 'none'; if (why) why.style.display = 'none';
+          out.innerHTML = msg('ok', r.already ? (T.already[r.status] || T.done[act]) : T.done[act]) + appLink;
+        } else {
+          var code = (r && r.error) || 'network';
+          if (code !== 'invalid_link' && code !== 'expired' && code !== 'forbidden') go.disabled = false;
+          out.innerHTML = msg('err', T.e[code] || T.e.server_error);
+        }
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>

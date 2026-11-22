@@ -1,7 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 // ============================================================
-// OM Wallet — send-email (14.1.2) — clés des fournisseurs : Supabase Vault (prioritaire) ou secrets de la fonction
+// OM Wallet — send-email (14.3) — clés des fournisseurs : Supabase Vault (prioritaire) ou secrets de la fonction
 // File d'attente : public.email_logs (créée par la base, jamais par le navigateur). Authentification : secret partagé gardé en base.
 //
 // FOURNISSEURS (le premier configuré qui accepte l'envoi gagne ; un refus de configuration passe au suivant) :
@@ -15,6 +15,9 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 //     la transaction est CONFIRMED, a une heure de confirmation, et que le grand livre montre le crédit du destinataire.
 //   - CRYPTO_WITHDRAWAL_CONFIRMED : un e-mail après la confirmation réseau (hash réel enregistré).
 //   - TX_SENDER / TX_RECEIVER (ancien processus) : remplacés, jamais envoyés (statut SKIPPED, raison écrite).
+//   - ADMIN_TX_ACTION (14.3) : e-mail à chaque administrateur dès qu'un envoi est enregistré, avec trois boutons (Confirmer / Refuser / Pause).
+//     Chaque bouton ouvre admin-action.html (page de confirmation) avec un jeton personnel ; les jetons sont effacés de la file après l'envoi.
+//   - TRANSFER_CONFIRMED (14.3) : e-mail détaillé à l'expéditeur quand l'administrateur confirme (le destinataire reçoit FUNDS_RECEIVED).
 // ============================================================
 const FROM_EMAIL = (Deno.env.get("EMAIL_FROM") || "yordigitalefinance@gmail.com").trim();
 const FROM_NAME = "OM Wallet";
@@ -60,8 +63,11 @@ const T: Record<Lang, Row> = {
     rewardLine: (a: string) => `Cadeau de bienvenue : ${a} ont été ajoutés à votre portefeuille.`,
     open: "Ouvrir OM Wallet", supportLine: "Besoin d'aide ? Écrivez-nous :", company: "OM Wallet", privacy: "Confidentialité", terms: "Conditions",
     f: { amount: "Montant", ref: "Référence", date: "Date et heure", status: "Statut", network: "Réseau", address: "Adresse de destination", hash: "Hash de la transaction",
-      name: "Nom", phone: "Téléphone", country: "Pays", email: "E-mail", yor: "Wallet ID" },
+      name: "Nom", phone: "Téléphone", country: "Pays", email: "E-mail", yor: "Wallet ID", from: "De", to: "À", note: "Note" },
     funds: { subject: "OM Wallet — Fonds reçus", title: "Fonds reçus", line: (a: string) => `Vous avez reçu ${a} sur votre compte OM Wallet.`, ok: "Crédité avec succès." },
+    act: { subject: (r: string) => `OM Wallet — Transfert à traiter (${r})`, title: "Un transfert attend votre décision", intro: (a: string) => `Un transfert de ${a} vient d'être enregistré. Choisissez une action :`,
+      confirm: "Confirmer", reject: "Refuser", pause: "Mettre en pause", expires: "Ces boutons sont personnels et valables 72 heures. Chacun ouvre une page de confirmation." },
+    tc: { subject: (r: string) => `OM Wallet — Transfert confirmé (${r})`, title: "Transfert confirmé", line: (a: string, to: string) => `Votre transfert de ${a} vers ${to} a été confirmé.`, ok: "Confirmé avec succès." },
     cw: { subject: (r: string) => `OM Wallet — Retrait confirmé sur la blockchain (${r})`, title: "Retrait confirmé sur la blockchain",
       line: (a: string) => `Votre retrait de ${a} a été confirmé par le réseau.`, ok: "Confirmé sur la blockchain." },
     tz: "heure d'Oman",
@@ -92,8 +98,11 @@ const T: Record<Lang, Row> = {
     rewardLine: (a: string) => `Welcome gift: ${a} has been added to your wallet.`,
     open: "Open OM Wallet", supportLine: "Need help? Write to us:", company: "OM Wallet", privacy: "Privacy", terms: "Terms",
     f: { amount: "Amount", ref: "Reference", date: "Date and time", status: "Status", network: "Network", address: "Destination address", hash: "Transaction hash",
-      name: "Name", phone: "Phone", country: "Country", email: "E-mail", yor: "Wallet ID" },
+      name: "Name", phone: "Phone", country: "Country", email: "E-mail", yor: "Wallet ID", from: "From", to: "To", note: "Note" },
     funds: { subject: "OM Wallet — Funds received", title: "Funds received", line: (a: string) => `You have received ${a} on your OM Wallet account.`, ok: "Credited successfully." },
+    act: { subject: (r: string) => `OM Wallet — Transfer to review (${r})`, title: "A transfer is waiting for your decision", intro: (a: string) => `A transfer of ${a} has just been recorded. Choose an action:`,
+      confirm: "Confirm", reject: "Refuse", pause: "Pause", expires: "These buttons are personal and valid for 72 hours. Each one opens a confirmation page." },
+    tc: { subject: (r: string) => `OM Wallet — Transfer confirmed (${r})`, title: "Transfer confirmed", line: (a: string, to: string) => `Your transfer of ${a} to ${to} has been confirmed.`, ok: "Confirmed successfully." },
     cw: { subject: (r: string) => `OM Wallet — Withdrawal confirmed on the blockchain (${r})`, title: "Withdrawal confirmed on the blockchain",
       line: (a: string) => `Your withdrawal of ${a} has been confirmed by the network.`, ok: "Confirmed on the blockchain." },
     tz: "Oman time",
@@ -124,8 +133,11 @@ const T: Record<Lang, Row> = {
     rewardLine: (a: string) => `هدية الترحيب: تمت إضافة ${a} إلى محفظتك.`,
     open: "فتح OM Wallet", supportLine: "هل تحتاج إلى مساعدة؟ راسلنا:", company: "OM Wallet", privacy: "الخصوصية", terms: "الشروط",
     f: { amount: "المبلغ", ref: "المرجع", date: "التاريخ والوقت", status: "الحالة", network: "الشبكة", address: "عنوان الوجهة", hash: "معرّف المعاملة",
-      name: "الاسم", phone: "الهاتف", country: "الدولة", email: "البريد الإلكتروني", yor: "Wallet ID" },
+      name: "الاسم", phone: "الهاتف", country: "الدولة", email: "البريد الإلكتروني", yor: "Wallet ID", from: "من", to: "إلى", note: "ملاحظة" },
     funds: { subject: "OM Wallet — تم استلام الأموال", title: "تم استلام الأموال", line: (a: string) => `لقد استلمت ${a} في حسابك على OM Wallet.`, ok: "أُضيف المبلغ بنجاح." },
+    act: { subject: (r: string) => `OM Wallet — تحويل بانتظار قرارك (${r})`, title: "تحويل ينتظر قرارك", intro: (a: string) => `تم تسجيل تحويل بقيمة ${a} للتو. اختر إجراءً:`,
+      confirm: "تأكيد", reject: "رفض", pause: "إيقاف مؤقت", expires: "هذه الأزرار شخصية وصالحة لمدة 72 ساعة، وكل زر يفتح صفحة تأكيد." },
+    tc: { subject: (r: string) => `OM Wallet — تم تأكيد التحويل (${r})`, title: "تم تأكيد التحويل", line: (a: string, to: string) => `تم تأكيد تحويلك بقيمة ${a} إلى ${to}.`, ok: "تم التأكيد بنجاح." },
     cw: { subject: (r: string) => `OM Wallet — تم تأكيد السحب على البلوكشين (${r})`, title: "تم تأكيد السحب على البلوكشين",
       line: (a: string) => `أكّدت الشبكة سحبك بقيمة ${a}.`, ok: "مؤكد على البلوكشين." },
     tz: "بتوقيت عُمان",
@@ -231,6 +243,43 @@ async function build(log: Row, lang: Lang): Promise<Built> {
       html: layout(lang, t.funds.title, t.funds.line(amt), rows, button(t.open)),
       text: textOf(t.funds.title, [t.funds.line(amt), "", `${t.f.ref} : ${dispId(tx.reference)}`, `${t.f.date} : ${at}`, `${t.f.status} : ${t.funds.ok}`]),
     };
+  }
+
+  if (type === "ADMIN_TX_ACTION") {
+    // three personal buttons; only while the transaction is still undecided (never offer a button for a closed transaction)
+    const p: Row = log.payload ?? {};
+    const { data: tx } = await sb.from("transactions").select("status").eq("id", log.transaction_id).maybeSingle();
+    if (!tx) return { skip: "transaction_not_found" };
+    if (tx.status !== "PENDING") return { skip: `already_${String(tx.status).toLowerCase()}` };
+    const tk: Row = p.tokens ?? {};
+    if (!tk.confirm || !tk.reject || !tk.pause) return { skip: "no_links" };
+    const amt = money(p.amount, String(p.asset), lang);
+    const rows: [string, string][] = [[t.f.ref, dispId(p.reference)], [t.f.amount, amt], [t.f.from, String(p.sender ?? "")], [t.f.to, String(p.receiver ?? "")]];
+    if (p.network) rows.push([t.f.network, NETWORK_NAMES[String(p.network)] ?? String(p.network)]);
+    if (p.note) rows.push([t.f.note, String(p.note)]);
+    rows.push([t.f.date, when(String(p.created_at ?? log.created_at), lang)]);
+    const url = (tok: string) => `${APP_URL}/admin-action#t=${tok}`;
+    const btn = (label: string, color: string, tok: string) => `<a href="${esc(url(String(tok)))}" style="display:inline-block;margin:6px;background:${color};color:#fff;text-decoration:none;font-weight:800;padding:13px 22px;border-radius:14px;font-size:15px">${esc(label)}</a>`;
+    const extra = `<div style="margin:24px 0 0;text-align:center">${btn(t.act.confirm, "#1FAF72", tk.confirm)}${btn(t.act.reject, "#D94F5B", tk.reject)}${btn(t.act.pause, "#E5A332", tk.pause)}</div>` +
+      `<p style="margin:16px 0 0;font-size:12px;line-height:1.6;color:#74879A">${esc(t.act.expires)}</p>`;
+    return { subject: t.act.subject(dispId(p.reference)), html: layout(lang, t.act.title, t.act.intro(amt), rows, extra),
+      text: textOf(t.act.title, [t.act.intro(amt), "", ...rows.map(([k, v]) => `${k} : ${v}`), "", `${t.act.confirm} : ${url(String(tk.confirm))}`, `${t.act.reject} : ${url(String(tk.reject))}`, `${t.act.pause} : ${url(String(tk.pause))}`, "", t.act.expires]) };
+  }
+
+  if (type === "TRANSFER_CONFIRMED") {
+    // to the sender, once, and only when the transaction really is CONFIRMED (same guard as FUNDS_RECEIVED)
+    const { data: tx } = await sb.from("transactions").select("id, reference, amount, asset, network, status, confirmed_at, sender_id, receiver_id").eq("id", log.transaction_id).maybeSingle();
+    if (!tx) return { skip: "transaction_not_found" };
+    if (tx.status !== "CONFIRMED" || !tx.confirmed_at) return { skip: `not_confirmed_${tx.status}`, retry: tx.status === "PENDING" };
+    if (tx.sender_id !== log.user_id) return { skip: "not_the_sender" };
+    const { data: rcv } = await sb.from("profiles").select("first_name, last_name, yor_id").eq("id", tx.receiver_id).maybeSingle();
+    const to = (`${rcv?.first_name ?? ""} ${rcv?.last_name ?? ""}`.trim()) || dispId(rcv?.yor_id);
+    const amt = money(tx.amount, tx.asset, lang), at = when(tx.confirmed_at, lang);
+    const rows: [string, string][] = [[t.f.ref, dispId(tx.reference)], [t.f.amount, amt], [t.f.to, to]];
+    if (tx.network) rows.push([t.f.network, NETWORK_NAMES[tx.network] ?? tx.network]);
+    rows.push([t.f.date, at], [t.f.status, t.tc.ok]);
+    return { subject: t.tc.subject(dispId(tx.reference)), html: layout(lang, t.tc.title, t.tc.line(amt, to), rows, button(t.open)),
+      text: textOf(t.tc.title, [t.tc.line(amt, to), "", ...rows.map(([k, v]) => `${k} : ${v}`)]) };
   }
 
   if (type === "CRYPTO_WITHDRAWAL_CONFIRMED") {
@@ -409,6 +458,13 @@ async function deliver(m: Mail): Promise<{ sent?: Sent; errors: string[]; allCon
 
 const retryDelayMin = (attempts: number) => Math.min(2 ** attempts, 60);
 
+// the personal tokens only live in the queue until the e-mail has left (or will never leave)
+async function scrub(log: Row): Promise<void> {
+  if (log.email_type !== "ADMIN_TX_ACTION" || !log.payload?.tokens) return;
+  const { tokens: _t, ...rest } = log.payload as Row;
+  await sb.from("email_logs").update({ payload: rest }).eq("id", log.id);
+}
+
 async function process(log: Row, dryRun = false): Promise<Row> {
   const lang: Lang = await langOf(log.user_id);
   const built = await build(log, lang);
@@ -420,6 +476,7 @@ async function process(log: Row, dryRun = false): Promise<Row> {
       return { id: log.id, status: "FAILED", error: built.skip };
     }
     await sb.from("email_logs").update({ status: "SKIPPED", locked_at: null, error_message: built.skip, recipient_language: lang }).eq("id", log.id);
+    await scrub(log);
     return { id: log.id, status: "SKIPPED", reason: built.skip };
   }
   if (dryRun) return { id: log.id, lang, to: log.recipient_email, from: FROM_EMAIL, subject: built.subject, html: built.html, text: built.text };
@@ -428,6 +485,7 @@ async function process(log: Row, dryRun = false): Promise<Row> {
   if (out.sent && out.sent.ok) {
     await sb.from("email_logs").update({ status: "SENT", locked_at: null, sent_at: new Date().toISOString(), recipient_language: lang,
       brevo_message_id: `${out.sent.provider}:${out.sent.id ?? ""}`.slice(0, 200), error_message: null, attempts: log.attempts + 1 }).eq("id", log.id);
+    await scrub(log);
     if (log.email_type === "WELCOME") await sb.from("profiles").update({ welcome_email_sent_at: new Date().toISOString() }).eq("id", log.user_id).is("welcome_email_sent_at", null);
     return { id: log.id, status: "SENT", provider: out.sent.provider };
   }
