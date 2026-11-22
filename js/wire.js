@@ -7,6 +7,8 @@
 async function openTxReceipt(txId){
   if (!txId) return;
   const tx = Runtime.transactions.find(x => x.id === txId);
+  /* 14.0.0: a crypto withdrawal opens its tracking screen (real status, hash, receipt) */
+  if (tx && tx.flow === 'CRYPTO_WITHDRAWAL' && tx.withdrawal && typeof OMXWithdraw !== 'undefined'){ OMXWithdraw.open('crypto', tx.withdrawal); return; }
   if (tx){
     const rc = { id: ID.receipt(), transactionId: tx.id, status: tx.status, direction: tx.direction, kind: tx.kind, amount: tx.amount, currency: tx.currency || 'OMR', fee: tx.fee || 0, total: tx.total || tx.amount, network: tx.network || null, country: tx.beneficiary && tx.beneficiary.country, reference: tx.reference, createdAt: tx.createdAt, asset: tx.asset || null, beneficiary: tx.beneficiary || null };
     /* recordLocalReceipt saves the receipt and adds it to Runtime.receipts; if saving fails the receipt is still shown from memory */

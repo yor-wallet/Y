@@ -17,13 +17,15 @@ for (const lang of ['en', 'ar']){
     const g = await page.evaluate(() => { const f = document.querySelector('.rv-card .rv-front').getBoundingClientRect(), b = document.querySelector('.rv-card .rv-back').getBoundingClientRect(); return { ft: Math.round(f.top), bt: Math.round(b.top), fh: Math.round(f.height), bh: Math.round(b.height) }; });
     assert.ok(Math.abs(g.ft - g.bt) <= 2, 'faces are stacked: ' + JSON.stringify(g));
   });
-  await ok('le symbole du rial remplace le code (le texte OMR reste) : accueil, historique', async () => {
+  await ok('solde masqué au démarrage ; le symbole du rial remplace le code (le texte OMR reste) : compte, historique', async () => {
     await page.evaluate(() => R.go('home', { force: true })); await wait(700);
     assert.equal(await page.evaluate(() => Runtime.hideBalance), true, 'a session starts with the balance hidden');
-    assert.match(await page.locator('#home .ds-bal-amt').textContent(), /^[•\s]+$/);
+    assert.match(await page.locator('#home [data-omx-total]').textContent(), /^[•\s]+$/);
     await page.click('#home [data-action="toggle-balance"]'); await wait(900);                 /* the eye shows it */
-    assert.ok(await page.locator('#home .ds-bal-amt .rv-cur[data-cur="OMR"]').count() >= 1);
-    assert.match(await page.locator('#home .ds-bal-amt').textContent(), /OMR/);
+    assert.match(await page.locator('#home [data-omx-total]').textContent(), /^\$[\d,]+\.\d{2}$/);
+    assert.match(await page.locator('#home .omx-ts').textContent(), /OMR/);
+    await page.evaluate(() => R.go('account', { force: true })); await wait(600);
+    assert.ok(await page.locator('#account .hub-amt .rv-cur[data-cur="OMR"]').count() >= 1, 'account wallet card');
     await page.evaluate(() => R.go('history', { force: true })); await wait(800);
     assert.ok(await page.locator('#history .item-amount .rv-cur[data-cur="OMR"]').count() >= 3, 'history rows');
     const w = await page.evaluate(() => { const e = document.querySelector('#history .item-amount .rv-cur'); const r = e.getBoundingClientRect(); return { w: r.width, h: r.height, mask: getComputedStyle(e).webkitMaskImage || getComputedStyle(e).maskImage }; });
@@ -47,18 +49,27 @@ for (const lang of ['en', 'ar']){
 }
 {
   const { ctx, page, logs } = await openApp(browser, url, { settle: 500 });
-  console.log('\n[confirmation et reçu]');
-  await ok('le solde disponible sous le montant est masqué (••••) tant que l’œil n’a pas été touché', async () => {
-    await page.evaluate(() => { txReset(); R.go('country-select'); }); await page.waitForSelector('#country-select.active #sp-num');
-    await page.fill('#sp-num', '99887766'); await page.dispatchEvent('#sp-num', 'input'); await page.waitForFunction(() => !document.getElementById('sp-next').disabled); await wait(500); await page.click('#sp-next');
-    await page.waitForSelector('#tx-amount.active #amt-input');
-    const cap = await page.locator('#tx-amount .caption').innerText(); assert.match(cap, /••••/); assert.doesNotMatch(cap, /1,284/);
+  console.log('\n[14.0.0 — transferts retirés de l’interface]');
+  await ok('aucun bouton de transfert : barre, accueil, services, recherche', async () => {
+    for (const id of ['home', 'services', 'account', 'wallet']){ await page.evaluate(i => R.go(i, { force: true }), id); await wait(400);
+      assert.equal(await page.locator('[data-nav="country-select"],[data-nav="receive"],[data-nav="tx-amount"]').count(), 0, id); }
+    assert.deepEqual(await page.evaluate(() => [...document.querySelectorAll('#bottom-nav .nav-item')].map(a => a.getAttribute('data-nav'))), ['home', 'wallet', 'markets', 'history', 'account']);
   });
-  await ok('le symbole du rial sur l’écran de confirmation', async () => {
-    await page.evaluate(() => { txReset(); R.go('country-select'); }); await page.waitForSelector('#country-select.active #sp-num');
-    await page.fill('#sp-num', '99887766'); await page.dispatchEvent('#sp-num', 'input'); await page.waitForFunction(() => !document.getElementById('sp-next').disabled); await wait(500); await page.click('#sp-next');
-    await page.waitForSelector('#tx-amount.active #amt-input'); await page.fill('#amt-input', '5'); await page.dispatchEvent('#amt-input', 'input'); await wait(500); await page.click('#amt-next');
-    await page.waitForSelector('#tx-review.active'); assert.ok(await page.locator('#tx-review .summary-v .rv-cur[data-cur="OMR"]').count() >= 1);
+  await ok('un ancien lien vers un écran de transfert ramène à l’accueil (rien n’est envoyé)', async () => {
+    for (const id of ['country-select', 'tx-amount', 'tx-review', 'receive', 'tx-result']){
+      await page.evaluate(i => R.go(i, { force: true }), id); await wait(300);
+      assert.equal(await page.evaluate(() => R.current()), 'home', id);
+    }
+    assert.equal(await page.evaluate(() => (window.__rpcLog || []).filter(x => /send|transfer/.test(x.name)).length), 0);
+  });
+  await ok('les anciens transferts restent dans l’historique', async () => {
+    await page.evaluate(() => R.go('history', { force: true })); await wait(700);
+    assert.match(await page.locator('#history').innerText(), /Salim Al Harthy/);
+  });
+  await ok('le portefeuille CFA (XOF) n’apparaît nulle part, mais il est conservé', async () => {
+    const r = await page.evaluate(() => ({ shown: Runtime.accounts.map(a => a.currency), kept: (Runtime.accountsArchived || []).map(a => a.currency) }));
+    assert.deepEqual(r.shown, ['OMR']); assert.deepEqual(r.kept, ['XOF']);
+    for (const id of ['home', 'account', 'wallet', 'cards']){ await page.evaluate(i => R.go(i, { force: true }), id); await wait(400); assert.doesNotMatch(await page.locator('#' + id).innerText(), /XOF|CFA|850[ ,.]?000/, id); }
   });
   await ok('no page errors', async () => assert.deepEqual(logs, []));
   await ctx.close();
@@ -70,7 +81,7 @@ for (const lang of ['en', 'ar']){
     await ok('le solde ' + bal + ' tient dans sa carte (jamais coupé), sans débordement horizontal', async () => {
       await page.evaluate(b => { Runtime.hideBalance = false; const a = Runtime.accounts.find(x => x.type === 'MAIN'); a.balance = b; a.availableBalance = b; R.go('home', { force: true }); }, bal);
       await wait(1500);
-      const m = await page.evaluate(() => { const e = document.getElementById('px-bal-amt'), r = document.createRange(); r.selectNodeContents(e); return { w: r.getBoundingClientRect().width, cw: e.clientWidth, ov: document.documentElement.scrollWidth > window.innerWidth + 1 }; });
+      const m = await page.evaluate(() => { const e = document.querySelector('#home [data-omx-total]'), r = document.createRange(); r.selectNodeContents(e); return { w: r.getBoundingClientRect().width, cw: e.clientWidth, ov: document.documentElement.scrollWidth > window.innerWidth + 1 }; });
       assert.ok(m.w <= m.cw, JSON.stringify(m)); assert.equal(m.ov, false);
     });
   }

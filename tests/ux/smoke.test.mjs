@@ -3,7 +3,8 @@
 import assert from 'node:assert/strict';
 import { serve, launch, openApp } from './harness.mjs';
 const { srv, url } = await serve(); const browser = await launch();
-const SCREENS = ['home', 'history', 'cards', 'services', 'profile', 'profile-edit', 'settings', 'notifications', 'receive', 'help', 'privacy', 'about', 'devices', 'sessions', 'country-select'];
+/* 14.0.0: the transfer screens (country-select, receive) are retired; the crypto and withdrawal screens are swept instead */
+const SCREENS = ['home', 'wallet', 'markets', 'asset', 'deposit', 'exchange', 'withdraw', 'withdraw-bank', 'withdraw-crypto', 'history', 'account', 'cards', 'services', 'profile', 'profile-edit', 'settings', 'notifications', 'help', 'privacy', 'about', 'devices', 'sessions'];
 let failed = 0, checks = 0;
 const wait = ms => new Promise(r => setTimeout(r, ms));
 for (const lang of ['en', 'fr', 'ar']) for (const theme of ['light', 'dark']){

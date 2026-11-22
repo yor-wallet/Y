@@ -5,14 +5,15 @@
    ============================================================ */
 function renderSidebar(){
   document.getElementById('sidebar-logo').innerHTML = logoLockup(48);
+  /* 14.0.0 — same sections as the floating bar (no transfer entry), then withdrawals and the account pages */
   const items = [
-    { nav:'home', icon:'home', key:'nav.home' },
-    { nav:'crypto', icon:'crypto', key:'crypto.title' },
-    { nav:'history', icon:'history', key:'nav.history' },
-    { nav:'banks', icon:'bank', key:'banks.title' },
+    { nav:'home', icon:'home', key:'omx.home' },
+    { nav:'wallet', icon:'crypto', key:'omx.crypto' },
+    { nav:'markets', icon:'chart', key:'omx.markets' },
+    { nav:'history', icon:'history', key:'omx.activity' },
+    { nav:'withdraw', icon:'download', key:'omx.withdraw' },
     { nav:'notifications', icon:'bell', key:'ui.notifications' },
-    { nav:'cards', icon:'cards', key:'nav.cards' },
-    { nav:'profile', icon:'profile', key:'nav.profile' },
+    { nav:'account', icon:'profile', key:'omx.account' },
     { nav:'settings', icon:'settings', key:'settings.title' }
   ];
   const nav = document.getElementById('side-nav');

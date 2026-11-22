@@ -224,7 +224,7 @@ const V12 = (() => {
     const it = (nav2, ic, lbl, cta) => cta
       ? '<a class="nav-item nav-cta" data-nav="' + nav2 + '"><span class="nav-cta-tile">' + icon(ic, 26) + '</span><span class="nav-lb">' + lbl + '</span></a>'
       : '<a class="nav-item" data-nav="' + nav2 + '"><span class="nav-ic">' + icon(ic, 24) + '</span><span class="nav-lb">' + lbl + '</span></a>';
-    nav.innerHTML = '<div class="nav-dock">' + it('home', 'home', vt('home')) + it('history', 'history', t('nav.tx')) + it('country-select', 'send', vt('send'), true) + it('cards', 'cards', vt('cards')) + it('account', 'user', t('nav.account')) + '<i class="nav-ind" aria-hidden="true"></i></div>';
+    nav.innerHTML = '<div class="nav-dock">' + it('home', 'home', t('omx.home')) + it('wallet', 'crypto', t('omx.navCrypto')) + it('markets', 'chart', t('omx.markets')) + it('history', 'history', t('omx.activity')) + it('account', 'user', t('omx.account')) + '<i class="nav-ind" aria-hidden="true"></i></div>';
     requestAnimationFrame(placeInd);
   }
   /* The highlight pill glides under the active tab (12.9.0). Measured, so it also works in RTL and at any width. */

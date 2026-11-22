@@ -51,7 +51,11 @@ const AuthEngine = (() => {
     ]);
     if (!UserContext.get() || UserContext.get().uid !== uid) return Runtime;   /* signed out meanwhile */
     Runtime.ctx = c; Runtime.profile = profile; Runtime.settings = settingsDoc || {}; Runtime.security = securityDoc || {};
-    Runtime.accounts = accounts || []; Runtime.transactions = transactions || []; Runtime.receipts = receipts || [];
+    /* 14.0.0 — the West-African CFA (XOF) wallet is retired from the app: it is not shown, converted or used anywhere. The account and its
+       amounts stay untouched in the database (kept apart here, read-only); its past operations stay in the history. */
+    Runtime.accounts = (accounts || []).filter(a => String(a.currency || '').toUpperCase() !== 'XOF');
+    Runtime.accountsArchived = (accounts || []).filter(a => String(a.currency || '').toUpperCase() === 'XOF');
+    Runtime.transactions = transactions || []; Runtime.receipts = receipts || [];
     Runtime.notifications = notifications || []; Runtime.cards = cards || []; Runtime.wallets = wallets || [];
     Runtime.bankAccounts = bankAccounts || []; Runtime.contacts = contacts || []; Runtime.beneficiaries = beneficiaries || [];
     Runtime.devices = devices || []; Runtime.sessions = sessions || [];

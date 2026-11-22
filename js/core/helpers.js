@@ -168,7 +168,7 @@ function statusPill(state, withIcon, label){
 }
 /* human name of an operation from the server kind (FIAT_TRANSFER, CRYPTO_BUY, ...); '' when unknown (nothing is guessed) */
 function opLabel(x){
-  const k = String((x && (x.kind || x.type)) || '').toUpperCase();
+  const k = x && x.flow === 'CRYPTO_WITHDRAWAL' ? 'CRYPTO_WITHDRAWAL' : String((x && (x.kind || x.type)) || '').toUpperCase();
   const key = 'op.' + k;
   const v = t(key);
   return v === key ? '' : v;

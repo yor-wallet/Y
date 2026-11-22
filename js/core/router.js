@@ -23,8 +23,14 @@ const R = (() => {
     'country-select':'home',
     'tx-amount':'country-select', 'tx-review':'tx-amount', 'receipt':'home',
     'receive':'home', 'profile-edit':'profile', 'tx-result':'home',
-    'devices':'settings', 'sessions':'settings', 'privacy':'settings', 'help':'account', 'about':'account', 'history':'home', 'dy-control':'account', 'payouts':'account'
+    'devices':'settings', 'sessions':'settings', 'privacy':'settings', 'help':'account', 'about':'account', 'history':'home', 'dy-control':'account', 'payouts':'dy-control',
+    /* 14.0.0 — OM Wallet crypto + withdrawals */
+    'wallet':'home', 'markets':'home', 'asset':'markets', 'deposit':'home', 'exchange':'home',
+    'withdraw':'home', 'withdraw-bank':'withdraw', 'withdraw-crypto':'withdraw', 'withdraw-confirm':'withdraw', 'withdraw-track':'withdraw'
   };
+  /* 14.0.0 — money transfers are retired from the app (their history and receipts stay readable). An old link, a saved screen or a
+     shortcut to a transfer screen lands on the home screen; the server functions are not changed by this. */
+  const RETIRED_RE = /^(country-select|service-select|identifier-input|tx-amount|tx-review|tx-result|receive|processing|tx-network-validation|tx-confirmation)$/;
   const NAV_KEYS = {
     'home':'home','services':'services','chain':'services','history':'history','cards':'cards','cards-add':'cards','card-settings':'cards','country-select':'country-select','service-select':'country-select','identifier-input':'country-select','tx-amount':'country-select','tx-review':'country-select','profile':'account','settings':'account','account':'account','dy-control':'account','payouts':'account','banks':'services','banks-add':'services','privacy':'settings','help':'settings','about':'settings',
     'notifications':'notifications','crypto':'crypto','crypto-market':'crypto-market','crypto-networks':'crypto-market','crypto-spot':'crypto-market',
@@ -32,7 +38,9 @@ const R = (() => {
     'crypto-swap':'crypto','crypto-swap-to':'crypto','crypto-swap-amount':'crypto',
     'crypto-send':'crypto','crypto-send-network':'crypto','crypto-send-address':'crypto','crypto-send-amount':'crypto',
     'crypto-review':'crypto','crypto-receive':'crypto','crypto-receive-address':'crypto',
-    'crypto-to-bank':'crypto','crypto-to-bank-account':'crypto','crypto-to-bank-amount':'crypto','crypto-bank-review':'crypto'
+    'crypto-to-bank':'crypto','crypto-to-bank-account':'crypto','crypto-to-bank-amount':'crypto','crypto-bank-review':'crypto',
+    'wallet':'wallet','asset':'wallet','deposit':'wallet','exchange':'wallet','withdraw':'wallet','withdraw-bank':'wallet','withdraw-crypto':'wallet','withdraw-confirm':'wallet','withdraw-track':'wallet',
+    'markets':'markets','receipt':'history'
   };
   function register(map){ Object.assign(SCREENS, map); }
   function onLeave(fn){ if (typeof fn === 'function') cleanups.push(fn); }
@@ -74,6 +82,9 @@ const R = (() => {
       return go('home', { reset:true, force:true });
     }
     if (ADMIN_SCREENS.indexOf(id) !== -1 && !(typeof canUseChain === 'function' && canUseChain())){
+      return go('home', { reset:true, force:true });
+    }
+    if (RETIRED_RE.test(id)){
       return go('home', { reset:true, force:true });
     }
     if (!FEATURES.crypto && CRYPTO_SCREEN_RE.test(id)){

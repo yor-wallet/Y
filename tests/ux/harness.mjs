@@ -13,6 +13,21 @@ const MOCK = fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.ur
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.woff2': 'font/woff2', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.ico': 'image/x-icon', '.txt': 'text/plain' };
 
 /* The production Content-Security-Policy (vercel.json) is applied to every page the tests open: a script, style or request it would refuse shows up as a console error. */
+/* Binance public market data, answered locally with fixed, recognisable test values (the tests never reach the internet). opts.market: 'ok' (default) | 'down' */
+const MK = { BTCUSDT: [97000, 95000], ETHUSDT: [3500, 3600], USDCUSDT: [1.0002, 1.0001], BNBUSDT: [690, 680], SOLUSDT: [210, 200], TRXUSDT: [0.25, 0.24], XRPUSDT: [2.4, 2.5],
+  LTCUSDT: [110, 105], DOGEUSDT: [0.38, 0.4], ADAUSDT: [1.05, 1], AVAXUSDT: [42, 40], POLUSDT: [0.55, 0.5] };
+function binance(u){
+  const q = new URL(u);
+  if (/\/ticker\/24hr/.test(q.pathname)){
+    const syms = JSON.parse(q.searchParams.get('symbols') || '[]');
+    return syms.filter(s => MK[s]).map(s => ({ symbol: s, lastPrice: String(MK[s][0]), openPrice: String(MK[s][1]), highPrice: String(MK[s][0] * 1.02), lowPrice: String(MK[s][1] * 0.98), volume: '1000', quoteVolume: String(MK[s][0] * 1000) }));
+  }
+  if (/\/klines/.test(q.pathname)){
+    const s = q.searchParams.get('symbol'), n = Number(q.searchParams.get('limit') || 24), m = MK[s] || [1, 1], t0 = Date.UTC(2026, 10, 20);
+    return Array.from({ length: n }, (_, i) => { const c = m[1] + (m[0] - m[1]) * (i / (n - 1)) + Math.sin(i / 3) * m[0] * 0.004; return [t0 + i * 3600e3, String(c), String(c), String(c), String(c), '1']; });
+  }
+  return [];
+}
 const CSP = (() => { try { const h = JSON.parse(fs.readFileSync(path.join(ROOT, 'vercel.json'), 'utf8')).headers[0].headers.find(x => x.key === 'Content-Security-Policy'); return h ? h.value : ''; } catch (e) { return ''; } })();
 export function serve(port = 0, root = ROOT_APP, index){
   const srv = http.createServer((req, res) => {
@@ -49,12 +64,17 @@ export async function openApp(browser, base, opts = {}){
       return route.fulfill({ status: 200, contentType: 'text/javascript', body });
     }
     if (u.startsWith(base)) return route.continue();
+    if (/^https:\/\/data-api\.binance\.vision\//.test(u)){
+      if (opts.market === 'down') return route.fulfill({ status: 503, contentType: 'application/json', body: '{}' });
+      return route.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify(binance(u)) });
+    }
     if (/cdn\.jsdelivr\.net.*supabase/.test(u)){
       const fx = JSON.stringify({ theme: opts.theme, lang: opts.lang, emptyTx: !!opts.emptyTx, signedOut: !!opts.signedOut, admin: !!opts.admin, dy: !!opts.dy, dyName: opts.dyName || '', dyFlipOnPin: !!opts.dyFlipOnPin });
       return route.fulfill({ status: 200, contentType: 'text/javascript', body: 'window.__FX=' + fx + ';' + MOCK });
     }
     return route.abort();
   });
+  try { await page.routeWebSocket(/binance\.vision/, ws => { ws.close(); }); } catch (e) {}       /* live stream refused: the app falls back to polling */
   await page.addInitScript((o) => { window.__FP_SPLASH_MIN = 50; try { if (o.lang) localStorage.setItem('fp_lang_test', o.lang); if (o.theme) localStorage.setItem('fp_theme', o.theme); } catch (e) {} }, opts);
   if (opts.net){ const c = await ctx.newCDPSession(page); await c.send('Network.enable'); await c.send('Network.emulateNetworkConditions', opts.net); }
   await page.goto(base, { waitUntil: 'load' });

@@ -24,8 +24,13 @@
   ];
   var tables = {
     profiles: [profile],
-    accounts: [{ id: 'acc-1', type: 'MAIN', name: 'Main OMR', currency: 'OMR', balance: FX.emptyTx ? 0 : 1284.5, available_balance: FX.emptyTx ? 0 : 1284.5, reserved_balance: 0, status: 'ACTIVE', country: 'OM', created_at: new Date(NOW - 90 * D).toISOString() }],
-    crypto_wallets: [],
+    accounts: [{ id: 'acc-1', type: 'MAIN', name: 'Main OMR', currency: 'OMR', balance: FX.emptyTx ? 0 : 1284.5, available_balance: FX.emptyTx ? 0 : 1284.5, reserved_balance: 0, status: 'ACTIVE', country: 'OM', created_at: new Date(NOW - 90 * D).toISOString() },
+      /* the retired CFA wallet: still in the database, never shown */
+      { id: 'acc-xof', type: 'WEST_AFRICA', name: 'West Africa XOF', currency: 'XOF', balance: 850000, available_balance: 850000, reserved_balance: 0, status: 'ACTIVE', country: 'ML', created_at: new Date(NOW - 90 * D).toISOString() }],
+    crypto_wallets: FX.emptyTx ? [] : [
+      { id: 'w-btc', user_id: uid, asset: 'BTC', network: 'bitcoin', address: 'bc1qinternaltestaddress0000000000000000', balance: 0.01, available_balance: 0.01, locked_balance: 0 },
+      { id: 'w-usdt', user_id: uid, asset: 'USDT', network: 'tron', address: 'TInternalTestAddress00000000000000', balance: 250, available_balance: 250, locked_balance: 0 }
+    ],
     notifications: FX.emptyTx ? [] : [
       { id: 'n-1', type: 'TRANSFER_RECEIVED', title: 'Money received', message: 'You received OMR 120.000 from Khalid Al Rawahi', read: false, transaction_id: 'tx-4', data: { amount: 120, currency: 'OMR', from: 'Khalid Al Rawahi' }, created_at: new Date(NOW - 2 * H).toISOString() },
       { id: 'n-2', type: 'TRANSFER_SENT', title: 'Transfer sent', message: 'OMR 25.500 sent to Salim Al Harthy', read: true, transaction_id: 'tx-1', data: { amount: 25.5, currency: 'OMR', to: 'Salim Al Harthy' }, created_at: new Date(NOW - 9 * H).toISOString() }
@@ -85,6 +90,10 @@
   var dyOverview = function(){ return { enabled: dyS.enabled, updatedAt: dyS.updatedAt, updatedBy: dyS.updatedBy, blocked24h: dyS.blocked, blockedTotal: dyS.blocked, history: dyS.history.slice() }; };
   var dyBlock = function(){ dyS.blocked++; return { ok: false, error: 'TRANSFER_UNAVAILABLE', blocked_by: 'DY' }; };
   window.__dyState = dyS;
+  var wdB = [], wdC = [], wdEnabled = true;
+  var acc = function(){ return tables.accounts[0]; };
+  var adm = function(){ if (!FX.admin) throw { message: 'forbidden', code: '42501' }; };
+  window.__wd = { bank: wdB, crypto: wdC };
   var rpcs = {
     dy_status: function(){ return { enabled: dyS.enabled, updatedAt: dyS.updatedAt }; },
     admin_console_stats: function(){ if (!FX.admin) throw { message: 'forbidden', code: '42501' }; return { users: 21, transfers_total: 220, transactions_today: 2, balance_omr: 1284.5 }; },
@@ -131,6 +140,49 @@
       var p = payouts.filter(function(x){ return x.id === a.p_tx; })[0]; if (!p || p.status !== 'COMPLETED') throw { message: 'invalid_state', code: '22023' };
       p.notice_status = 'QUEUED'; p.notice_error = null; p._q = 2; return { ok: true }; },
     get_recipient_notice_status: function(){ return []; },
+    /* 14.0.0 — withdrawals, behaving like the database functions */
+    get_receive_address: function(){ throw { message: 'deposit_address_unavailable', code: '22023' }; },
+    withdraw_overview: function(){ return { items: wdB.slice(), banks: [{ code: 'BMCT', en: 'Bank Muscat', fr: 'Bank Muscat', ar: 'بنك مسقط' }, { code: 'NBO', en: 'National Bank of Oman', fr: 'National Bank of Oman', ar: 'البنك الوطني العماني' }],
+      available: acc().available_balance, reserved: acc().reserved_balance, min: 10, enabled: wdEnabled }; },
+    withdraw_request: function(a){
+      if (!a.p_key || a.p_key.length < 8) throw { message: 'idempotency_key_required' };
+      var ex = wdB.filter(function(w){ return w._idem === a.p_key; })[0]; if (ex) return { ok: true, id: ex.id, reference: ex.reference, replayed: true };
+      if (!wdEnabled) throw { message: 'withdraw_disabled' };
+      var amt = Math.round(Number(a.p_amount) * 1000) / 1000; if (!(amt >= 10)) throw { message: 'amount_out_of_range' };
+      if (amt > acc().available_balance) throw { message: 'insufficient_balance' };
+      acc().available_balance -= amt; acc().reserved_balance += amt;
+      var w = { id: 'wdb-' + (wdB.length + 1), reference: 'WD-TEST000' + (wdB.length + 1), amount: amt, holder: a.p_holder, bank_code: a.p_bank_code, bank_name: 'Bank Muscat', account_number: a.p_account, iban: a.p_iban || null, status: 'PENDING', admin_note: null, paid_ref: null, created_at: new Date().toISOString(), decided_at: null, paid_at: null, _idem: a.p_key };
+      wdB.unshift(w); return { ok: true, id: w.id, reference: w.reference }; },
+    withdraw_cancel: function(a){ var w = wdB.filter(function(x){ return x.id === a.p_id; })[0]; if (!w) throw { message: 'not_found' }; if (w.status !== 'PENDING') throw { message: 'invalid_state' };
+      w.status = 'CANCELLED'; acc().available_balance += w.amount; acc().reserved_balance -= w.amount; return { ok: true }; },
+    crypto_withdraw_overview: function(){ var bal = {}; tables.crypto_wallets.forEach(function(w){ bal[w.asset] = (bal[w.asset] || 0) + w.available_balance; });
+      return { enabled: wdEnabled, kyc_required: false, networks: [{ asset: 'BTC', network: 'bitcoin', fee: 0.0002 }, { asset: 'ETH', network: 'ethereum', fee: 0.002 }, { asset: 'USDT', network: 'ethereum', fee: 0 }, { asset: 'USDT', network: 'tron', fee: 0 }, { asset: 'USDT', network: 'bsc', fee: 0 }, { asset: 'XRP', network: 'xrp', fee: 0.2 }],
+        balances: bal, items: wdC.slice() }; },
+    crypto_withdraw_request: function(a){
+      var ex = wdC.filter(function(w){ return w._idem === a.p_idempotency_key; })[0]; if (ex) return { ok: true, id: ex.id, reference: ex.reference, status: ex.status, replayed: true };
+      if (!a.p_pin_grant) throw { message: 'pin_required', code: '42501' };
+      if (!wdEnabled) throw { message: 'withdraw_disabled' };
+      if (a.p_network === 'tron' && !/^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(a.p_address)) throw { message: 'invalid_address' };
+      if (/^TInternal/.test(a.p_address)) throw { message: 'internal_address_not_allowed' };
+      var fee = a.p_asset === 'BTC' ? 0.0002 : 0, w0 = tables.crypto_wallets.filter(function(w){ return w.asset === a.p_asset; })[0];
+      if (!w0 || w0.available_balance < Number(a.p_amount) + fee) throw { message: 'insufficient_balance' };
+      w0.available_balance -= Number(a.p_amount) + fee; w0.balance -= Number(a.p_amount) + fee;
+      var w = { id: 'wdc-' + (wdC.length + 1), reference: 'OMT' + String(48213570 + wdC.length), asset: a.p_asset, network: a.p_network, address: a.p_address, memo: a.p_memo, amount: Number(a.p_amount), fee: fee, status: 'PENDING', tx_hash: null, admin_note: null, transaction_id: 'tx-wd' + wdC.length, created_at: new Date().toISOString(), _idem: a.p_idempotency_key };
+      wdC.unshift(w); return { ok: true, id: w.id, reference: w.reference, status: 'PENDING', transaction_id: w.transaction_id, amount: w.amount, fee: fee, total: w.amount + fee, asset: w.asset, network: w.network }; },
+    crypto_withdraw_cancel: function(a){ var w = wdC.filter(function(x){ return x.id === a.p_id; })[0]; if (!w) throw { message: 'not_found' }; if (w.status !== 'PENDING') throw { message: 'invalid_state' };
+      w.status = 'CANCELLED'; var w0 = tables.crypto_wallets.filter(function(x){ return x.asset === w.asset; })[0]; w0.available_balance += w.amount + w.fee; w0.balance += w.amount + w.fee; return { ok: true }; },
+    admin_withdrawal_list: function(){ adm(); return wdB.map(function(w){ return Object.assign({ user_id: uid, yor_id: 'YOR-A1B2C3', full_name: 'Amira Al Said', phone: '+96891234567' }, w); }); },
+    admin_withdrawal_decide: function(a){ adm(); var w = wdB.filter(function(x){ return x.id === a.p_id; })[0]; if (!w || w.status !== 'PENDING') throw { message: 'invalid_state' };
+      if (!a.p_approve && String(a.p_note || '').trim().length < 3) throw { message: 'reason_required' }; w.status = a.p_approve ? 'APPROVED' : 'REJECTED'; w.admin_note = a.p_note || null; return { ok: true }; },
+    admin_withdrawal_mark_paid: function(a){ adm(); var w = wdB.filter(function(x){ return x.id === a.p_id; })[0]; if (!w || w.status !== 'APPROVED') throw { message: 'invalid_state' }; w.status = 'PAID'; w.paid_ref = a.p_bank_ref; return { ok: true }; },
+    admin_crypto_withdrawal_list: function(){ adm(); return wdC.map(function(w){ return Object.assign({ user_id: uid, yor_id: 'YOR-A1B2C3', full_name: 'Amira Al Said', phone: '+96891234567' }, w); }); },
+    admin_crypto_withdrawal_process: function(a){ adm(); var w = wdC.filter(function(x){ return x.id === a.p_id; })[0]; if (!w || w.status !== 'PENDING') throw { message: 'invalid_state' }; w.status = 'PROCESSING'; return { ok: true }; },
+    admin_crypto_withdrawal_complete: function(a){ adm(); var w = wdC.filter(function(x){ return x.id === a.p_id; })[0]; if (!w || (w.status !== 'PENDING' && w.status !== 'PROCESSING')) throw { message: 'invalid_state' };
+      if (w.network === 'tron' && !/^[0-9a-fA-F]{64}$/.test(a.p_tx_hash)) throw { message: 'invalid_tx_hash' }; w.status = 'COMPLETED'; w.tx_hash = a.p_tx_hash; return { ok: true }; },
+    admin_crypto_withdrawal_reject: function(a){ adm(); var w = wdC.filter(function(x){ return x.id === a.p_id; })[0]; if (!w) throw { message: 'not_found' }; if (String(a.p_reason || '').trim().length < 3) throw { message: 'reason_required' }; w.status = 'REJECTED'; w.admin_note = a.p_reason; return { ok: true }; },
+    admin_recent_users: function(){ adm(); return [{ yor_id: 'YOR-A1B2C3', first_name: 'Amira', last_name: 'Al Said', email: profile.email, phone: profile.phone, country: 'OM', status: 'active', role: profile.role, created_at: profile.created_at, email_confirmed: true }]; },
+    admin_search_users: function(a){ adm(); return /amira/i.test(a.p_query || '') ? rpcs.admin_recent_users() : []; },
+    admin_set_setting: function(a){ adm(); if (a.p_key === 'withdraw_enabled'){ if (typeof a.p_value !== 'boolean') throw { message: 'invalid_value' }; wdEnabled = a.p_value; } return {}; },
     get_tx_balance_after: function(){ return null; }
   };
   var client = {

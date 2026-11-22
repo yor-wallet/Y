@@ -1,3 +1,30 @@
+# OM Wallet 14.0.0 — portefeuille crypto premium : marchés réels, retraits réels, transferts retirés
+
+## Données conservées (aucune suppression)
+- Aucune ligne de la base n'a été supprimée ni modifiée en masse. Les anciennes transactions de transfert, leurs reçus et les versements restent consultables (Activité, Admin › Transferts (archives)). Les références historiques ne changent pas.
+- Le portefeuille **CFA (XOF)** est retiré de l'interface seulement : le compte et ses montants restent intacts en base, aucune conversion automatique ; l'application le garde à part (`Runtime.accountsArchived`) et ne l'affiche, ne le convertit et ne l'utilise plus.
+
+## Serveur (`supabase/migrations/20261122_crypto_withdrawals_real.sql`, appliquée ; retour arrière : `…_rollback.sql`)
+- **Plus aucune fausse adresse de dépôt** : `get_receive_address` refuse (`deposit_address_unavailable`) — les adresses créées auparavant étaient générées au hasard, sans clé privée : des fonds envoyés dessus auraient été perdus.
+- **Retraits crypto réels, payés manuellement** : table `crypto_withdrawals`, `crypto_withdraw_request` (code PIN vérifié par le serveur, clé d'idempotence, format d'adresse par réseau, adresses internes refusées, tag XRP, 3 demandes ouvertes au plus, débit immédiat du solde, transaction `CRYPTO_SEND` en `PENDING`), `crypto_withdraw_cancel`, `crypto_withdraw_overview`. Admin : `admin_crypto_withdrawal_list / process / complete / reject`. **Confirmé seulement avec le vrai hash blockchain** (format du réseau, jamais réutilisé) ; refus = remboursement. Testé dans des transactions annulées (rejeu, annulation, refus, droits).
+- Les retraits bancaires OMR existants (`withdraw_*`, `admin_withdrawal_*`) sont utilisés tels quels : mêmes règles (minimum, KYC, banques, IBAN, 3 demandes ouvertes).
+
+## Interface
+- **Transferts retirés** : bouton, onglet, écrans (numéro du destinataire, montant, confirmation, résultat, « Recevoir »), raccourcis de recherche, bannière, « envoyer à nouveau » des reçus. Un ancien lien vers ces écrans ramène à l'accueil (garde du routeur `RETIRED_RE`). Les fonctions serveur de transfert ne sont pas modifiées.
+- **Barre flottante** : Accueil · Crypto · Marchés · Activité · Compte. Barre latérale (bureau) alignée.
+- **Accueil** (`js/screens/omx.js`) : « OM Wallet », « Bienvenue, [Nom] », profil, recherche, notifications ; carte « Total des actifs » en USD avec l'équivalent OMR, variation 24 h, graphique du portefeuille (avoirs actuels × cours historiques, indiqué comme tel), œil (masqué au démarrage) ; actions Dépôt · Retrait · Échange · Marchés ; vos actifs, marchés, activité récente.
+- **Données de marché réelles** (`js/crypto/omx-data.js`) : API publique Binance (REST `data-api.binance.vision`, flux WebSocket `data-stream.binance.vision`, repli toutes les 20 s), état affiché (En direct / Actualisé / Hors ligne / Indisponible + Réessayer) et heure de dernière synchro. Cours en USDT ≈ USD (indiqué). Aucun cours inventé : sans données, « — ».
+- **Crypto, Marchés, Détail** : 13 actifs (BTC, ETH, USDT, USDC, BNB, SOL, TRX, XRP, LTC, DOGE, ADA, AVAX, POL) avec logos officiels (web3icons, MIT), cours, variation, mini-graphique, recherche, favoris (enregistrés dans les préférences), graphique interactif 1H/4H/1D/1W/1M/1Y, plus haut / bas / volume 24 h, réseaux avec contrats vérifiés sur la chaîne, explorateur.
+- **Dépôt** : crypto → réseau → le serveur est interrogé ; sans adresse réelle, message clair « n'envoyez aucun fonds », ni adresse ni QR. Un vrai encodeur QR (qrcode-generator, MIT) n'est utilisé qu'avec une adresse renvoyée par le serveur.
+- **Échange** : indiqué comme indisponible (pas de service de marché réel relié).
+- **Retraits** (`js/screens/omx-withdraw.js`) : banque (OMR) et crypto ; contrôles avant envoi (montant, minimum, solde + frais, IBAN mod-97, format d'adresse, tag XRP), récapitulatif + case « j'ai vérifié », code PIN, **suivi animé selon le statut réel** (Préparation → Vérification / En attente → Traitement → Confirmation ; Échec / Annulé), rafraîchi toutes les 15 s, annulation tant que la demande est en attente, lien explorateur et hash quand ils existent, reçu PDF / partage (réseau, adresse, hash).
+- **Admin Control** (`js/screens/admin-dy.js`) : tableau de bord, retraits bancaires (approuver, refuser avec motif, marquer payé avec la référence bancaire), retraits crypto (traitement, confirmation par hash, refus), utilisateurs, actifs et réseaux, paramètres (retraits activés), journal. L'interrupteur DY est retiré avec les transferts ; son historique reste lisible.
+- Reçus exportés : identité OM Wallet (couleurs, nom de fichier `OM-WALLET-…`).
+- Lignes d'Activité plus lisibles sur téléphone ; CSP : `connect-src` ajoute les deux hôtes Binance.
+
+## Tests
+- `tests/ux/omx.test.mjs` (accueil, total exact, marchés, favoris, graphique, dépôt sans adresse, échange, marché indisponible, retraits crypto et banque, annulation, IBAN), `tests/ux/admin-console.test.mjs` (remplace `dy.test.mjs`), balayage `smoke` sur les nouveaux écrans (22 écrans × 3 langues × 2 thèmes), `bugfix` (transferts retirés, CFA masqué). `orange-money.test.mjs` supprimé : le parcours testé n'existe plus.
+
 # OM Wallet 13.3.1 — le solde reste masqué tant qu'on ne touche pas l'œil
 
 ## Modifié

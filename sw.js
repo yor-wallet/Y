@@ -1,11 +1,11 @@
-/* OM Wallet service worker (13.3.1) : coquille de l'application hors ligne + réception des notifications push.
+/* OM Wallet service worker (14.0.0) : coquille de l'application hors ligne + réception des notifications push.
    - Il ne met JAMAIS en cache le trafic Supabase / API / chaîne : soldes et transactions viennent toujours du serveur.
    - Réseau d'abord (toujours la dernière version quand on est en ligne), avec repli sur la copie locale si le réseau est absent ou trop lent.
    - Seules les réponses réussies (200) du même site sont gardées : une page d'erreur n'est jamais servie plus tard comme si c'était l'application.
    - Hors ligne : l'application démarre depuis la copie locale ; si elle n'existe pas encore, « offline.html » explique la situation.
    - Il ne touche JAMAIS aux ressources d'autres sites (client Supabase sur le CDN, WalletConnect, chaîne) : le navigateur les charge lui-même.
      (12.11.0 interceptait le client Supabase : la CSP bloquait ce rechargement par le service worker et l'application ne démarrait plus dès la 2e ouverture.) */
-const CACHE = 'fp-shell-v13.3.1';
+const CACHE = 'fp-shell-v14.0.0';
 const SLOW_MS = 4500;      /* au-delà, on sert la copie locale si on en a une */
 
 const SHELL = [
@@ -16,6 +16,9 @@ const SHELL = [
   'assets/fonts/plex-arabic-400.woff2', 'assets/fonts/plex-arabic-500.woff2', 'assets/fonts/plex-arabic-600.woff2', 'assets/fonts/plex-arabic-700.woff2',
   'assets/icons/icon.svg', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/apple-touch-icon.png',
   'assets/ui/snowflake.svg',
+  /* 14.0.0 — official crypto and network logos (MIT, web3icons) */
+  'assets/crypto/tokens/BTC.svg', 'assets/crypto/tokens/ETH.svg', 'assets/crypto/tokens/USDT.svg', 'assets/crypto/tokens/USDC.svg', 'assets/crypto/tokens/BNB.svg', 'assets/crypto/tokens/SOL.svg', 'assets/crypto/tokens/TRX.svg', 'assets/crypto/tokens/XRP.svg', 'assets/crypto/tokens/LTC.svg', 'assets/crypto/tokens/DOGE.svg', 'assets/crypto/tokens/ADA.svg', 'assets/crypto/tokens/AVAX.svg', 'assets/crypto/tokens/POL.svg',
+  'assets/crypto/networks/bitcoin.svg', 'assets/crypto/networks/ethereum.svg', 'assets/crypto/networks/bsc.svg', 'assets/crypto/networks/tron.svg', 'assets/crypto/networks/solana.svg', 'assets/crypto/networks/polygon.svg', 'assets/crypto/networks/arbitrum.svg', 'assets/crypto/networks/base.svg', 'assets/crypto/networks/avalanche.svg', 'assets/crypto/networks/litecoin.svg', 'assets/crypto/networks/xrp.svg',
 ];
 
 /* Une réponse « redirigée » (ex. /offline.html → /offline avec cleanUrls) ne peut pas être servie à une navigation : on en garde une copie propre. */

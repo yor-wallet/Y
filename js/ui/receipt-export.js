@@ -23,6 +23,7 @@ const ReceiptExport = (() => {
       if (v.vatFmt) out.push([t('receipt.vat'), v.vatFmt]);
       if (v.hasCost !== false) out.push([t('receipt.totalDebit'), v.totalFmt, 'bold']);
     }
+    (v.extra || []).forEach(x => out.push(x));          /* 14.0.0: network, address, blockchain hash… (withdrawals) */
     out.push([t('receipt.date'), v.date]);
     out.push([t('receipt.hour'), v.time]);
     out.push([t('receipt.status'), v.statusTxt, 'st']);
@@ -54,18 +55,19 @@ const ReceiptExport = (() => {
     let ry = top;
     const body = list.map((x, i) => {
       ry += rowH;
-      const val = String(x[1]); const fs = val.length > 34 ? 22 : (val.length > 24 ? 26 : 32);
-      const isSt = x[2] === 'st', c = isSt ? pal.fg : x[2] === 'acc' ? '#0B7F75' : '#0B1F1D', w = (x[2] === 'bold' || isSt) ? 800 : 600;
+      let val = String(x[1]); if (val.length > 46) val = val.slice(0, 22) + '…' + val.slice(-20);   /* long hashes / addresses stay on one line */
+      const fs = val.length > 34 ? 22 : (val.length > 24 ? 26 : 32);
+      const isSt = x[2] === 'st', c = isSt ? pal.fg : x[2] === 'acc' ? '#369EDB' : '#102A43', w = (x[2] === 'bold' || isSt) ? 800 : 600;
       return '<text x="' + xL + '" y="' + (ry - 26) + '" font-size="28" fill="#6B6B6B" text-anchor="' + aL + '">' + escapeHtml(x[0]) + '</text>' +
         '<text x="' + xV + '" y="' + (ry - 26) + '" font-size="' + (x[2] === 'bold' ? 36 : fs) + '" font-weight="' + w + '" fill="' + c + '" text-anchor="' + aV + '" direction="ltr"' + (x[2] === 'mono' ? ' font-family="ui-monospace,Menlo,Consolas,monospace"' : '') + '>' + escapeHtml(val) + '</text>' +
         (i < list.length - 1 ? '<line x1="90" x2="' + (W - 90) + '" y1="' + (ry - 4) + '" y2="' + (ry - 4) + '" stroke="#EAEAEA" stroke-width="2"/>' : '');
     }).join('');
     const BRAND = rtl ? 'OM Wallet' : 'OM Wallet';      /* reçu exporté en PNG : mot-symbole arabe, sans espacement des lettres */
     return '<svg xmlns="http://www.w3.org/2000/svg" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" font-family="' + FONT + '">' +
-      '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14B8A6"/><stop offset="1" stop-color="#0B7F75"/></linearGradient></defs>' +
+      '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#78C9F4"/><stop offset="1" stop-color="#369EDB"/></linearGradient></defs>' +
       '<rect width="' + W + '" height="' + H + '" fill="' + BG + '"/>' +
       '<rect x="40" y="40" width="' + (W - 80) + '" height="' + (H - 80) + '" rx="56" fill="#FFFFFF" stroke="#E6E6E6" stroke-width="2"/>' +
-      '<rect x="' + (rtl ? W - 154 : 90) + '" y="96" width="64" height="64" rx="20" fill="url(#g)"/><text x="' + (rtl ? W - 122 : 122) + '" y="142" font-size="34" font-weight="800" fill="#FFFFFF" text-anchor="middle">F</text>' +
+      '<rect x="' + (rtl ? W - 154 : 90) + '" y="96" width="64" height="64" rx="20" fill="url(#g)"/><text x="' + (rtl ? W - 122 : 122) + '" y="139" font-size="26" font-weight="800" fill="#FFFFFF" text-anchor="middle">OM</text>' +
       '<text x="' + (rtl ? W - 176 : 176) + '" y="140" font-size="34" font-weight="800" fill="#111111" text-anchor="' + (rtl ? 'end' : 'start') + '"' + (rtl ? '' : ' letter-spacing="1"') + '>' + BRAND + '</text>' +
       '<circle cx="' + cx + '" cy="270" r="72" fill="' + pal.bg + '"/><circle cx="' + cx + '" cy="270" r="50" fill="none" stroke="' + pal.fg + '" stroke-width="7"/>' +
       '<g transform="translate(' + cx + ' 270)"><path d="' + pal.icon + '" stroke="' + pal.fg + '" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>' +
@@ -117,7 +119,7 @@ const ReceiptExport = (() => {
   async function run(kind){
     const r = window.__YOR_LAST_RECEIPT__, v = window.__YOR_LAST_RECEIPT_VIEW__;
     if (!r || !v) return;
-    const base = 'FRIENDLY-PAY-' + dispId(String(r.reference || r.transactionId || r.id || 'receipt')).replace(/[^\w-]/g, '');
+    const base = 'OM-WALLET-' + dispId(String(r.reference || r.transactionId || r.id || 'receipt')).replace(/[^\w-]/g, '');
     try {
       const c = await canvasOf(r, v);
       if (kind === 'pdf'){ save(await pdfBlob(c), base + '.pdf'); toast(t('action.download'), 'success'); return; }

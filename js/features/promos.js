@@ -12,10 +12,10 @@ const Promos = (() => {
   const KEY = 'yor.promos.dismissed';
   const AUTO_MS = 6500;
   const ITEMS = [
-    { id: 'send', tone: 'send', nav: 'country-select',
-      title: { fr: 'Transférez de l’argent vite et en sécurité', en: 'Transfer money quickly and securely', ar: 'تحويل الأموال بسرعة وأمان' },
-      body:  { fr: 'En local et à l’international avec OM Wallet', en: 'Locally and internationally with OM Wallet', ar: 'محلياً ودولياً عبر OM Wallet' },
-      cta:   { fr: 'Envoyer', en: 'Send', ar: 'إرسال' } },
+    { id: 'send', tone: 'send', nav: 'markets',
+      title: { fr: 'Suivez les marchés crypto en direct', en: 'Follow the crypto markets live', ar: 'تابع أسواق العملات الرقمية مباشرة' },
+      body:  { fr: 'Cours réels, graphiques et favoris dans OM Wallet', en: 'Real prices, charts and favourites in OM Wallet', ar: 'أسعار حقيقية ورسوم بيانية ومفضلة في OM Wallet' },
+      cta:   { fr: 'Voir les marchés', en: 'See markets', ar: 'عرض الأسواق' } },
     { id: 'card', tone: 'card', nav: 'cards',
       title: { fr: 'Vos cartes OM Wallet', en: 'Your OM Wallet cards', ar: 'بطاقاتك من OM Wallet' },
       body:  { fr: 'Gelez ou dégelez une carte en un geste.', en: 'Freeze or unfreeze a card with one tap.', ar: 'جمّد البطاقة أو ألغِ التجميد بلمسة واحدة.' },

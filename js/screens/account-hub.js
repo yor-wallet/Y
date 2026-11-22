@@ -57,6 +57,7 @@ function renderAccount(){
       '<section class="hub-card hub-level"><span class="hub-chev dir-flip">' + icon('chev', 16) + '</span><div><b>' + escapeHtml(t('ac.level')) + '</b><span class="' + (verified ? 'ok' : 'no') + '">' + escapeHtml(t(verified ? 'ac.full' : 'ac.notyet')) + '</span></div><span class="hub-wi crown">' + icon(verified ? 'shield' : 'info', 26) + '</span></section>' +
     '</div>' +
     '<section class="hub-card hub-list">' +
+      row('withdraw', 'c-green', 'download', t('omx.withdraw'), t('wd.sub')) +
       row('settings', 'c-blue', 'lock', t('ac.sec'), t('ac.secD')) +
       '<div class="hub-row"><span class="hub-i c-violet">' + icon('bell', 22) + '</span><span class="hub-t"><b>' + escapeHtml(t('ac.notif')) + '</b><small>' + escapeHtml(t('ac.notifD')) + '</small></span>' +
         '<button type="button" class="switch" role="switch" aria-checked="' + (notifsOn ? 'true' : 'false') + '" aria-label="' + escapeHtml(t('ac.notif')) + '" data-action="settings-toggle-notifs"></button></div>' +

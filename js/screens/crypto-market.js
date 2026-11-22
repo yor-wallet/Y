@@ -75,15 +75,18 @@ function renderCryptoMarket(){
 }
 function renderServices(){
   const G = [
-    ['gMoney', [['country-select','send','send']].concat(FEATURES.crypto ? [['banks','bank','banks']] : [], [['cards','cards','cards'],['history','history','history']])],
+    ['gMoney', [['withdraw','download','withdraw']].concat(FEATURES.crypto ? [['banks','bank','banks']] : [], [['cards','cards','cards'],['history','history','history']])],
     ['gCrypto', [['crypto-buy','plus','buyC'],['crypto-sell','minus','sellC'],['crypto-swap','swap','swapC'],['crypto-receive','receive','recvC'],['crypto-market','chart','mkt'],['crypto-networks','network','nets']]],
     ['gAccount', [['profile','user','profile'],['notifications','bell','notifications'],['settings','settings','settings'],['help','globe','help'],['privacy','shield','privacy']]]
   ];
   /* groupe Blockchain (YOR-USDT, réseau de test) : administrateurs uniquement */
   if (FEATURES.crypto && typeof canUseChain === 'function' && canUseChain()) G.splice(1, 0, ['gChain', [['chain','wallet','chainTile']]]);
   if (!FEATURES.crypto) G.splice(1, 1);                  /* the Crypto group is hidden with the rest of the crypto section */
+  /* 14.0.0 — OM Wallet crypto services (real data) first; labels from the omx.* keys */
+  G.splice(1, 0, ['omx.crypto', [['wallet','crypto','omx.crypto'],['markets','chart','omx.markets'],['deposit','receive','omx.deposit'],['exchange','swap','omx.exchange']]]);
+  const lbl = k => /^omx\./.test(k) ? escapeHtml(t(k)) : k === 'withdraw' ? escapeHtml(t('omx.withdraw')) : yt(k);
   return '<div class="yb"><div class="yb-top"><h1 class="yb-title" style="text-align:start">' + yt('svcTitle') + '</h1></div>' +
-    G.map(g => '<section class="yb-sec"><div class="yb-h"><h2>' + yt(g[0]) + '</h2></div><div class="yb-grid">' +
-      g[1].map(s => '<button class="yb-svc" data-nav="' + s[0] + '"><span class="yb-svc-i">' + icon(s[1], 24) + '</span><span class="yb-svc-t">' + yt(s[2]) + '</span></button>').join('') + '</div></section>').join('') +
+    G.map(g => '<section class="yb-sec"><div class="yb-h"><h2>' + lbl(g[0]) + '</h2></div><div class="yb-grid">' +
+      g[1].map(s => '<button class="yb-svc" data-nav="' + s[0] + '"><span class="yb-svc-i">' + icon(s[1], 24) + '</span><span class="yb-svc-t">' + lbl(s[2]) + '</span></button>').join('') + '</div></section>').join('') +
     '<div style="height:calc(24px + var(--safe-b))"></div></div>';
 }

@@ -74,7 +74,7 @@ const IOS = (() => {
 
   /* ---------- screen transitions ---------- */
   const PRESENT = { processing:1, receipt:1, 'tx-result':1, 'cards-add':1, 'contact-add':1, 'banks-add':1, 'profile-edit':1 };
-  const TABS = { home:1, cards:1, history:1, services:1, 'country-select':1 };
+  const TABS = { home:1, wallet:1, markets:1, history:1, account:1, services:1 };
   let running = [], skipNext = false, dimEl = null;
   function dim(){
     if (dimEl && dimEl.isConnected) return dimEl;

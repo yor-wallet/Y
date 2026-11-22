@@ -251,7 +251,8 @@ const TxResult = (() => {
    ============================================================ */
 const PxSearch = (() => {
   const SCREENS = () => [
-    ['country-select', 'send', t('px.send')], ['receive', 'receive', t('px.receive')], ['history', 'history', t('px.history')], ['cards', 'cards', V12.vt('cards')],
+    ['wallet', 'crypto', t('omx.crypto')], ['markets', 'chart', t('omx.markets')], ['deposit', 'receive', t('omx.deposit')], ['withdraw', 'download', t('omx.withdraw')], ['exchange', 'swap', t('omx.exchange')],
+    ['history', 'history', t('px.history')], ['cards', 'cards', V12.vt('cards')],
     ['profile', 'user', t('px.profile')], ['profile-edit', 'user', t('px.edit')], ['settings', 'settings', t('settings.title')], ['notifications', 'bell', t('px.notifs')],
     ['settings', 'globe', t('px.language')], ['settings', 'sparkle', t('px.theme')], ['settings', 'banknote', t('px.dispCur')], ['settings', 'bell', t('settings.notifs')],
     ['px:pin', 'lock', t('px.pinChange')], ['devices', 'device', t('devices.title')], ['sessions', 'session', t('sessions.title')],
@@ -273,7 +274,7 @@ const PxSearch = (() => {
     const n = pxNorm(q).trim();
     if (!n) return '<p class="px-s-hint">' + escapeHtml(t('px.sHint')) + '</p>';
     const txs = visibleTransactions(Runtime.transactions || []).filter(x => txMatches(x, q)).slice(0, 8);
-    const ppl = people(q);
+    const ppl = [];                                    /* 14.0.0: transfers are retired, a person found here cannot be paid any more */
     const scr = SCREENS().filter(s => pxNorm(s[2]).indexOf(n) !== -1).slice(0, 6);
     if (!txs.length && !ppl.length && !scr.length) return '<p class="px-s-hint">' + escapeHtml(tf('px.sNone', { q: q.trim() })) + '</p>';
     let h = '';

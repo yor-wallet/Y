@@ -233,7 +233,7 @@ function renderReceipt(){
     if (hasCost) rows += rcRow(t('receipt.totalDebit'), moneyHtml(totalFmt), { cls: 'total', vcls: 'ltr' });
   }
   /* "Make another transfer": a fiat transfer goes back to the start of the transfer flow, a crypto send to the crypto send flow; never for an incoming operation */
-  const anotherNav = isIn ? '' : !isCrypto ? 'country-select' : /SEND/.test(kindStr) ? 'crypto-send' : '';
+  const anotherNav = '';                       /* 14.0.0: transfers and the old crypto send are retired: a receipt offers no "send again" */
   const copyBtn = (val) => '<button type="button" class="rc-copy" data-action="copy-ref" data-copy="' + escapeHtml(val) + '" aria-label="' + escapeHtml(t('receipt.copy_ref')) + '">' + icon('copy', 14) + '</button>';
   const statement =
     '<div class="receipt-statement">' +
