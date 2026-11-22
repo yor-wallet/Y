@@ -1,3 +1,16 @@
+# OM Wallet 14.1.1 (serveur) — e-mails dans la langue de chaque personne, plus aucune confirmation automatique
+
+## E-mails (`send-email`, version 54)
+- **Chaque e-mail part dans la langue choisie dans l'application** (arabe, anglais ou français ; 21 personnes : 10 en arabe, 6 en anglais, 5 en français). Sans langue enregistrée : celle du pays (pays arabophones → arabe, francophones → français, sinon anglais).
+- Les e-mails de validation (identité vérifiée, paiement confirmé, retrait payé), auparavant toujours en arabe, suivent eux aussi la langue de la personne ; le nom de la banque est traduit (table `oman_banks`).
+- Arabe vérifié sur rendu réel : sens de droite à gauche, valeurs en `dir="auto"` (date et statut lisibles), virgule arabe, polices arabes (Tahoma, Geeza Pro, Noto). Une adresse ou un hash passe à la ligne ; une phrase ou une date ne se coupe plus au milieu d'un mot.
+- Lien du bouton : https://yor-wallet.vercel.app. Si l'adresse d'expédition n'est pas vérifiée dans le compte Brevo de la clé, l'envoi utilise l'expéditeur vérifié de ce compte (une seule fois, puis mémorisé).
+- La file d'attente est envoyée automatiquement toutes les 5 minutes (tâche planifiée existante) dès qu'une clé valide est enregistrée.
+
+## Seul l'administrateur confirme (`20261122_admin_only_confirmation.sql`, appliquée ; retour arrière fourni)
+- L'envoi vers un numéro (`fiat_send_external`) n'est plus « confirmé » d'office : il est enregistré « en traitement » (paiement manuel) et seul l'administrateur le termine, avec la référence du paiement réel (Admin Control › Transferts (archives)). Vérifié dans un bloc annulé.
+- La tâche planifiée `demo_advance_jobs`, qui faisait passer des transferts « bancaires » à « terminé » toute seule, est désactivée (réversible ; elle n'avait traité qu'un transfert, le 20 octobre).
+
 # OM Wallet 14.1.0 — confirmation des transactions par l'administrateur, e-mail « Fonds reçus »
 
 ## Serveur (`supabase/migrations/20261122_admin_tx_confirmation.sql`, appliquée ; retour arrière : `…_rollback.sql`)

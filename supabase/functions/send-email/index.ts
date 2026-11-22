@@ -19,7 +19,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 const FROM_EMAIL = (Deno.env.get("EMAIL_FROM") || "yordigitalefinance@gmail.com").trim();
 const FROM_NAME = "OM Wallet";
 const REPLY_TO = FROM_EMAIL;
-const APP_URL = (Deno.env.get("APP_URL") || "").trim();
+const APP_URL = (Deno.env.get("APP_URL") || "https://yor-wallet.vercel.app").trim();
 const BREVO_KEY = (Deno.env.get("BREVO_API_KEY") ?? "").trim();
 const SMTP = {
   host: (Deno.env.get("SMTP_HOST") ?? "").trim(), port: Number(Deno.env.get("SMTP_PORT") || 465),
@@ -51,6 +51,16 @@ const T: Record<Lang, Row> = {
     cw: { subject: (r: string) => `OM Wallet — Retrait confirmé sur la blockchain (${r})`, title: "Retrait confirmé sur la blockchain",
       line: (a: string) => `Votre retrait de ${a} a été confirmé par le réseau.`, ok: "Confirmé sur la blockchain." },
     tz: "heure d'Oman",
+    val: {
+      kycSubject: "OM Wallet — Votre identité est vérifiée", kycTitle: "Vérification d'identité acceptée",
+      kycBody: "Notre équipe a examiné vos documents et votre photo, et les a acceptés. Votre compte est maintenant vérifié.",
+      invSubject: (r: string) => `OM Wallet — Paiement confirmé (${r})`, invTitle: "Votre paiement est reçu et confirmé",
+      invBody: "L'administrateur a vérifié la réception réelle du montant sur notre compte ; votre plan est actif.",
+      wdSubject: (r: string) => `OM Wallet — Retrait effectué (${r})`, wdTitle: "Votre demande de retrait est exécutée",
+      wdBody: "L'administrateur a confirmé le virement du montant vers votre compte bancaire. Son apparition sur votre relevé peut prendre un peu de temps selon la banque.",
+      plan: "Plan", days: "Durée (jours)", bank: "Banque", bankRef: "Référence du virement bancaire",
+      plans: { ESSENTIAL: "Essentiel", GROWTH: "Croissance", PREMIUM: "Premium" },
+    },
     admin: { subject: (n: string) => `Nouveau membre : ${n}`, title: "Un nouveau membre vient de s'inscrire", intro: "Voici ses informations d'inscription." },
     sec: {
       SEC_PASSWORD_CHANGED: ["Votre mot de passe a été modifié", "Le mot de passe de votre compte OM Wallet vient d'être modifié."],
@@ -73,6 +83,16 @@ const T: Record<Lang, Row> = {
     cw: { subject: (r: string) => `OM Wallet — Withdrawal confirmed on the blockchain (${r})`, title: "Withdrawal confirmed on the blockchain",
       line: (a: string) => `Your withdrawal of ${a} has been confirmed by the network.`, ok: "Confirmed on the blockchain." },
     tz: "Oman time",
+    val: {
+      kycSubject: "OM Wallet — Your identity is verified", kycTitle: "Identity verification accepted",
+      kycBody: "Our team reviewed your documents and your photo and accepted them. Your account is now verified.",
+      invSubject: (r: string) => `OM Wallet — Payment confirmed (${r})`, invTitle: "Your payment is received and confirmed",
+      invBody: "The administrator checked that the amount really reached our account; your plan is active.",
+      wdSubject: (r: string) => `OM Wallet — Withdrawal paid (${r})`, wdTitle: "Your withdrawal request is paid",
+      wdBody: "The administrator confirmed the transfer of the amount to your bank account. It may take some time to appear on your statement, depending on the bank.",
+      plan: "Plan", days: "Duration (days)", bank: "Bank", bankRef: "Bank transfer reference",
+      plans: { ESSENTIAL: "Essential", GROWTH: "Growth", PREMIUM: "Premium" },
+    },
     admin: { subject: (n: string) => `New member: ${n}`, title: "A new member just signed up", intro: "Here are their sign-up details." },
     sec: {
       SEC_PASSWORD_CHANGED: ["Your password was changed", "The password of your OM Wallet account was just changed."],
@@ -104,11 +124,11 @@ const T: Record<Lang, Row> = {
       warn: "إذا لم تكن أنت، تواصل مع الدعم فوراً:",
     },
     val: {
-      kycSubject: "تم التحقق من هويتك في OM Wallet", kycTitle: "تم قبول التحقق من الهوية",
+      kycSubject: "OM Wallet — تم التحقق من هويتك", kycTitle: "تم قبول التحقق من الهوية",
       kycBody: "راجع فريقنا وثائقك وصورتك الشخصية وتم قبولها. حسابك موثّق الآن.",
-      invSubject: (r: string) => `تم تأكيد دفعتك — ${r}`, invTitle: "تم استلام دفعتك وتأكيدها",
+      invSubject: (r: string) => `OM Wallet — تم تأكيد دفعتك (${r})`, invTitle: "تم استلام دفعتك وتأكيدها",
       invBody: "تحقق المسؤول فعلياً من وصول المبلغ إلى حسابنا، وأصبحت خطتك فعّالة.",
-      wdSubject: (r: string) => `تم تنفيذ سحبك — ${r}`, wdTitle: "تم تنفيذ طلب السحب",
+      wdSubject: (r: string) => `OM Wallet — تم تنفيذ سحبك (${r})`, wdTitle: "تم تنفيذ طلب السحب",
       wdBody: "أكّد المسؤول تحويل المبلغ إلى حسابك المصرفي. قد يستغرق ظهوره في كشف الحساب بعض الوقت حسب البنك.",
       plan: "الخطة", days: "المدة (أيام)", bank: "البنك", bankRef: "مرجع التحويل المصرفي",
       plans: { ESSENTIAL: "الأساسية", GROWTH: "النمو", PREMIUM: "بريميوم" },
@@ -131,25 +151,27 @@ const money = (n: unknown, asset: string, lang: Lang) => `${num(n, asset, lang)}
 /* exact time of the event, in Oman time (Asia/Muscat, UTC+4), with seconds */
 function when(iso: string, lang: Lang): string {
   const d = new Date(iso);
-  return new Intl.DateTimeFormat(T[lang].locale, { dateStyle: "long", timeStyle: "medium", timeZone: "Asia/Muscat", hourCycle: "h23" }).format(d) + ` (${T[lang].tz}, UTC+4)`;
+  return new Intl.DateTimeFormat(T[lang].locale, { dateStyle: "long", timeStyle: "medium", timeZone: "Asia/Muscat", hourCycle: "h23" }).format(d) + ` (${T[lang].tz}${lang === "ar" ? "، " : ", "}UTC+4)`;
 }
 
 function layout(lang: Lang, title: string, intro: string, rows: [string, string][], extraHtml = ""): string {
   const t = T[lang], al = t.dir === "rtl" ? "right" : "left";
-  const wrap = (v: string) => (v.length > 28 ? ";word-break:break-all;overflow-wrap:anywhere" : "");
+  // only a long value WITHOUT spaces (address, hash) may break anywhere; a sentence or a date wraps between words
+  const wrap = (v: string) => (v.length > 28 && !/\s/.test(v) ? ";word-break:break-all;overflow-wrap:anywhere" : "");
+  const nb = (v: string) => v.replace(/OM Wallet/g, "OM\u00a0Wallet");
   const body = rows.map(([k, v]) =>
     `<tr><td style="padding:10px 0;color:#74879A;font-size:14px;text-align:${al};border-bottom:1px solid #E6F2FB">${esc(k)}</td>` +
-    `<td style="padding:10px 0;color:${INK};font-size:14px;font-weight:700;text-align:${t.dir === "rtl" ? "left" : "right"};border-bottom:1px solid #E6F2FB${wrap(v)}" dir="ltr">${esc(v)}</td></tr>`).join("");
+    `<td style="padding:10px 0;color:${INK};font-size:14px;font-weight:700;text-align:${t.dir === "rtl" ? "left" : "right"};border-bottom:1px solid #E6F2FB${wrap(v)}" dir="auto">${esc(v)}</td></tr>`).join("");
   const links = APP_URL ? `<a href="${esc(APP_URL)}" style="color:#74879A">${esc(t.privacy)}</a> · <a href="${esc(APP_URL)}" style="color:#74879A">${esc(t.terms)}</a>` : "";
   return `<!doctype html><html lang="${lang}" dir="${t.dir}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>` +
-    `<body style="margin:0;background:${BG};font-family:-apple-system,'Segoe UI',Arial,Helvetica,sans-serif" dir="${t.dir}">` +
+    `<body style="margin:0;background:${BG};font-family:-apple-system,'Segoe UI',Tahoma,'Geeza Pro','Noto Sans Arabic','Noto Naskh Arabic',Arial,Helvetica,sans-serif" dir="${t.dir}">` +
     `<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:24px 12px">` +
     `<table role="presentation" width="100%" style="max-width:560px;background:#fff;border-radius:22px;overflow:hidden;border:1px solid ${SKY_LIGHT}" cellpadding="0" cellspacing="0">` +
     `<tr><td style="background:linear-gradient(135deg,#78C9F4,${SKY});background-color:${SKY};padding:22px 28px;text-align:${al}">` +
     `<span style="display:inline-block;background:#fff;color:${SKY};font-size:16px;font-weight:900;border-radius:10px;padding:6px 9px;vertical-align:middle">OM</span>` +
     `<span style="color:#fff;font-size:21px;font-weight:800;margin:0 10px;vertical-align:middle">OM Wallet</span></td></tr>` +
     `<tr><td style="padding:28px;text-align:${al}"><h1 style="margin:0 0 12px;font-size:22px;color:${INK}">${esc(title)}</h1>` +
-    (intro ? `<p style="margin:0 0 20px;font-size:16px;line-height:1.6;color:${INK}">${esc(intro)}</p>` : "") +
+    (intro ? `<p style="margin:0 0 20px;font-size:16px;line-height:1.6;color:${INK}">${esc(nb(intro))}</p>` : "") +
     (rows.length ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${body}</table>` : "") +
     extraHtml + `</td></tr>` +
     `<tr><td style="padding:18px 28px;background:${BG};font-size:12px;line-height:1.6;color:#74879A;text-align:${al}">` +
@@ -160,11 +182,17 @@ const button = (label: string) => APP_URL ? `<p style="margin:24px 0 0;text-alig
 const rewardBox = (text: string) => `<div style="margin:0 0 18px;padding:14px 16px;border-radius:14px;background:#EAF6FF;border:1px solid ${SKY};color:${INK};font-size:15px;font-weight:700;line-height:1.5">${esc(text)}</div>`;
 const textOf = (title: string, lines: string[]) => [title, "", ...lines, "", "OM Wallet"].join("\n");
 
+const AR_COUNTRIES = ["OM", "AE", "SA", "QA", "KW", "BH", "EG", "JO", "LB", "IQ", "SY", "YE", "MA", "DZ", "TN", "LY", "SD", "PS", "MR"];
+const FR_COUNTRIES = ["FR", "BE", "CH", "LU", "MC", "ML", "CI", "SN", "BF", "NE", "GN", "BJ", "TG", "CM", "GA", "CG", "CD", "MG", "TD", "CF", "HT"];
+/* the language the person chose in the app (Arabic, English, French); if none was ever saved, the language of their country */
 async function langOf(userId: string | null): Promise<Lang> {
-  if (!userId) return "fr";
+  if (!userId) return "en";
   const { data } = await sb.from("user_docs").select("data").eq("user_id", userId).eq("doc_name", "preferences").maybeSingle();
   const l = data?.data?.language;
-  return l === "fr" || l === "ar" || l === "en" ? l : "fr";
+  if (l === "fr" || l === "ar" || l === "en") return l;
+  const { data: p } = await sb.from("profiles").select("country").eq("id", userId).maybeSingle();
+  const c = String(p?.country ?? "").toUpperCase();
+  return AR_COUNTRIES.includes(c) ? "ar" : FR_COUNTRIES.includes(c) ? "fr" : "en";
 }
 
 type Built = { subject: string; html: string; text?: string } | { skip: string; retry?: boolean };
@@ -215,18 +243,24 @@ async function build(log: Row, lang: Lang): Promise<Built> {
     return { subject: amt ? t.welcomeSubjectReward(amt) : t.welcomeSubject,
       html: layout(lang, t.welcomeTitle(name).replace(" ,", ","), t.welcomeBody, [], (amt ? rewardBox(t.rewardLine(amt)) : "") + button(t.open)) };
   }
-  if (type === "KYC_APPROVED") return { subject: T.ar.val.kycSubject, html: layout("ar", T.ar.val.kycTitle, T.ar.val.kycBody, [], button(T.ar.open)) };
+  // validation e-mails: in the person's language (Arabic, English or French), like every other e-mail
+  if (type === "KYC_APPROVED") return { subject: t.val.kycSubject, html: layout(lang, t.val.kycTitle, t.val.kycBody, [], button(t.open)), text: textOf(t.val.kycTitle, [t.val.kycBody]) };
   if (type === "INVEST_CONFIRMED") {
     const p: Row = log.payload ?? {};
-    const rows: [string, string][] = [[T.ar.f.ref, dispId(p.reference)], [T.ar.val.plan, T.ar.val.plans[String(p.plan)] ?? String(p.plan ?? "")], [T.ar.f.amount, money(p.amount, "OMR", "ar")], [T.ar.val.days, String(p.days ?? "")]];
-    return { subject: T.ar.val.invSubject(dispId(p.reference)), html: layout("ar", T.ar.val.invTitle, T.ar.val.invBody, rows, button(T.ar.open)) };
+    const rows: [string, string][] = [[t.f.ref, dispId(p.reference)], [t.val.plan, t.val.plans[String(p.plan)] ?? String(p.plan ?? "")], [t.f.amount, money(p.amount, "OMR", lang)], [t.val.days, String(p.days ?? "")]];
+    return { subject: t.val.invSubject(dispId(p.reference)), html: layout(lang, t.val.invTitle, t.val.invBody, rows, button(t.open)), text: textOf(t.val.invTitle, [t.val.invBody, "", ...rows.map(([k, v]) => `${k} : ${v}`)]) };
   }
   if (type === "WITHDRAWAL_PAID") {
     const p: Row = log.payload ?? {};
-    const rows: [string, string][] = [[T.ar.f.ref, dispId(p.reference)], [T.ar.f.amount, money(p.amount, "OMR", "ar")]];
-    if (p.bank_ar) rows.push([T.ar.val.bank, String(p.bank_ar)]);
-    if (p.bank_ref) rows.push([T.ar.val.bankRef, String(p.bank_ref)]);
-    return { subject: T.ar.val.wdSubject(dispId(p.reference)), html: layout("ar", T.ar.val.wdTitle, T.ar.val.wdBody, rows, button(T.ar.open)) };
+    let bank = lang === "ar" ? String(p.bank_ar ?? "") : "";
+    if (lang !== "ar" || !bank) {                 // the bank's name in the person's language (oman_banks has en / fr / ar)
+      const { data: w } = await sb.from("withdrawal_requests").select("bank_code, bank_name").eq("reference", p.reference).maybeSingle();
+      if (w?.bank_code) { const { data: b } = await sb.from("oman_banks").select("name_en, name_fr, name_ar").eq("code", w.bank_code).maybeSingle(); bank = String((b && (b[`name_${lang}`] || b.name_en)) || w.bank_name || bank); }
+    }
+    const rows: [string, string][] = [[t.f.ref, dispId(p.reference)], [t.f.amount, money(p.amount, "OMR", lang)]];
+    if (bank) rows.push([t.val.bank, bank]);
+    if (p.bank_ref) rows.push([t.val.bankRef, String(p.bank_ref)]);
+    return { subject: t.val.wdSubject(dispId(p.reference)), html: layout(lang, t.val.wdTitle, t.val.wdBody, rows, button(t.open)), text: textOf(t.val.wdTitle, [t.val.wdBody, "", ...rows.map(([k, v]) => `${k} : ${v}`)]) };
   }
   if (type === "ADMIN_NEW_USER") {
     const p: Row = log.payload ?? {};
@@ -253,13 +287,29 @@ async function build(log: Row, lang: Lang): Promise<Built> {
 type Mail = { to: string; subject: string; html: string; text?: string; tag: string };
 type Sent = { ok: true; provider: string; id: string | null } | { ok: false; provider: string; config: boolean; error: string };
 
+let brevoFrom: string | null = null;           // the sender actually accepted by the Brevo account (cached for this instance)
+async function brevoVerifiedSender(): Promise<string | null> {
+  try {
+    const s = await fetch("https://api.brevo.com/v3/senders", { headers: { "api-key": BREVO_KEY, accept: "application/json" } });
+    if (!s.ok) return null;
+    const list = (((await s.json()) as Row).senders ?? []) as Row[];
+    const mine = list.find((x) => x.active && String(x.email).toLowerCase() === FROM_EMAIL.toLowerCase());
+    const any = list.find((x) => x.active);
+    return String((mine ?? any)?.email ?? "") || null;
+  } catch { return null; }
+}
 async function viaBrevo(m: Mail): Promise<Sent> {
-  const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+  const post = (from: string) => fetch("https://api.brevo.com/v3/smtp/email", {
     method: "POST", headers: { "api-key": BREVO_KEY, "content-type": "application/json", accept: "application/json" },
-    body: JSON.stringify({ sender: { name: FROM_NAME, email: FROM_EMAIL }, replyTo: { name: FROM_NAME, email: REPLY_TO }, to: [{ email: m.to }],
+    body: JSON.stringify({ sender: { name: FROM_NAME, email: from }, replyTo: { name: FROM_NAME, email: REPLY_TO }, to: [{ email: m.to }],
       subject: m.subject, htmlContent: m.html, textContent: m.text, tags: [m.tag] }),
   });
-  const text = await res.text();
+  let res = await post(brevoFrom || FROM_EMAIL);
+  let text = await res.text();
+  if (res.status === 400 && /sender/i.test(text)) {        // the address is not a verified sender of this account: use the verified one, once
+    const v = await brevoVerifiedSender();
+    if (v && v !== (brevoFrom || FROM_EMAIL)) { brevoFrom = v; res = await post(v); text = await res.text(); }
+  }
   if (res.ok) { let b: Row = {}; try { b = JSON.parse(text); } catch { /* */ } return { ok: true, provider: "brevo", id: b.messageId ?? null }; }
   return { ok: false, provider: "brevo", config: res.status === 401 || res.status === 403 || (res.status === 400 && /sender/i.test(text)), error: `brevo ${res.status}: ${text}`.slice(0, 300) };
 }
@@ -343,10 +393,9 @@ async function deliver(m: Mail): Promise<{ sent?: Sent; errors: string[]; allCon
 }
 
 const retryDelayMin = (attempts: number) => Math.min(2 ** attempts, 60);
-const ARABIC_ONLY = ["KYC_APPROVED", "INVEST_CONFIRMED", "WITHDRAWAL_PAID"];
 
 async function process(log: Row, dryRun = false): Promise<Row> {
-  const lang: Lang = ARABIC_ONLY.includes(log.email_type) ? "ar" : await langOf(log.user_id);
+  const lang: Lang = await langOf(log.user_id);
   const built = await build(log, lang);
   if ("skip" in built) {
     if (dryRun) return { id: log.id, skip: built.skip };
@@ -393,6 +442,7 @@ async function check(): Promise<Row> {
         const j: Row = s.ok ? await s.json() : {};
         const list = (j.senders ?? []) as Row[];
         out.providers.brevo.sender_verified = list.some((x) => String(x.email).toLowerCase() === FROM_EMAIL.toLowerCase() && x.active);
+        out.providers.brevo.fallback_sender_available = list.some((x) => x.active);
         out.providers.brevo.senders = list.filter((x) => x.active).length;
       } else { await a.text(); }
     } catch (e) { out.providers.brevo.error = String(e).slice(0, 200); }
