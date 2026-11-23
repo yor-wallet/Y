@@ -404,3 +404,4 @@ html:root:root body .omx-act span{word-break:normal!important;overflow-wrap:norm
 html:root:root body .omx-act{padding-inline:2px!important;min-width:0}
 html:root:root[data-theme="dark"] body .w-pill{background:linear-gradient(160deg,rgba(60,120,210,.55),rgba(30,70,140,.55));color:#D6EBFF;border-color:rgba(140,190,255,.3)}
 html:root:root[data-theme="dark"] body .w-hero-art{opacity:.92}
+html:root:root body #login.rv-auth > .topbar{display:none!important}
