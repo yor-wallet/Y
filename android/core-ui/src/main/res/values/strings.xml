@@ -61,7 +61,7 @@
     <string name="promo_withdraw_t">Withdraw to an Omani bank</string>
     <string name="promo_withdraw_b">In OMR, to the account you choose.</string>
     <string name="promo_withdraw_cta">Withdraw</string>
-    <string name="assets_title">Assets</string>
+    <string name="assets_title">My assets</string>
     <string name="assets_locked">Held</string>
     <string name="tab_overview">Overview</string>
     <string name="tab_history">History</string>
@@ -263,4 +263,7 @@
     <string name="onb_t3">Protected by your PIN</string>
     <string name="onb_p3">Your account stays locked until you unlock it.</string>
     <string name="onb_c3">Sign in</string>
+    <string name="assets_digital">Digital wallet</string>
+    <string name="assets_details">View details</string>
+    <string name="acc_settings">Settings</string>
 </resources>

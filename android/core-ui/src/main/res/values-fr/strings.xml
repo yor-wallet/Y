@@ -60,7 +60,7 @@
     <string name="promo_withdraw_t">Retrait vers une banque omanaise</string>
     <string name="promo_withdraw_b">En OMR, vers le compte de votre choix.</string>
     <string name="promo_withdraw_cta">Retirer</string>
-    <string name="assets_title">Actifs</string>
+    <string name="assets_title">Mes actifs</string>
     <string name="assets_locked">Réservé</string>
     <string name="tab_overview">Aperçu</string>
     <string name="tab_history">Historique</string>
@@ -262,4 +262,7 @@
     <string name="onb_t3">Protégé par votre code</string>
     <string name="onb_p3">Votre compte reste verrouillé tant que vous ne l’ouvrez pas.</string>
     <string name="onb_c3">Se connecter</string>
+    <string name="assets_digital">Portefeuille numérique</string>
+    <string name="assets_details">Voir les détails</string>
+    <string name="acc_settings">Paramètres</string>
 </resources>

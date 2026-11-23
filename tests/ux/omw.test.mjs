@@ -93,6 +93,16 @@ const cur = page => page.evaluate(() => R.current());
     assert.equal(await page.locator('#toasts .w-toast.success .w-ti svg').count(), 1);
     assert.equal(await page.locator('#toasts .w-toast .w-tb').count(), 1);
   });
+  await ok('reçu : ticket, lignes à icônes, montant mis en avant ; tuiles Télécharger / Partager / Accueil reliées à leurs actions', async () => {
+    await page.evaluate(() => { Runtime.receipts.push({ id:'r9', transactionId:null, reference:'OMW-TX900001', status:'COMPLETED', createdAt: Date.now(), amount: 5, currency:'USDT', fee:0, vat:0, total:5, direction:'OUT', kind:'CRYPTO_TRANSFER', beneficiary:{ name:'Sara K.' } }); R.go('receipt', { force:true }); });
+    await wait(800);
+    assert.equal(await page.locator('#receipt .w-ticket .receipt-hero').count(), 1);
+    assert.ok(await page.locator('#receipt .w-rc-ic').count() >= 4);
+    assert.equal(await page.locator('#receipt .receipt-row.w-amt').count(), 1);
+    assert.deepEqual(await page.$$eval('#receipt .w-rc-tiles [data-action]', b => b.map(x => x.getAttribute('data-action'))), ['download-pdf', 'share-receipt', 'done']);
+    await page.click('#receipt .w-rc-tiles [data-action="done"]'); await wait(800);
+    assert.equal(await cur(page), 'home');
+  });
   await ok('paramètres : « Se déconnecter » déconnecte', async () => {
     await page.evaluate(() => R.go('settings', { force: true })); await wait(600);
     await page.click('#settings .w-out[data-action="sign-out"]'); await wait(3200);   /* sign-out waits up to 2 s for the phone alerts to be released */

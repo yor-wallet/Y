@@ -159,7 +159,7 @@ function rcBadge(state){
 function rcRow(label, valueHtml, opts){
   opts = opts || {};
   return '<div class="receipt-row' + (opts.cls ? ' ' + opts.cls : '') + '"' + (opts.id ? ' id="' + opts.id + '"' : '') + '>' +
-    '<span class="receipt-row-label">' + escapeHtml(label) + '</span>' +
+    (opts.ic ? '<span class="w-rc-ic" aria-hidden="true">' + icon(opts.ic, 18) + '</span>' : '') + '<span class="receipt-row-label">' + escapeHtml(label) + '</span>' +
     '<span class="receipt-row-value' + (opts.vcls ? ' ' + opts.vcls : '') + '">' + valueHtml + '</span></div>';
 }
 
@@ -221,41 +221,44 @@ function renderReceipt(){
 
   /* amounts: a failed operation draws no "total debited" line (it would claim a debit that did not happen) */
   let rows = '';
-  if (fromPhone) rows += rcRow(t('receipt.from'), escapeHtml(typeof formatPhoneIntl === 'function' ? formatPhoneIntl(fromPhone) : fromPhone), { id: 'receipt-from', vcls: 'ltr' });
-  if (!isIn && !isCrypto) rows += rcRow(t('receipt.paidFrom'), escapeHtml(t('receipt.paidFromVal') + ' · ' + (r.currency || 'OMR')));
-  rows += rcRow(t(isIn ? 'receipt.amountReceived' : 'receipt.amountSent'), moneyHtml(amtFmt), { vcls: 'ltr' });
-  if (destFmt) rows += rcRow(t('transfer.receiving'), escapeHtml(destFmt), { vcls: 'ltr acc' });
-  if (rateTxt) rows += rcRow(t('transfer.rate'), escapeHtml(rateTxt), { vcls: 'ltr sm' });
+  if (fromPhone) rows += rcRow(t('receipt.from'), escapeHtml(typeof formatPhoneIntl === 'function' ? formatPhoneIntl(fromPhone) : fromPhone), { id: 'receipt-from', vcls: 'ltr', ic: 'user' });
+  if (!isIn && !isCrypto) rows += rcRow(t('receipt.paidFrom'), escapeHtml(t('receipt.paidFromVal') + ' · ' + (r.currency || 'OMR')), { ic: 'cards' });
+  rows += rcRow(t(isIn ? 'receipt.amountReceived' : 'receipt.amountSent'), moneyHtml(amtFmt), { vcls: 'ltr', cls: 'w-amt', ic: 'wallet' });
+  if (destFmt) rows += rcRow(t('transfer.receiving'), escapeHtml(destFmt), { vcls: 'ltr acc', ic: 'swap' });
+  if (rateTxt) rows += rcRow(t('transfer.rate'), escapeHtml(rateTxt), { vcls: 'ltr sm', ic: 'percent' });
   if (!isIn && state !== 'failed'){
-    if (r.fee) rows += rcRow(t('receipt.fees'), moneyHtml(feeFmt), { vcls: 'ltr' });
-    if (vatFmt) rows += rcRow(t('receipt.vat'), escapeHtml(vatFmt), { vcls: 'ltr' });
+    if (r.fee) rows += rcRow(t('receipt.fees'), moneyHtml(feeFmt), { vcls: 'ltr', ic: 'doc' });
+    if (vatFmt) rows += rcRow(t('receipt.vat'), escapeHtml(vatFmt), { vcls: 'ltr', ic: 'doc' });
     /* 12.12.0: no fees on transfers -> "total debited" would repeat the amount; it is drawn only when it differs (older operations, crypto) */
-    if (hasCost) rows += rcRow(t('receipt.totalDebit'), moneyHtml(totalFmt), { cls: 'total', vcls: 'ltr' });
+    if (hasCost) rows += rcRow(t('receipt.totalDebit'), moneyHtml(totalFmt), { cls: 'total', vcls: 'ltr', ic: 'wallet' });
   }
   /* "Make another transfer": a fiat transfer goes back to the start of the transfer flow, a crypto send to the crypto send flow; never for an incoming operation */
   const anotherNav = '';                       /* 14.0.0: transfers and the old crypto send are retired: a receipt offers no "send again" */
   const copyBtn = (val) => '<button type="button" class="rc-copy" data-action="copy-ref" data-copy="' + escapeHtml(val) + '" aria-label="' + escapeHtml(t('receipt.copy_ref')) + '">' + icon('copy', 14) + '</button>';
   const statement =
     '<div class="receipt-statement">' +
-      '<div class="receipt-line"><span class="receipt-line-label">' + t('receipt.date') + '</span><span class="receipt-line-value">' + escapeHtml(fmtDate(r.createdAt)) + '</span></div>' +
-      '<div class="receipt-line"><span class="receipt-line-label">' + t('receipt.hour') + '</span><span class="receipt-line-value">' + escapeHtml(fmtTime(r.createdAt)) + '</span></div>' +
-      '<div class="receipt-line"><span class="receipt-line-label">' + t('receipt.status') + '</span><span class="receipt-line-value">' + statusPill(state, true, statusTxt) + '</span></div>' +
-      '<div class="receipt-line"><span class="receipt-line-label">' + t('receipt.reference') + '</span><span class="receipt-line-value ltr mono" id="receipt-ref">' + escapeHtml(ref) + '</span>' + (ref ? copyBtn(ref) : '') + '</div>' +
+      '<div class="receipt-line">' + '<span class="w-rc-ic" aria-hidden="true">' + icon('cal', 18) + '</span>' + '<span class="receipt-line-label">' + t('receipt.date') + '</span><span class="receipt-line-value">' + escapeHtml(fmtDate(r.createdAt)) + '</span></div>' +
+      '<div class="receipt-line">' + '<span class="w-rc-ic" aria-hidden="true">' + icon('clock', 18) + '</span>' + '<span class="receipt-line-label">' + t('receipt.hour') + '</span><span class="receipt-line-value">' + escapeHtml(fmtTime(r.createdAt)) + '</span></div>' +
+      '<div class="receipt-line">' + '<span class="w-rc-ic" aria-hidden="true">' + icon('shield', 18) + '</span>' + '<span class="receipt-line-label">' + t('receipt.status') + '</span><span class="receipt-line-value">' + statusPill(state, true, statusTxt) + '</span></div>' +
+      '<div class="receipt-line">' + '<span class="w-rc-ic" aria-hidden="true">' + icon('doc', 18) + '</span>' + '<span class="receipt-line-label">' + t('receipt.reference') + '</span><span class="receipt-line-value ltr mono" id="receipt-ref">' + escapeHtml(ref) + '</span>' + (ref ? copyBtn(ref) : '') + '</div>' +
       (txId && txId !== ref ? '<div class="receipt-line"><span class="receipt-line-label">' + t('receipt.id') + '</span><span class="receipt-line-value ltr mono sm">' + escapeHtml(txId) + '</span>' + copyBtn(txId) + '</div>' : '') +
     '</div>';
 
   return '<div class="receipt-view rc rc-' + state + '">' +
-    '<div class="receipt-head">' + logoMark(30) + '<div class="rc-doc"><b>' + escapeHtml(t('rc.docTitle')) + '</b><small>OM Wallet</small></div>' +
-      '<button class="topbar-action" data-action="done" aria-label="' + escapeHtml(t('receipt.back_home')) + '">' + icon('close', 18) + '</button>' +
+    /* receipt reference: back · logo · share, then one glass ticket (badge, title, rows with icon tiles, highlighted amount) */
+    '<div class="receipt-head w-rc-head"><button class="w-sq" data-action="done" aria-label="' + escapeHtml(t('receipt.back_home')) + '"><span class="dir-flip" style="display:inline-flex">' + icon('back', 20) + '</span></button>' +
+      '<span class="w-brand"><img class="w-l" src="assets/brand/om-logo-horizontal.png" alt="OM Wallet" width="150" height="54"><img class="w-d" src="assets/brand/om-logo-horizontal-white.png" alt="" width="150" height="54"></span>' +
+      '<button class="w-sq" data-action="share-receipt" aria-label="' + escapeHtml(t('action.share')) + '">' + icon('share', 20) + '</button>' +
     '</div>' +
-    '<section class="receipt-hero">' + rcBadge(state) +
-      '<div class="rc-amt ltr">' + moneyHtml(amtFmt) + '</div>' +
-      (destFmt ? '<div class="rc-dest ltr">≈ ' + escapeHtml(destFmt) + '</div>' : '') +
-      '<div class="receipt-title">' + escapeHtml(title) + '</div>' +
-      (eyebrow ? '<div class="rc-eyebrow">' + escapeHtml(eyebrow) + '</div>' : '') +
-      (sub ? '<div class="receipt-sub">' + escapeHtml(sub) + '</div>' : '') +
-    '</section>' +
-    '<section class="rc-sheet receipt-panel">' +
+    '<section class="rc-sheet receipt-panel w-ticket">' +
+      '<div class="receipt-hero">' + rcBadge(state) +
+        '<div class="receipt-title">' + escapeHtml(title) + '</div>' +
+        (eyebrow ? '<div class="rc-eyebrow">' + escapeHtml(eyebrow) + '</div>' : '') +
+        (sub ? '<div class="receipt-sub">' + escapeHtml(sub) + '</div>' : '') +
+        '<div class="rc-amt ltr">' + moneyHtml(amtFmt) + '</div>' +
+        (destFmt ? '<div class="rc-dest ltr">≈ ' + escapeHtml(destFmt) + '</div>' : '') +
+      '</div>' +
+      '<div class="rc-tear" aria-hidden="true"></div>' +
       '<div class="receipt-benef">' +
         '<div class="receipt-avatar">' + icon(isCrypto ? 'crypto' : 'user', 22) + '</div>' +
         '<div class="receipt-benef-body">' +
@@ -275,14 +278,17 @@ function renderReceipt(){
     '</section>' +
     '<div class="rc-sheet receipt-panel rc-notice" id="receipt-notice" style="display:none" aria-live="polite"></div>' +
     /* 12.14.0 — order: download (PDF / PNG), share, copy the reference, print; then another operation and home */
-    '<div class="receipt-actions rc-acts">' +
-      '<button class="btn btn-secondary rc-a" data-action="download-pdf" aria-label="' + escapeHtml(t('rc.pdfL')) + '">' + icon('download', 18) + '<span>' + escapeHtml(t('rc.pdf')) + '</span></button>' +
-      '<button class="btn btn-secondary rc-a" data-action="download-receipt" aria-label="' + escapeHtml(t('rc.pngL')) + '">' + icon('download', 18) + '<span>' + escapeHtml(t('rc.png')) + '</span></button>' +
-      '<button class="btn btn-secondary rc-a" data-action="share-receipt">' + icon('share', 18) + '<span>' + t('action.share') + '</span></button>' +
-      (ref ? '<button class="btn btn-secondary rc-a" data-action="copy-ref" data-copy="' + escapeHtml(ref) + '">' + icon('copy', 18) + '<span>' + escapeHtml(t('rc.copyRef')) + '</span></button>' : '') +
-      '<button class="btn btn-ghost rc-a rc-print" data-action="print-receipt">' + icon('doc', 18) + '<span>' + t('receipt.print') + '</span></button>' +
+    /* three glass tiles as in the reference (download, share, home), then the other real actions as small pills */
+    '<div class="receipt-actions rc-acts w-rc-tiles">' +
+      '<button class="w-rc-tile rc-a" data-action="download-pdf" aria-label="' + escapeHtml(t('rc.pdfL')) + '">' + icon('download', 24) + '<span>' + escapeHtml(t('rc.pdf')) + '</span></button>' +
+      '<button class="w-rc-tile rc-a" data-action="share-receipt">' + icon('share', 24) + '<span>' + t('action.share') + '</span></button>' +
+      '<button class="w-rc-tile rc-done" data-action="done">' + icon('home', 24) + '<span>' + t('receipt.back_home') + '</span></button>' +
+    '</div>' +
+    '<div class="w-rc-more">' +
+      '<button class="w-pill rc-a" data-action="download-receipt" aria-label="' + escapeHtml(t('rc.pngL')) + '">' + icon('download', 16) + '<span>' + escapeHtml(t('rc.png')) + '</span></button>' +
+      (ref ? '<button class="w-pill rc-a" data-action="copy-ref" data-copy="' + escapeHtml(ref) + '">' + icon('copy', 16) + '<span>' + escapeHtml(t('rc.copyRef')) + '</span></button>' : '') +
+      '<button class="w-pill rc-a rc-print" data-action="print-receipt">' + icon('doc', 16) + '<span>' + t('receipt.print') + '</span></button>' +
     '</div>' +
     (anotherNav ? '<button class="btn btn-primary rc-another" data-nav="' + anotherNav + '">' + t('receipt.another') + '</button>' : '') +
-    '<button class="btn ' + (anotherNav ? 'btn-secondary' : 'btn-primary') + ' rc-done" data-action="done">' + t('receipt.back_home') + '</button>' +
   '</div>';
 }

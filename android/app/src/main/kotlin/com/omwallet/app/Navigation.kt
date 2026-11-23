@@ -132,6 +132,7 @@ fun MainNav(isAdmin: Boolean) {
                 HomeScreen(HomeActions(
                     deposit = { nav.navigate("deposit") }, withdraw = { nav.navigate("withdraw") }, crypto = { nav.tab(Tab.Assets.route) },
                     markets = { nav.tab(Tab.Markets.route) }, send = { nav.navigate("send") }, asset = { nav.navigate("asset/$it") }, activity = { nav.tab(Tab.Activity.route) },
+                    account = { nav.tab(Tab.Account.route) },
                 ), pad)
             }
             composable(Tab.Assets.route) { AssetsScreen(onAsset = { nav.navigate("asset/$it") }, onDeposit = { nav.navigate("deposit") }, onSend = { nav.navigate("send") }, contentPadding = pad) }

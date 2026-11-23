@@ -123,13 +123,17 @@ class ScreensFrTest : ScreenTestBase() {
         /* 0.0123 BTC × 91 234.50 + 150.25 USDT ÷ 0.9998 + 0.5 ETH × 3 050.10 + 20.500 OMR × 2.6008 */
         val expected = 0.0123 * 91234.5 + 150.25 / 0.9998 + 0.5 * 3050.1 + 20.5 * 2.6008
         waitText(com.omwallet.core.data.Fmt.money(expected))
-        assertTrue(!has("Transfert", substring = true))
+        /* no transfer feature on the home (the status « Transfert confirmé » of a confirmed send may appear in the recent activity) */
+        assertTrue(!has("Transfert") && !has("Transférer") && !has("Envoyer de l’argent"))
         assertTrue(!has("XOF", substring = true) && !has("CFA", substring = true))
         listOf("Dépôt", "Retrait", "Crypto", "Marchés").forEach { assertTrue(it, has(it)) }
         shot("01_home")
         click("Marchés")
         waitText("+1.37%"); waitText("−2.24%")
         shot("02_markets")
+        compose.onNodeWithTag("tab_assets").performClick()
+        waitText("Mes actifs"); waitText("Voir les détails", substring = true)
+        shot("02b_assets")
         click("Compte")
         waitText("Admin Control")
         shot("03_account")

@@ -60,7 +60,7 @@
     <string name="promo_withdraw_t">اسحب إلى بنك عُماني</string>
     <string name="promo_withdraw_b">بالريال العُماني إلى الحساب الذي تختاره.</string>
     <string name="promo_withdraw_cta">سحب</string>
-    <string name="assets_title">الأصول</string>
+    <string name="assets_title">أصولي</string>
     <string name="assets_locked">محجوز</string>
     <string name="tab_overview">نظرة عامة</string>
     <string name="tab_history">السجل</string>
@@ -262,4 +262,7 @@
     <string name="onb_t3">محمية برمزك السري</string>
     <string name="onb_p3">يبقى حسابك مقفلاً حتى تفتحه بنفسك.</string>
     <string name="onb_c3">تسجيل الدخول</string>
+    <string name="assets_digital">المحفظة الرقمية</string>
+    <string name="assets_details">عرض التفاصيل</string>
+    <string name="acc_settings">الإعدادات</string>
 </resources>

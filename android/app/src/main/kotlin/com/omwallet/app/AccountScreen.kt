@@ -1,5 +1,27 @@
 package com.omwallet.app
 
+import com.omwallet.core.design.ReferenceTitle
+
+import com.omwallet.core.design.ReferenceRow
+
+import com.omwallet.core.design.GlassTile
+
+import com.omwallet.core.design.BrandLockup
+
+import androidx.compose.ui.draw.clip
+
+import androidx.compose.foundation.shape.CircleShape
+
+import androidx.compose.foundation.layout.size
+
+import androidx.compose.foundation.layout.height
+
+import androidx.compose.foundation.layout.Spacer
+
+import androidx.compose.foundation.layout.Box
+
+import androidx.compose.foundation.background
+
 import android.text.format.Formatter
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.Arrangement
@@ -59,46 +81,60 @@ fun AccountScreen(isAdmin: Boolean, onAdmin: () -> Unit, contentPadding: Padding
     LaunchedEffect(cleared) { cache = g.cache.sizeBytes() }
     val lang = AppCompatDelegate.getApplicationLocales().toLanguageTags().substringBefore('-')
 
-    LazyColumn(Modifier.fillMaxSize(), contentPadding = contentPadding, verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        item { Text(stringResource(R.string.account_title), style = MaterialTheme.typography.headlineMedium, color = OmColors.Ink, modifier = Modifier.statusBarsPadding().padding(horizontal = 20.dp, vertical = 8.dp)) }
+    /* settings / profile references: logo, large centred title, profile card, one glass list (glass tiles, labels, chevrons),
+       then the log-out pill. Every row keeps its existing action. */
+    LazyColumn(Modifier.fillMaxSize(), contentPadding = contentPadding, verticalArrangement = Arrangement.spacedBy(14.dp)) {
         item {
-            GlassCard(Modifier.padding(horizontal = 16.dp), strong = true) {
-                Text(profile?.displayName ?: "—", style = MaterialTheme.typography.titleLarge, color = OmColors.Ink)
-                profile?.email?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = OmColors.InkSecondary) }
-                profile?.yorId?.let { Text(stringResource(R.string.acc_id) + " · " + it, style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary) }
+            Column(Modifier.statusBarsPadding().padding(horizontal = 16.dp, vertical = 6.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                BrandLockup(height = 38.dp)
+                ReferenceTitle(stringResource(R.string.account_title))
             }
         }
         item {
-            GlassCard(Modifier.padding(horizontal = 16.dp)) {
-                Line(stringResource(R.string.acc_language), when (lang) { "ar" -> "العربية"; "fr" -> "Français"; "en" -> "English"; else -> stringResource(R.string.lang_system) }) { languages = true }
-                Line(stringResource(R.string.acc_currency), prefs.currency.name) {
+            GlassCard(Modifier.padding(horizontal = 16.dp), strong = true, rise = 0) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                    val initials = (profile?.displayName ?: "").split(' ').filter { it.isNotBlank() }.take(2).joinToString("") { it.take(1).uppercase() }
+                    Box(Modifier.size(64.dp).clip(CircleShape).background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(OmColors.SkyGlow, OmColors.Blue700))), contentAlignment = Alignment.Center) {
+                        Text(initials.ifBlank { "OM" }, style = MaterialTheme.typography.titleLarge, color = androidx.compose.ui.graphics.Color.White)
+                    }
+                    Column(Modifier.weight(1f)) {
+                        Text(profile?.displayName ?: "—", style = MaterialTheme.typography.titleLarge, color = OmColors.Ink)
+                        profile?.email?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = OmColors.InkSecondary) }
+                        profile?.yorId?.let { Text(stringResource(R.string.acc_id) + " · " + it, style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary) }
+                    }
+                }
+            }
+        }
+        item {
+            GlassCard(Modifier.padding(horizontal = 16.dp), padding = 14.dp, rise = 1) {
+                ReferenceRow(OmIcons.Globe, stringResource(R.string.acc_language), value = when (lang) { "ar" -> "العربية"; "fr" -> "Français"; "en" -> "English"; else -> stringResource(R.string.lang_system) }) { languages = true }
+                ReferenceRow(OmIcons.Coin, stringResource(R.string.acc_currency), value = prefs.currency.name) {
                     scope.launch { g.prefs.setCurrency(if (prefs.currency == DisplayCurrency.USD) DisplayCurrency.OMR else DisplayCurrency.USD) }
                 }
-                Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Text(stringResource(R.string.acc_hide), style = MaterialTheme.typography.bodyLarge, color = OmColors.Ink, modifier = Modifier.weight(1f))
+                Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                    GlassTile(OmIcons.Eye)
+                    Text(stringResource(R.string.acc_hide), style = MaterialTheme.typography.titleLarge, color = OmColors.Ink, modifier = Modifier.weight(1f))
                     Switch(prefs.hideBalance, { v -> scope.launch { g.prefs.setHidden(v) } }, colors = SwitchDefaults.colors(checkedTrackColor = OmColors.Blue600))
                 }
-            }
-        }
-        if (isAdmin) item {
-            GlassCard(Modifier.padding(horizontal = 16.dp).pressable(onClick = onAdmin)) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    OmIcon(OmIcons.Shield, null, tint = OmColors.Blue600)
-                    Text(stringResource(R.string.acc_admin), style = MaterialTheme.typography.titleMedium, color = OmColors.Ink, modifier = Modifier.weight(1f))
-                    OmIcon(OmIcons.Chevron, null, tint = OmColors.InkSecondary, size = 18.dp)
-                }
+                if (isAdmin) ReferenceRow(OmIcons.Shield, stringResource(R.string.acc_admin), onClick = onAdmin)
             }
         }
         item {
-            GlassCard(Modifier.padding(horizontal = 16.dp)) {
-                Text(stringResource(R.string.acc_cache), style = MaterialTheme.typography.titleSmall, color = OmColors.Ink)
-                Text(stringResource(R.string.acc_cache_size, if (cache < 0) "—" else Formatter.formatShortFileSize(ctx, cache)), style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary)
-                if (cleared) Text(stringResource(R.string.acc_cache_cleared), style = MaterialTheme.typography.bodySmall, color = OmColors.Success)
+            GlassCard(Modifier.padding(horizontal = 16.dp), rise = 2) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                    GlassTile(OmIcons.Refresh)
+                    Column(Modifier.weight(1f)) {
+                        Text(stringResource(R.string.acc_cache), style = MaterialTheme.typography.titleMedium, color = OmColors.Ink)
+                        Text(stringResource(R.string.acc_cache_size, if (cache < 0) "—" else Formatter.formatShortFileSize(ctx, cache)), style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary)
+                        if (cleared) Text(stringResource(R.string.acc_cache_cleared), style = MaterialTheme.typography.bodySmall, color = OmColors.Success)
+                    }
+                }
+                Spacer(Modifier.height(10.dp))
                 OmSecondaryButton(stringResource(R.string.acc_cache_clear)) { scope.launch { g.cache.purge(maxBytes = 0); cleared = true } }
             }
         }
         item {
-            GlassCard(Modifier.padding(horizontal = 16.dp)) {
+            GlassCard(Modifier.padding(horizontal = 16.dp), rise = 3) {
                 Text(stringResource(R.string.acc_licenses), style = MaterialTheme.typography.titleSmall, color = OmColors.Ink)
                 Text(stringResource(R.string.acc_licenses_b), style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary)
                 Text(stringResource(R.string.acc_version, BuildConfig.VERSION_NAME), style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary)
@@ -119,14 +155,5 @@ fun AccountScreen(isAdmin: Boolean, onAdmin: () -> Unit, contentPadding: Padding
                     AppCompatDelegate.setApplicationLocales(if (tag.isEmpty()) LocaleListCompat.getEmptyLocaleList() else LocaleListCompat.forLanguageTags(tag))
                 }.padding(vertical = 12.dp))
         }
-    }
-}
-
-@Composable
-private fun Line(label: String, value: String, onClick: () -> Unit) {
-    Row(Modifier.fillMaxWidth().pressable(onClick = onClick).padding(vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(label, style = MaterialTheme.typography.bodyLarge, color = OmColors.Ink, modifier = Modifier.weight(1f))
-        Text(value, style = MaterialTheme.typography.bodyMedium, color = OmColors.Blue600)
-        OmIcon(OmIcons.Chevron, null, tint = OmColors.InkSecondary, size = 16.dp, modifier = Modifier.padding(start = 6.dp))
     }
 }

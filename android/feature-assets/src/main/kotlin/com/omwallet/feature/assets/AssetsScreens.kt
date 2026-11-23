@@ -1,5 +1,19 @@
 package com.omwallet.feature.assets
 
+import com.omwallet.core.design.WalletArt
+
+import com.omwallet.core.design.ReferenceTitle
+
+import com.omwallet.core.design.BrandLockup
+
+import androidx.compose.ui.graphics.Color
+
+import androidx.compose.ui.graphics.Brush
+
+import androidx.compose.foundation.lazy.itemsIndexed
+
+import androidx.compose.foundation.border
+
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
@@ -91,27 +105,43 @@ class AssetsViewModel(g: OmGraph) : ViewModel() {
 fun AssetsScreen(onAsset: (String) -> Unit, onDeposit: () -> Unit, onSend: () -> Unit, contentPadding: PaddingValues) {
     val vm = omViewModel { AssetsViewModel(it) }
     val s by vm.state.collectAsStateWithLifecycle()
-    LazyColumn(Modifier.fillMaxSize(), contentPadding = contentPadding, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    /* « my assets » reference: logo, large centred title, hero glass card with the glass wallet, then one glass card per asset
+       with « View details » (opens the real asset page) */
+    LazyColumn(Modifier.fillMaxSize(), contentPadding = contentPadding, verticalArrangement = Arrangement.spacedBy(14.dp)) {
         item {
-            Column(Modifier.statusBarsPadding().padding(horizontal = 20.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text(stringResource(R.string.assets_title), style = MaterialTheme.typography.headlineMedium, color = OmColors.Ink)
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    OmPrimaryButton(stringResource(R.string.action_deposit), Modifier.weight(1f), onClick = onDeposit)
-                    OmSecondaryButton(stringResource(R.string.action_send), Modifier.weight(1f), onClick = onSend)
+            Column(Modifier.statusBarsPadding().padding(horizontal = 16.dp, vertical = 6.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                BrandLockup(height = 38.dp)
+                ReferenceTitle(stringResource(R.string.assets_title))
+            }
+        }
+        item {
+            GlassCard(Modifier.padding(horizontal = 16.dp), strong = true, padding = 20.dp, rise = 0) {
+                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    WalletArt()
+                    Text(stringResource(R.string.assets_digital), style = MaterialTheme.typography.headlineMedium, color = OmColors.Ink)
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        OmPrimaryButton(stringResource(R.string.action_deposit), Modifier.weight(1f), onClick = onDeposit)
+                        OmSecondaryButton(stringResource(R.string.action_send), Modifier.weight(1f), onClick = onSend)
+                    }
                 }
             }
         }
         if (s.loading) item { SkeletonRows(4, Modifier.padding(horizontal = 20.dp)) }
         else if (s.lines.isEmpty()) item { EmptyState(stringResource(R.string.home_no_holdings_t), stringResource(R.string.home_no_holdings_b), Modifier.padding(16.dp), stringResource(R.string.action_deposit), onDeposit) }
-        items(s.lines, key = { it.position.asset }) { l ->
-            Row(Modifier.fillMaxWidth().pressable { onAsset(l.position.asset) }.padding(horizontal = 20.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                AssetLogo(l.position.asset)
-                Column(Modifier.weight(1f)) {
-                    Text(Catalog.asset(l.position.asset)?.name ?: l.position.asset, style = MaterialTheme.typography.titleSmall, color = OmColors.Ink)
-                    Text(Fmt.masked(Fmt.qty(l.position.balance, l.position.asset), s.hidden), style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary)
-                    if (l.position.locked > 0) Text(stringResource(R.string.assets_locked) + " " + Fmt.masked(Fmt.qty(l.position.locked, l.position.asset), s.hidden), style = MaterialTheme.typography.labelSmall, color = OmColors.Warning)
+        itemsIndexed(s.lines, key = { _, l -> l.position.asset }) { i, l ->
+            GlassCard(Modifier.padding(horizontal = 16.dp).pressable { onAsset(l.position.asset) }, padding = 16.dp, rise = i + 1) {
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                    AssetLogo(l.position.asset, size = 52.dp)
+                    Column(Modifier.weight(1f)) {
+                        Text(l.position.asset, style = MaterialTheme.typography.titleLarge, color = OmColors.Ink)
+                        Text(Catalog.asset(l.position.asset)?.name ?: l.position.asset, style = MaterialTheme.typography.bodyMedium, color = OmColors.InkSecondary)
+                        Text(Fmt.masked(Fmt.qty(l.position.balance, l.position.asset), s.hidden) + "  ·  " + money(l.usd, s.currency, s.hidden), style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary)
+                        if (l.position.locked > 0) Text(stringResource(R.string.assets_locked) + " " + Fmt.masked(Fmt.qty(l.position.locked, l.position.asset), s.hidden), style = MaterialTheme.typography.labelSmall, color = OmColors.Warning)
+                    }
+                    Text(stringResource(R.string.assets_details), style = MaterialTheme.typography.labelLarge, color = OmColors.Blue600,
+                        modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(Brush.linearGradient(listOf(Color(0xF2FFFFFF), Color(0xBFDCEEFF))))
+                            .border(1.dp, Color.White, RoundedCornerShape(16.dp)).pressable { onAsset(l.position.asset) }.padding(horizontal = 14.dp, vertical = 10.dp))
                 }
-                Text(money(l.usd, s.currency, s.hidden), style = MaterialTheme.typography.titleSmall, color = OmColors.Ink)
             }
         }
     }
