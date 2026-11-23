@@ -143,7 +143,8 @@ const OMX = (() => {
         omxLogoLine() +
         '<button class="hub-circ" data-action="notifications" aria-label="' + escapeHtml(t('px.notifs')) + '">' + icon('bell', 22) + (unread ? '<span class="rv-bdg dot"></span>' : '') + '</button></header>' +
       '<div class="w-hello"><h2 class="omx-hello">' + escapeHtml(tf('omx.welcome', { n: name })) + '</h2><p>' + escapeHtml(t('hm.sub')) + '</p></div>' +
-      '<div class="w-scene" aria-hidden="true"></div>' +
+      /* original glass decoration (vector waves and a glint, drawn here — no photo) */
+      '<div class="w-scene" aria-hidden="true"><svg viewBox="0 0 400 120" preserveAspectRatio="none" width="100%" height="100%"><defs><linearGradient id="wsg1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#BFE3FF" stop-opacity="0"/><stop offset=".45" stop-color="#8FD0FF" stop-opacity=".55"/><stop offset="1" stop-color="#4FA8FF" stop-opacity=".25"/></linearGradient><linearGradient id="wsg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><path class="w-wave a" d="M-20 78 C 70 30, 160 104, 250 62 S 380 30, 430 52 L 430 120 L -20 120 Z" fill="url(#wsg1)"/><path class="w-wave b" d="M-20 92 C 90 58, 190 118, 290 80 S 400 60, 430 74 L 430 120 L -20 120 Z" fill="url(#wsg2)" opacity=".7"/><path class="w-wave c" d="M-20 78 C 70 30, 160 104, 250 62 S 380 30, 430 52" fill="none" stroke="#fff" stroke-width="1.6" stroke-opacity=".95"/><circle class="w-glint" cx="318" cy="40" r="22" fill="url(#wsg2)" opacity=".55"/></svg></div>' +
       '<section class="omx-card omx-total" aria-label="' + escapeHtml(t('omx.total')) + '">' +
         '<div class="omx-tl"><span>' + escapeHtml(t('omx.total')) + '</span><button class="ds-eye" data-action="toggle-balance" aria-pressed="' + (hide ? 'true' : 'false') + '" aria-label="' + escapeHtml(t(hide ? 'px.showBal' : 'px.hideBal')) + '">' + icon(hide ? 'eyeOff' : 'eye', 20) + '</button></div>' +
         '<div class="omx-tv ltr" id="omx-total-v" data-omx-total>' + escapeHtml(totalTxt) + '</div>' +
@@ -153,7 +154,7 @@ const OMX = (() => {
         '<div class="omx-pf" id="omx-pf" aria-hidden="' + (hide ? 'true' : 'false') + '"></div>' +
         (tt.hasCrypto ? '<small class="omx-note">' + escapeHtml(t('omx.pfNote')) + '</small>' : '') +
       '</section>' +
-      '<nav class="omx-acts" aria-label="' + escapeHtml(t('omx.total')) + '">' + act('deposit', 'receive', t('omx.deposit'), true) + act('withdraw', 'download', t('omx.withdraw')) + act('exchange', 'swap', t('omx.exchange')) + act('markets', 'chart', t('omx.markets')) + '</nav>' +
+      '<nav class="omx-acts" aria-label="' + escapeHtml(t('omx.total')) + '">' + act('deposit', 'receive', t('omx.deposit'), true) + act('withdraw', 'withdraw', t('omx.withdraw')) + act('exchange', 'swap', t('omx.exchange')) + act('markets', 'chart', t('omx.markets')) + '</nav>' +
       /* shortcut banners: each one opens a real screen (deposit, send to an OM Wallet user, markets) */
       '<section class="omx-card w-promo" data-w-carousel aria-roledescription="carousel"><div class="w-promo-track">' +
         promos.map((x, k) => '<button type="button" class="w-promo-card" data-nav="' + x[0] + '" aria-label="' + escapeHtml(t(x[1])) + '"' + (k ? ' tabindex="-1"' : '') + '><span class="w-promo-art" aria-hidden="true"></span>' +
@@ -195,7 +196,7 @@ const OMX = (() => {
         '<h1>' + escapeHtml(t('omx.myAssets')) + '</h1><button class="w-sq" data-nav="markets" aria-label="' + escapeHtml(t('omx.search')) + '">' + icon('search', 22) + '</button></div>' +
       '<section class="omx-card w-hero"><span class="w-hero-art" aria-hidden="true"></span><h2>' + escapeHtml(t('omx.digital')) + '</h2>' +
         '<span class="w-hero-v ltr">' + escapeHtml(hide ? '••••••' : omxUsd(tt.usd, { dp: 2 })) + '</span>' +
-        '<div class="omx-acts mini">' + ['deposit:receive:omx.deposit', 'send-internal:send:si.short', 'withdraw:download:omx.withdraw', 'exchange:swap:omx.exchange'].map((x, k) => { const s2 = x.split(':'); return '<button class="omx-act' + (k ? '' : ' p') + '" data-nav="' + s2[0] + '"><i>' + icon(s2[1], 22) + '</i><span>' + escapeHtml(t(s2[2])) + '</span></button>'; }).join('') + '</div></section>' +
+        '<div class="omx-acts mini">' + ['deposit:receive:omx.deposit', 'send-internal:send:si.short', 'withdraw:withdraw:omx.withdraw', 'exchange:swap:omx.exchange'].map((x, k) => { const s2 = x.split(':'); return '<button class="omx-act' + (k ? '' : ' p') + '" data-nav="' + s2[0] + '"><i>' + icon(s2[1], 22) + '</i><span>' + escapeHtml(t(s2[2])) + '</span></button>'; }).join('') + '</div></section>' +
       (hs.length ? '<div class="w-alist">' + hs.map(h => card(omxAsset(h.sym) || { sym: h.sym, name: h.sym }, h.qty)).join('') + '</div>'
         : '<section class="omx-card omx-empty">' + icon('crypto', 30) + '<b>' + escapeHtml(t('omx.noAssets')) + '</b><p>' + escapeHtml(t('omx.noAssetsD')) + '</p></section>') +
       '<h3 class="w-sec-t">' + escapeHtml(t('omx.markets')) + '</h3>' + statusLine() +
@@ -212,7 +213,7 @@ const OMX = (() => {
   function renderMarkets(){
     return top(t('omx.markets'), false) + '<div class="screen-body omx-page">' +
       '<div class="field-box omx-search">' + icon('search', 18) + '<input type="search" id="omx-q" placeholder="' + escapeHtml(t('omx.search')) + '" value="' + escapeHtml(S.q) + '" autocomplete="off" aria-label="' + escapeHtml(t('omx.search')) + '"></div>' +
-      '<div class="chips" role="group"><button class="chip" data-omx-tab="all" aria-pressed="' + (S.tab === 'all') + '">' + escapeHtml(t('omx.all')) + '</button><button class="chip" data-omx-tab="fav" aria-pressed="' + (S.tab === 'fav') + '">★ ' + escapeHtml(t('omx.fav')) + '</button></div>' +
+      '<div class="chips" role="group"><button class="chip" data-omx-tab="all" aria-pressed="' + (S.tab === 'all') + '">' + escapeHtml(t('omx.all')) + '</button><button class="chip" data-omx-tab="fav" aria-pressed="' + (S.tab === 'fav') + '">' + icon('star', 15) + ' ' + escapeHtml(t('omx.fav')) + '</button></div>' +
       statusLine() + '<section class="omx-card omx-sec"><div class="omx-list" id="omx-mk">' + marketRows() + '</div></section><p class="omx-src">' + escapeHtml(t('omx.source')) + '</p></div>';
   }
   /* ---------- ASSET DETAIL ---------- */
@@ -223,7 +224,7 @@ const OMX = (() => {
     const stat = (l, v) => '<div class="omx-stat"><small>' + escapeHtml(l) + '</small><b class="ltr">' + escapeHtml(v) + '</b></div>';
     return top(a.name) + '<div class="screen-body omx-page">' +
       '<section class="omx-card omx-asset"><div class="omx-ah">' + omxLogo(a.sym, 52) + '<div><b>' + escapeHtml(a.name) + '</b><small>' + escapeHtml(a.sym) + '</small></div>' +
-        '<button type="button" class="omx-star' + (isFav ? ' on' : '') + '" data-omx="fav" aria-pressed="' + isFav + '" aria-label="' + escapeHtml(t(isFav ? 'omx.favDel' : 'omx.favAdd')) + '">★</button></div>' +
+        '<button type="button" class="omx-star' + (isFav ? ' on' : '') + '" data-omx="fav" aria-pressed="' + isFav + '" aria-label="' + escapeHtml(t(isFav ? 'omx.favDel' : 'omx.favAdd')) + '">' + icon('star', 20) + '</button></div>' +
         '<div class="omx-ap ltr" data-omx-v="' + a.sym + '">' + escapeHtml(k ? omxUsd(k.price) : '—') + '</div>' +
         '<div class="omx-apc ' + (k && k.pct != null ? (k.pct >= 0 ? 'up' : 'down') : '') + ' ltr" data-omx-p="' + a.sym + '">' + escapeHtml(k ? omxPct(k.pct) + ' · 24 h' : '—') + '</div>' +
         '<div class="omx-ch" id="omx-ch"></div>' +
@@ -232,7 +233,7 @@ const OMX = (() => {
       '<section class="omx-card omx-stats">' + stat(t('omx.high'), k && k.high ? omxUsd(k.high) : '—') + stat(t('omx.low'), k && k.low ? omxUsd(k.low) : '—') + stat(t('omx.vol'), k && k.qvol ? omxUsd(k.qvol, { dp: 0 }) : '—') +
         stat(t('omx.yours'), hide ? '••••' : omxQty(qty, a.sym)) + '</section>' +
       '<div class="omx-acts two"><button class="omx-act p" data-omx="dep">' + '<i>' + icon('receive', 24) + '</i><span>' + escapeHtml(t('omx.deposit')) + '</span></button>' +
-        '<button class="omx-act" data-omx="wd"><i>' + icon('download', 24) + '</i><span>' + escapeHtml(t('omx.withdraw')) + '</span></button></div>' +
+        '<button class="omx-act" data-omx="wd"><i>' + icon('withdraw', 24) + '</i><span>' + escapeHtml(t('omx.withdraw')) + '</span></button></div>' +
       '<section class="omx-card omx-sec"><div class="omx-sh"><h2>' + escapeHtml(t('omx.networks')) + '</h2></div><div class="omx-nets">' +
         (a.nets.length ? a.nets.map(n => netRow(a.sym, n, wdNets.indexOf(n) !== -1)).join('') : '<p class="omx-muted">' + escapeHtml(t('omx.unsupported')) + '</p>') + '</div></section>' +
       '<p class="omx-src">' + escapeHtml(t('omx.source')) + '</p></div>';

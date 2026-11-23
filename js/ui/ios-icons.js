@@ -53,6 +53,10 @@ const IOS_ICONS = (() => {
     search: C(10.8, 10.8, 6.6) + P('M20 20l-4.6-4.6'),
     share: P('M8.6 8.6H7.4a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h9.2a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1.2') + P('M12 14.6V3.8M8.8 6.9 12 3.7l3.2 3.2'),
     download: P('M12 4v11M7.4 10.8 12 15.4l4.6-4.6M5.2 19.8h13.6'),
+    /* 14.5.0: money leaving the wallet — the arrow goes UP out of the tray (deposit / receive keeps the arrow coming in) */
+    withdraw: P('M12 15.4V4.4M7.4 8.6 12 4l4.6 4.6M5.2 19.8h13.6'),
+    /* favourite: five-point star, round joins; the selected state fills it (css: .omx-star.on .ic) */
+    star: P('M12 3.8l2.5 5.1 5.6.8-4.05 3.95.95 5.6L12 16.6l-5 2.65.95-5.6L3.9 9.7l5.6-.8z'),
     copy: R(9.2, 9.2, 10.8, 10.8, 2.6) + P('M14.8 9.2V6.8a2.6 2.6 0 0 0-2.6-2.6H6.8a2.6 2.6 0 0 0-2.6 2.6v5.4a2.6 2.6 0 0 0 2.6 2.6h2.4'),
     trash: P('M4.6 6.8h14.8M9.6 6.8V5a1.4 1.4 0 0 1 1.4-1.4h2A1.4 1.4 0 0 1 14.4 5v1.8M6.6 6.8l.8 11.9a2 2 0 0 0 2 1.9h5.2a2 2 0 0 0 2-1.9l.8-11.9M10.2 10.8v6M13.8 10.8v6'),
     logout: P('M9.6 20.2H6.8A2.6 2.6 0 0 1 4.2 17.6V6.4a2.6 2.6 0 0 1 2.6-2.6h2.8') + P('M15.6 16.4 20 12l-4.4-4.4M20 12H9.6'),

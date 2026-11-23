@@ -101,7 +101,9 @@ fun GlassEmblem(modifier: Modifier = Modifier, size: Dp = 84.dp) {
         val t = rememberInfiniteTransition(label = "float")
         val v by t.animateFloat(0f, 1f, infiniteRepeatable(tween(3000), RepeatMode.Reverse), label = "lift"); v
     }
-    Image(painterResource(R.drawable.om_glass_icon), null, modifier.size(size).graphicsLayer { translationY = -6.dp.toPx() * lift; rotationZ = -6f + 3f * lift })
+    /* the icon file has light square corners: crop slightly and round them so only the glass tile shows */
+    Image(painterResource(R.drawable.om_glass_icon), null, modifier.size(size).graphicsLayer { translationY = -6.dp.toPx() * lift; rotationZ = -6f + 3f * lift }
+        .clip(RoundedCornerShape(percent = 26)), contentScale = androidx.compose.ui.layout.ContentScale.Crop, alignment = Alignment.Center, colorFilter = null)
 }
 
 /* Glass wallet illustration of the « my assets » reference, edges faded into the card. */

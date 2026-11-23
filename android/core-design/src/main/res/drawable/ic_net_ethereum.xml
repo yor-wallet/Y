@@ -3,30 +3,36 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <path
-        android:fillColor="#FF8FFCF3"
-        android:pathData="M12 3v6.651l5.625 2.516z"/>
-    <path
-        android:fillColor="#FFCABCF8"
-        android:pathData="M12 3l-5.625 9.166L12 9.653z"/>
-    <path
-        android:fillColor="#FFCBA7F5"
-        android:pathData="M12 16.478V21l5.625-7.784z"/>
-    <path
-        android:fillColor="#FF74A0F3"
-        android:pathData="M12 21v-4.522l-5.625-3.262z"/>
-    <path
-        android:fillColor="#FFCBA7F5"
-        android:pathData="M12 15.43l5.625-3.263L12 9.652z"/>
-    <path
-        android:fillColor="#FF74A0F3"
-        android:pathData="M6.375 12.167L12 15.43V9.652z"/>
-    <path
-        android:fillColor="#FF202699"
-        android:fillType="evenOdd"
-        android:pathData="M12 15.43l-5.625-3.263L12 3l5.624 9.166z m-5.252-3.528l5.161-8.41v6.114z m-0.077 0.229l5.238-2.327v5.364z m5.418-2.327v5.364l5.234-3.037z m0-0.198l5.161 2.296-5.161-8.41z"/>
-    <path
-        android:fillColor="#FF202699"
-        android:fillType="evenOdd"
-        android:pathData="M12 16.406l-5.625-3.195L12 21l5.624-7.79z m-4.995-2.633l4.904 2.79v4.005z m5.084 2.79v4.005l4.905-6.795z"/>
+    <!-- web3icons 4.0.61 (MIT), round-badge variant: official colours -->
+    <group>
+        <path
+            android:fillColor="#FF000000"
+            android:pathData="M12 0A12 12 0 1 0 12 24 12 12 0 1 0 12 0Z"/>
+        <path
+            android:fillColor="#FF8FFCF3"
+            android:pathData="M12 4V9.912L17 12.149Z"/>
+        <path
+            android:fillColor="#FFCABCF8"
+            android:pathData="M12 4L7 12.148 12 9.913Z"/>
+        <path
+            android:fillColor="#FFCBA7F5"
+            android:pathData="M12 15.98V20L17 13.08Z"/>
+        <path
+            android:fillColor="#FF74A0F3"
+            android:pathData="M12 20V15.98L7 13.08Z"/>
+        <path
+            android:fillColor="#FFCBA7F5"
+            android:pathData="M12 15.049L17 12.149 12 9.913Z"/>
+        <path
+            android:fillColor="#FF74A0F3"
+            android:pathData="M7 12.149L12 15.049V9.913Z"/>
+        <path
+            android:fillColor="#FF202699"
+            android:fillType="evenOdd"
+            android:pathData="M12 15.048L7 12.148 12 4 17 12.148ZM7.33 11.912L11.918 4.437V9.872ZM7.262 12.116L11.918 10.048V14.816ZM12.078 10.048V14.816L16.731 12.116ZM12.078 9.872L16.666 11.912 12.078 4.437Z"/>
+        <path
+            android:fillColor="#FF202699"
+            android:fillType="evenOdd"
+            android:pathData="M12 15.917L7 13.077 12 20 17 13.076ZM7.56 13.576L11.92 16.056V19.616ZM12.079 16.056V19.616L16.439 13.576Z"/>
+    </group>
 </vector>

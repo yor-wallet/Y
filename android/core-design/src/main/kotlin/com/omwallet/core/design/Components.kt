@@ -192,12 +192,13 @@ fun GlassTile(@DrawableRes icon: Int, modifier: Modifier = Modifier, size: Dp = 
     ) { OmIcon(icon, null, tint = tint, size = size * 0.46f) }
 }
 
-/* Official asset / network logos (web3icons, MIT) as vector drawables: never blurry at any density. */
+/* Official asset / network logos (web3icons 4.0.61, MIT, round-badge variant; XRP from the XRPL Brand Kit 2026) as vector drawables: never blurry at any density. */
 @Composable
 fun AssetLogo(symbol: String, size: Dp = 40.dp, modifier: Modifier = Modifier) {
     val res = tokenLogo(symbol)
     Box(modifier.size(size).clip(CircleShape).background(Color.White), contentAlignment = Alignment.Center) {
-        if (res != null) Image(painterResource(res), contentDescription = null, modifier = Modifier.size(size * 0.82f))
+        /* 14.5.0: the official round coin badge fills the circle, as on the projects' own sites and on exchanges */
+        if (res != null) Image(painterResource(res), contentDescription = null, modifier = Modifier.size(size))
         else Text(symbol.take(3), style = MaterialTheme.typography.labelSmall, color = OmColors.InkSecondary)
     }
 }
@@ -205,8 +206,8 @@ fun AssetLogo(symbol: String, size: Dp = 40.dp, modifier: Modifier = Modifier) {
 @Composable
 fun NetworkLogo(network: String, size: Dp = 28.dp, modifier: Modifier = Modifier) {
     val res = networkLogo(network)
-    Box(modifier.size(size).clip(RoundedCornerShape(8.dp)).background(Color.White), contentAlignment = Alignment.Center) {
-        if (res != null) Image(painterResource(res), contentDescription = null, modifier = Modifier.size(size * 0.8f))
+    Box(modifier.size(size).clip(CircleShape).background(Color.White), contentAlignment = Alignment.Center) {
+        if (res != null) Image(painterResource(res), contentDescription = null, modifier = Modifier.size(size))
     }
 }
 

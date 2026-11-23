@@ -12,7 +12,7 @@ const SHELL = [
   './', 'index.html', 'offline.html', 'manifest.webmanifest', 'favicon.ico',
   'css/app.css', 'js/app.js',
   'assets/brand/logo-mark.svg', 'assets/brand/om-logo-horizontal.png', 'assets/brand/om-logo-horizontal-white.png', 'assets/brand/omr-symbol.svg', 'public/branding/om-wallet-favicon.svg', 'public/branding/apple-touch-icon.png',
-  'assets/promo/promo-1.jpg', 'assets/promo/promo-2.jpg', 'assets/promo/oman-coast.jpg', 'assets/promo/wallet-glass.jpg', 'assets/brand/app-icon-glass-hd.png',
+  'assets/promo/promo-1.jpg', 'assets/promo/promo-2.jpg', 'assets/promo/wallet-glass.jpg', 'assets/brand/app-icon-glass-hd.png',
   'assets/fonts/sora-latin-var.woff2', 'assets/fonts/sora-latin-ext-var.woff2',
   'assets/fonts/tajawal-arabic-400.woff2', 'assets/fonts/tajawal-arabic-500.woff2', 'assets/fonts/tajawal-arabic-700.woff2', 'assets/fonts/tajawal-arabic-800.woff2',
   'assets/icons/icon.svg', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/apple-touch-icon.png',

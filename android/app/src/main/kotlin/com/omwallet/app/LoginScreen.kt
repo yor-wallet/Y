@@ -94,7 +94,7 @@ fun LoginScreen() {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Image(painterResource(com.omwallet.app.R.drawable.app_icon_glass), contentDescription = stringResource(R.string.app_name),
-            modifier = Modifier.padding(top = 18.dp).size(168.dp).riseIn(0))
+            modifier = Modifier.padding(top = 18.dp).size(168.dp).riseIn(0).clip(RoundedCornerShape(percent = 26)))
         Text("OM Wallet", style = MaterialTheme.typography.displaySmall.copy(brush = Brush.verticalGradient(listOf(Color(0xFF1C5FD6), Color(0xFF0B2E7A)))), modifier = Modifier.riseIn(1))
         Spacer(Modifier.height(18.dp))
         Text(stringResource(R.string.login_title), style = MaterialTheme.typography.headlineMedium, color = OmColors.Ink, textAlign = TextAlign.Center, modifier = Modifier.riseIn(2))

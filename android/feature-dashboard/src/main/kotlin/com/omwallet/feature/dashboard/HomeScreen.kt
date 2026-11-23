@@ -1,6 +1,7 @@
 package com.omwallet.feature.dashboard
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.animateFloat
 import kotlinx.coroutines.delay
 import com.omwallet.core.design.riseIn
 import com.omwallet.core.design.GlassSquare
@@ -155,9 +156,7 @@ fun HomeScreen(actions: HomeActions, contentPadding: PaddingValues) {
         }
         item {
             Box {
-                Image(painterResource(com.omwallet.feature.dashboard.R.drawable.oman_coast), null, contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxWidth().height(110.dp).graphicsLayer { alpha = 0.95f; compositingStrategy = CompositingStrategy.Offscreen }
-                        .drawWithContent { drawContent(); drawRect(Brush.verticalGradient(0f to Color.Transparent, 0.3f to Color.Black, 0.65f to Color.Black, 1f to Color.Transparent), blendMode = BlendMode.DstIn) })
+                GlassWaves(Modifier.fillMaxWidth().height(110.dp))
                 GlassCard(Modifier.padding(start = 16.dp, end = 16.dp, top = 70.dp), strong = true, padding = 20.dp, rise = 1) {
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                         Column(Modifier.weight(1f)) {
@@ -293,5 +292,33 @@ private fun Promotions(actions: HomeActions) {
                 Box(Modifier.height(8.dp).width(if (on) 22.dp else 8.dp).clip(RoundedCornerShape(5.dp)).background(if (on) OmColors.Blue600 else Color(0x401A84F5)))
             }
         }
+    }
+}
+
+/* Original glass decoration behind the balance card (drawn, no photo): two translucent waves, a bright rim and a soft glint that drift
+   slowly; still under « remove animations ». */
+@Composable
+private fun GlassWaves(modifier: Modifier) {
+    val reduced = com.omwallet.core.design.LocalOmMotion.current.reduced
+    val drift = if (reduced) 0f else {
+        val t = androidx.compose.animation.core.rememberInfiniteTransition(label = "waves")
+        val v by t.animateFloat(-1f, 1f, androidx.compose.animation.core.infiniteRepeatable(androidx.compose.animation.core.tween(9000), androidx.compose.animation.core.RepeatMode.Reverse), label = "drift"); v
+    }
+    androidx.compose.foundation.Canvas(modifier) {
+        val w = size.width; val h = size.height; val dx = drift * 10.dp.toPx()
+        fun wave(y0: Float, amp: Float, shift: Float) = androidx.compose.ui.graphics.Path().apply {
+            moveTo(-40f + shift, h * y0)
+            cubicTo(w * 0.18f + shift, h * (y0 - amp), w * 0.4f + shift, h * (y0 + amp), w * 0.62f + shift, h * y0)
+            cubicTo(w * 0.8f + shift, h * (y0 - amp), w * 0.95f + shift, h * (y0 - amp * 0.4f), w + 40f + shift, h * (y0 - amp * 0.2f))
+        }
+        val a = wave(0.65f, 0.38f, dx)
+        val fillA = androidx.compose.ui.graphics.Path().apply { addPath(a); lineTo(w + 40f, h); lineTo(-40f, h); close() }
+        drawPath(fillA, Brush.horizontalGradient(listOf(Color(0x1ABFE3FF), Color(0xB38FD0FF), Color(0x664FA8FF))))
+        val b = wave(0.78f, 0.3f, -dx)
+        val fillB = androidx.compose.ui.graphics.Path().apply { addPath(b); lineTo(w + 40f, h); lineTo(-40f, h); close() }
+        drawPath(fillB, Brush.verticalGradient(listOf(Color(0xB3FFFFFF), Color(0x00FFFFFF))))
+        drawPath(a, Color(0xF2FFFFFF), style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.6.dp.toPx()))
+        drawCircle(Brush.radialGradient(listOf(Color(0x99FFFFFF), Color.Transparent), center = androidx.compose.ui.geometry.Offset(w * 0.8f - dx, h * 0.33f), radius = h * 0.3f),
+            radius = h * 0.3f, center = androidx.compose.ui.geometry.Offset(w * 0.8f - dx, h * 0.33f))
     }
 }

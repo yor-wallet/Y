@@ -91,7 +91,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
                         alignment = androidx.compose.ui.BiasAlignment(p.focusX * 2 - 1, -0.6f))
                     else Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Box(Modifier.size(300.dp).clip(CircleShape).border(1.5.dp, Color(0xF2FFFFFF), CircleShape).background(Brush.radialGradient(listOf(Color(0x5578BEFF), Color.Transparent))))
-                        Image(painterResource(com.omwallet.app.R.drawable.app_icon_glass), null, Modifier.size(210.dp).shadow(30.dp, RoundedCornerShape(50.dp), ambientColor = Color(0x661E78E6), spotColor = Color(0x661E78E6)))
+                        Image(painterResource(com.omwallet.app.R.drawable.app_icon_glass), null, Modifier.size(210.dp).shadow(30.dp, RoundedCornerShape(percent = 26), ambientColor = Color(0x661E78E6), spotColor = Color(0x661E78E6)).clip(RoundedCornerShape(percent = 26)))
                     }
                     Box(Modifier.fillMaxSize().background(Brush.verticalGradient(0.55f to Color(0x00EAF4FF), 0.86f to Color(0xD9EAF4FF), 1f to Color(0xFFEAF4FF))))
                 }

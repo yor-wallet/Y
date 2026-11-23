@@ -4,25 +4,31 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <path
-        android:pathData="M16.364 15.217l4.27-2.435A0.73 0.73 0 0 0 21 12.155V7.284a0.72 0.72 0 0 0-0.366-0.627l-4.27-2.435a0.74 0.74 0 0 0-0.732 0l-4.27 2.435a0.72 0.72 0 0 0-0.366 0.627v8.704l-2.994 1.707-2.994-1.707v-3.415l2.994-1.707 1.974 1.127V9.702L8.368 8.784a0.75 0.75 0 0 0-0.732 0l-4.27 2.435A0.72 0.72 0 0 0 3 11.846v4.87c0 0.258 0.14 0.498 0.366 0.627l4.27 2.436a0.75 0.75 0 0 0 0.732 0l4.27-2.436a0.72 0.72 0 0 0 0.366-0.626V8.012l0.053-0.03 2.94-1.677 2.994 1.707v3.415l-2.994 1.707-1.972-1.124v2.291l1.606 0.916a0.75 0.75 0 0 0 0.732 0z">
-        <aapt:attr name="android:fillColor">
-            <gradient
-                android:type="linear"
-                android:startX="2.942"
-                android:startY="17.194"
-                android:endX="20.119"
-                android:endY="7.101">
-                <item
-                    android:color="#FFA726C1"
-                    android:offset="0"/>
-                <item
-                    android:color="#FF803BDF"
-                    android:offset="0.88"/>
-                <item
-                    android:color="#FF7B3FE4"
-                    android:offset="1"/>
-            </gradient>
-        </aapt:attr>
-    </path>
+    <!-- web3icons 4.0.61 (MIT), round-badge variant: official colours -->
+    <group>
+        <path
+            android:pathData="M12 0A12 12 0 1 0 12 24 12 12 0 1 0 12 0Z">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:type="linear"
+                    android:startX="3.948"
+                    android:startY="16.617"
+                    android:endX="19.217"
+                    android:endY="7.645">
+                    <item
+                        android:color="#FFA726C1"
+                        android:offset="0"/>
+                    <item
+                        android:color="#FF803BDF"
+                        android:offset="0.88"/>
+                    <item
+                        android:color="#FF7B3FE4"
+                        android:offset="1"/>
+                </gradient>
+            </aapt:attr>
+        </path>
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M15.88 14.86L19.674 12.695A0.64 0.64 0 0 0 20 12.137V7.807A0.64 0.64 0 0 0 19.674 7.251L15.88 5.086A0.66 0.66 0 0 0 15.23 5.086L11.432 7.25A0.64 0.64 0 0 0 11.107 7.807V15.544L8.445 17.061 5.784 15.544V12.508L8.445 10.991 10.2 11.992V9.958L8.77 9.142A0.66 0.66 0 0 0 8.12 9.142L4.324 11.307A0.64 0.64 0 0 0 3.999 11.864V16.194C3.999 16.423 4.123 16.636 4.324 16.751L8.12 18.916C8.32 19.03 8.57 19.03 8.77 18.916L12.566 16.751A0.64 0.64 0 0 0 12.891 16.194V8.455L12.939 8.429 15.552 6.939 18.213 8.455V11.491L15.552 13.008 13.799 12.009V14.046L15.226 14.86A0.66 0.66 0 0 0 15.877 14.86Z"/>
+    </group>
 </vector>

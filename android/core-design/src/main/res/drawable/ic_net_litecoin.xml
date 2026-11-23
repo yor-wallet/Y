@@ -3,7 +3,13 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <path
-        android:fillColor="#FF345D9D"
-        android:pathData="M5.734 15.611l-1.609 0.63 0.776-3.116 1.62-0.652L8.86 3h5.772l-1.71 6.975 1.586-0.642-0.765 3.083-1.598 0.653-0.956 4.074h8.685L18.896 21H4.406z"/>
+    <!-- web3icons 4.0.61 (MIT), round-badge variant: official colours -->
+    <group>
+        <path
+            android:fillColor="#FF345D9D"
+            android:pathData="M12 0A12 12 0 1 0 12 24 12 12 0 1 0 12 0Z"/>
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M6.43 15.21L5 15.77 5.69 13 7.13 12.42 9.21 4H14.34L12.82 10.2 14.23 9.63 13.55 12.37 12.13 12.95 11.28 16.571H19L18.13 20H5.25Z"/>
+    </group>
 </vector>
