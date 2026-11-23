@@ -60,8 +60,8 @@ fun GlassSquare(@DrawableRes icon: Int, description: String, modifier: Modifier 
     val shape = if (round) CircleShape else RoundedCornerShape(18.dp)
     Box(
         modifier.size(50.dp).shadow(10.dp, shape, ambientColor = Color(0x33145AB4), spotColor = Color(0x55145AB4)).clip(shape)
-            .background(Brush.linearGradient(listOf(Color(0x3DFFFFFF), Color(0x14FFFFFF)))).border(1.dp, OmColors.Edge, shape)
-            .pressable(onClick = onClick).semantics { contentDescription = description },
+            .background(Brush.linearGradient(listOf(Color(0x3DFFFFFF), Color(0x14FFFFFF)))).glassSheen().border(1.dp, OmGlass.Rim, shape)
+            .pressable(grow = true, onClick = onClick).semantics { contentDescription = description },
         contentAlignment = Alignment.Center,
     ) { OmIcon(icon, null, tint = OmColors.Ink, size = 22.dp) }
 }
@@ -84,7 +84,8 @@ fun ActionTile(@DrawableRes icon: Int, label: String, modifier: Modifier = Modif
         modifier.aspectRatio(0.92f).shadow(if (primary) 18.dp else 12.dp, shape, ambientColor = Color(if (primary) 0x661677F2 else 0x33145AB4), spotColor = Color(if (primary) 0x991677F2 else 0x55145AB4))
             .clip(shape)
             .background(if (primary) Brush.verticalGradient(listOf(OmColors.GradTop, OmColors.GradMid, OmColors.GradBottom)) else Brush.linearGradient(listOf(Color(0x3DFFFFFF), Color(0x14FFFFFF))))
-            .border(1.dp, if (primary) Color(0x8CFFFFFF) else OmColors.Edge, shape)
+            .glassSheen(if (primary) 1.4f else 1f)
+            .border(1.dp, if (primary) OmGlass.RimStrong else OmGlass.Rim, shape)
             .pressable(onClick = onClick).padding(6.dp),
         horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
     ) {

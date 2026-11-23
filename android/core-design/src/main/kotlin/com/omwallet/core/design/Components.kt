@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import kotlinx.coroutines.delay
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.LaunchedEffect
@@ -68,6 +69,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
+/* 14.6.0 — « verre liquide » (owner: glass, transparent, in the spirit of iOS 26 — the design language only, nothing copied).
+   Every glass surface gets a light rim, bright on its top-start edge and softer on its bottom-end edge, and a sheen on its top half.
+   Appearance only: no behaviour, data or server call depends on it. */
+object OmGlass {
+    val Rim: Brush = Brush.linearGradient(0f to Color(0xC7FFFFFF), 0.3f to Color(0x33FFFFFF), 0.62f to Color(0x14FFFFFF), 1f to Color(0x80FFFFFF))
+    val RimStrong: Brush = Brush.linearGradient(0f to Color(0xF2FFFFFF), 0.32f to Color(0x4DFFFFFF), 0.64f to Color(0x26FFFFFF), 1f to Color(0xA6FFFFFF))
+    val Lens: Brush = Brush.verticalGradient(listOf(Color(0x70FFFFFF), Color(0x29FFFFFF), Color(0x1FFFFFFF)))
+}
+
+/* The sheen on the top half of a glass surface (drawn behind the content, inside the surface's clip). */
+fun Modifier.glassSheen(strength: Float = 1f): Modifier = drawBehind {
+    drawRect(Brush.verticalGradient(listOf(Color.White.copy(alpha = 0.19f * strength), Color.Transparent), endY = size.height * 0.5f))
+}
+
 /* Glass surface: translucent white over the sky background, hairline light border, very soft shadow.
    Used on the dashboard, sheets and wallet cards; financial input screens use the stronger, calmer variant (strong = true). */
 @Composable
@@ -81,7 +96,8 @@ fun GlassCard(modifier: Modifier = Modifier, strong: Boolean = false, padding: D
             .shadow(20.dp, shape, ambientColor = Color(0x33145AB4), spotColor = Color(0x55145AB4))
             .clip(shape)
             .background(Brush.linearGradient(if (strong) listOf(Color(0x33FFFFFF), Color(0x14FFFFFF)) else listOf(Color(0x24FFFFFF), Color(0x0FFFFFFF))))
-            .border(BorderStroke(1.dp, OmColors.Edge), shape)
+            .glassSheen()
+            .border(BorderStroke(1.dp, OmGlass.Rim), shape)
             .padding(padding),
         content = content,
     )
@@ -104,14 +120,15 @@ fun SkyBackground(modifier: Modifier = Modifier, content: @Composable () -> Unit
     }
 }
 
-/* Press feedback (14.4.0): the control springs to 0.96 and a soft light blooms from the exact point the finger touched, then fades.
+/* Press feedback (14.4.0, 14.6.0): the control springs to 0.96 (or grows to 1.06 for glass controls) and a soft light blooms from the exact point the finger touched, then fades.
    Draw-phase only (graphicsLayer / drawWithContent); skipped under « remove animations ». Haptic tap on click. */
 @Composable
-fun Modifier.pressable(enabled: Boolean = true, role: Role = Role.Button, onClick: () -> Unit): Modifier {
+fun Modifier.pressable(enabled: Boolean = true, role: Role = Role.Button, grow: Boolean = false, onClick: () -> Unit): Modifier {
     val source = remember { MutableInteractionSource() }
     val pressed by source.collectIsPressedAsState()
     val reduced = LocalOmMotion.current.reduced
-    val scale by animateFloatAsState(if (pressed && !reduced) 0.96f else 1f, OmSprings.press(), label = "press")
+    /* 14.6.0: a glass control (grow = true) swells slightly and glows under the finger, like a drop of glass; buttons still settle to 0.96 */
+    val scale by animateFloatAsState(if (pressed && !reduced) (if (grow) 1.06f else 0.96f) else 1f, OmSprings.press(), label = "press")
     val glow by animateFloatAsState(if (pressed && !reduced) 1f else 0f, tween(if (pressed) 140 else 460), label = "glow")
     var at by remember { mutableStateOf(Offset.Unspecified) }
     LaunchedEffect(source) { source.interactions.collect { if (it is PressInteraction.Press) at = it.pressPosition } }
@@ -151,8 +168,8 @@ fun LoadingDots(color: Color = Color.White) {
 
 @Composable
 fun OmPrimaryButton(text: String, modifier: Modifier = Modifier, enabled: Boolean = true, loading: Boolean = false, onClick: () -> Unit) {
-    /* gradient blue with a light sheen on the top half and a blue glow (owner references) */
-    val shape = RoundedCornerShape(OmRadius.M)
+    /* gradient blue with a light sheen on the top half and a blue glow (owner references); 14.6.0: a glass capsule with a light rim */
+    val shape = RoundedCornerShape(50)
     Box(
         modifier
             .heightIn(min = 58.dp)
@@ -161,7 +178,7 @@ fun OmPrimaryButton(text: String, modifier: Modifier = Modifier, enabled: Boolea
             .clip(shape)
             .background(if (enabled) Brush.verticalGradient(listOf(OmColors.GradTop, OmColors.GradMid, OmColors.GradBottom)) else Brush.verticalGradient(listOf(OmColors.Sky300, OmColors.Sky300)))
             .drawWithContent { drawContent(); drawRect(Brush.verticalGradient(listOf(Color(0x52FFFFFF), Color.Transparent), endY = size.height * 0.55f)) }
-            .border(1.dp, Color(0x8CFFFFFF), shape)
+            .border(1.dp, if (enabled) OmGlass.RimStrong else OmGlass.Rim, shape)
             .pressable(enabled = enabled && !loading, onClick = onClick)
             .semantics { if (loading) contentDescription = text },
         contentAlignment = Alignment.Center,
@@ -173,10 +190,10 @@ fun OmPrimaryButton(text: String, modifier: Modifier = Modifier, enabled: Boolea
 
 @Composable
 fun OmSecondaryButton(text: String, modifier: Modifier = Modifier, enabled: Boolean = true, onClick: () -> Unit) {
-    val shape = RoundedCornerShape(OmRadius.M)
+    val shape = RoundedCornerShape(50)
     Box(
         modifier.heightIn(min = 54.dp).fillMaxWidth().shadow(10.dp, shape, ambientColor = Color(0x33145AB4), spotColor = Color(0x44145AB4)).clip(shape)
-            .background(Brush.linearGradient(listOf(Color(0x33FFFFFF), Color(0x14FFFFFF)))).border(1.dp, OmColors.Edge, shape).pressable(enabled = enabled, onClick = onClick),
+            .background(Brush.linearGradient(listOf(Color(0x33FFFFFF), Color(0x14FFFFFF)))).glassSheen().border(1.dp, OmGlass.Rim, shape).pressable(enabled = enabled, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) { Text(text, style = MaterialTheme.typography.labelLarge, color = if (enabled) OmColors.Blue600 else OmColors.InkSecondary) }
 }
@@ -187,7 +204,7 @@ fun GlassTile(@DrawableRes icon: Int, modifier: Modifier = Modifier, size: Dp = 
     val shape = RoundedCornerShape(16.dp)
     Box(
         modifier.size(size).shadow(8.dp, shape, ambientColor = Color(0x33145AB4), spotColor = Color(0x55145AB4)).clip(shape)
-            .background(Brush.linearGradient(listOf(Color(0x3DFFFFFF), Color(0x14FFFFFF)))).border(1.dp, OmColors.Edge, shape),
+            .background(Brush.linearGradient(listOf(Color(0x3DFFFFFF), Color(0x14FFFFFF)))).glassSheen().border(1.dp, OmGlass.Rim, shape),
         contentAlignment = Alignment.Center,
     ) { OmIcon(icon, null, tint = tint, size = size * 0.46f) }
 }

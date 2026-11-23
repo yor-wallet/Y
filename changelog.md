@@ -1,3 +1,19 @@
+# OM Wallet 14.6.0 — « verre liquide » dans l'esprit d'iOS 26 (web + Android)
+
+Demande du propriétaire (23/11) : « تحسينات في الشكل زجاجي شفاف iOS 26 » (améliorer le look : verre transparent façon iOS 26). Apparence seulement : écrans, boutons, données, règles de confirmation, e-mails et serveur inchangés. Seul le langage visuel s'inspire d'iOS 26 : aucun écran, icône ni texte d'Apple n'est repris.
+
+- **Matériau verre (web + Android)** : chaque surface de verre reçoit un liseré lumineux (bord haut-gauche brillant, bord bas-droit plus doux) et un reflet sur sa moitié haute ; sur le web, les cartes sont aussi dépolies (flou de l'arrière-plan). Web : `css/liquid.css` (dernière couche) ; Android : `OmGlass` et `glassSheen()` dans `core-design`.
+- **Menu du bas flottant (web + Android)** : capsule de verre détachée des bords de l'écran ; l'onglet actif est marqué par une lentille de verre qui glisse et s'étire pendant son trajet. Web : la lentille existait mais une ancienne règle de style la masquait ; elle est réactivée et seule à marquer l'onglet actif. Web : la capsule s'affine quand la page défile vers le bas (libellés masqués, icônes gardées) et redevient pleine en remontant, près du haut ou à l'ouverture d'une autre page (`js/ui/liquid.js`). Android : capsule presque opaque (Compose n'offre pas de flou de l'arrière-plan ; les libellés restent lisibles).
+- **En-têtes de page (web)** : plus de barre ; quand la page défile, le contenu se fond dans un flou doux sous le titre.
+- **Feuilles et fenêtres (web)** : verre flottant au-dessus du bas de l'écran, grands coins arrondis, flou fort.
+- **Boutons (web + Android)** : capsules de verre ; un contrôle de verre touché (carré retour, onglets, segments) grossit légèrement et s'éclaire, puis revient en ressort ; les boutons pleins gardent leur léger enfoncement.
+- **Segments (web)** : piste de verre en capsule, segment choisi en lentille lumineuse (15m / 1H / 4H / 1D, Tout / Favoris) ; Acheter / Vendre gardent leur vert / rouge, avec le même liseré.
+- **Accessibilité** : « réduire les animations » → rien ne grossit, ne s'étire ni ne s'affine ; « réduire la transparence » (web) → verre opaque, sans flou.
+- **iPhone / iPad (web)** : Safari peut annoncer un nombre de cœurs réduit ; ce seul critère pouvait couper le flou sur les appareils Apple. Pour eux, le mode « appareil peu puissant » se fonde désormais sur la mémoire seulement (inchangé ailleurs).
+- **Réglages (web)** : le bouton « Se déconnecter » est aligné sur les cartes (une marge négative le décalait vers la gauche).
+- **Tests** : web — nouveau `tests/ux/liquid.test.mjs` (menu flottant et flouté, affinage au défilement puis retour, retour à l'ouverture d'une page, chaque onglet ouvre sa page avec la lentille centrée dessous, flou sous l'en-tête, capsules, appui « gel », réduire les animations, appareil peu puissant) ; les 9 suites existantes passent. Android — 48 tests verts, rendus Robolectric contrôlés (accueil en arabe, marchés en français).
+- **Non vérifié** : aucun essai sur un vrai iPhone ni sur un vrai téléphone Android (rendus du navigateur de test et de Robolectric seulement).
+
 # OM Wallet 14.5.0 — verre transparent, menu Spot / Swap, logos officiels
 
 Demandes du propriétaire : « une interface glass transparente, pas blanc qui fait mal aux yeux », un menu principal avec Marchés, Spot et Swap, « le logo de l'application à chaque fois », des animations en temps réel, des icônes à l'apparence officielle (recherche en ligne faite avant). Règles inchangées : prix jamais inventé, confirmation par l'administrateur seul, un seul e-mail après le crédit, aucune donnée supprimée.

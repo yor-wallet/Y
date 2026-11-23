@@ -1,0 +1,158 @@
+/* ==========================================================================
+   OM WALLET — « VERRE LIQUIDE » (14.6.0)
+   Owner (23/11): glass, transparent, in the spirit of iOS 26 (the design language only: no Apple screen, icon or text is reproduced).
+   What changes, appearance only (markup hooks, handlers, data and server calls are untouched). Loads after verre.css and trade.css:
+   - every glass surface gets a light rim (bright top-left edge, softer bottom-right edge), a sheen at the top and a frosted blur
+   - the bottom menu floats as a glass capsule above the content; the active tab sits in a glass lens that stretches as it moves
+     (js/ui/liquid.js) and the capsule gets slimmer while the page scrolls down, full again when scrolling up
+   - page headers: no bar any more; once the page scrolls, the content fades into a soft blur under the title and the round glass buttons
+   - sheets float above the bottom edge with large rounded corners; buttons become glass capsules; touched glass grows slightly and glows
+   - « reduce motion »: nothing grows, stretches or slims; « reduce transparency » and low-power phones: no blur, more opaque glass
+   ========================================================================== */
+
+/* ---------- material ---------- */
+html:root:root:root[data-theme]{
+  --lg-rim:inset 1.5px 1.5px 1px -1px rgba(255,255,255,.78),inset -1.5px -1.5px 1px -1px rgba(255,255,255,.40);
+  --lg-sheen:inset 0 18px 26px -20px rgba(255,255,255,.46);
+  --lg-depth:inset 0 -12px 22px -18px rgba(150,215,255,.38);
+  --lg-drop:0 22px 44px -24px rgba(2,16,64,.62),0 2px 8px -3px rgba(2,16,64,.22);
+  --lg-fill:linear-gradient(160deg,rgba(255,255,255,.17) 0%,rgba(255,255,255,.065) 55%,rgba(255,255,255,.10) 100%);
+  --lg-fill-strong:linear-gradient(160deg,rgba(255,255,255,.26) 0%,rgba(255,255,255,.10) 60%,rgba(255,255,255,.14) 100%);
+  --lg-edge:rgba(255,255,255,.20);
+  --lg-blur:blur(16px) saturate(180%);
+  --lg-blur-bar:blur(30px) saturate(210%) brightness(1.08);
+  --lg-sheet:linear-gradient(170deg,rgba(44,116,232,.76) 0%,rgba(16,58,156,.84) 100%);
+  --lg-spring:cubic-bezier(.32,1.45,.55,1);
+}
+html:root:root:root[data-theme][data-tone="night"]{
+  --lg-rim:inset 1.5px 1.5px 1px -1px rgba(200,225,255,.50),inset -1.5px -1.5px 1px -1px rgba(200,225,255,.24);
+  --lg-sheen:inset 0 18px 26px -20px rgba(200,225,255,.26);
+  --lg-depth:inset 0 -12px 22px -18px rgba(90,160,255,.30);
+  --lg-fill:linear-gradient(160deg,rgba(255,255,255,.12) 0%,rgba(255,255,255,.045) 55%,rgba(255,255,255,.07) 100%);
+  --lg-fill-strong:linear-gradient(160deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,.07) 60%,rgba(255,255,255,.10) 100%);
+  --lg-edge:rgba(175,212,255,.18);
+  --lg-sheet:linear-gradient(170deg,rgba(18,54,128,.82) 0%,rgba(6,26,72,.88) 100%);
+}
+
+/* ---------- glass surfaces (cards, lists, panels) ---------- */
+html:root:root:root[data-theme] body :is(.omx-card,.settings-group,.rv-list,.ds-list,.glass,.glass-elevated,.hub-card,.faq-item,.contact-card,.receipt-panel,.rc-sheet,.pi-card,.card,.wd-card,.w-glass){
+  background:var(--lg-fill)!important;border:1px solid var(--lg-edge)!important;
+  box-shadow:var(--lg-drop),var(--lg-rim),var(--lg-sheen),var(--lg-depth)!important;
+  -webkit-backdrop-filter:var(--lg-blur);backdrop-filter:var(--lg-blur)}
+html:root:root:root[data-theme] body .w-home .omx-total{background:var(--lg-fill-strong)!important;border-color:rgba(255,255,255,.30)!important}
+html:root:root:root[data-theme] body :is(.hub-i,.hub-wi,.wd-mi,.ds-empty-ic,.tile,.w-tile){
+  background:var(--lg-fill-strong)!important;border:1px solid var(--lg-edge)!important;
+  box-shadow:0 10px 20px -12px rgba(2,18,70,.6),var(--lg-rim),var(--lg-sheen)!important}
+
+/* ---------- round / square glass controls: the touched glass grows and glows (gel), then springs back ---------- */
+html:root:root:root[data-theme] body :is(.topbar-back,.hub-circ,.rv-circ,.ds-eye,.rv-cp,.hub-me-go,.yb-ic,.w-sq){
+  background:var(--lg-fill-strong)!important;border:1px solid rgba(255,255,255,.24)!important;
+  box-shadow:0 14px 28px -16px rgba(2,16,64,.65),var(--lg-rim),var(--lg-sheen)!important;
+  -webkit-backdrop-filter:var(--lg-blur);backdrop-filter:var(--lg-blur)}
+html:root:root:root[data-theme] body .omx-act{background:var(--lg-fill)!important;border:1px solid var(--lg-edge)!important;
+  box-shadow:var(--lg-drop),var(--lg-rim),var(--lg-sheen),var(--lg-depth)!important;-webkit-backdrop-filter:var(--lg-blur);backdrop-filter:var(--lg-blur)}
+html:root:root:root[data-theme] body .omx-act.p{background:var(--w-grad)!important;border-color:rgba(255,255,255,.5)!important;
+  box-shadow:0 18px 30px -14px rgba(40,170,255,.85),inset 1.5px 1.5px 1px -1px rgba(255,255,255,.9),inset -1.5px -1.5px 1px -1px rgba(255,255,255,.45),inset 0 18px 22px -16px rgba(255,255,255,.6)!important}
+html:root:root:root[data-theme] body :is(.topbar-back,.hub-circ,.rv-circ,.ds-eye,.rv-cp,.hub-me-go,.yb-ic,.w-sq,.chip,.nav-item,.w-pill,.omx-act,.tr-pairbtn){
+  transition:transform .5s var(--lg-spring),filter .3s ease,background-color .25s ease,color .25s ease}
+html:root:root:root[data-theme] body :is(.topbar-back,.hub-circ,.rv-circ,.ds-eye,.rv-cp,.hub-me-go,.yb-ic,.w-sq,.chip,.nav-item,.w-pill,.tr-pairbtn).w-press{transform:scale(1.07)!important;filter:brightness(1.16) saturate(1.1)}
+html:root:root:root[data-theme] body .omx-act.w-press{transform:scale(1.04)!important;filter:brightness(1.12)}
+
+/* ---------- buttons: glass capsules ---------- */
+html:root:root:root[data-theme] body :is(.btn-primary,a.btn.btn-primary,.btn-secondary){border-radius:999px!important}
+html:root:root:root[data-theme] body :is(.btn-primary,a.btn.btn-primary){border:1px solid rgba(255,255,255,.45)!important;
+  box-shadow:0 18px 34px -16px rgba(40,170,255,.85),inset 1.5px 1.5px 1px -1px rgba(255,255,255,.95),inset -1.5px -1.5px 1px -1px rgba(255,255,255,.5),inset 0 20px 24px -18px rgba(255,255,255,.62)!important}
+html:root:root:root[data-theme] body .btn-secondary{background:var(--lg-fill-strong)!important;border:1px solid rgba(255,255,255,.26)!important;
+  box-shadow:0 14px 28px -18px rgba(2,16,64,.6),var(--lg-rim),var(--lg-sheen)!important;-webkit-backdrop-filter:var(--lg-blur);backdrop-filter:var(--lg-blur)}
+html:root:root:root[data-theme] body .btn.w-press{transform:scale(.97)!important;filter:brightness(1.08)}
+
+/* ---------- segmented controls: a glass track, the chosen segment is a brighter lens ---------- */
+html:root:root:root[data-theme] body .chips{border-radius:999px;background:rgba(255,255,255,.07)!important;border:1px solid var(--lg-edge)!important;
+  box-shadow:inset 0 1px 3px rgba(2,18,70,.28),inset -1px -1px 1px -.5px rgba(255,255,255,.22)!important}
+html:root:root:root[data-theme] body :is(.chip[aria-pressed="true"],.chip.on){border-radius:999px!important;
+  background:radial-gradient(120% 140% at 30% 0%,rgba(150,220,255,.95),rgba(62,168,255,.88) 55%,rgba(26,112,236,.92))!important;color:#fff!important;
+  box-shadow:0 10px 18px -10px rgba(40,170,255,.9),inset 1.5px 1.5px 1px -1px rgba(255,255,255,.95),inset -1.5px -1.5px 1px -1px rgba(255,255,255,.45),inset 0 12px 14px -10px rgba(255,255,255,.55)!important}
+html:root:root:root[data-theme] body .tr-side{border-radius:999px;box-shadow:inset 0 1px 3px rgba(2,18,70,.28)}
+html:root:root:root[data-theme] body .tr-side button{border-radius:999px}
+html:root:root:root[data-theme] body .tr-side button.on{box-shadow:inset 1.5px 1.5px 1px -1px rgba(255,255,255,.85),inset -1.5px -1.5px 1px -1px rgba(255,255,255,.4),inset 0 12px 14px -10px rgba(255,255,255,.55),0 8px 16px -10px rgba(2,16,64,.6)}
+html:root:root:root[data-theme] body .tr-pairbtn{border-radius:999px;background:var(--lg-fill-strong);box-shadow:0 12px 24px -16px rgba(2,16,64,.6),var(--lg-rim),var(--lg-sheen)}
+
+/* ---------- fields ---------- */
+html:root:root:root[data-theme] body :is(.input,.field-box){box-shadow:inset 0 1px 3px rgba(2,18,70,.28),inset -1px -1px 1px -.5px rgba(255,255,255,.28)!important}
+html:root:root:root[data-theme] body :is(.input,.field-box):focus-within,html:root:root:root[data-theme] body .input:focus{
+  box-shadow:0 0 0 4px rgba(140,215,255,.25),inset 0 1px 3px rgba(2,18,70,.28),inset -1px -1px 1px -.5px rgba(255,255,255,.35)!important}
+
+/* ---------- bottom menu: a floating glass capsule ---------- */
+html:root:root:root[data-theme] body #bottom-nav{left:0!important;right:0!important;bottom:0!important;height:auto!important;
+  padding:0 14px max(10px,env(safe-area-inset-bottom,0px))!important;background:transparent!important;border:0!important;box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;pointer-events:none}
+html:root:root:root[data-theme] body #bottom-nav .nav-dock{pointer-events:auto;position:relative;height:68px!important;width:100%!important;max-width:520px!important;margin:0 auto!important;
+  padding:6px!important;border-radius:34px!important;border:1px solid rgba(255,255,255,.22)!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.21) 0%,rgba(255,255,255,.10) 100%)!important;
+  -webkit-backdrop-filter:var(--lg-blur-bar)!important;backdrop-filter:var(--lg-blur-bar)!important;
+  box-shadow:0 24px 48px -18px rgba(2,16,64,.72),0 4px 14px -6px rgba(2,16,64,.35),var(--lg-rim),var(--lg-sheen)!important;
+  transition:height .5s var(--lg-spring),box-shadow .3s ease}
+html:root:root:root[data-theme][data-tone="night"] body #bottom-nav .nav-dock{background:linear-gradient(180deg,rgba(150,195,255,.17) 0%,rgba(150,195,255,.08) 100%)!important}
+html:root:root:root[data-theme] body #bottom-nav .nav-item{height:56px!important;border-radius:28px!important;gap:3px}
+html:root:root:root[data-theme] body #bottom-nav .nav-lb{transition:opacity .25s ease,max-height .35s ease;max-height:18px;overflow:hidden}
+/* the lens is the only mark of the active tab (an older layer hid it and painted a tile on the tab itself) */
+html:root:root:root[data-theme] body #bottom-nav .nav-ind{display:block!important;position:absolute!important;left:0!important;z-index:0;pointer-events:none}
+html:root:root:root[data-theme] body #bottom-nav .nav-item[aria-current="page"]{background:transparent!important;box-shadow:none!important}
+html:root:root:root[data-theme] body #bottom-nav .nav-item::before,html:root:root:root[data-theme] body #bottom-nav .nav-item::after{display:none!important}
+html:root:root:root[data-theme] body #bottom-nav .nav-ind{height:56px!important;top:6px!important;border-radius:28px!important;
+  background:transparent!important;border:0!important;box-shadow:none!important;
+  transition:transform .62s var(--lg-spring),width .5s var(--lg-spring),height .5s var(--lg-spring),opacity .2s!important}
+html:root:root:root[data-theme] body #bottom-nav .nav-ind::before{content:"";position:absolute;inset:0;border-radius:inherit;
+  background:radial-gradient(120% 140% at 30% 0%,rgba(255,255,255,.44),rgba(255,255,255,.15) 62%,rgba(255,255,255,.10));
+  border:1px solid rgba(255,255,255,.30);
+  box-shadow:inset 1.5px 1.5px 1px -1px rgba(255,255,255,.95),inset -1.5px -1.5px 1px -1px rgba(255,255,255,.5),0 8px 18px -10px rgba(2,16,64,.55)}
+html:root:root:root[data-theme] body #bottom-nav .nav-ind.lg-stretch::before{animation:lgStretch .55s var(--lg-spring)}
+@keyframes lgStretch{0%{transform:scale(1,1)}35%{transform:scale(1.2,.88)}70%{transform:scale(.97,1.03)}100%{transform:scale(1,1)}}
+/* while the page scrolls down the capsule gets slimmer (labels fade, icons stay); scrolling up brings it back */
+html:root:root:root[data-theme] body #bottom-nav.lg-min .nav-dock{height:54px!important}
+html:root:root:root[data-theme] body #bottom-nav.lg-min .nav-item{height:42px!important}
+html:root:root:root[data-theme] body #bottom-nav.lg-min .nav-ind{height:42px!important}
+html:root:root:root[data-theme] body #bottom-nav.lg-min .nav-lb{opacity:0;max-height:0}
+
+/* ---------- page headers: no bar; the content fades into a soft blur under the title once the page scrolls ---------- */
+html:root:root:root[data-theme] body .screen.ios-scrolled > .topbar{background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html:root:root:root[data-theme] body .screen > .topbar::after{content:"";position:absolute;left:0;right:0;top:0;bottom:-28px;z-index:-1;pointer-events:none;opacity:0;transition:opacity .3s ease;
+  background:linear-gradient(180deg,rgba(18,86,210,.62) 0%,rgba(18,86,210,.30) 62%,rgba(18,86,210,0) 100%);
+  -webkit-backdrop-filter:blur(14px) saturate(180%);backdrop-filter:blur(14px) saturate(180%);
+  -webkit-mask-image:linear-gradient(180deg,#000 58%,transparent);mask-image:linear-gradient(180deg,#000 58%,transparent)}
+html:root:root:root[data-theme][data-tone="night"] body .screen > .topbar::after{background:linear-gradient(180deg,rgba(6,28,78,.72) 0%,rgba(6,28,78,.34) 62%,rgba(6,28,78,0) 100%)}
+html:root:root:root[data-theme] body .screen.ios-scrolled > .topbar::after{opacity:1}
+
+/* ---------- sheets and dialogs: floating glass with large rounded corners ---------- */
+html:root:root:root[data-theme] body .ov:not(.is-modal) .ov-panel{width:calc(100% - 16px)!important;margin-bottom:max(8px,env(safe-area-inset-bottom,0px))!important;
+  border-radius:36px!important;border:1px solid rgba(255,255,255,.26)!important}
+html:root:root:root[data-theme] body :is(.ov-panel,.yd-p){background:var(--lg-sheet)!important;
+  -webkit-backdrop-filter:blur(34px) saturate(200%)!important;backdrop-filter:blur(34px) saturate(200%)!important;
+  box-shadow:0 30px 70px -24px rgba(2,12,50,.78),var(--lg-rim),var(--lg-sheen)!important}
+html:root:root:root[data-theme] body .ov.is-modal .ov-panel{border-radius:34px!important;border:1px solid rgba(255,255,255,.26)!important}
+html:root:root:root[data-theme] body .ov-backdrop{background:rgba(2,14,52,.38)!important}
+
+/* ---------- messages: glass capsule with the same rim ---------- */
+html:root:root:root[data-theme] body .toast.w-toast{border-radius:26px!important;
+  -webkit-backdrop-filter:blur(24px) saturate(200%)!important;backdrop-filter:blur(24px) saturate(200%)!important;
+  box-shadow:0 20px 40px -18px rgba(2,12,50,.7),var(--lg-rim),var(--lg-sheen)!important}
+
+/* ---------- accessibility and low-power phones ---------- */
+@media (prefers-reduced-motion:reduce){
+  html:root:root:root[data-theme] body :is(.topbar-back,.hub-circ,.rv-circ,.ds-eye,.rv-cp,.hub-me-go,.yb-ic,.w-sq,.chip,.nav-item,.w-pill,.omx-act,.tr-pairbtn,.btn).w-press{transform:none!important}
+  html:root:root:root[data-theme] body #bottom-nav .nav-ind.lg-stretch::before{animation:none!important}
+  html:root:root:root[data-theme] body #bottom-nav :is(.nav-dock,.nav-ind,.nav-item,.nav-lb){transition:none!important}
+}
+@media (prefers-reduced-transparency:reduce){
+  html:root:root:root[data-theme] body :is(.omx-card,.settings-group,.rv-list,.ds-list,.glass,.glass-elevated,.hub-card,.faq-item,.contact-card,.receipt-panel,.rc-sheet,.pi-card,.card,.wd-card,.w-glass,.omx-act:not(.p),.btn-secondary,.topbar-back,.hub-circ,.w-sq){
+    -webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:rgba(20,84,200,.94)!important}
+  html:root:root:root[data-theme] body :is(#bottom-nav .nav-dock,.ov-panel,.yd-p,.toast.w-toast){-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:rgba(16,70,180,.97)!important}
+  html:root:root:root[data-theme] body .screen > .topbar::after{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:rgba(18,86,210,.96)!important;-webkit-mask-image:none;mask-image:none}
+}
+html.w-lite:root:root:root[data-theme] body :is(.omx-card,.settings-group,.rv-list,.ds-list,.glass,.glass-elevated,.hub-card,.faq-item,.contact-card,.receipt-panel,.rc-sheet,.pi-card,.card,.wd-card,.w-glass,.omx-act,.btn-secondary,.topbar-back,.hub-circ,.rv-circ,.ds-eye,.rv-cp,.hub-me-go,.yb-ic,.w-sq,#bottom-nav .nav-dock,.ov-panel,.yd-p,.toast.w-toast){
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html.w-lite:root:root:root[data-theme] body #bottom-nav .nav-dock{background:linear-gradient(180deg,rgba(34,114,226,.94),rgba(17,79,191,.96))!important}
+html.w-lite:root:root:root[data-theme] body .screen > .topbar::after{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+
+/* settings: the « log out » glass button lines up with the cards above it (it was pulled to the left edge by a negative margin) */
+html:root:root:root[data-theme] body .w-set > .w-out{margin-inline:0!important}
