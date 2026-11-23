@@ -9,6 +9,8 @@ Le propriétaire a donné des consignes strictes et les a répétées plusieurs 
 
 ## 1. Règles non négociables
 
+**Interface d'échange (Spot / Swap / Marchés)** : principes tirés de Revolut et Binance, sans copier leurs écrans — voir `references/design-research.md`.
+
 **Données (voir `references/rules.md` pour les citations exactes)**
 - Aucune suppression de données en base. Jamais d'historique supprimé ni de montant historique modifié. Les anciennes données CFA/XOF restent intactes, ne sont jamais converties en crypto, et n'apparaissent qu'en lecture seule (« Historique CFA (archivé) »).
 - Avant toute migration : vérifier les dépendances, préparer un fichier `*_rollback.sql` et sauvegarder les fonctions remplacées (table `function_backups`). Pas de `drop … if exists` sur des objets portant des données.
