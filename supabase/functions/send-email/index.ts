@@ -179,6 +179,8 @@ function num(n: unknown, asset: string, lang: Lang): string {
   return new Intl.NumberFormat(T[lang].locale, { minimumFractionDigits: dec ?? 0, maximumFractionDigits: dec ?? 8 }).format(Number(n));
 }
 const money = (n: unknown, asset: string, lang: Lang) => `${num(n, asset, lang)} ${asset}`;
+/* « 1 BTC = 61,012.14 USDT » rather than « 1 USDT = 0.0000164 BTC »: the side worth more than 1 is named first, as in the app */
+const rate = (fa: string, ta: string, p: number, lang: Lang) => !(p > 0) ? "—" : p >= 1 ? `1 ${fa} = ${num(p, ta, lang)} ${ta}` : `1 ${ta} = ${num(1 / p, fa, lang)} ${fa}`;
 /* exact time of the event, in Oman time (Asia/Muscat, UTC+4), with seconds */
 function when(iso: string, lang: Lang): string {
   const d = new Date(iso);
@@ -260,7 +262,7 @@ async function build(log: Row, lang: Lang): Promise<Built> {
     const amt = money(p.amount, String(p.asset), lang);
     const rows: [string, string][] = [[t.f.ref, dispId(p.reference)], [t.f.amount, amt], [t.f.from, String(p.sender ?? "")], [t.f.to, String(p.receiver ?? "")]];
     if (p.network) rows.push([t.f.network, NETWORK_NAMES[String(p.network)] ?? String(p.network)]);
-    if (p.swap && p.swap.to_asset) rows.push([t.sw.row, `${amt} → ${money(p.swap.to_amount, String(p.swap.to_asset), lang)}`], [t.sw.rate, `1 ${p.asset} = ${Number(p.swap.price)} ${p.swap.to_asset}`]);
+    if (p.swap && p.swap.to_asset) rows.push([t.sw.row, `${amt} → ${money(p.swap.to_amount, String(p.swap.to_asset), lang)}`], [t.sw.rate, rate(String(p.asset), String(p.swap.to_asset), Number(p.swap.price), lang)]);
     else if (p.note) rows.push([t.f.note, String(p.note)]);
     rows.push([t.f.date, when(String(p.created_at ?? log.created_at), lang)]);
     const url = (tok: string) => `${APP_URL}/admin-action#t=${tok}`;
@@ -299,7 +301,7 @@ async function build(log: Row, lang: Lang): Promise<Built> {
     const credited = (led ?? []).filter((r: Row) => r.asset === sw.to_asset).reduce((a: number, r: Row) => a + Number(r.delta), 0);
     if (!(credited > 0)) return { skip: "ledger_missing", retry: true };
     const from = money(tx.amount, tx.asset, lang), to = money(credited, String(sw.to_asset), lang), at = when(tx.confirmed_at, lang);
-    const rows: [string, string][] = [[t.f.ref, dispId(tx.reference)], [t.sw.row, `${from} → ${to}`], [t.sw.rate, `1 ${tx.asset} = ${Number(sw.price)} ${sw.to_asset}`]];
+    const rows: [string, string][] = [[t.f.ref, dispId(tx.reference)], [t.sw.row, `${from} → ${to}`], [t.sw.rate, rate(String(tx.asset), String(sw.to_asset), Number(sw.price), lang)]];
     if (sw.to_network) rows.push([t.f.network, NETWORK_NAMES[String(sw.to_network)] ?? String(sw.to_network)]);
     rows.push([t.f.date, at], [t.f.status, t.sw.ok]);
     return { subject: t.sw.subject(dispId(tx.reference)), html: layout(lang, t.sw.title, t.sw.line(from, to), rows, button(t.open)),
