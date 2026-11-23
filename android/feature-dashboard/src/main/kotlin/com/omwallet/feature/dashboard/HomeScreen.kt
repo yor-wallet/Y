@@ -1,5 +1,7 @@
 package com.omwallet.feature.dashboard
 
+import androidx.compose.ui.platform.testTag
+
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloat
 import kotlinx.coroutines.delay
@@ -145,9 +147,10 @@ fun HomeScreen(actions: HomeActions, contentPadding: PaddingValues) {
         item {
             Column(Modifier.statusBarsPadding().padding(horizontal = 16.dp, vertical = 6.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Box(Modifier.size(50.dp))
+                    /* 14.5: Activity left the main menu (now Home · Markets · Spot · Swap · Assets): it sits here, one tap away */
+                    GlassSquare(OmIcons.Activity, stringResource(R.string.nav_activity), round = true, onClick = actions.activity, modifier = Modifier.testTag("home_activity"))
                     Box(Modifier.weight(1f), contentAlignment = Alignment.Center) { BrandLockup(height = 40.dp) }
-                    GlassSquare(OmIcons.User, stringResource(R.string.nav_account), round = true, onClick = actions.account)
+                    GlassSquare(OmIcons.User, stringResource(R.string.nav_account), round = true, onClick = actions.account, modifier = Modifier.testTag("home_account"))
                 }
                 Text(if (s.name.isBlank()) stringResource(R.string.app_name) else stringResource(R.string.home_hello, s.name), style = MaterialTheme.typography.headlineMedium, color = OmColors.Ink,
                     textAlign = TextAlign.Center, modifier = Modifier.padding(top = 10.dp).riseIn(0))
@@ -289,7 +292,7 @@ private fun Promotions(actions: HomeActions) {
         Row(Modifier.padding(top = 10.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             promos.indices.forEach { j ->
                 val on = j == pager.currentPage
-                Box(Modifier.height(8.dp).width(if (on) 22.dp else 8.dp).clip(RoundedCornerShape(5.dp)).background(if (on) OmColors.Blue600 else Color(0x401A84F5)))
+                Box(Modifier.height(8.dp).width(if (on) 22.dp else 8.dp).clip(RoundedCornerShape(5.dp)).background(if (on) OmColors.Blue600 else Color(0x52FFFFFF)))
             }
         }
     }

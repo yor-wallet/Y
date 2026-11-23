@@ -73,10 +73,11 @@ async function pin(page){ await page.waitForSelector('.ps #ps-dots', { timeout: 
     assert.equal(await page.locator('#deposit .omx-qr, #deposit .omx-addr').count(), 0);
     await page.evaluate(() => { window.__noAddr = false; });
   });
-  await ok('échange : indisponible, expliqué, aucun ordre possible', async () => {
-    await page.evaluate(() => R.go('exchange')); await wait(400);
-    assert.match(await page.locator('#exchange').innerText(), /indisponible/);
-    assert.equal(await page.locator('#exchange input').count(), 0);
+  /* 14.5.0: the exchange is now a real Swap (server-fixed price, PIN, administrator's confirmation) — tested in detail in trade.test.mjs */
+  await ok('échange (Swap) : formulaire réel, prix fixé par le serveur, frais affichés', async () => {
+    await page.evaluate(() => R.go('exchange')); await wait(500);
+    assert.equal(await page.locator('#exchange #sw-amt').count(), 1);
+    assert.match(await page.locator('#exchange .tr-det').innerText(), /fixé au moment de la demande/);
   });
   await ok('no page errors', async () => assert.deepEqual(logs, []));
   await ctx.close();

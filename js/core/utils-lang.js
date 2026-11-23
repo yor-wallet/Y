@@ -68,9 +68,12 @@ function applyTheme(mode){
   let dark = false;
   try { dark = mode === 'system' ? !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) : mode === 'dark'; } catch(e){ dark = mode === 'dark'; }
   const eff = dark ? 'dark' : 'light';
-  document.documentElement.setAttribute('data-theme', eff);
+  /* 14.5.0 « Verre » : the interface is always transparent glass with light text (no white surfaces, at the owner's request);
+     the person's setting chooses the tone of the blue — « jour » (light) luminous, « nuit » (dark) deep. */
+  document.documentElement.setAttribute('data-theme', 'dark');
+  document.documentElement.setAttribute('data-tone', eff === 'dark' ? 'night' : 'day');
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute('content', eff === 'dark' ? '#000000' : '#FFFFFF');
+  if (meta) meta.setAttribute('content', eff === 'dark' ? '#0A2A6E' : '#1A6FE6');
   /* « Système » suit le téléphone en direct (nuit / jour), sans recharger */
   if (!_themeMq && window.matchMedia){
     try {

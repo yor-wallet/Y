@@ -134,9 +134,54 @@ class ScreensFrTest : ScreenTestBase() {
         compose.onNodeWithTag("tab_assets").performClick()
         waitText("Mes actifs"); waitText("Voir les détails", substring = true)
         shot("02b_assets")
-        click("Compte")
+        /* 14.5: Account is on the home header (the main menu is Home · Markets · Spot · Swap · Assets) */
+        compose.onNodeWithTag("tab_home").performClick(); idle(600)
+        compose.onNodeWithTag("home_account").performClick()
         waitText("Admin Control")
         shot("03_account")
+    }
+
+    @Test fun spot_live_market_and_swap_stays_in_progress_until_the_admin() {
+        compose.setContent { OmTheme(reducedMotion = true) { OmRoot() } }
+        startMarket()
+        waitText("Solde total")
+        listOf("tab_home", "tab_markets", "tab_spot", "tab_swap", "tab_assets").forEach { compose.onNodeWithTag(it).assertExists() }
+        compose.onNodeWithTag("tab_spot").performClick()
+        waitText("BTC/USDT"); waitText("Carnet d’ordres")
+        compose.waitUntil(10_000) { has("Ordre au marché") }
+        assertTrue(has("Les ordres à cours limité ne sont pas proposés", substring = true))       /* no button that would not really execute */
+        compose.waitUntil(15_000) { has("91,243.50") }                    /* first ask of the order book (server snapshot) */
+        idle(600); shot("15_spot")
+        compose.onNodeWithTag("tab_swap").performClick()
+        waitText("Échanger")
+        compose.onNodeWithTag("swap_amount").performTextInput("50")
+        idle(400); shot("16_swap")
+        compose.onNodeWithTag("swap_go").performClick()
+        waitText("Vérifiez votre échange"); waitText("Prix valable", substring = true)
+        assertTrue(has("0.000548", substring = true))
+        shot("17_swap_review")
+        compose.onNodeWithTag("review_confirm").performClick()
+        waitText("Saisissez votre code")
+        "123456".forEach { d -> compose.onAllNodesWithContentDescription(d.toString()).onLast().performClick() }
+        compose.waitUntil(15_000) { has("Terminé") }                       /* the result screen, not the « submitting » step */
+        assertTrue(has("En cours"))
+        assertEquals(1, backend.called("swap_execute"))
+        val body = backend.bodyOf("swap_execute")!!
+        assertTrue(body, body.contains("\"p_quote\":\"q-1\"") && body.contains("\"p_idempotency_key\":\"and-") && body.contains("\"p_pin_grant\":\"7d0e0c1e"))
+        assertTrue(!has("Échange confirmé"))                              /* nothing is credited before the administrator */
+        shot("18_swap_pending")
+    }
+
+    @Test fun swap_not_activated_on_the_server_says_so_and_records_nothing() {
+        backend.swapOff = true
+        compose.setContent { OmTheme(reducedMotion = true) { OmRoot() } }
+        waitText("Solde total")
+        compose.onNodeWithTag("tab_swap").performClick()
+        waitText("Échanger")
+        compose.onNodeWithTag("swap_amount").performTextInput("10")
+        compose.onNodeWithTag("swap_go").performClick()
+        waitText("L’échange n’est pas encore activé sur le serveur.")
+        assertEquals(0, backend.called("swap_execute"))
     }
 
     @Test fun opening_presentation_three_screens_then_sign_in() {
@@ -300,7 +345,7 @@ class NonAdminTest : ScreenTestBase() {
         assertTrue(!(g.auth.state.value as AuthState.SignedIn).isAdmin)
         compose.setContent { OmTheme(reducedMotion = true) { OmRoot() } }
         waitText("Solde total")
-        compose.onNodeWithTag("tab_account").performClick()
+        compose.onNodeWithTag("home_account").performClick()
         idle(900); shot("99_nonadmin_account")
         /* the taller glass layout puts « Se déconnecter » below the fold of the lazy list: scroll to it */
         compose.onAllNodes(androidx.compose.ui.test.SemanticsMatcher.keyIsDefined(androidx.compose.ui.semantics.SemanticsProperties.VerticalScrollAxisRange)).onLast().performScrollToNode(hasText("Se déconnecter"))

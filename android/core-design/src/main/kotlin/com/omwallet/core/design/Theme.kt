@@ -5,7 +5,7 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
@@ -23,26 +23,34 @@ import androidx.compose.ui.unit.sp
 
 /* ============================================================
    OM GLASS — design tokens (cahier OM Wallet Android).
-   Material 3 surfaces as the technical base, OM Wallet's white / sky-blue glass as the visual layer.
+   Material 3 surfaces as the technical base; 14.5.0: transparent glass over a luminous blue (no white surfaces).
    ============================================================ */
 object OmColors {
-    val Surface = Color(0xFFF3F8FE)
-    val SurfaceBright = Color(0xFFFFFFFF)
-    val GlassWhite = Color(0x94FFFFFF)        // rgba(255,255,255,0.58) — owner references
-    val GlassStrong = Color(0xC7FFFFFF)       // rgba(255,255,255,0.78)
-    val Sky100 = Color(0xFFE3F0FD)
-    val Sky300 = Color(0xFFBFE3FF)
-    val Sky500 = Color(0xFF55B9FF)
-    val Blue600 = Color(0xFF1A84F5)
-    val Blue700 = Color(0xFF0E6BEA)
-    val SkyGlow = Color(0xFF5CC0FF)
-    val Ink = Color(0xFF0E1B3D)
-    val InkSecondary = Color(0xFF5E6E87)
-    val Success = Color(0xFF1FAF72)
-    val Warning = Color(0xFFE5A332)
-    val Error = Color(0xFFD94F5B)
-    val Hairline = Color(0x1A637483)
-    val Sheet = Color(0xF7FFFFFF)              // sheets / dialogs: almost opaque, the content behind never competes with the text
+    /* 14.5.0 « Verre » — the owner: « une interface glass transparente, pas blanc qui fait mal aux yeux ». Every surface is transparent
+       glass over a luminous blue; text is light. Token NAMES are unchanged, so every screen follows without being rewritten. */
+    val Surface = Color(0xFF1A6FE6)            // page blue (top of the gradient)
+    val SurfaceBright = Color(0x2EFFFFFF)      // glass fill 18 %
+    val GlassWhite = Color(0x21FFFFFF)         // glass 13 %
+    val GlassStrong = Color(0x30FFFFFF)        // glass 19 %
+    val Sky100 = Color(0x26FFFFFF)             // light glass (chips, tracks)
+    val Sky300 = Color(0x4DFFFFFF)             // glass edge
+    val Sky500 = Color(0xFF86D6FF)
+    val Blue600 = Color(0xFFA6E1FF)            // accent for text and icons on the blue (readable)
+    val Blue700 = Color(0xFF1A70EC)
+    val SkyGlow = Color(0xFF8DE0FF)
+    val Ink = Color(0xFFFFFFFF)
+    val InkSecondary = Color(0xD1EAF3FF)
+    val Success = Color(0xFF45E39A)
+    val Warning = Color(0xFFFFC766)
+    val Error = Color(0xFFFF7D89)
+    val Hairline = Color(0x26FFFFFF)
+    val Sheet = Color(0xF51A5FD0)              // sheets / dialogs: nearly opaque blue glass, the content behind never competes with the text
+    val PageMid = Color(0xFF1153C8)
+    val PageBottom = Color(0xFF0A3591)
+    val GradTop = Color(0xFF8DE0FF)            // primary button: luminous sky → blue
+    val GradMid = Color(0xFF3EA8FF)
+    val GradBottom = Color(0xFF1A70EC)
+    val Edge = Color(0x4DFFFFFF)               // 1 dp light edge of every glass surface
 }
 
 object OmRadius { val S = 14.dp; val M = 20.dp; val L = 28.dp; val XL = 34.dp }
@@ -60,17 +68,17 @@ val OmArabicFont = FontFamily(
 )
 val OmFont = OmLatinFont
 
-private val OmColorScheme: ColorScheme = lightColorScheme(
-    primary = OmColors.Blue600, onPrimary = Color.White,
+private val OmColorScheme: ColorScheme = darkColorScheme(
+    primary = OmColors.GradMid, onPrimary = Color.White,
     primaryContainer = OmColors.Sky100, onPrimaryContainer = OmColors.Ink,
-    secondary = OmColors.Sky500, onSecondary = Color.White,
+    secondary = OmColors.Sky500, onSecondary = Color(0xFF04204F),
     background = OmColors.Surface, onBackground = OmColors.Ink,
     surface = OmColors.Surface, onSurface = OmColors.Ink,
     surfaceVariant = OmColors.Sky100, onSurfaceVariant = OmColors.InkSecondary,
-    surfaceContainerLowest = OmColors.SurfaceBright, surfaceContainerLow = Color(0xFFF2F8FD),
-    surfaceContainer = Color(0xFFEAF4FB), surfaceContainerHigh = Color(0xFFE2EFF8),
-    outline = Color(0x33637483), outlineVariant = OmColors.Hairline,
-    error = OmColors.Error, onError = Color.White,
+    surfaceContainerLowest = Color(0xFF1660D6), surfaceContainerLow = Color(0xFF1A66DA),
+    surfaceContainer = Color(0xFF1E6CDE), surfaceContainerHigh = Color(0xFF2473E2), surfaceContainerHighest = Color(0xFF2A7AE6),
+    outline = OmColors.Edge, outlineVariant = OmColors.Hairline,
+    error = OmColors.Error, onError = Color(0xFF3A0610),
 )
 
 /* textDirection ContentOrLtr: Arabic sentences run right-to-left, while amounts, prices and signs ("+1.37%", "0.5 BTC") stay left-to-right

@@ -138,6 +138,19 @@ class SupabaseApi(
         }
     }
 
+    /* Edge function call with the user's session (14.5: crypto-swap fixes the price on the server). A refusal carries { error: "code" }. */
+    suspend fun function(name: String, body: JsonObject): JsonElement = withContext(Dispatchers.IO) {
+        ensureFresh()
+        execute(authed("/functions/v1/$name").post(body.toString().toRequestBody(JSON)).build()).use {
+            val text = it.body?.string().orEmpty()
+            if (!it.isSuccessful) {
+                if (it.code == 404 && !text.contains("\"error\"")) throw ApiException("server_off", "function $name not deployed", 404)
+                throw parseError(it.code, text)
+            }
+            if (text.isBlank()) JsonNull else OmJson.parseToJsonElement(text)
+        }
+    }
+
     /* ---------- tables (row-level security: each user reads only their own rows) ---------- */
     suspend fun select(table: String, query: String): JsonArray = withContext(Dispatchers.IO) {
         ensureFresh()

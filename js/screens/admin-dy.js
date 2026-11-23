@@ -126,7 +126,7 @@ const AdminDY = (() => {
       (acts ? '<div class="omx-btns">' + acts + '</div>' : '') + '</article>';
   }
   /* 14.1.0 — transactions confirmed by the administrator: ONE button credits the recipient, records the exact time and queues ONE e-mail */
-  const amtOf = x => x.kind === 'CRYPTO_TRANSFER' ? (typeof omxLogo === 'function' ? omxLogo(x.asset, 20) : '') + escapeHtml(omxQty(x.amount, x.asset)) : OMR(x.amount);
+  const amtOf = x => (x.kind === 'CRYPTO_TRANSFER' || x.kind === 'CRYPTO_SWAP') ? (typeof omxLogo === 'function' ? omxLogo(x.asset, 20) : '') + escapeHtml(omxQty(x.amount, x.asset)) : OMR(x.amount);
   const party = p => escapeHtml((p && (p.name || dispId(p.yor_id || ''))) || '—') + (p && p.yor_id ? ' <small class="ltr" dir="ltr">' + escapeHtml(dispId(p.yor_id)) + '</small>' : '');
   function mailLine(x){
     if (x.status !== 'CONFIRMED') return '';
@@ -142,6 +142,11 @@ const AdminDY = (() => {
       '<div class="ad-amt ltr">' + amtOf(x) + chipSt(x.status) + (pending && x.paused ? ' <span class="wd-chip s-pending">' + escapeHtml(t('tx.paused')) + '</span>' : '') + '</div></div>' +
       '<dl class="ad-dl"><div><dt>' + escapeHtml(t('wd.ref')) + '</dt><dd class="ltr">' + escapeHtml(x.reference || '') + '</dd></div><div><dt>' + escapeHtml(t('wd.date')) + '</dt><dd>' + escapeHtml(exact(x.created_at)) + '</dd></div>' +
       (x.network ? '<div><dt>' + escapeHtml(t('wd.network')) + '</dt><dd>' + escapeHtml((OMX_NETWORKS[x.network] || { name: x.network }).name) + '</dd></div>' : '') +
+      /* 14.5 — a swap: what is sold, what is received at the price fixed by the server at the request */
+      (x.kind === 'CRYPTO_SWAP' && x.swap ? '<div><dt>' + escapeHtml(t('tr.swap')) + '</dt><dd class="ltr">' + escapeHtml(omxQty(x.amount, x.asset) + ' → ' + omxQty(x.swap.to_amount, x.swap.to_asset)) +
+        ' <small>(' + escapeHtml((OMX_NETWORKS[x.swap.to_network] || { name: x.swap.to_network }).name) + ')</small></dd></div>' +
+        '<div><dt>' + escapeHtml(t('tr.priceL')) + '</dt><dd class="ltr">' + escapeHtml(Number(x.swap.price) >= 1 ? '1 ' + x.asset + ' = ' + Number(x.swap.price).toLocaleString('en-US', { maximumFractionDigits: 4 }) + ' ' + x.swap.to_asset
+          : '1 ' + x.swap.to_asset + ' = ' + (1 / Number(x.swap.price)).toLocaleString('en-US', { maximumFractionDigits: 4 }) + ' ' + x.asset) + '</dd></div>' : '') +
       (x.confirmed_at ? '<div><dt>' + escapeHtml(t('tx.confAt')) + '</dt><dd class="ltr">' + escapeHtml(exact(x.confirmed_at)) + '</dd></div>' : '') + '</dl>' +
       mailLine(x) +
       (pending ? '<div class="omx-btns"><button type="button" class="btn btn-primary tx-go" data-ad="t-confirm" data-id="' + x.id + '">' + icon('check', 18) + '<span>' + escapeHtml(t('tx.confirm')) + '</span></button>' +

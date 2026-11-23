@@ -10,7 +10,7 @@ import com.omwallet.core.security.SecretStore
 class OmGraph(
     ctx: Context,
     val api: SupabaseApi = SupabaseApi(),
-    marketApi: MarketApi = MarketApi(api.http),
+    val marketApi: MarketApi = MarketApi(api.http),
     secrets: SecretStore = KeystoreSecretStore(ctx.applicationContext),
     val db: OmDatabase = OmDatabase.create(ctx.applicationContext),
     val prefs: PrefsStore = PrefsStore(ctx),

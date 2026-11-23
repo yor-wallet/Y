@@ -26,6 +26,14 @@ function binance(u){
     const s = q.searchParams.get('symbol'), n = Number(q.searchParams.get('limit') || 24), m = MK[s] || [1, 1], t0 = Date.UTC(2026, 10, 20);
     return Array.from({ length: n }, (_, i) => { const c = m[1] + (m[0] - m[1]) * (i / (n - 1)) + Math.sin(i / 3) * m[0] * 0.004; return [t0 + i * 3600e3, String(c), String(c), String(c), String(c), '1']; });
   }
+  if (/\/depth/.test(q.pathname)){
+    const m = MK[q.searchParams.get('symbol')] || [1, 1], p = m[0], st = p * 0.0001;
+    return { lastUpdateId: 1, bids: Array.from({ length: 10 }, (_, i) => [String(p - st * (i + 1)), String(0.1 + (i % 4) * 0.25)]), asks: Array.from({ length: 10 }, (_, i) => [String(p + st * (i + 1)), String(0.15 + (i % 3) * 0.3)]) };
+  }
+  if (/\/trades/.test(q.pathname)){
+    const m = MK[q.searchParams.get('symbol')] || [1, 1], n = Number(q.searchParams.get('limit') || 16), t0 = Date.UTC(2026, 10, 23, 12);
+    return Array.from({ length: n }, (_, i) => ({ id: i, price: String(m[0] * (1 + Math.sin(i) * 0.0002)), qty: String(0.01 * (1 + i % 5)), time: t0 + i * 1500, isBuyerMaker: i % 3 === 0 }));
+  }
   return [];
 }
 const CSP = (() => { try { const h = JSON.parse(fs.readFileSync(path.join(ROOT, 'vercel.json'), 'utf8')).headers[0].headers.find(x => x.key === 'Content-Security-Policy'); return h ? h.value : ''; } catch (e) { return ''; } })();
@@ -69,12 +77,28 @@ export async function openApp(browser, base, opts = {}){
       return route.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify(binance(u)) });
     }
     if (/cdn\.jsdelivr\.net.*supabase/.test(u)){
-      const fx = JSON.stringify({ theme: opts.theme, lang: opts.lang, emptyTx: !!opts.emptyTx, signedOut: !!opts.signedOut, admin: !!opts.admin, dy: !!opts.dy, dyName: opts.dyName || '', dyFlipOnPin: !!opts.dyFlipOnPin });
+      const fx = JSON.stringify({ theme: opts.theme, lang: opts.lang, emptyTx: !!opts.emptyTx, signedOut: !!opts.signedOut, admin: !!opts.admin, dy: !!opts.dy, dyName: opts.dyName || '', dyFlipOnPin: !!opts.dyFlipOnPin, swapOff: !!opts.swapOff, quoteTtl: opts.quoteTtl || 30 });
       return route.fulfill({ status: 200, contentType: 'text/javascript', body: 'window.__FX=' + fx + ';' + MOCK });
     }
     return route.abort();
   });
-  try { await page.routeWebSocket(/binance\.vision/, ws => { ws.close(); }); } catch (e) {}       /* live stream refused: the app falls back to polling */
+  /* default: the live stream is refused (the app falls back to polling). opts.ws === 'live': a local stand-in of the Binance stream sends
+     trades, a depth snapshot and the current candle a few times a second, so real-time painting can be checked (still no internet). */
+  try { await page.routeWebSocket(/binance\.vision/, ws => {
+    if (opts.ws !== 'live'){ ws.close(); return; }
+    const u = ws.url(), pair = ((u.match(/streams=([a-z]+)@/) || [])[1] || 'btcusdt').toUpperCase(), m = MK[pair] || [1, 1];
+    let i = 0;
+    const tick = setInterval(() => {
+      i++; const p = m[0] * (1 + Math.sin(i / 2) * 0.0008), st = m[0] * 0.0001, now = Date.now();
+      try {
+        if (/@aggTrade/.test(u)) ws.send(JSON.stringify({ stream: pair.toLowerCase() + '@aggTrade', data: { e: 'aggTrade', s: pair, p: String(p), q: String(0.002 * (1 + i % 4)), T: now, m: i % 2 === 0 } }));
+        if (/@depth/.test(u)) ws.send(JSON.stringify({ stream: pair.toLowerCase() + '@depth10@1000ms', data: { bids: Array.from({ length: 10 }, (_, k) => [String(p - st * (k + 1)), String(0.1 + ((k + i) % 4) * 0.2)]), asks: Array.from({ length: 10 }, (_, k) => [String(p + st * (k + 1)), String(0.12 + ((k + i) % 3) * 0.25)]) } }));
+        if (/@kline/.test(u)) ws.send(JSON.stringify({ stream: pair.toLowerCase() + '@kline_1h', data: { e: 'kline', k: { t: Date.UTC(2026, 10, 20) + 63 * 3600e3, o: String(m[0]), h: String(p * 1.001), l: String(m[0] * 0.999), c: String(p), x: false } } }));
+      } catch (e) { clearInterval(tick); }
+    }, 350);
+    if (tick.unref) tick.unref();          /* never keeps the test process alive */
+    ws.onClose(() => clearInterval(tick)); page.once('close', () => clearInterval(tick));
+  }); } catch (e) {}
   await page.addInitScript((o) => { window.__FP_SPLASH_MIN = 50; try { if (o.lang) localStorage.setItem('fp_lang_test', o.lang); if (o.theme) localStorage.setItem('fp_theme', o.theme); } catch (e) {} }, opts);
   if (opts.net){ const c = await ctx.newCDPSession(page); await c.send('Network.enable'); await c.send('Network.emulateNetworkConditions', opts.net); }
   await page.goto(base, { waitUntil: 'load' });

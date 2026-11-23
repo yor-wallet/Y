@@ -75,7 +75,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
     val pager = rememberPagerState { pages.size }
     val scope = rememberCoroutineScope()
     val reduced = LocalOmMotion.current.reduced
-    Box(Modifier.fillMaxSize().background(Color(0xFFEAF4FF)).testTag("onboarding")) {
+    Box(Modifier.fillMaxSize().background(OmColors.Surface).testTag("onboarding")) {
         HorizontalPager(pager, Modifier.fillMaxSize()) { k ->
             val p = pages[k]
             val offset = (pager.currentPage - k) + pager.currentPageOffsetFraction
@@ -93,23 +93,23 @@ fun OnboardingScreen(onDone: () -> Unit) {
                         Box(Modifier.size(300.dp).clip(CircleShape).border(1.5.dp, Color(0xF2FFFFFF), CircleShape).background(Brush.radialGradient(listOf(Color(0x5578BEFF), Color.Transparent))))
                         Image(painterResource(com.omwallet.app.R.drawable.app_icon_glass), null, Modifier.size(210.dp).shadow(30.dp, RoundedCornerShape(percent = 26), ambientColor = Color(0x661E78E6), spotColor = Color(0x661E78E6)).clip(RoundedCornerShape(percent = 26)))
                     }
-                    Box(Modifier.fillMaxSize().background(Brush.verticalGradient(0.55f to Color(0x00EAF4FF), 0.86f to Color(0xD9EAF4FF), 1f to Color(0xFFEAF4FF))))
+                    Box(Modifier.fillMaxSize().background(Brush.verticalGradient(0.55f to Color(0x001A6FE6), 0.86f to Color(0xD91A6FE6), 1f to OmColors.Surface)))
                 }
                 /* the glass card: message, button, dots */
                 Column(
                     Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(16.dp).fillMaxWidth()
                         .shadow(28.dp, RoundedCornerShape(34.dp), ambientColor = Color(0x66145AB4), spotColor = Color(0x88145AB4))
                         .clip(RoundedCornerShape(34.dp))
-                        .background(Brush.linearGradient(listOf(Color(0xF0FFFFFF), Color(0xC7E8F4FF))))
-                        .border(1.dp, Color.White, RoundedCornerShape(34.dp)).padding(22.dp),
+                        .background(Brush.linearGradient(listOf(Color(0x8C1A64E1), Color(0x9E082880))))
+                        .border(1.dp, Color(0x57FFFFFF), RoundedCornerShape(34.dp)).padding(22.dp),
                 ) {
                     val rise by animateDpAsState(if (on || reduced) 0.dp else 18.dp, tween(700), label = "rise")
                     val fade by animateFloatAsState(if (on || reduced) 1f else 0f, tween(600), label = "fade")
                     Image(painterResource(com.omwallet.app.R.drawable.om_logo_horizontal), stringResource(R.string.app_name), Modifier.height(36.dp).graphicsLayer { alpha = fade })
                     Spacer(Modifier.height(12.dp))
-                    Text(stringResource(p.title), style = MaterialTheme.typography.displaySmall, color = Color(0xFF0B1E54), modifier = Modifier.graphicsLayer { alpha = fade; translationY = rise.toPx() })
+                    Text(stringResource(p.title), style = MaterialTheme.typography.displaySmall, color = Color.White, modifier = Modifier.graphicsLayer { alpha = fade; translationY = rise.toPx() })
                     Spacer(Modifier.height(10.dp))
-                    Text(stringResource(p.text), style = MaterialTheme.typography.bodyLarge, color = Color(0xFF4A5B78), modifier = Modifier.graphicsLayer { alpha = fade; translationY = rise.toPx() * 1.4f })
+                    Text(stringResource(p.text), style = MaterialTheme.typography.bodyLarge, color = Color(0xDBEAF3FF), modifier = Modifier.graphicsLayer { alpha = fade; translationY = rise.toPx() * 1.4f })
                     Spacer(Modifier.height(20.dp))
                     OmPrimaryButton(stringResource(p.cta), Modifier.testTag("onb_cta_$k")) {
                         if (k < pages.lastIndex) scope.launch { if (reduced) pager.scrollToPage(k + 1) else pager.animateScrollToPage(k + 1) } else onDone()
@@ -118,7 +118,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
                     Row(Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         pages.indices.forEach { j ->
                             val w by animateDpAsState(if (j == pager.currentPage) 26.dp else 10.dp, tween(380), label = "dot")
-                            Box(Modifier.height(10.dp).width(w).clip(RoundedCornerShape(6.dp)).background(if (j == pager.currentPage) OmColors.Blue600 else Color(0x401A84F5))
+                            Box(Modifier.height(10.dp).width(w).clip(RoundedCornerShape(6.dp)).background(if (j == pager.currentPage) Color.White else Color(0x61FFFFFF))
                                 .semantics { contentDescription = "${j + 1} / ${pages.size}" })
                         }
                     }
@@ -128,9 +128,9 @@ fun OnboardingScreen(onDone: () -> Unit) {
         /* Skip (not on the last page): goes straight to sign-in */
         if (pager.currentPage < pages.lastIndex) {
             Text(
-                stringResource(R.string.onb_skip), style = MaterialTheme.typography.titleMedium, color = Color(0xFF0B1E54),
+                stringResource(R.string.onb_skip), style = MaterialTheme.typography.titleMedium, color = Color.White,
                 modifier = Modifier.align(Alignment.TopEnd).statusBarsPadding().padding(16.dp)
-                    .clip(RoundedCornerShape(16.dp)).background(Color(0xB3FFFFFF)).border(1.dp, Color.White, RoundedCornerShape(16.dp))
+                    .clip(RoundedCornerShape(16.dp)).background(Color(0xA8082A7A)).border(1.dp, Color(0x66FFFFFF), RoundedCornerShape(16.dp))
                     .pressable(role = Role.Button) { onDone() }.padding(horizontal = 18.dp, vertical = 10.dp).testTag("onb_skip"),
             )
         }

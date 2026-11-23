@@ -70,7 +70,7 @@ fun OmDialog(title: String, body: String, confirm: String, onConfirm: () -> Unit
         androidx.compose.runtime.LaunchedEffect(Unit) { shown = true }
         Column(
             Modifier.graphicsLayer { scaleX = scale; scaleY = scale }.clip(RoundedCornerShape(OmRadius.L)).background(OmColors.Sheet)
-                .border(1.dp, Color(0xCCFFFFFF), RoundedCornerShape(OmRadius.L)).padding(22.dp),
+                .border(1.dp, OmColors.Edge, RoundedCornerShape(OmRadius.L)).padding(22.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp), horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             val dot = when (tone) { ChipTone.Success -> OmColors.Success; ChipTone.Failed -> OmColors.Error; ChipTone.Pending -> OmColors.Warning; ChipTone.Neutral -> OmColors.Blue600 }

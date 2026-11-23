@@ -258,6 +258,25 @@ class MoneyRepository(private val api: SupabaseApi) {
     }
 
     /* Recorded PENDING; the amount is held. Only the administrator's confirmation credits the recipient (and sends the one e-mail). */
+    /* 14.5 — swap / Spot market order. 1) the server fixes the price (Edge function crypto-swap, Binance, 30 s);
+       2) swap_execute (PIN grant, idempotency key) holds the amount paid and records the operation IN PROGRESS. Nothing is credited here:
+       only the administrator's confirmation credits the crypto bought. */
+    data class SwapQuote(val id: String, val fromAsset: String, val fromNetwork: String, val toAsset: String, val toNetwork: String,
+                         val fromAmount: Double, val toAmount: Double, val price: Double, val source: String, val side: String?, val expiresAt: Long)
+    suspend fun swapQuote(fromAsset: String, fromNetwork: String, toAsset: String, toNetwork: String, amount: BigDecimal, side: String?): SwapQuote {
+        val o = api.function("crypto-swap", buildJsonObject {
+            put("from_asset", fromAsset); put("from_network", fromNetwork); put("to_asset", toAsset); put("to_network", toNetwork)
+            put("from_amount", amount.toPlainString()); if (side != null) put("side", side)
+        }).obj() ?: throw ApiException("unknown", "empty answer")
+        if (!o.bool("ok")) throw ApiException(o.str("error") ?: "unknown", o.str("error") ?: "refused")
+        val q = o["quote"].obj() ?: throw ApiException("unknown", "no quote")
+        return SwapQuote(q.str("id") ?: "", q.str("from_asset") ?: fromAsset, q.str("from_network") ?: fromNetwork, q.str("to_asset") ?: toAsset, q.str("to_network") ?: toNetwork,
+            q.num("from_amount"), q.num("to_amount"), q.num("price"), q.str("source") ?: "binance", q.str("side"), q.time("expires_at"))
+    }
+    suspend fun swapExecute(quoteId: String, key: String, grant: String) = submitted(api.rpc("swap_execute", buildJsonObject {
+        put("p_quote", quoteId); put("p_idempotency_key", key); put("p_pin_grant", grant)
+    }).obj())
+
     suspend fun sendInternal(toYorId: String, asset: String, network: String, amount: BigDecimal, note: String?, key: String, grant: String) = submitted(api.rpc("transfer_crypto", buildJsonObject {
         put("p_to_yor_id", toYorId); put("p_asset", asset); put("p_network", network); put("p_amount", JsonPrimitive(amount)); put("p_note", note?.ifBlank { null })
         put("p_idempotency_key", key); put("p_pin_grant", grant)

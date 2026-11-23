@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr" data-theme="light">
+<html lang="en" dir="ltr" data-theme="dark" data-tone="day">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
-<meta name="theme-color" content="#F4FAFF">
+<meta name="theme-color" content="#1A6FE6">
 <meta name="apple-mobile-web-app-title" content="OM Wallet">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="description" content="OM Wallet — send money to a mobile number in Oman and manage your cards. Simple, secure, in English, Français and العربية.">
@@ -69,7 +69,9 @@
 <script>
 /* last theme used on this phone, applied before the first paint (the app confirms it once the account is known) */
 (function(){try{var t=localStorage.getItem('fp_theme'),d=document.documentElement;
-  if(t==='dark'||(t==='system'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)){d.setAttribute('data-theme','dark');var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content','#0A1B2B');}
+  /* 14.5.0 « Verre »: always glass with light text; the saved setting only picks the blue (day / night) */
+  d.setAttribute('data-theme','dark');
+  if(t==='dark'||(t==='system'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)){d.setAttribute('data-tone','night');var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content','#0A2A6E');}
 }catch(e){}})();
 </script>
 <meta name="mobile-web-app-capable" content="yes">
@@ -124,6 +126,8 @@
 <link rel="stylesheet" href="css/glass.css">
 <link rel="stylesheet" href="css/omx.css">
 <link rel="stylesheet" href="css/omw.css">
+<link rel="stylesheet" href="css/verre.css">
+<link rel="stylesheet" href="css/trade.css">
 </head>
 <body>
 
@@ -209,6 +213,7 @@
 <script src="js/screens/omx.js" defer></script>
 <script src="js/screens/omx-withdraw.js" defer></script>
 <script src="js/screens/omx-send.js" defer></script>
+<script src="js/screens/omx-trade.js" defer></script>
 <script src="js/ui/ios-motion.js" defer></script>
 <script src="js/ui/omw.js" defer></script>
 <script src="js/wire.js" defer></script>

@@ -101,8 +101,10 @@ fun MarketsScreen(onAsset: (String) -> Unit, contentPadding: PaddingValues) {
 
 @Composable
 private fun Segment(text: String, on: Boolean, onClick: () -> Unit) {
-    Box(Modifier.clip(RoundedCornerShape(50)).background(if (on) OmColors.Ink else OmColors.Sky100).pressable(role = Role.Tab, onClick = onClick).padding(horizontal = 14.dp, vertical = 7.dp)) {
-        Text(text, style = MaterialTheme.typography.labelLarge, color = if (on) Color.White else OmColors.Ink)
+    /* selected: luminous gradient pill (« Verre »); not selected: clear glass */
+    Box(Modifier.clip(RoundedCornerShape(50)).background(if (on) androidx.compose.ui.graphics.Brush.verticalGradient(listOf(OmColors.GradTop, OmColors.GradMid, OmColors.GradBottom)) else androidx.compose.ui.graphics.SolidColor(OmColors.Sky100))
+        .pressable(role = Role.Tab, onClick = onClick).padding(horizontal = 14.dp, vertical = 7.dp)) {
+        Text(text, style = MaterialTheme.typography.labelLarge, color = if (on) Color.White else OmColors.InkSecondary)
     }
 }
 

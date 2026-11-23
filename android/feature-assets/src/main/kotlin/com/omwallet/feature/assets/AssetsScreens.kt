@@ -139,7 +139,7 @@ fun AssetsScreen(onAsset: (String) -> Unit, onDeposit: () -> Unit, onSend: () ->
                         if (l.position.locked > 0) Text(stringResource(R.string.assets_locked) + " " + Fmt.masked(Fmt.qty(l.position.locked, l.position.asset), s.hidden), style = MaterialTheme.typography.labelSmall, color = OmColors.Warning)
                     }
                     Text(stringResource(R.string.assets_details), style = MaterialTheme.typography.labelLarge, color = OmColors.Blue600,
-                        modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(Brush.linearGradient(listOf(Color(0xF2FFFFFF), Color(0xBFDCEEFF))))
+                        modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(Brush.linearGradient(listOf(Color(0x3DFFFFFF), Color(0x14FFFFFF))))
                             .border(1.dp, Color.White, RoundedCornerShape(16.dp)).pressable { onAsset(l.position.asset) }.padding(horizontal = 14.dp, vertical = 10.dp))
                 }
             }

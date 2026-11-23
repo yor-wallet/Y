@@ -80,8 +80,8 @@ fun GlassCard(modifier: Modifier = Modifier, strong: Boolean = false, padding: D
             .riseIn(rise)
             .shadow(20.dp, shape, ambientColor = Color(0x33145AB4), spotColor = Color(0x55145AB4))
             .clip(shape)
-            .background(Brush.linearGradient(if (strong) listOf(Color(0xF2FFFFFF), Color(0xD9EAF5FF)) else listOf(Color(0xD1FFFFFF), Color(0x94EAF5FF))))
-            .border(BorderStroke(1.dp, Color(0xF2FFFFFF)), shape)
+            .background(Brush.linearGradient(if (strong) listOf(Color(0x33FFFFFF), Color(0x14FFFFFF)) else listOf(Color(0x24FFFFFF), Color(0x0FFFFFFF))))
+            .border(BorderStroke(1.dp, OmColors.Edge), shape)
             .padding(padding),
         content = content,
     )
@@ -91,14 +91,14 @@ fun GlassCard(modifier: Modifier = Modifier, strong: Boolean = false, padding: D
 @Composable
 fun SkyBackground(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     /* white to sky, with the two soft glass waves of the owner's references (top-left, bottom-right) */
-    Box(modifier.background(Brush.verticalGradient(listOf(Color(0xFFF7FBFF), OmColors.Surface, Color(0xFFE3F0FD))))) {
+    Box(modifier.background(Brush.verticalGradient(listOf(OmColors.Surface, OmColors.PageMid, OmColors.PageBottom)))) {
         Canvas(Modifier.matchParentSize()) {
-            drawCircle(Brush.radialGradient(listOf(Color(0x5A8CCDFF), Color.Transparent), center = Offset(size.width * 1.0f, 0f), radius = size.width * 0.9f))
-            drawCircle(Brush.radialGradient(listOf(Color(0x4D78C3FF), Color.Transparent), center = Offset(0f, size.height), radius = size.width * 0.9f))
-            drawOval(Brush.radialGradient(listOf(Color(0xF2FFFFFF), Color(0x00FFFFFF)), center = Offset(size.width * 0.05f, size.height * 0.02f), radius = size.width * 0.85f),
+            drawCircle(Brush.radialGradient(listOf(Color(0x8C8CDCFF), Color.Transparent), center = Offset(size.width * 1.0f, 0f), radius = size.width * 0.9f))
+            drawCircle(Brush.radialGradient(listOf(Color(0x578270FF), Color.Transparent), center = Offset(0f, size.height), radius = size.width * 0.9f))
+            drawOval(Brush.radialGradient(listOf(Color(0x4DAAE1FF), Color(0x00AAE1FF)), center = Offset(size.width * 0.05f, size.height * 0.02f), radius = size.width * 0.85f),
                 topLeft = Offset(-size.width * 0.8f, -size.height * 0.28f), size = androidx.compose.ui.geometry.Size(size.width * 1.7f, size.height * 0.62f))
-            drawOval(Color(0xB3FFFFFF), topLeft = Offset(-size.width * 0.8f, -size.height * 0.28f), size = androidx.compose.ui.geometry.Size(size.width * 1.7f, size.height * 0.62f), style = Stroke(width = 1.5.dp.toPx()))
-            drawOval(Color(0x8CFFFFFF), topLeft = Offset(size.width * 0.35f, size.height * 0.82f), size = androidx.compose.ui.geometry.Size(size.width * 1.4f, size.height * 0.4f), style = Stroke(width = 1.5.dp.toPx()))
+            drawOval(Color(0x38FFFFFF), topLeft = Offset(-size.width * 0.8f, -size.height * 0.28f), size = androidx.compose.ui.geometry.Size(size.width * 1.7f, size.height * 0.62f), style = Stroke(width = 1.5.dp.toPx()))
+            drawOval(Color(0x29FFFFFF), topLeft = Offset(size.width * 0.35f, size.height * 0.82f), size = androidx.compose.ui.geometry.Size(size.width * 1.4f, size.height * 0.4f), style = Stroke(width = 1.5.dp.toPx()))
         }
         content()
     }
@@ -159,9 +159,9 @@ fun OmPrimaryButton(text: String, modifier: Modifier = Modifier, enabled: Boolea
             .fillMaxWidth()
             .shadow(if (enabled) 16.dp else 0.dp, shape, ambientColor = Color(0x661677F2), spotColor = Color(0x991677F2))
             .clip(shape)
-            .background(if (enabled) Brush.verticalGradient(listOf(OmColors.SkyGlow, OmColors.Blue600, OmColors.Blue700)) else Brush.verticalGradient(listOf(OmColors.Sky300, OmColors.Sky300)))
+            .background(if (enabled) Brush.verticalGradient(listOf(OmColors.GradTop, OmColors.GradMid, OmColors.GradBottom)) else Brush.verticalGradient(listOf(OmColors.Sky300, OmColors.Sky300)))
             .drawWithContent { drawContent(); drawRect(Brush.verticalGradient(listOf(Color(0x52FFFFFF), Color.Transparent), endY = size.height * 0.55f)) }
-            .border(1.dp, Color(0x59FFFFFF), shape)
+            .border(1.dp, Color(0x8CFFFFFF), shape)
             .pressable(enabled = enabled && !loading, onClick = onClick)
             .semantics { if (loading) contentDescription = text },
         contentAlignment = Alignment.Center,
@@ -176,7 +176,7 @@ fun OmSecondaryButton(text: String, modifier: Modifier = Modifier, enabled: Bool
     val shape = RoundedCornerShape(OmRadius.M)
     Box(
         modifier.heightIn(min = 54.dp).fillMaxWidth().shadow(10.dp, shape, ambientColor = Color(0x33145AB4), spotColor = Color(0x44145AB4)).clip(shape)
-            .background(Brush.linearGradient(listOf(Color(0xF2FFFFFF), Color(0xBFE6F2FF)))).border(1.dp, Color(0xF2FFFFFF), shape).pressable(enabled = enabled, onClick = onClick),
+            .background(Brush.linearGradient(listOf(Color(0x33FFFFFF), Color(0x14FFFFFF)))).border(1.dp, OmColors.Edge, shape).pressable(enabled = enabled, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) { Text(text, style = MaterialTheme.typography.labelLarge, color = if (enabled) OmColors.Blue600 else OmColors.InkSecondary) }
 }
@@ -187,7 +187,7 @@ fun GlassTile(@DrawableRes icon: Int, modifier: Modifier = Modifier, size: Dp = 
     val shape = RoundedCornerShape(16.dp)
     Box(
         modifier.size(size).shadow(8.dp, shape, ambientColor = Color(0x33145AB4), spotColor = Color(0x55145AB4)).clip(shape)
-            .background(Brush.linearGradient(listOf(Color(0xFAFFFFFF), Color(0xEBE2F1FF)))).border(1.dp, Color(0xF2FFFFFF), shape),
+            .background(Brush.linearGradient(listOf(Color(0x3DFFFFFF), Color(0x14FFFFFF)))).border(1.dp, OmColors.Edge, shape),
         contentAlignment = Alignment.Center,
     ) { OmIcon(icon, null, tint = tint, size = size * 0.46f) }
 }
@@ -228,10 +228,10 @@ enum class ChipTone { Success, Pending, Failed, Neutral }
 @Composable
 fun StatusChip(text: String, tone: ChipTone, modifier: Modifier = Modifier, animated: Boolean = false) {
     val (bg, fg) = when (tone) {
-        ChipTone.Success -> Color(0x241FAF72) to Color(0xFF137A4F)
-        ChipTone.Pending -> Color(0x29E5A332) to Color(0xFF8A5A00)
-        ChipTone.Failed -> Color(0x1FD94F5B) to Color(0xFFB23542)
-        ChipTone.Neutral -> Color(0x1F637483) to OmColors.InkSecondary
+        ChipTone.Success -> Color(0x2945E39A) to Color(0xFF8AF2C2)
+        ChipTone.Pending -> Color(0x33FFC766) to Color(0xFFFFDC8F)
+        ChipTone.Failed -> Color(0x29FF7D89) to Color(0xFFFFB6BD)
+        ChipTone.Neutral -> Color(0x24FFFFFF) to OmColors.InkSecondary
     }
     androidx.compose.foundation.layout.Row(
         modifier.clip(RoundedCornerShape(50)).background(bg).padding(horizontal = 10.dp, vertical = 3.dp),
@@ -342,6 +342,7 @@ object OmIcons {
     val Home = R.drawable.ic_om_home; val Wallet = R.drawable.ic_om_wallet; val Chart = R.drawable.ic_om_chart; val Activity = R.drawable.ic_om_activity
     val User = R.drawable.ic_om_user; val Deposit = R.drawable.ic_om_arrow_down; val Withdraw = R.drawable.ic_om_arrow_up; val Coin = R.drawable.ic_om_coin
     val Eye = R.drawable.ic_om_eye; val EyeOff = R.drawable.ic_om_eye_off; val Star = R.drawable.ic_om_star; val StarFilled = R.drawable.ic_om_star_filled
+    val Swap = R.drawable.ic_om_swap; val Trend = R.drawable.ic_om_trend
     val Send = R.drawable.ic_om_send; val Copy = R.drawable.ic_om_copy; val Back = R.drawable.ic_om_back; val Chevron = R.drawable.ic_om_chevron
     val Shield = R.drawable.ic_om_shield; val Share = R.drawable.ic_om_share; val Refresh = R.drawable.ic_om_refresh; val Close = R.drawable.ic_om_close
     val Logout = R.drawable.ic_om_logout; val Mail = R.drawable.ic_om_mail; val Lock = R.drawable.ic_om_lock; val Globe = R.drawable.ic_om_globe

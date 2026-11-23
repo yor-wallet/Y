@@ -55,6 +55,10 @@ const IOS_ICONS = (() => {
     download: P('M12 4v11M7.4 10.8 12 15.4l4.6-4.6M5.2 19.8h13.6'),
     /* 14.5.0: money leaving the wallet — the arrow goes UP out of the tray (deposit / receive keeps the arrow coming in) */
     withdraw: P('M12 15.4V4.4M7.4 8.6 12 4l4.6 4.6M5.2 19.8h13.6'),
+    /* 14.5.0 — Spot / Swap: dropdown chevron, arrow between the two legs of a swap, new price */
+    'chevron-down': P('M6.4 9.4 12 15l5.6-5.6'),
+    'arrow-down': P('M12 4.6v14.6M6.6 13.8 12 19.2l5.4-5.4'),
+    refresh: P('M19.2 12a7.2 7.2 0 1 1-2.1-5.1') + P('M19.6 4.6v4.2h-4.2'),
     /* favourite: five-point star, round joins; the selected state fills it (css: .omx-star.on .ic) */
     star: P('M12 3.8l2.5 5.1 5.6.8-4.05 3.95.95 5.6L12 16.6l-5 2.65.95-5.6L3.9 9.7l5.6-.8z'),
     copy: R(9.2, 9.2, 10.8, 10.8, 2.6) + P('M14.8 9.2V6.8a2.6 2.6 0 0 0-2.6-2.6H6.8a2.6 2.6 0 0 0-2.6 2.6v5.4a2.6 2.6 0 0 0 2.6 2.6h2.4'),

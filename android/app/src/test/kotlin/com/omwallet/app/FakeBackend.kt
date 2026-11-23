@@ -15,6 +15,7 @@ class FakeBackend : Dispatcher() {
     @Volatile var admin = true
     @Volatile var confirmed = false
     @Volatile var paused = false
+    @Volatile var swapOff = false
     /* deposit address: "unavailable" (server has none) · "pending" (created on first request) · "ok" */
     @Volatile var addr = "unavailable"
     @Volatile var addrCreated = false
@@ -70,6 +71,11 @@ class FakeBackend : Dispatcher() {
                 {"symbol":"USDCUSDT","lastPrice":"0.9998","openPrice":"0.9999","highPrice":"1","lowPrice":"0.999","volume":"1","quoteVolume":"900000000"},
                 {"symbol":"SOLUSDT","lastPrice":"142.30","openPrice":"138.00","highPrice":"145","lowPrice":"137","volume":"1","quoteVolume":"300000000"},
                 {"symbol":"BNBUSDT","lastPrice":"610.00","openPrice":"615.00","highPrice":"620","lowPrice":"605","volume":"1","quoteVolume":"100000000"}]""")
+            path.startsWith("/api/v3/depth") -> ok("""{"lastUpdateId":1,"bids":[${(1..10).joinToString(",") { "[\"${91234.5 - it * 9}\",\"${0.1 * (it % 4 + 1)}\"]" }}],"asks":[${(1..10).joinToString(",") { "[\"${91234.5 + it * 9}\",\"${0.12 * (it % 3 + 1)}\"]" }}]}""")
+            path.startsWith("/api/v3/trades") -> ok((0 until 16).joinToString(",", "[", "]") { i -> """{"id":$i,"price":"${91234.5 + (i % 5) * 3}","qty":"0.0${i % 9 + 1}","time":${1_790_000_000_000L + i * 1500},"isBuyerMaker":${i % 3 == 0}}""" })
+            /* 14.5 — server-fixed quote (the Edge function), then swap_execute: PENDING, nothing credited */
+            path.startsWith("/functions/v1/crypto-swap") -> if (swapOff) MockResponse().setResponseCode(404).setBody("Requested function was not found") else ok("""{"ok":true,"fee":0,"ttl_s":30,"quote":{"id":"q-1","from_asset":"USDT","from_network":"tron","to_asset":"BTC","to_network":"bitcoin","from_amount":"50","to_amount":"0.00054803","price":"0.0000109607","source":"binance:data-api.binance.vision","side":null,"created_at":"${ago(0)}","expires_at":"${java.time.OffsetDateTime.now().plusSeconds(30)}"}}""")
+            fn == "swap_execute" -> ok("""{"ok":true,"transaction_id":"tx-swap","reference":"OMW-26C1","status":"PENDING","from_asset":"USDT","from_amount":50,"to_asset":"BTC","to_amount":0.00054803}""")
             path.startsWith("/api/v3/klines") -> ok((0 until 96).joinToString(",", "[", "]") { i -> "[${1_790_000_000_000L + i * 900_000L},\"0\",\"0\",\"0\",\"${"%.2f".format(java.util.Locale.US, 90000 + 900 * sin(i / 9.0) + i * 12)}\"]" })
             else -> MockResponse().setResponseCode(404)
         }

@@ -77,9 +77,12 @@ import com.omwallet.feature.send.SendScreen
 import com.omwallet.feature.withdraw.WithdrawScreen
 
 enum class Tab(val route: String, val label: Int, val icon: Int) {
-    Home("home", R.string.nav_home, OmIcons.Home), Assets("assets", R.string.nav_assets, OmIcons.Wallet), Markets("markets", R.string.nav_markets, OmIcons.Chart),
-    Activity("activity", R.string.nav_activity, OmIcons.Activity), Account("account", R.string.nav_account, OmIcons.User),
+    /* 14.5 main menu (owner's request): Home · Markets · Spot · Swap · Assets. Activity and Account stay one tap away on the home header. */
+    Home("home", R.string.nav_home, OmIcons.Home), Markets("markets", R.string.nav_markets, OmIcons.Chart), Spot("spot", R.string.nav_spot, OmIcons.Trend),
+    Swap("swap", R.string.nav_swap, OmIcons.Swap), Assets("assets", R.string.nav_assets, OmIcons.Wallet),
 }
+private const val ACTIVITY = "activity"
+private const val ACCOUNT = "account"
 
 @Composable
 fun OmRoot() {
@@ -131,14 +134,16 @@ fun MainNav(isAdmin: Boolean) {
             composable(Tab.Home.route) {
                 HomeScreen(HomeActions(
                     deposit = { nav.navigate("deposit") }, withdraw = { nav.navigate("withdraw") }, crypto = { nav.tab(Tab.Assets.route) },
-                    markets = { nav.tab(Tab.Markets.route) }, send = { nav.navigate("send") }, asset = { nav.navigate("asset/$it") }, activity = { nav.tab(Tab.Activity.route) },
-                    account = { nav.tab(Tab.Account.route) },
+                    markets = { nav.tab(Tab.Markets.route) }, send = { nav.navigate("send") }, asset = { nav.navigate("asset/$it") }, activity = { nav.tab(ACTIVITY) },
+                    account = { nav.tab(ACCOUNT) },
                 ), pad)
             }
             composable(Tab.Assets.route) { AssetsScreen(onAsset = { nav.navigate("asset/$it") }, onDeposit = { nav.navigate("deposit") }, onSend = { nav.navigate("send") }, contentPadding = pad) }
             composable(Tab.Markets.route) { MarketsScreen(onAsset = { nav.navigate("asset/$it") }, contentPadding = pad) }
-            composable(Tab.Activity.route) { ActivityScreen(pad) }
-            composable(Tab.Account.route) { AccountScreen(isAdmin, onAdmin = { nav.navigate("admin") }, contentPadding = pad) }
+            composable(Tab.Spot.route) { com.omwallet.feature.markets.SpotScreen(pad) }
+            composable(Tab.Swap.route) { com.omwallet.feature.markets.SwapScreen(pad) }
+            composable(ACTIVITY) { ActivityScreen(pad) }
+            composable(ACCOUNT) { AccountScreen(isAdmin, onAdmin = { nav.navigate("admin") }, contentPadding = pad) }
             composable("asset/{sym}", listOf(navArgument("sym") { type = NavType.StringType })) { e ->
                 val sym = e.arguments?.getString("sym").orEmpty()
                 AssetDetailScreen(sym, onBack = { nav.popBackStack() }, onDeposit = { nav.navigate("deposit?asset=$it") }, onWithdraw = { nav.navigate("withdraw?asset=$it") }, onSend = { nav.navigate("send?asset=$it") })
@@ -150,32 +155,33 @@ fun MainNav(isAdmin: Boolean) {
                 WithdrawScreen(e.arguments?.getString("asset"), onBack = { nav.popBackStack() })
             }
             composable("send?asset={asset}", listOf(navArgument("asset") { type = NavType.StringType; nullable = true; defaultValue = null })) { e ->
-                SendScreen(e.arguments?.getString("asset"), onBack = { nav.popBackStack() }, onActivity = { nav.popBackStack(); nav.tab(Tab.Activity.route) })
+                SendScreen(e.arguments?.getString("asset"), onBack = { nav.popBackStack() }, onActivity = { nav.popBackStack(); nav.tab(ACTIVITY) })
             }
             /* the admin destination exists only for a server-confirmed administrator */
             if (isAdmin) composable("admin") { AdminScreen(onBack = { nav.popBackStack() }) }
         }
-        if (current != null) BottomBar(current) { nav.tab(it.route) }
+        /* the bar stays on Activity and Account too (no tab highlighted there), so the main menu is always one tap away */
+        if (current != null || route == ACTIVITY || route == ACCOUNT) BottomBar(current) { nav.tab(it.route) }
     }
 }
 
 /* Bottom bar from the owner's references: a full-width glass bar with rounded top corners; the active tab sits in a light glass tile
    that glides (spatial spring) and its icon pops. */
 @Composable
-fun androidx.compose.foundation.layout.BoxScope.BottomBar(current: Tab, onTab: (Tab) -> Unit) {
+fun androidx.compose.foundation.layout.BoxScope.BottomBar(current: Tab?, onTab: (Tab) -> Unit) {
     val haptics = rememberOmHaptics()
     val reduced = com.omwallet.core.design.LocalOmMotion.current.reduced
     val top = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)
     BoxWithConstraints(
         Modifier.align(Alignment.BottomCenter).fillMaxWidth()
             .androidx_shadow(top)
-            .clip(top).background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(Color(0xF0FFFFFF), Color(0xD9FFFFFF))))
-            .border(1.dp, Color(0xF2FFFFFF), top).navigationBarsPadding().padding(horizontal = 10.dp, vertical = 8.dp).height(68.dp),
+            .clip(top).background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(Color(0xEB2272E2), Color(0xF5114FBF))))
+            .border(1.dp, OmColors.Edge, top).navigationBarsPadding().padding(horizontal = 10.dp, vertical = 8.dp).height(68.dp),
     ) {
         val w = maxWidth / Tab.entries.size
-        val x by animateDpAsState(w * current.ordinal, OmSprings.spatial(), label = "tile")
-        Box(Modifier.offset(x = x).width(w).fillMaxHeight().padding(horizontal = 3.dp).clip(RoundedCornerShape(20.dp))
-            .background(androidx.compose.ui.graphics.Brush.linearGradient(listOf(Color(0xF2E6F3FF), Color(0xBFCDE6FF)))).border(1.dp, Color.White, RoundedCornerShape(20.dp)))
+        val x by animateDpAsState(w * (current?.ordinal ?: 0), OmSprings.spatial(), label = "tile")
+        if (current != null) Box(Modifier.offset(x = x).width(w).fillMaxHeight().padding(horizontal = 3.dp).clip(RoundedCornerShape(20.dp))
+            .background(androidx.compose.ui.graphics.Brush.linearGradient(listOf(Color(0x4DFFFFFF), Color(0x1FFFFFFF)))).border(1.dp, Color(0x66FFFFFF), RoundedCornerShape(20.dp)))
         Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly) {
             Tab.entries.forEach { t ->
                 val on = t == current

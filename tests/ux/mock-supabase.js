@@ -11,6 +11,7 @@
     { id: '11111111-1111-4111-8111-111111111111', reference: 'YOR-PAYOUT1', status: 'PROCESSING', created_at: new Date(NOW - 2 * H).toISOString(), user_id: uid, yor_id: 'YOR-A1B2C3', full_name: 'Amira Al Said', phone: '+96891234567', amount: 25, dest_amount: 37300, dest_currency: 'XOF', rate: 1492, beneficiary_name: 'Aminata Traoré', beneficiary_phone: '+22376123456', provider: 'Orange Money', paid_ref: null, paid_at: null, reject_reason: null, notice_status: null, notice_error: null },
     { id: '22222222-2222-4222-8222-222222222222', reference: 'YOR-PAYOUT2', status: 'COMPLETED', created_at: new Date(NOW - 30 * H).toISOString(), user_id: uid, yor_id: 'YOR-A1B2C3', full_name: 'Amira Al Said', phone: '+96891234567', amount: 10, dest_amount: 14920, dest_currency: 'XOF', rate: 1492, beneficiary_name: 'Moussa Diallo', beneficiary_phone: '+22370112233', provider: 'Orange Money', paid_ref: 'MP221118.1205.C12345', paid_at: new Date(NOW - 29 * H).toISOString(), reject_reason: null, notice_status: 'FAILED', notice_error: 'sms_credits_missing: insufficient credit' }
   ];
+  var quotes = {}, qn = 0;
   var tx = function(i, o){ return Object.assign({ id: 'tx-' + i, reference: 'YOR-TX' + (100000 + i), kind: 'FIAT_TRANSFER', direction: 'OUT', status: 'CONFIRMED', asset: 'OMR', amount: 10, fee: 0, total: 10,
     network: null, note: null, created_at: new Date(NOW - i * 7 * H).toISOString(), counterparty_name: 'Salim Al Harthy', counterparty_yor_id: 'YOR-ZZ1122', meta: {} }, o || {}); };
   var txs = FX.emptyTx ? [] : [
@@ -115,6 +116,20 @@
     verify_pin: function(){ if (window.__dyFlipOnPin) dyS.enabled = true; return { ok: true, grant: 'grant-1' }; },
     set_pin: function(){ return { ok: true }; },
     find_user_by_yor_id: function(a){ return String(a && a.p_yor_id || '').toUpperCase() === 'YOR-ZZ1122' ? [{ yor_id: 'YOR-ZZ1122', display_name: 'Salim Al Harthy', country: 'OM', photo: null }] : []; },
+    /* 14.5 — swap / Spot market order: the quote is used once, the amount paid is held, the operation is PENDING; nothing is credited */
+    swap_execute: function(a){
+      if (FX.swapOff) throw { message: 'Could not find the function public.swap_execute', code: 'PGRST202' };
+      if (!a.p_pin_grant) throw { message: 'pin_required', code: '42501' };
+      var q = quotes[a.p_quote]; if (!q) throw { message: 'quote_not_found', code: 'P0002' };
+      if (q.used) throw { message: 'quote_used', code: '22023' };
+      if (Date.parse(q.expires_at) <= Date.now()) throw { message: 'quote_expired', code: '22023' };
+      var w = tables.crypto_wallets.filter(function(x){ return x.asset === q.from_asset && x.network === q.from_network; })[0];
+      if (!w || w.available_balance < q.from_amount) throw { message: 'insufficient_balance', code: '23514' };
+      w.available_balance -= q.from_amount; w.locked_balance = (w.locked_balance || 0) + q.from_amount; q.used = true;
+      txs.unshift(tx(0, { id: 'tx-sw' + q.id, reference: 'OMT4821' + (7000 + qn), kind: 'CRYPTO_SWAP', direction: 'OUT', status: 'PENDING', asset: q.from_asset, network: q.from_network, amount: q.from_amount, total: q.from_amount,
+        counterparty_name: null, created_at: new Date().toISOString(), meta: { confirm: 'ADMIN', swap: { to_asset: q.to_asset, to_network: q.to_network, to_amount: q.to_amount, price: q.price } } }));
+      return { ok: true, transaction_id: 'tx-sw' + q.id, reference: 'OMT4821' + (7000 + qn), status: 'PENDING', from_asset: q.from_asset, from_amount: q.from_amount, to_asset: q.to_asset, to_amount: q.to_amount, price: q.price };
+    },
     /* 14.2 — internal crypto send: recorded PENDING (amount reserved), credited only when the administrator confirms */
     transfer_crypto: function(a){
       if (!a.p_pin_grant) throw { message: 'pin_required', code: '42501' };
@@ -237,7 +252,21 @@
       try { return Promise.resolve({ data: f ? f(args) : null, error: null }); }
       catch (e) { return Promise.resolve({ data: null, error: e }); }
     },
-    functions: { invoke: function(){ return Promise.resolve({ data: { ok: true }, error: null }); } },
+    functions: { invoke: function(name, o){
+      /* 14.5 — crypto-swap: a server-fixed quote (fixed test prices, 30 s), like the Edge function; FX.swapOff: the function is not deployed */
+      if (name === 'crypto-swap'){
+        if (FX.swapOff) return Promise.resolve({ data: null, error: { message: 'Function not found', context: { status: 404 } } });
+        var b = (o && o.body) || {}, PX = { BTC: 97000, ETH: 3500, USDT: 1, USDC: 1.0002, BNB: 690, SOL: 210, XRP: 2.4, LTC: 110 };
+        var w = tables.crypto_wallets.filter(function(x){ return x.asset === b.from_asset && x.network === b.from_network; })[0];
+        if (!w) return Promise.resolve({ data: { ok: false, error: 'sender_wallet_missing' }, error: null });
+        if (w.available_balance < Number(b.from_amount)) return Promise.resolve({ data: { ok: false, error: 'insufficient_balance' }, error: null });
+        var price = PX[b.from_asset] / PX[b.to_asset], q = { id: 'q-' + (++qn), from_asset: b.from_asset, from_network: b.from_network, to_asset: b.to_asset, to_network: b.to_network,
+          from_amount: Number(b.from_amount), to_amount: Math.floor(Number(b.from_amount) * price * 1e8) / 1e8, price: price, px_from_usdt: PX[b.from_asset], px_to_usdt: PX[b.to_asset],
+          source: 'binance:data-api.binance.vision', side: b.side || null, created_at: new Date().toISOString(), expires_at: new Date(Date.now() + (FX.quoteTtl || 30) * 1000).toISOString() };
+        quotes[q.id] = q; (window.__quotes = window.__quotes || []).push(q);
+        return Promise.resolve({ data: { ok: true, fee: 0, ttl_s: 30, quote: q }, error: null });
+      }
+      return Promise.resolve({ data: { ok: true }, error: null }); } },
     channel: function(){ var c = { on: function(){ return c; }, subscribe: function(){ return c; } }; return c; },
     removeChannel: function(){}
   };

@@ -31,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -59,7 +60,7 @@ fun GlassSquare(@DrawableRes icon: Int, description: String, modifier: Modifier 
     val shape = if (round) CircleShape else RoundedCornerShape(18.dp)
     Box(
         modifier.size(50.dp).shadow(10.dp, shape, ambientColor = Color(0x33145AB4), spotColor = Color(0x55145AB4)).clip(shape)
-            .background(Brush.linearGradient(listOf(Color(0xF7FFFFFF), Color(0xC7E8F4FF)))).border(1.dp, Color(0xF2FFFFFF), shape)
+            .background(Brush.linearGradient(listOf(Color(0x3DFFFFFF), Color(0x14FFFFFF)))).border(1.dp, OmColors.Edge, shape)
             .pressable(onClick = onClick).semantics { contentDescription = description },
         contentAlignment = Alignment.Center,
     ) { OmIcon(icon, null, tint = OmColors.Ink, size = 22.dp) }
@@ -82,8 +83,8 @@ fun ActionTile(@DrawableRes icon: Int, label: String, modifier: Modifier = Modif
     Column(
         modifier.aspectRatio(0.92f).shadow(if (primary) 18.dp else 12.dp, shape, ambientColor = Color(if (primary) 0x661677F2 else 0x33145AB4), spotColor = Color(if (primary) 0x991677F2 else 0x55145AB4))
             .clip(shape)
-            .background(if (primary) Brush.verticalGradient(listOf(OmColors.SkyGlow, OmColors.Blue600, OmColors.Blue700)) else Brush.linearGradient(listOf(Color(0xF7FFFFFF), Color(0xBFE8F4FF))))
-            .border(1.dp, if (primary) Color(0x59FFFFFF) else Color(0xF2FFFFFF), shape)
+            .background(if (primary) Brush.verticalGradient(listOf(OmColors.GradTop, OmColors.GradMid, OmColors.GradBottom)) else Brush.linearGradient(listOf(Color(0x3DFFFFFF), Color(0x14FFFFFF))))
+            .border(1.dp, if (primary) Color(0x8CFFFFFF) else OmColors.Edge, shape)
             .pressable(onClick = onClick).padding(6.dp),
         horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
     ) {
@@ -110,8 +111,10 @@ fun GlassEmblem(modifier: Modifier = Modifier, size: Dp = 84.dp) {
 @Composable
 fun WalletArt(modifier: Modifier = Modifier) {
     Box(modifier.fillMaxWidth(0.62f).aspectRatio(338f / 295f)) {
-        Image(painterResource(R.drawable.om_wallet_glass), null, Modifier.matchParentSizeCompat())
-        Box(Modifier.matchParentSizeCompat().background(Brush.radialGradient(0.42f to Color.Transparent, 0.72f to Color(0x99F6FAFF), 0.95f to Color(0xFFF7FBFF))))
+        /* the photo's light edges fade to transparent, so only the glass wallet shows on the blue (no white box) */
+        Image(painterResource(R.drawable.om_wallet_glass), null, Modifier.matchParentSizeCompat()
+            .graphicsLayer { compositingStrategy = androidx.compose.ui.graphics.CompositingStrategy.Offscreen }
+            .drawWithContent { drawContent(); drawRect(Brush.radialGradient(0.40f to Color.Black, 0.70f to Color(0x88000000), 0.96f to Color.Transparent), blendMode = androidx.compose.ui.graphics.BlendMode.DstIn) })
     }
 }
 private fun Modifier.matchParentSizeCompat() = this.fillMaxWidth().aspectRatio(338f / 295f)

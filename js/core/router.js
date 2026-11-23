@@ -26,6 +26,8 @@ const R = (() => {
     'devices':'settings', 'sessions':'settings', 'privacy':'settings', 'help':'account', 'about':'account', 'history':'home', 'dy-control':'account', 'payouts':'dy-control',
     /* 14.0.0 — OM Wallet crypto + withdrawals */
     'wallet':'home', 'markets':'home', 'asset':'markets', 'deposit':'home', 'exchange':'home',
+    /* 14.5 — Spot / Swap */
+    'spot':'home', 'trade-review':'exchange', 'trade-done':'home',
     'send-internal':'wallet', 'send-internal-review':'send-internal', 'send-internal-done':'wallet',
     'withdraw':'home', 'withdraw-bank':'withdraw', 'withdraw-crypto':'withdraw', 'withdraw-confirm':'withdraw', 'withdraw-track':'withdraw'
   };
@@ -40,7 +42,7 @@ const R = (() => {
     'crypto-send':'crypto','crypto-send-network':'crypto','crypto-send-address':'crypto','crypto-send-amount':'crypto',
     'crypto-review':'crypto','crypto-receive':'crypto','crypto-receive-address':'crypto',
     'crypto-to-bank':'crypto','crypto-to-bank-account':'crypto','crypto-to-bank-amount':'crypto','crypto-bank-review':'crypto',
-    'wallet':'wallet','asset':'wallet','deposit':'wallet','exchange':'wallet','withdraw':'wallet','withdraw-bank':'wallet','withdraw-crypto':'wallet','withdraw-confirm':'wallet','withdraw-track':'wallet',
+    'wallet':'wallet','asset':'wallet','deposit':'wallet','exchange':'exchange','spot':'spot','trade-review':'exchange','trade-done':'exchange','withdraw':'wallet','withdraw-bank':'wallet','withdraw-crypto':'wallet','withdraw-confirm':'wallet','withdraw-track':'wallet',
     'markets':'markets','receipt':'history','send-internal':'wallet','send-internal-review':'wallet','send-internal-done':'wallet'
   };
   function register(map){ Object.assign(SCREENS, map); }

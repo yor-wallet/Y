@@ -53,7 +53,7 @@ for (const lang of ['en', 'ar']){
   await ok('aucun bouton de transfert : barre, accueil, services, recherche', async () => {
     for (const id of ['home', 'services', 'account', 'wallet']){ await page.evaluate(i => R.go(i, { force: true }), id); await wait(400);
       assert.equal(await page.locator('[data-nav="country-select"],[data-nav="receive"],[data-nav="tx-amount"]').count(), 0, id); }
-    assert.deepEqual(await page.evaluate(() => [...document.querySelectorAll('#bottom-nav .nav-item')].map(a => a.getAttribute('data-nav'))), ['home', 'wallet', 'markets', 'history', 'account']);
+    assert.deepEqual(await page.evaluate(() => [...document.querySelectorAll('#bottom-nav .nav-item')].map(a => a.getAttribute('data-nav'))), ['home', 'markets', 'spot', 'exchange', 'wallet']);   /* 14.5.0 main menu; Activity and Account are on the home header */
   });
   await ok('un ancien lien vers un écran de transfert ramène à l’accueil (rien n’est envoyé)', async () => {
     for (const id of ['country-select', 'tx-amount', 'tx-review', 'receive', 'tx-result']){
