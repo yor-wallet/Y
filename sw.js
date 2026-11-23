@@ -11,7 +11,7 @@ const SLOW_MS = 4500;      /* au-delà, on sert la copie locale si on en a une *
 const SHELL = [
   './', 'index.html', 'offline.html', 'manifest.webmanifest', 'favicon.ico',
   'css/app.css', 'js/app.js',
-  'assets/brand/logo-mark.svg', 'assets/brand/omr-symbol.svg', 'public/branding/om-wallet-favicon.svg', 'public/branding/apple-touch-icon.png',
+  'assets/brand/logo-mark.svg', 'assets/brand/om-logo-horizontal.png', 'assets/brand/om-logo-horizontal-white.png', 'assets/brand/omr-symbol.svg', 'public/branding/om-wallet-favicon.svg', 'public/branding/apple-touch-icon.png',
   'assets/fonts/inter-latin-var.woff2',
   'assets/fonts/plex-arabic-400.woff2', 'assets/fonts/plex-arabic-500.woff2', 'assets/fonts/plex-arabic-600.woff2', 'assets/fonts/plex-arabic-700.woff2',
   'assets/icons/icon.svg', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/apple-touch-icon.png',

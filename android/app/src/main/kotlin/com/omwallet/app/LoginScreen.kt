@@ -1,7 +1,16 @@
 package com.omwallet.app
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,10 +46,6 @@ import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import com.omwallet.core.data.Validation
 import com.omwallet.core.design.FieldError
-import com.omwallet.core.design.GlassCard
-import com.omwallet.core.design.OmColors
-import com.omwallet.core.design.OmPrimaryButton
-import com.omwallet.core.design.OmRadius
 import com.omwallet.core.design.pressable
 import com.omwallet.core.design.rememberOmHaptics
 import com.omwallet.core.network.ApiException
@@ -63,7 +68,7 @@ fun LoginScreen() {
     var error by rememberSaveable { mutableStateOf<String?>(null) }
     val emailErr = if (tried && !Validation.emailOk(email)) stringResource(R.string.login_e_email) else null
     val passErr = if (tried && password.isEmpty()) stringResource(R.string.login_e_password) else null
-    val colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = OmColors.Blue600, unfocusedBorderColor = OmColors.Sky300, focusedContainerColor = OmColors.SurfaceBright, unfocusedContainerColor = OmColors.SurfaceBright)
+    val colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = Navy, unfocusedBorderColor = Hairline, focusedLabelColor = Navy, unfocusedLabelColor = Muted, cursorColor = Navy, focusedContainerColor = Color.White, unfocusedContainerColor = Color.White)
 
     fun submit() {
         tried = true; error = null
@@ -76,31 +81,53 @@ fun LoginScreen() {
         }
     }
 
+    /* Sober, flat sign-in page: plain white, small logo as a logo only, left-aligned type, hairline fields, one solid action. */
     Column(
-        Modifier.fillMaxSize().statusBarsPadding().imePadding().verticalScroll(rememberScrollState()).padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp),
+        Modifier.fillMaxSize().background(Color.White).statusBarsPadding().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = 28.dp, vertical = 28.dp),
+        horizontalAlignment = Alignment.Start,
     ) {
-        Image(painterResource(com.omwallet.app.R.drawable.om_logo_stacked), contentDescription = stringResource(R.string.app_name), modifier = Modifier.width(190.dp).padding(top = 24.dp))
-        Text(stringResource(R.string.login_title), style = MaterialTheme.typography.displaySmall, color = OmColors.Ink)
-        Text(stringResource(R.string.login_sub), style = MaterialTheme.typography.bodyLarge, color = OmColors.InkSecondary)
-        GlassCard(Modifier.fillMaxWidth(), strong = true) {
-            OutlinedTextField(
-                email, { email = it.trim(); error = null }, label = { Text(stringResource(R.string.email)) }, singleLine = true, isError = emailErr != null, modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next), shape = RoundedCornerShape(OmRadius.S), colors = colors,
-                textStyle = MaterialTheme.typography.bodyLarge.copy(textDirection = TextDirection.Ltr),
-            )
-            FieldError(emailErr)
-            OutlinedTextField(
-                password, { password = it; error = null }, label = { Text(stringResource(R.string.password)) }, singleLine = true, isError = passErr != null, modifier = Modifier.fillMaxWidth(),
-                visualTransformation = PasswordVisualTransformation(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
-                keyboardActions = androidx.compose.foundation.text.KeyboardActions(onDone = { submit() }), shape = RoundedCornerShape(OmRadius.S), colors = colors,
-            )
-            FieldError(passErr ?: error?.let { errorText(it) })
-            OmPrimaryButton(stringResource(R.string.login_btn), loading = busy) { submit() }
-        }
-        Text(
-            stringResource(R.string.login_signup), style = MaterialTheme.typography.labelLarge, color = OmColors.Blue600, textAlign = TextAlign.Center,
-            modifier = Modifier.pressable { openUrl(ctx, "https://yor-wallet.vercel.app/") }.padding(8.dp),
+        Image(painterResource(com.omwallet.app.R.drawable.om_logo_horizontal), contentDescription = stringResource(R.string.app_name), modifier = Modifier.width(150.dp))
+        Spacer(Modifier.height(64.dp))
+        Text(stringResource(R.string.login_title), style = MaterialTheme.typography.headlineMedium, color = Navy)
+        Spacer(Modifier.height(8.dp))
+        Text(stringResource(R.string.login_sub), style = MaterialTheme.typography.bodyLarge, color = Muted)
+        Spacer(Modifier.height(36.dp))
+        OutlinedTextField(
+            email, { email = it.trim(); error = null }, label = { Text(stringResource(R.string.email)) }, singleLine = true, isError = emailErr != null, modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next), shape = RoundedCornerShape(12.dp), colors = colors,
+            textStyle = MaterialTheme.typography.bodyLarge.copy(textDirection = TextDirection.Ltr),
         )
+        FieldError(emailErr)
+        Spacer(Modifier.height(16.dp))
+        OutlinedTextField(
+            password, { password = it; error = null }, label = { Text(stringResource(R.string.password)) }, singleLine = true, isError = passErr != null, modifier = Modifier.fillMaxWidth(),
+            visualTransformation = PasswordVisualTransformation(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
+            keyboardActions = androidx.compose.foundation.text.KeyboardActions(onDone = { submit() }), shape = RoundedCornerShape(12.dp), colors = colors,
+        )
+        FieldError(passErr ?: error?.let { errorText(it) })
+        Spacer(Modifier.height(28.dp))
+        SolidButton(stringResource(R.string.login_btn), loading = busy) { submit() }
+        Spacer(Modifier.height(40.dp))
+        Text(
+            stringResource(R.string.login_signup), style = MaterialTheme.typography.bodyMedium, color = Muted, textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth().pressable { openUrl(ctx, "https://yor-wallet.vercel.app/") }.padding(vertical = 12.dp),
+        )
+    }
+}
+
+/* Navy is the wordmark colour of the logo; hairline and muted are neutral greys. */
+private val Navy = Color(0xFF0D2049)
+private val Muted = Color(0xFF5B6878)
+private val Hairline = Color(0xFFD3DAE3)
+
+@Composable
+private fun SolidButton(text: String, loading: Boolean, onClick: () -> Unit) {
+    val shape = RoundedCornerShape(12.dp)
+    Box(
+        Modifier.fillMaxWidth().heightIn(min = 54.dp).clip(shape).background(Navy).pressable(enabled = !loading, onClick = onClick).semantics { if (loading) contentDescription = text },
+        contentAlignment = Alignment.Center,
+    ) {
+        if (loading) CircularProgressIndicator(Modifier.size(22.dp), color = Color.White, strokeWidth = 2.5.dp)
+        else Text(text, style = MaterialTheme.typography.labelLarge, color = Color.White, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 16.dp))
     }
 }

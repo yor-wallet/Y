@@ -3,7 +3,7 @@
    app-icon-glass.png (the glass app icon), logo-sheet.png (six logo variants), onboarding-ar.png (an onboarding slide, kept as a reference).
    - brand/om-*.png        transparent logo files (mark, stacked, horizontal, navy, white silhouettes)
    - web: assets/icons, public/branding, assets/brand (PNG icons, favicon.ico, SVG wrappers that embed the PNG)
-   - Android: android/app/src/main/res/drawable-nodpi (adaptive icon layers, themed icon, splash mark, login logo)
+   - Android: android/app/src/main/res/drawable-nodpi (adaptive icon layers, themed icon, splash mark, login lockup)
    Usage (repo root): python3 brand/make_assets.py        Needs: Pillow, numpy."""
 import base64, io, os, sys
 import numpy as np
@@ -38,7 +38,7 @@ cell = lambda c, r: S.crop((c * 512 + inset, r * 512 + inset, c * 512 + 512 - in
 stacked, horiz, navy = key_white(cell(2, 0)), key_white(cell(1, 0)), key_white(cell(0, 1))
 scale_w(pad(stacked), 1024).save(B + 'om-logo-stacked.png'); scale_w(pad(horiz), 1400).save(B + 'om-logo-horizontal.png'); scale_w(pad(navy), 1024).save(B + 'om-logo-navy.png')
 scale_w(pad(to_white(stacked)), 1024).save(B + 'om-logo-white.png'); scale_w(pad(to_white(horiz)), 1400).save(B + 'om-logo-horizontal-white.png')
-stacked_l = Image.open(B + 'om-logo-stacked.png'); stacked_w = Image.open(B + 'om-logo-white.png')
+horiz_l = Image.open(B + 'om-logo-horizontal.png'); stacked_l = Image.open(B + 'om-logo-stacked.png'); stacked_w = Image.open(B + 'om-logo-white.png')
 
 # ---------- 2. tiles ----------
 def gradient(size, c0=(246, 251, 255), c1=(206, 230, 255)):
@@ -69,6 +69,7 @@ def card(im): return place(Image.new('RGBA', (1200, 900), (0, 0, 0, 0)), im, 0.8
 for lang in ('en', 'ar'):
     save(card(stacked_l), f'assets/brand/png/logo-wordmark-{lang}-dark.png'); save(card(stacked_w), f'assets/brand/png/logo-wordmark-{lang}-white.png')
 save(scale_w(stacked_l, 1200), P + 'om-wallet-logo.png')
+save(scale_w(horiz, 480), 'assets/brand/om-logo-horizontal.png'); save(scale_w(to_white(horiz), 480), 'assets/brand/om-logo-horizontal-white.png')   # sign-in page lockup (light / dark)
 def b64(im): bf = io.BytesIO(); im.save(bf, 'PNG', optimize=True); return base64.b64encode(bf.getvalue()).decode()
 def svg(path, w, h, im, extra=''):
     open(path, 'w').write(f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 {w} {h}"{extra}><image width="{w}" height="{h}" preserveAspectRatio="xMidYMid meet" xlink:href="data:image/png;base64,{b64(im)}"/></svg>')
@@ -85,6 +86,6 @@ def layer(ratio, black=False, size=432):
     c.alpha_composite(mm, ((size - mm.width) // 2, (size - mm.height) // 2)); return c
 save(layer(0.54), R + 'ic_launcher_foreground.png')           # adaptive icon layer (108 dp @4x): the mark stays inside the 66 dp safe zone
 save(layer(0.54, black=True), R + 'ic_launcher_monochrome.png')  # themed icon (Android 13)
-save(layer(0.64), R + 'ic_splash.png'); save(scale_w(stacked_l, 640), R + 'om_logo_stacked.png')
+save(layer(0.64), R + 'ic_splash.png'); save(scale_w(horiz, 560), R + 'om_logo_horizontal.png')   # login: a small, flat lockup (the logo is used as a logo only)
 save(tile(512), B + 'play-store-icon-512.png')
 print('brand assets regenerated')

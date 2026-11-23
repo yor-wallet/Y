@@ -156,7 +156,7 @@ const OMX = (() => {
         ((visibleTransactions(Runtime.transactions || []).slice(0, 4)).length ? txGroupedHtml(visibleTransactions(Runtime.transactions || []).slice(0, 4), hide) : '<div class="rv-list">' + emptyState('history', V12.vt('noTx'), t('ds.nohist_body')) + '</div>') + '</section>' +
       '</div>';
   }
-  function omxLogoLine(){ return '<span class="omx-brand" role="img" aria-label="OM Wallet"><img src="assets/brand/logo-mark.svg" alt="" width="34" height="34" decoding="async"><b>OM Wallet</b></span>'; }
+  function omxLogoLine(){ return '<span class="omx-brand" role="img" aria-label="OM Wallet"><b>OM Wallet</b></span>'; }
   async function paintPortfolio(){
     const host = document.getElementById('omx-pf'); if (!host || Runtime.hideBalance) return;
     const hs = holdings(); if (!hs.length){ host.innerHTML = ''; return; }

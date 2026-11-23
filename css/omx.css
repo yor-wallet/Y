@@ -339,3 +339,28 @@ html:root body .tx-row .item-right{flex:none;display:flex;align-items:center;gap
 .omx-prog i:nth-child(2){animation-delay:.16s}.omx-prog i:nth-child(3){animation-delay:.32s}
 @keyframes omxProg{0%,80%,100%{transform:scale(.55);opacity:.35}40%{transform:scale(1);opacity:1}}
 @media (prefers-reduced-motion:reduce){.omx-prog i{animation:none;opacity:.75}}
+
+/* ===== Sign-in / sign-up / reset: sober and flat (14.3.1) =====
+   The logo is a logo only: one small lockup at the top. No glass, no glow, no gradient, no pills — plain surface, hairline fields, one solid action. */
+html:root body .rv-auth{--au-bg:#fff;--au-ink:#0D2049;--au-muted:#5B6878;--au-line:#D3DAE3;--au-btn:#0D2049;--au-btn-ink:#fff;background:var(--au-bg)!important;background-image:none!important}
+html:root[data-theme="dark"] body .rv-auth{--au-bg:#0B1220;--au-ink:#EAF0F7;--au-muted:#9AA8B8;--au-line:#2B3A4D;--au-btn:#fff;--au-btn-ink:#0D2049}
+html:root body .rv-auth .screen-body{max-width:420px!important;padding:calc(28px*var(--ui)) 28px calc(28px + var(--safe-b))!important}
+html:root body #login.rv-auth .topbar{display:none}
+html:root body .rv-auth .rv-auth-hero{align-items:flex-start;text-align:start;gap:0;padding:calc(8px*var(--ui)) 0 calc(28px*var(--ui))}
+html:root body .rv-auth .rv-auth-logo{display:block;width:150px;height:auto;margin:0 0 calc(44px*var(--ui));filter:none;box-shadow:none;border-radius:0}
+html:root body .rv-auth .rv-auth-logo.rv-d{display:none}
+html:root[data-theme="dark"] body .rv-auth .rv-auth-logo.rv-l{display:none}
+html:root[data-theme="dark"] body .rv-auth .rv-auth-logo.rv-d{display:block}
+html:root body .rv-auth .rv-auth-hero h1{margin:0;font-size:calc(26px*var(--ui));line-height:1.2;font-weight:700;letter-spacing:-.01em;color:var(--au-ink)}
+html:root body .rv-auth .rv-auth-hero p{margin:calc(8px*var(--ui)) 0 0;max-width:none;font-size:calc(16px*var(--ui));line-height:1.45;color:var(--au-muted)}
+html:root body .rv-auth .field-label{color:var(--au-muted);font-size:calc(13px*var(--ui));font-weight:600;letter-spacing:0}
+html:root body .rv-auth .field-box{background:var(--au-bg)!important;border:1px solid var(--au-line)!important;border-radius:12px!important;box-shadow:none!important;min-height:calc(54px*var(--ui))}
+html:root body .rv-auth .field-box:focus-within{border-color:var(--au-ink)!important;box-shadow:inset 0 0 0 1px var(--au-ink)!important;background:var(--au-bg)!important}
+html:root body .rv-auth .field-box input{color:var(--au-ink)}
+html:root body .rv-auth .field-err{text-align:start!important}
+html:root body .rv-auth .btn-primary{background:var(--au-btn)!important;color:var(--au-btn-ink)!important;border:0!important;border-radius:12px!important;box-shadow:none!important;min-height:calc(54px*var(--ui));font-weight:600;letter-spacing:0}
+html:root body .rv-auth .btn-primary:active{opacity:.88}
+html:root body .rv-auth .btn-ghost{background:transparent!important;box-shadow:none!important;border:0!important;color:var(--au-muted)!important;font-weight:500;font-size:calc(15px*var(--ui))}
+html:root body .rv-auth .rv-lang{justify-content:flex-start;gap:4px;margin-top:calc(24px*var(--ui));padding-bottom:0}
+html:root body .rv-auth .rv-lang button{background:transparent;border:0;border-radius:8px;color:var(--au-muted);font-weight:500;padding:8px 10px}
+html:root body .rv-auth .rv-lang button[aria-pressed="true"]{background:transparent;color:var(--au-ink);font-weight:700;box-shadow:inset 0 -2px 0 var(--au-ink);border-radius:0}
