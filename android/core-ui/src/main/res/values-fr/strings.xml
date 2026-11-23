@@ -24,8 +24,8 @@
     <string name="nav_markets">Marchés</string>
     <string name="nav_activity">Activité</string>
     <string name="nav_account">Compte</string>
-    <string name="login_title">Connexion</string>
-    <string name="login_sub">Votre compte OM Wallet</string>
+    <string name="login_title">Bon retour parmi nous</string>
+    <string name="login_sub">Connectez-vous à votre portefeuille</string>
     <string name="email">E-mail</string>
     <string name="password">Mot de passe</string>
     <string name="login_btn">Se connecter</string>
@@ -197,7 +197,7 @@
     <string name="acc_admin">Admin Control</string>
     <string name="acc_logout">Se déconnecter</string>
     <string name="acc_licenses">Licences</string>
-    <string name="acc_licenses_b">IBM Plex Sans Arabic (SIL Open Font License 1.1) · logos crypto web3icons (MIT) · données de marché API publique Binance · QR codes ZXing (Apache 2.0).</string>
+    <string name="acc_licenses_b">Sora et Tajawal (SIL Open Font License 1.1) · logos crypto web3icons (MIT) · données de marché API publique Binance · QR codes ZXing (Apache 2.0).</string>
     <string name="acc_version">Version %1$s</string>
     <string name="admin_title">Admin Control</string>
     <string name="adm_tab_internal">Internes</string>
@@ -250,4 +250,16 @@
     <string name="adm_paused">En pause</string>
     <string name="adm_to_decide">À traiter</string>
     <string name="adm_pause_toast">Mise en pause. Le montant reste réservé ; vous pourrez encore confirmer ou refuser.</string>
+    <string name="login_forgot">Mot de passe oublié ?</string>
+    <string name="onb_skip">Passer</string>
+    <string name="onb_have">J’ai déjà un compte</string>
+    <string name="onb_t1">Votre portefeuille numérique, toujours avec vous</string>
+    <string name="onb_p1">Suivez tous vos actifs depuis un seul endroit.</string>
+    <string name="onb_c1">Découvrir le portefeuille</string>
+    <string name="onb_t2">Une expérience plus simple</string>
+    <string name="onb_p2">Déposez, envoyez et retirez en quelques gestes.</string>
+    <string name="onb_c2">Continuer</string>
+    <string name="onb_t3">Protégé par votre code</string>
+    <string name="onb_p3">Votre compte reste verrouillé tant que vous ne l’ouvrez pas.</string>
+    <string name="onb_c3">Se connecter</string>
 </resources>

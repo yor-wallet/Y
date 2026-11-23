@@ -1,6 +1,12 @@
 package com.omwallet.app
 
 import androidx.compose.foundation.Image
+import androidx.compose.ui.graphics.Brush
+import com.omwallet.core.design.riseIn
+import com.omwallet.core.design.OmIcon
+import com.omwallet.core.design.OmPrimaryButton
+import com.omwallet.core.design.OmColors
+import com.omwallet.core.design.GlassCard
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.graphics.Color
@@ -68,7 +74,7 @@ fun LoginScreen() {
     var error by rememberSaveable { mutableStateOf<String?>(null) }
     val emailErr = if (tried && !Validation.emailOk(email)) stringResource(R.string.login_e_email) else null
     val passErr = if (tried && password.isEmpty()) stringResource(R.string.login_e_password) else null
-    val colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = Navy, unfocusedBorderColor = Hairline, focusedLabelColor = Navy, unfocusedLabelColor = Muted, cursorColor = Navy, focusedContainerColor = Color.White, unfocusedContainerColor = Color.White)
+    val colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = OmColors.Blue600, unfocusedBorderColor = Color(0xF2FFFFFF), focusedContainerColor = Color(0xF7FFFFFF), unfocusedContainerColor = Color(0xD9FFFFFF), cursorColor = OmColors.Blue600, focusedLeadingIconColor = OmColors.Blue600)
 
     fun submit() {
         tried = true; error = null
@@ -81,53 +87,48 @@ fun LoginScreen() {
         }
     }
 
-    /* Sober, flat sign-in page: plain white, small logo as a logo only, left-aligned type, hairline fields, one solid action. */
+    /* Sign-in from the owner's reference: the glass app icon, the word mark, « Welcome back », one glass card (e-mail and password with
+       their icons, « Forgot your password? », the gradient button), then the sign-up link. */
     Column(
-        Modifier.fillMaxSize().background(Color.White).statusBarsPadding().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = 28.dp, vertical = 28.dp),
-        horizontalAlignment = Alignment.Start,
+        Modifier.fillMaxSize().statusBarsPadding().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = 22.dp, vertical = 20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Image(painterResource(com.omwallet.app.R.drawable.om_logo_horizontal), contentDescription = stringResource(R.string.app_name), modifier = Modifier.width(150.dp))
-        Spacer(Modifier.height(64.dp))
-        Text(stringResource(R.string.login_title), style = MaterialTheme.typography.headlineMedium, color = Navy)
-        Spacer(Modifier.height(8.dp))
-        Text(stringResource(R.string.login_sub), style = MaterialTheme.typography.bodyLarge, color = Muted)
-        Spacer(Modifier.height(36.dp))
-        OutlinedTextField(
-            email, { email = it.trim(); error = null }, label = { Text(stringResource(R.string.email)) }, singleLine = true, isError = emailErr != null, modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next), shape = RoundedCornerShape(12.dp), colors = colors,
-            textStyle = MaterialTheme.typography.bodyLarge.copy(textDirection = TextDirection.Ltr),
-        )
-        FieldError(emailErr)
-        Spacer(Modifier.height(16.dp))
-        OutlinedTextField(
-            password, { password = it; error = null }, label = { Text(stringResource(R.string.password)) }, singleLine = true, isError = passErr != null, modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
-            keyboardActions = androidx.compose.foundation.text.KeyboardActions(onDone = { submit() }), shape = RoundedCornerShape(12.dp), colors = colors,
-        )
-        FieldError(passErr ?: error?.let { errorText(it) })
-        Spacer(Modifier.height(28.dp))
-        SolidButton(stringResource(R.string.login_btn), loading = busy) { submit() }
-        Spacer(Modifier.height(40.dp))
+        Image(painterResource(com.omwallet.app.R.drawable.app_icon_glass), contentDescription = stringResource(R.string.app_name),
+            modifier = Modifier.padding(top = 18.dp).size(168.dp).riseIn(0))
+        Text("OM Wallet", style = MaterialTheme.typography.displaySmall.copy(brush = Brush.verticalGradient(listOf(Color(0xFF1C5FD6), Color(0xFF0B2E7A)))), modifier = Modifier.riseIn(1))
+        Spacer(Modifier.height(18.dp))
+        Text(stringResource(R.string.login_title), style = MaterialTheme.typography.headlineMedium, color = OmColors.Ink, textAlign = TextAlign.Center, modifier = Modifier.riseIn(2))
+        Spacer(Modifier.height(6.dp))
+        Text(stringResource(R.string.login_sub), style = MaterialTheme.typography.bodyLarge, color = OmColors.InkSecondary, textAlign = TextAlign.Center, modifier = Modifier.riseIn(2))
+        Spacer(Modifier.height(24.dp))
+        GlassCard(Modifier.fillMaxWidth(), strong = true, padding = 18.dp, rise = 3) {
+            OutlinedTextField(
+                email, { email = it.trim(); error = null }, placeholder = { Text(stringResource(R.string.email)) }, singleLine = true, isError = emailErr != null, modifier = Modifier.fillMaxWidth(),
+                leadingIcon = { OmIcon(com.omwallet.core.design.OmIcons.Mail, null, tint = OmColors.InkSecondary) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next), shape = RoundedCornerShape(18.dp), colors = colors,
+                textStyle = MaterialTheme.typography.bodyLarge.copy(textDirection = TextDirection.Ltr),
+            )
+            FieldError(emailErr)
+            Spacer(Modifier.height(12.dp))
+            OutlinedTextField(
+                password, { password = it; error = null }, placeholder = { Text(stringResource(R.string.password)) }, singleLine = true, isError = passErr != null, modifier = Modifier.fillMaxWidth(),
+                leadingIcon = { OmIcon(com.omwallet.core.design.OmIcons.Lock, null, tint = OmColors.InkSecondary) },
+                visualTransformation = PasswordVisualTransformation(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
+                keyboardActions = androidx.compose.foundation.text.KeyboardActions(onDone = { submit() }), shape = RoundedCornerShape(18.dp), colors = colors,
+            )
+            FieldError(passErr ?: error?.let { errorText(it) })
+            Text(
+                stringResource(R.string.login_forgot), style = MaterialTheme.typography.titleMedium, color = OmColors.Blue600,
+                modifier = Modifier.padding(top = 10.dp).pressable { openUrl(ctx, "https://yor-wallet.vercel.app/") }.padding(vertical = 6.dp),
+            )
+            Spacer(Modifier.height(14.dp))
+            OmPrimaryButton(stringResource(R.string.login_btn), loading = busy) { submit() }
+        }
+        Spacer(Modifier.height(20.dp))
         Text(
-            stringResource(R.string.login_signup), style = MaterialTheme.typography.bodyMedium, color = Muted, textAlign = TextAlign.Center,
+            stringResource(R.string.login_signup), style = MaterialTheme.typography.titleSmall, color = OmColors.Blue600, textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth().pressable { openUrl(ctx, "https://yor-wallet.vercel.app/") }.padding(vertical = 12.dp),
         )
     }
 }
 
-/* Navy is the wordmark colour of the logo; hairline and muted are neutral greys. */
-private val Navy = Color(0xFF0D2049)
-private val Muted = Color(0xFF5B6878)
-private val Hairline = Color(0xFFD3DAE3)
-
-@Composable
-private fun SolidButton(text: String, loading: Boolean, onClick: () -> Unit) {
-    val shape = RoundedCornerShape(12.dp)
-    Box(
-        Modifier.fillMaxWidth().heightIn(min = 54.dp).clip(shape).background(Navy).pressable(enabled = !loading, onClick = onClick).semantics { if (loading) contentDescription = text },
-        contentAlignment = Alignment.Center,
-    ) {
-        if (loading) CircularProgressIndicator(Modifier.size(22.dp), color = Color.White, strokeWidth = 2.5.dp)
-        else Text(text, style = MaterialTheme.typography.labelLarge, color = Color.White, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 16.dp))
-    }
-}

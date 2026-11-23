@@ -1,6 +1,6 @@
 # OM Wallet — application Android native
 
-Kotlin 2.1 · Jetpack Compose (Material 3, identité « OM Glass ») · min SDK 26, cible SDK 35 · version 14.3.1 (code 140301).
+Kotlin 2.1 · Jetpack Compose (Material 3, identité « OM Glass ») · min SDK 26, cible SDK 35 · version 14.4.0 (code 140400).
 Même serveur que l'application web (Supabase `gebjmguoauvutiqvoswl`) : le serveur reste la seule autorité pour les soldes, les statuts
 et les rôles. L'application n'invente aucune donnée : sans réponse, elle affiche « — » et l'état de la connexion.
 
@@ -14,7 +14,7 @@ UI Compose ──► ViewModel (UiState en StateFlow) ──► Repositories ─
 
 | Module | Rôle |
 |---|---|
-| `core-design` | Jetons OM Glass (couleurs, rayons 14/20/28/34 dp, espacements base 4 dp), typographie IBM Plex Sans Arabic embarquée, ressorts, retours haptiques natifs, cartes verre, boutons, feuilles, clavier PIN, étapes de statut, graphiques, icônes originales, logos web3icons (MIT). |
+| `core-design` | Jetons OM Glass (couleurs, rayons 14/20/28/34 dp, espacements base 4 dp), typographie Sora (latin) et Tajawal (arabe) embarquées, ressorts, retours haptiques natifs, cartes verre, boutons, feuilles, clavier PIN, étapes de statut, graphiques, icônes originales, logos web3icons (MIT). |
 | `core-ui` | Textes **en / fr / ar** (une seule table, mêmes clés), libellés de statut honnêtes, ligne et fiche de transaction, saisie du code PIN (vérifié par le serveur), onglets. |
 | `core-network` | `SupabaseApi` (GoTrue, PostgREST, RPC, rafraîchissement du jeton, codes d'erreur du serveur, échec réseau = « incertain ») et `MarketApi` (Binance : REST + WebSocket mini-ticker). |
 | `core-data` | Modèles, règles (adresses par réseau = mêmes formats que le serveur, montants, décimales), dépôts Auth / Wallet / Market / Money / Admin, Room, DataStore, moteur de cache + WorkManager. |

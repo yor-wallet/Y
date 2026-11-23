@@ -8,7 +8,9 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onLast
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.hasSetTextAction
@@ -133,10 +135,37 @@ class ScreensFrTest : ScreenTestBase() {
         shot("03_account")
     }
 
+    @Test fun opening_presentation_three_screens_then_sign_in() {
+        runBlocking { g.auth.signOut() }
+        val ctx = ApplicationProvider.getApplicationContext<Context>()
+        ctx.getSharedPreferences("om_onboarding", Context.MODE_PRIVATE).edit().clear().commit()
+        compose.setContent { OmTheme(reducedMotion = true) { OmRoot() } }
+        waitText("Votre portefeuille numérique, toujours avec vous")
+        assertTrue(has("Passer")); assertTrue(has("Découvrir le portefeuille"))
+        shot("00a_promo_1")
+        compose.onNodeWithTag("onb_cta_0").performClick(); idle(700)
+        waitText("Une expérience plus simple"); shot("00b_promo_2")
+        compose.onNodeWithTag("onb_cta_1").performClick(); idle(700)
+        waitText("Protégé par votre code"); assertTrue(!has("Passer")); shot("00c_promo_3")
+        compose.onNodeWithTag("onb_cta_2").performClick()
+        waitText("Bon retour parmi nous")
+        assertTrue(OnboardingPrefs.seen(ctx))
+    }
+    @Test fun opening_presentation_skip_goes_to_sign_in() {
+        runBlocking { g.auth.signOut() }
+        val ctx = ApplicationProvider.getApplicationContext<Context>()
+        ctx.getSharedPreferences("om_onboarding", Context.MODE_PRIVATE).edit().clear().commit()
+        compose.setContent { OmTheme(reducedMotion = true) { OmRoot() } }
+        waitText("Passer")
+        compose.onNodeWithTag("onb_skip").performClick()
+        waitText("Bon retour parmi nous")
+        assertTrue(OnboardingPrefs.seen(ctx))
+    }
     @Test fun login_errors_under_the_fields_then_home() {
         runBlocking { g.auth.signOut() }
+        OnboardingPrefs.markSeen(ApplicationProvider.getApplicationContext())
         compose.setContent { OmTheme(reducedMotion = true) { OmRoot() } }
-        waitText("Connexion")
+        waitText("Bon retour parmi nous")
         click("Se connecter")
         waitText("Saisissez une adresse e-mail valide.")
         type("E-mail", "amina@example.com"); type("Mot de passe", "wrong-pass")
@@ -259,6 +288,7 @@ class ScreensFrTest : ScreenTestBase() {
 }
 
 @RunWith(RobolectricTestRunner::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [33], qualifiers = "fr-rFR-w411dp-h891dp-xxhdpi", application = android.app.Application::class)
 class NonAdminTest : ScreenTestBase() {
     @Before fun notAdmin() { backend.admin = false; runBlocking { g.auth.restore() } }
@@ -266,7 +296,10 @@ class NonAdminTest : ScreenTestBase() {
         assertTrue(!(g.auth.state.value as AuthState.SignedIn).isAdmin)
         compose.setContent { OmTheme(reducedMotion = true) { OmRoot() } }
         waitText("Solde total")
-        click("Compte")
+        compose.onNodeWithTag("tab_account").performClick()
+        idle(900); shot("99_nonadmin_account")
+        /* the taller glass layout puts « Se déconnecter » below the fold of the lazy list: scroll to it */
+        compose.onAllNodes(androidx.compose.ui.test.SemanticsMatcher.keyIsDefined(androidx.compose.ui.semantics.SemanticsProperties.VerticalScrollAxisRange)).onLast().performScrollToNode(hasText("Se déconnecter"))
         waitText("Se déconnecter")
         assertTrue(!has("Admin Control"))
     }
@@ -276,6 +309,17 @@ class NonAdminTest : ScreenTestBase() {
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [31, 33], qualifiers = "ar-w411dp-h891dp-xxhdpi", application = android.app.Application::class)
 class ScreensArTest : ScreenTestBase() {
+    @Test fun arabic_opening_presentation_and_sign_in() {
+        runBlocking { g.auth.signOut() }
+        val ctx = ApplicationProvider.getApplicationContext<Context>()
+        ctx.getSharedPreferences("om_onboarding", Context.MODE_PRIVATE).edit().clear().commit()
+        compose.setContent { OmTheme(reducedMotion = true) { OmRoot() } }
+        waitText("محفظتك الرقمية معك"); assertTrue(has("تخطي")); assertTrue(has("اكتشف المحفظة"))
+        shot("00a_promo_1")
+        compose.onNodeWithTag("onb_skip").performClick()
+        waitText("أهلاً بك من جديد")
+        shot("00_login")
+    }
     @Test fun arabic_right_to_left_home_markets_and_send() {
         compose.setContent { OmTheme(reducedMotion = true) { OmRoot() } }
         startMarket()

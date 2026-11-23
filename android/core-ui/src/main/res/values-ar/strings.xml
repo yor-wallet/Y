@@ -24,8 +24,8 @@
     <string name="nav_markets">الأسواق</string>
     <string name="nav_activity">النشاط</string>
     <string name="nav_account">الحساب</string>
-    <string name="login_title">تسجيل الدخول</string>
-    <string name="login_sub">حسابك في OM Wallet</string>
+    <string name="login_title">أهلاً بك من جديد</string>
+    <string name="login_sub">سجّل دخولك إلى محفظتك</string>
     <string name="email">البريد الإلكتروني</string>
     <string name="password">كلمة المرور</string>
     <string name="login_btn">دخول</string>
@@ -197,7 +197,7 @@
     <string name="acc_admin">لوحة المشرف</string>
     <string name="acc_logout">تسجيل الخروج</string>
     <string name="acc_licenses">التراخيص</string>
-    <string name="acc_licenses_b">IBM Plex Sans Arabic (رخصة SIL OFL 1.1) · شعارات web3icons (MIT) · بيانات السوق من واجهة Binance العامة · رموز QR عبر ZXing (Apache 2.0).</string>
+    <string name="acc_licenses_b">Sora وTajawal (رخصة SIL OFL 1.1) · شعارات web3icons (MIT) · بيانات السوق من واجهة Binance العامة · رموز QR عبر ZXing (Apache 2.0).</string>
     <string name="acc_version">الإصدار %1$s</string>
     <string name="admin_title">لوحة المشرف</string>
     <string name="adm_tab_internal">داخلية</string>
@@ -250,4 +250,16 @@
     <string name="adm_paused">متوقفة مؤقتًا</string>
     <string name="adm_to_decide">بانتظار القرار</string>
     <string name="adm_pause_toast">تم الإيقاف المؤقت. يبقى المبلغ محجوزًا ويمكنك التأكيد أو الرفض لاحقًا.</string>
+    <string name="login_forgot">نسيت كلمة المرور؟</string>
+    <string name="onb_skip">تخطي</string>
+    <string name="onb_have">لدي حساب بالفعل</string>
+    <string name="onb_t1">محفظتك الرقمية معك</string>
+    <string name="onb_p1">تابع أصولك من مكان واحد</string>
+    <string name="onb_c1">اكتشف المحفظة</string>
+    <string name="onb_t2">تجربة أسهل</string>
+    <string name="onb_p2">أودِع وأرسِل واسحب بخطوات بسيطة.</string>
+    <string name="onb_c2">متابعة</string>
+    <string name="onb_t3">محمية برمزك السري</string>
+    <string name="onb_p3">يبقى حسابك مقفلاً حتى تفتحه بنفسك.</string>
+    <string name="onb_c3">تسجيل الدخول</string>
 </resources>

@@ -1,6 +1,19 @@
 package com.omwallet.core.design
 
 import androidx.annotation.DrawableRes
+import kotlinx.coroutines.delay
+import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateFloat
@@ -58,15 +71,17 @@ import androidx.compose.ui.unit.dp
 /* Glass surface: translucent white over the sky background, hairline light border, very soft shadow.
    Used on the dashboard, sheets and wallet cards; financial input screens use the stronger, calmer variant (strong = true). */
 @Composable
-fun GlassCard(modifier: Modifier = Modifier, strong: Boolean = false, padding: Dp = OmSpace.L, fill: Boolean = true, content: @Composable ColumnScope.() -> Unit) {
+fun GlassCard(modifier: Modifier = Modifier, strong: Boolean = false, padding: Dp = OmSpace.L, fill: Boolean = true, rise: Int = 0, content: @Composable ColumnScope.() -> Unit) {
+    /* owner references: white-to-sky glass, a bright white rim, a soft blue shadow; the card rises into place when it first appears */
     val shape = RoundedCornerShape(OmRadius.L)
     Column(
         modifier
             .then(if (fill) Modifier.fillMaxWidth() else Modifier)
-            .shadow(18.dp, shape, ambientColor = Color(0x2219405A), spotColor = Color(0x2219405A))
+            .riseIn(rise)
+            .shadow(20.dp, shape, ambientColor = Color(0x33145AB4), spotColor = Color(0x55145AB4))
             .clip(shape)
-            .background(if (strong) OmColors.GlassStrong else OmColors.GlassWhite)
-            .border(BorderStroke(1.dp, Color(0xBFFFFFFF)), shape)
+            .background(Brush.linearGradient(if (strong) listOf(Color(0xF2FFFFFF), Color(0xD9EAF5FF)) else listOf(Color(0xD1FFFFFF), Color(0x94EAF5FF))))
+            .border(BorderStroke(1.dp, Color(0xF2FFFFFF)), shape)
             .padding(padding),
         content = content,
     )
@@ -75,47 +90,83 @@ fun GlassCard(modifier: Modifier = Modifier, strong: Boolean = false, padding: D
 /* Sky background with two very diffuse halos (login / dashboard). */
 @Composable
 fun SkyBackground(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
-    Box(
-        modifier.background(
-            Brush.verticalGradient(listOf(OmColors.Sky100, OmColors.Surface, OmColors.Surface))
-        )
-    ) {
+    /* white to sky, with the two soft glass waves of the owner's references (top-left, bottom-right) */
+    Box(modifier.background(Brush.verticalGradient(listOf(Color(0xFFF7FBFF), OmColors.Surface, Color(0xFFE3F0FD))))) {
         Canvas(Modifier.matchParentSize()) {
-            drawCircle(Brush.radialGradient(listOf(Color(0x5563C3F2), Color.Transparent), center = Offset(size.width * 0.1f, size.height * 0.05f), radius = size.width * 0.8f))
-            drawCircle(Brush.radialGradient(listOf(Color(0x44A8DFFF), Color.Transparent), center = Offset(size.width * 0.95f, size.height * 0.3f), radius = size.width * 0.7f))
+            drawCircle(Brush.radialGradient(listOf(Color(0x5A8CCDFF), Color.Transparent), center = Offset(size.width * 1.0f, 0f), radius = size.width * 0.9f))
+            drawCircle(Brush.radialGradient(listOf(Color(0x4D78C3FF), Color.Transparent), center = Offset(0f, size.height), radius = size.width * 0.9f))
+            drawOval(Brush.radialGradient(listOf(Color(0xF2FFFFFF), Color(0x00FFFFFF)), center = Offset(size.width * 0.05f, size.height * 0.02f), radius = size.width * 0.85f),
+                topLeft = Offset(-size.width * 0.8f, -size.height * 0.28f), size = androidx.compose.ui.geometry.Size(size.width * 1.7f, size.height * 0.62f))
+            drawOval(Color(0xB3FFFFFF), topLeft = Offset(-size.width * 0.8f, -size.height * 0.28f), size = androidx.compose.ui.geometry.Size(size.width * 1.7f, size.height * 0.62f), style = Stroke(width = 1.5.dp.toPx()))
+            drawOval(Color(0x8CFFFFFF), topLeft = Offset(size.width * 0.35f, size.height * 0.82f), size = androidx.compose.ui.geometry.Size(size.width * 1.4f, size.height * 0.4f), style = Stroke(width = 1.5.dp.toPx()))
         }
         content()
     }
 }
 
-/* Press feedback: scale 1.00 → 0.975 and opacity → 0.90 on touch-down, soft spring back; haptic tap on click. Draw-phase only. */
+/* Press feedback (14.4.0): the control springs to 0.96 and a soft light blooms from the exact point the finger touched, then fades.
+   Draw-phase only (graphicsLayer / drawWithContent); skipped under « remove animations ». Haptic tap on click. */
 @Composable
 fun Modifier.pressable(enabled: Boolean = true, role: Role = Role.Button, onClick: () -> Unit): Modifier {
     val source = remember { MutableInteractionSource() }
     val pressed by source.collectIsPressedAsState()
     val reduced = LocalOmMotion.current.reduced
-    val scale by animateFloatAsState(if (pressed && !reduced) 0.975f else 1f, OmSprings.press(), label = "press")
-    val alpha by animateFloatAsState(if (pressed) 0.9f else 1f, OmSprings.fade(90), label = "pressAlpha")
+    val scale by animateFloatAsState(if (pressed && !reduced) 0.96f else 1f, OmSprings.press(), label = "press")
+    val glow by animateFloatAsState(if (pressed && !reduced) 1f else 0f, tween(if (pressed) 140 else 460), label = "glow")
+    var at by remember { mutableStateOf(Offset.Unspecified) }
+    LaunchedEffect(source) { source.interactions.collect { if (it is PressInteraction.Press) at = it.pressPosition } }
     val haptics = rememberOmHaptics()
     return this
-        .graphicsLayer { scaleX = scale; scaleY = scale; this.alpha = alpha }
+        .graphicsLayer { scaleX = scale; scaleY = scale }
+        .drawWithContent {
+            drawContent()
+            if (glow > 0.01f && at != Offset.Unspecified) clipRect {
+                val r = size.maxDimension * (0.25f + 0.55f * glow)
+                drawCircle(Brush.radialGradient(listOf(Color.White.copy(alpha = 0.5f * glow), Color.Transparent), center = at, radius = r), radius = r, center = at)
+            }
+        }
         .clickable(interactionSource = source, indication = null, enabled = enabled, role = role) { haptics.tap(); onClick() }
+}
+
+/* Cards and rows rise into place one after the other when a screen opens (index × 55 ms); nothing moves under « remove animations ». */
+@Composable
+fun Modifier.riseIn(index: Int): Modifier {
+    if (LocalOmMotion.current.reduced) return this
+    val a = remember { Animatable(0f) }
+    LaunchedEffect(Unit) { delay(index * 55L); a.animateTo(1f, tween(560, easing = FastOutSlowInEasing)) }
+    return graphicsLayer { alpha = a.value; translationY = (1f - a.value) * 16.dp.toPx() }
+}
+
+/* Loading inside a button: three dots that hop one after the other (replaces the spinner). */
+@Composable
+fun LoadingDots(color: Color = Color.White) {
+    val t = rememberInfiniteTransition(label = "dots")
+    Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+        repeat(3) { k ->
+            val y by t.animateFloat(0f, 1f, infiniteRepeatable(keyframes { durationMillis = 900; 0f at (k * 120); 1f at (k * 120 + 220); 0f at (k * 120 + 440) }), label = "d$k")
+            Box(Modifier.size(9.dp).graphicsLayer { translationY = -6.dp.toPx() * y }.clip(CircleShape).background(color))
+        }
+    }
 }
 
 @Composable
 fun OmPrimaryButton(text: String, modifier: Modifier = Modifier, enabled: Boolean = true, loading: Boolean = false, onClick: () -> Unit) {
+    /* gradient blue with a light sheen on the top half and a blue glow (owner references) */
     val shape = RoundedCornerShape(OmRadius.M)
     Box(
         modifier
-            .heightIn(min = 54.dp)
+            .heightIn(min = 58.dp)
             .fillMaxWidth()
+            .shadow(if (enabled) 16.dp else 0.dp, shape, ambientColor = Color(0x661677F2), spotColor = Color(0x991677F2))
             .clip(shape)
-            .background(if (enabled) Brush.verticalGradient(listOf(OmColors.Sky500, OmColors.Blue600)) else Brush.verticalGradient(listOf(OmColors.Sky300, OmColors.Sky300)))
+            .background(if (enabled) Brush.verticalGradient(listOf(OmColors.SkyGlow, OmColors.Blue600, OmColors.Blue700)) else Brush.verticalGradient(listOf(OmColors.Sky300, OmColors.Sky300)))
+            .drawWithContent { drawContent(); drawRect(Brush.verticalGradient(listOf(Color(0x52FFFFFF), Color.Transparent), endY = size.height * 0.55f)) }
+            .border(1.dp, Color(0x59FFFFFF), shape)
             .pressable(enabled = enabled && !loading, onClick = onClick)
             .semantics { if (loading) contentDescription = text },
         contentAlignment = Alignment.Center,
     ) {
-        if (loading) CircularProgressIndicator(Modifier.size(22.dp), color = Color.White, strokeWidth = 2.5.dp)
+        if (loading) LoadingDots()
         else Text(text, style = MaterialTheme.typography.labelLarge, color = Color.White, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 16.dp))
     }
 }
@@ -124,10 +175,21 @@ fun OmPrimaryButton(text: String, modifier: Modifier = Modifier, enabled: Boolea
 fun OmSecondaryButton(text: String, modifier: Modifier = Modifier, enabled: Boolean = true, onClick: () -> Unit) {
     val shape = RoundedCornerShape(OmRadius.M)
     Box(
-        modifier.heightIn(min = 50.dp).fillMaxWidth().clip(shape).background(OmColors.GlassStrong)
-            .border(1.dp, OmColors.Sky300, shape).pressable(enabled = enabled, onClick = onClick),
+        modifier.heightIn(min = 54.dp).fillMaxWidth().shadow(10.dp, shape, ambientColor = Color(0x33145AB4), spotColor = Color(0x44145AB4)).clip(shape)
+            .background(Brush.linearGradient(listOf(Color(0xF2FFFFFF), Color(0xBFE6F2FF)))).border(1.dp, Color(0xF2FFFFFF), shape).pressable(enabled = enabled, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) { Text(text, style = MaterialTheme.typography.labelLarge, color = if (enabled) OmColors.Blue600 else OmColors.InkSecondary) }
+}
+
+/* Glass icon tile (settings / assets references): light glass square with a blue line icon. */
+@Composable
+fun GlassTile(@DrawableRes icon: Int, modifier: Modifier = Modifier, size: Dp = 52.dp, tint: Color = OmColors.Blue600) {
+    val shape = RoundedCornerShape(16.dp)
+    Box(
+        modifier.size(size).shadow(8.dp, shape, ambientColor = Color(0x33145AB4), spotColor = Color(0x55145AB4)).clip(shape)
+            .background(Brush.linearGradient(listOf(Color(0xFAFFFFFF), Color(0xEBE2F1FF)))).border(1.dp, Color(0xF2FFFFFF), shape),
+        contentAlignment = Alignment.Center,
+    ) { OmIcon(icon, null, tint = tint, size = size * 0.46f) }
 }
 
 /* Official asset / network logos (web3icons, MIT) as vector drawables: never blurry at any density. */
@@ -281,7 +343,7 @@ object OmIcons {
     val Eye = R.drawable.ic_om_eye; val EyeOff = R.drawable.ic_om_eye_off; val Star = R.drawable.ic_om_star; val StarFilled = R.drawable.ic_om_star_filled
     val Send = R.drawable.ic_om_send; val Copy = R.drawable.ic_om_copy; val Back = R.drawable.ic_om_back; val Chevron = R.drawable.ic_om_chevron
     val Shield = R.drawable.ic_om_shield; val Share = R.drawable.ic_om_share; val Refresh = R.drawable.ic_om_refresh; val Close = R.drawable.ic_om_close
-    val Logout = R.drawable.ic_om_logout
+    val Logout = R.drawable.ic_om_logout; val Mail = R.drawable.ic_om_mail; val Lock = R.drawable.ic_om_lock
 }
 
 @Composable

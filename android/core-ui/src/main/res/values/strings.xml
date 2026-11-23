@@ -25,8 +25,8 @@
     <string name="nav_markets">Markets</string>
     <string name="nav_activity">Activity</string>
     <string name="nav_account">Account</string>
-    <string name="login_title">Sign in</string>
-    <string name="login_sub">Your OM Wallet account</string>
+    <string name="login_title">Welcome back</string>
+    <string name="login_sub">Sign in to your wallet</string>
     <string name="email">E-mail</string>
     <string name="password">Password</string>
     <string name="login_btn">Sign in</string>
@@ -198,7 +198,7 @@
     <string name="acc_admin">Admin Control</string>
     <string name="acc_logout">Sign out</string>
     <string name="acc_licenses">Licences</string>
-    <string name="acc_licenses_b">IBM Plex Sans Arabic (SIL Open Font License 1.1) · crypto logos web3icons (MIT) · market data Binance public API · QR codes ZXing (Apache 2.0).</string>
+    <string name="acc_licenses_b">Sora and Tajawal (SIL Open Font License 1.1) · crypto logos web3icons (MIT) · market data Binance public API · QR codes ZXing (Apache 2.0).</string>
     <string name="acc_version">Version %1$s</string>
     <string name="admin_title">Admin Control</string>
     <string name="adm_tab_internal">Internal</string>
@@ -251,4 +251,16 @@
     <string name="adm_paused">Paused</string>
     <string name="adm_to_decide">To decide</string>
     <string name="adm_pause_toast">Paused. The amount stays held; you can still confirm or refuse.</string>
+    <string name="login_forgot">Forgot your password?</string>
+    <string name="onb_skip">Skip</string>
+    <string name="onb_have">I already have an account</string>
+    <string name="onb_t1">Your digital wallet, always with you</string>
+    <string name="onb_p1">Follow all your assets from one place.</string>
+    <string name="onb_c1">Discover the wallet</string>
+    <string name="onb_t2">An easier experience</string>
+    <string name="onb_p2">Deposit, send and withdraw in a few simple steps.</string>
+    <string name="onb_c2">Continue</string>
+    <string name="onb_t3">Protected by your PIN</string>
+    <string name="onb_p3">Your account stays locked until you unlock it.</string>
+    <string name="onb_c3">Sign in</string>
 </resources>

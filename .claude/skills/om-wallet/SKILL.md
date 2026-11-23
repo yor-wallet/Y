@@ -27,9 +27,12 @@ Le propriétaire a donné des consignes strictes et les a répétées plusieurs 
 - Chaque utilisateur a ses propres adresses de dépôt, différentes par réseau et générées par le serveur (vraie clé chiffrée, stockée avec l'adresse), et un QR code unique, sauvegardé.
 - E-mails dans la langue de la personne (ar / en / fr). Détail du transfert dans « Transfert confirmé » (expéditeur), « Fonds reçus » (destinataire).
 
-**Design**
-- Le logo reste un logo : icône de l'application, démarrage, en-tête de connexion, reçus, « À propos », installation. Pas en décor, pas en fond, pas répété sur les écrans. L'effet verre de l'icône n'est pas un style d'interface.
-- Page de connexion : sobre et professionnelle — fond uni, petit logo horizontal, titre aligné au bord, champs à fine bordure, un bouton plein bleu nuit `#0D2049`. Pas de halo, de dégradé, de pastilles ni d'allure « jeu d'enfant ».
+**Design (consigne du 23/11, remplace les précédentes)**
+- Suivre à la lettre les visuels du propriétaire dans `brand/originals/` (`ref-login`, `ref-home`, `ref-settings`, `ref-assets`, `ref-profile`, `ref-receipt`, `ref-admin`, `promo-1-ar`, `promo-2-ar`, `app-icon-glass`) : blanc, bleu ciel, surfaces transparentes, effet verre. Connexion = `ref-login` (grande icône verre, mot-symbole, carte de verre, bouton dégradé).
+- Le style « papier / bleu nuit » (OM Ink) a été **refusé** : ne pas y revenir.
+- Une refonte change la composition des écrans et les interactions, pas seulement les couleurs ; chaque bouton redessiné reste relié à sa fonction existante (vérifier avec `tests/ux/omw.test.mjs`).
+- Images publicitaires : jamais de bouton ou de texte imprimé dans une image présenté comme réel ; les textes sont effacés et remplacés par de vrais éléments traduits.
+- Polices : Sora (latin) + Tajawal (arabe), auto-hébergées. Animations : respecter « réduire les animations » ; pas d'animation lourde permanente.
 - Interdiction de modifier les instructions du propriétaire ou d'ajouter des fonctions cassées.
 
 ## 2. Carte du projet
@@ -42,7 +45,8 @@ Le propriétaire a donné des consignes strictes et les a répétées plusieurs 
 | Android | `android/` (Kotlin 2.1, Compose, modules `core-*`, `feature-*`, `app`) ; textes en/fr/ar |
 | Serveur | Supabase projet `gebjmguoauvutiqvoswl` : migrations `supabase/migrations/`, fonctions Edge `send-email`, `wallet-addresses`, `admin-action` |
 | Déploiement | Vercel projet `prj_uRkEgOnfKYdXmpJ2D2161mbaJHpA` (équipe `team_b1invDzTYyVjIAUAWoEFnPIv`), site `https://yor-wallet.vercel.app` ; GitHub `yor-wallet/Y` |
-| Identité | `brand/` : originaux fournis (`brand/originals/`), `python3 brand/make_assets.py` régénère icônes web, favicon, logos, calques Android |
+| Identité | `brand/` : originaux et visuels de référence (`brand/originals/`), `python3 brand/make_assets.py` régénère icônes web, favicon, logos, calques Android |
+| Design | `css/omw.css` (couche finale), `js/ui/omw.js` (interactions), `js/features/onboarding.js` (présentation), Android `core-design` (Theme, Components) et `app/OnboardingScreen.kt` |
 | Tests | `tests/ux/*.test.mjs` (Playwright + faux Supabase), `tests/keys` (vecteurs de dérivation d'adresses), Android `testDebugUnitTest` |
 
 Secrets : la clé Brevo est dans le Vault Supabase (`brevo_api_key`), la clé maître des portefeuilles dans `wallet_master_key`. Ne jamais les afficher, les écrire dans un fichier, un commit ou un message.
@@ -52,11 +56,11 @@ Secrets : la clé Brevo est dans le Vault Supabase (`brevo_api_key`), la clé ma
 ```bash
 # Web
 node tools/build.mjs                         # régénère js/app.js et css/app.css (obligatoire après tout changement de js/ ou css/)
-for t in shell smoke bugfix omx admin-console ios-motion admin-payouts; do node tests/ux/$t.test.mjs; done   # tout doit passer
+for t in shell smoke bugfix omx omw admin-console ios-motion admin-payouts; do node tests/ux/$t.test.mjs; done   # tout doit passer
 cd tests/keys && npm install && npm test     # dérivation des adresses (Node 22)
 
 # Android (JDK 17+, SDK 35, ANDROID_HOME=/opt/android-sdk, Gradle dans /opt/gradle)
-cd android && gradle testDebugUnitTest :app:assembleDebug :app:bundleRelease :app:assembleRelease   # 38 tests attendus
+cd android && gradle testDebugUnitTest :app:assembleDebug :app:bundleRelease :app:assembleRelease   # 44 tests attendus
 ```
 
 Les rendus d'écran Android (Robolectric, pas un émulateur) sont dans `android/app/build/screenshots/`. Les regarder après toute modification d'interface.
@@ -77,4 +81,4 @@ Relire les règles du §1 contre ce qui a été changé : un utilisateur ordinai
 
 ## 6. Lacunes connues (à ne pas masquer)
 
-Pas de détection automatique des dépôts (l'administrateur crédite après vérification sur le réseau) ; retrait crypto « confirmé par le réseau » repose sur le hash saisi par l'admin, sans vérification on-chain ; pas de notification push (FCM) pour l'administrateur ; Trust Wallet / WalletConnect non branché ; aucun test sur appareil ou émulateur ; AAB release non signé ; images de lancement iOS (`assets/splash`) avec l'ancien logo ; écran d'accueil illustré fourni (texte arabe incrusté) conservé comme référence, non utilisé dans l'application ; Phase 5 (reçus partageables, PDF) volontairement non faite.
+Refonte : compositions Android (accueil, actifs, marchés, activité, compte, dépôt, retrait, envoi, admin) et web (formulaires d'envoi / retrait / dépôt, historique, reçu, aide, admin) pas encore recomposées (nouvelle peau seulement). Pas de détection automatique des dépôts (l'administrateur crédite après vérification sur le réseau) ; retrait crypto « confirmé par le réseau » repose sur le hash saisi par l'admin, sans vérification on-chain ; pas de notification push (FCM) pour l'administrateur ; Trust Wallet / WalletConnect non branché ; aucun test sur appareil ou émulateur ; AAB release non signé ; images de lancement iOS (`assets/splash`) avec l'ancien logo ; écran d'accueil illustré fourni (texte arabe incrusté) conservé comme référence, non utilisé dans l'application ; Phase 5 (reçus partageables, PDF) volontairement non faite.
