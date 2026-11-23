@@ -42,8 +42,7 @@ Object.assign(TR.ar, {
 
 const OMXSend = (() => {
   const S = { f: {}, who: null, look: 0, review: null, done: null, pollT: 0 };
-  const top = title => '<div class="topbar omx-top"><button class="topbar-back" data-action="back" aria-label="' + escapeHtml(t('ui.back')) + '"><span class="dir-flip" style="display:inline-flex">' + icon('back', 20) + '</span></button>' +
-    '<span class="topbar-title">' + escapeHtml(title) + '</span><span style="width:calc(44px*var(--ui))"></span></div>';
+  const top = title => refTop(title);
   const errText = e => { const m = String(e && (e.message || e.code) || e || ''); const k = (m.match(/[a-z_]{5,}/g) || []).find(x => TR.en['si.e.' + x]); return t(k ? 'si.e.' + k : 'si.e.unknown'); };
   const isNetErr = e => { const m = String(e && e.message || e || ''); return /Failed to fetch|NetworkError|network|timeout|aborted|Load failed/i.test(m) && !/[a-z]+_[a-z_]+/.test(m); };
   /* the server keeps YOR-XXXXXX; the app shows FRD-XXXXXX; a bare code is accepted too */

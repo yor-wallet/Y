@@ -75,11 +75,15 @@ fun ActivityScreen(contentPadding: PaddingValues) {
     val today = LocalDate.now()
     val fmt = remember { DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL) }
 
-    PullToRefreshBox(isRefreshing = w.loading && w.syncedAt > 0, onRefresh = { vm.refresh() }, modifier = Modifier.fillMaxSize()) {
+    val refreshing = w.loading && w.syncedAt > 0
+    val pull = androidx.compose.material3.pulltorefresh.rememberPullToRefreshState()
+    /* the refresh indicator appears under the large title, never over it */
+    PullToRefreshBox(isRefreshing = refreshing, onRefresh = { vm.refresh() }, modifier = Modifier.fillMaxSize(), state = pull,
+        indicator = { androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator(state = pull, isRefreshing = refreshing, modifier = Modifier.align(androidx.compose.ui.Alignment.TopCenter).padding(top = 150.dp)) }) {
         LazyColumn(Modifier.fillMaxSize(), contentPadding = contentPadding) {
             item {
-                Column(Modifier.statusBarsPadding().padding(horizontal = 20.dp, vertical = 8.dp)) {
-                    Text(stringResource(R.string.activity_title), style = MaterialTheme.typography.headlineMedium, color = OmColors.Ink)
+                com.omwallet.core.design.RefHeader(stringResource(R.string.activity_title)) 
+                Column(Modifier.padding(horizontal = 20.dp)) {
                     if (w.syncedAt > 0) Text(stringResource(if (w.offline) R.string.offline_since else R.string.updated_at, relative(w.syncedAt)), style = MaterialTheme.typography.bodySmall,
                         color = if (w.offline) OmColors.Warning else OmColors.InkSecondary)
                     if (w.error != null && !w.offline) Text(errorText(w.error), style = MaterialTheme.typography.bodySmall, color = OmColors.Error)
@@ -94,7 +98,10 @@ fun ActivityScreen(contentPadding: PaddingValues) {
                         style = MaterialTheme.typography.labelLarge, color = OmColors.InkSecondary, modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 4.dp),
                     )
                 }
-                items(txs, key = { it.id }) { t -> TxItem(t, s.hidden, { detail = t }, Modifier.padding(horizontal = 20.dp)) }
+                /* the operations of a day sit in one glass card (home / history references) */
+                item(key = "c-$day") {
+                    com.omwallet.core.design.GlassCard(Modifier.padding(horizontal = 16.dp), padding = 10.dp) { txs.forEach { t -> TxItem(t, s.hidden, { detail = t }) } }
+                }
             }
             /* CFA history: kept unchanged on the server, shown read-only — never converted, never counted in a crypto balance */
             if (w.archivedCfa.isNotEmpty()) item {

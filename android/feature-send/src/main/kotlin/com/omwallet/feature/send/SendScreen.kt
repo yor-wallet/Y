@@ -162,11 +162,7 @@ fun SendScreen(initialAsset: String?, onBack: () -> Unit, onActivity: () -> Unit
 
     LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 40.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
-            val back = stringResource(R.string.back)
-            Row(Modifier.statusBarsPadding().padding(horizontal = 12.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Box(Modifier.size(44.dp).pressable(onClick = onBack).semantics { contentDescription = back }, contentAlignment = Alignment.Center) { OmIcon(OmIcons.Back, null) }
-                Text(stringResource(R.string.send_title), style = MaterialTheme.typography.headlineSmall, color = OmColors.Ink)
-            }
+            com.omwallet.core.design.RefHeader(stringResource(R.string.send_title), onBack, stringResource(R.string.back))
         }
         val sent = f.sent
         if (sent != null) {

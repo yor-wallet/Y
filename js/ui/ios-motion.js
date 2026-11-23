@@ -153,7 +153,7 @@ const IOS = (() => {
   }
 
   /* ---------- large titles, collapsing bar, back label ---------- */
-  const LARGE = { history:1, notifications:1, profile:1, cards:1, services:1 };   /* settings has its own large header (14.4.0) */
+  const LARGE = { profile:1, cards:1, services:1 };   /* settings has its own large header (14.4.0) */
   const screenTitle = el => {
     if (!el) return '';
     const n = el.querySelector('.ios-lt, .topbar-title, h1');

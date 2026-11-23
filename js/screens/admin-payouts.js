@@ -172,8 +172,7 @@ const AdminPayouts = (() => {
 
   function render(){
     if (!isAdmin()){ setTimeout(() => R.go('home', { reset: true }), 0); return ''; }
-    return '<div class="topbar"><button class="topbar-back" data-action="back" aria-label="' + escapeHtml(t('ui.back')) + '"><span class="dir-flip" style="display:inline-flex">' + icon('back', 20) + '</span></button>' +
-      '<span class="topbar-title">' + escapeHtml(t('po.title')) + '</span><span style="width:calc(44px*var(--ui))"></span></div>' +
+    return refTop(t('po.title')) +
       '<div class="screen-body" style="padding-top:0"><div class="chips" role="group" aria-label="' + escapeHtml(t('po.title')) + '">' +
         ['open', 'done', 'all'].map(f => '<button type="button" class="chip" data-pf="' + f + '" aria-pressed="' + (f === filter ? 'true' : 'false') + '">' + escapeHtml(t('po.f.' + f)) + '</button>').join('') +
       '</div><div id="po-list" aria-live="polite"></div></div>';

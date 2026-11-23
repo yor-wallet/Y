@@ -43,7 +43,7 @@ Object.assign(TR.fr, { 'hist.q':'Nom, numéro, référence ou montant', 'hist.pe
 Object.assign(TR.ar, { 'hist.q':'الاسم أو الرقم أو المرجع أو المبلغ', 'hist.period':'الفترة', 'hist.dir':'الاتجاه', 'hist.p.all':'كل التواريخ', 'hist.p.today':'اليوم', 'hist.p.7d':'7 أيام', 'hist.p.30d':'30 يوماً', 'hist.p.month':'هذا الشهر', 'hist.d.all':'الوارد والصادر', 'hist.d.in':'المستلمة', 'hist.d.out':'المرسلة' });
 function renderHistory(){
   const chip = (f, key, on) => '<button class="chip" data-filter="' + f + '" aria-pressed="' + (on ? 'true' : 'false') + '">' + t(key) + '</button>';
-  return '<div class="topbar"><span style="width:calc(44px*var(--ui))"></span><span class="topbar-title">' + t('nav.history') + '</span><span style="width:calc(44px*var(--ui))"></span></div>' +
+  return refTop(t('nav.history'), false) +
     '<div class="screen-body ds-hist" style="padding-top:0">' +
       '<div class="chips ds-chips" role="group" aria-label="' + escapeHtml(t('nav.history')) + '">' +
         chip('all', 'filter.all', true) + (FEATURES.crypto ? chip('fiat', 'filter.fiat') + chip('crypto', 'filter.crypto') : '') + chip('pending', 'filter.pending') + chip('failed', 'filter.failed') +

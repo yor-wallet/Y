@@ -80,21 +80,21 @@ fun MarketsScreen(onAsset: (String) -> Unit, contentPadding: PaddingValues) {
 
     LazyColumn(Modifier.fillMaxSize(), contentPadding = contentPadding) {
         item {
-            Column(Modifier.statusBarsPadding().padding(horizontal = 20.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text(stringResource(R.string.markets_title), style = MaterialTheme.typography.headlineMedium, color = OmColors.Ink)
+            com.omwallet.core.design.RefHeader(stringResource(R.string.markets_title), below = {
                 FeedBadge(s.mode, s.lastSync)
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 6.dp)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Segment(stringResource(R.string.filter_all), !favOnly) { favOnly = false }
                     Segment(stringResource(R.string.filter_fav), favOnly) { favOnly = true }
                 }
-            }
+            })
         }
         if (s.mode == FeedMode.Idle && s.rows.all { it.quote == null }) item { SkeletonRows(6, Modifier.padding(horizontal = 20.dp)) }
         if (s.mode == FeedMode.Offline && s.rows.all { it.quote == null }) item {
             EmptyState(stringResource(R.string.markets_error), stringResource(R.string.markets_source), Modifier.padding(16.dp))
         }
         if (favOnly && rows.isEmpty()) item { EmptyState(stringResource(R.string.markets_fav_empty_t), stringResource(R.string.markets_fav_empty_b), Modifier.padding(16.dp)) }
-        items(rows, key = { it.asset.sym }) { r -> MarketItem(r, s.currency, onClick = { onAsset(r.asset.sym) }, onStar = { vm.toggleFavorite(r.asset.sym) }) }
+        /* one glass card per asset, as in the « my assets » reference */
+        items(rows, key = { it.asset.sym }) { r -> com.omwallet.core.design.GlassCard(Modifier.padding(horizontal = 16.dp, vertical = 6.dp), padding = 4.dp) { MarketItem(r, s.currency, onClick = { onAsset(r.asset.sym) }, onStar = { vm.toggleFavorite(r.asset.sym) }) } }
         item { Text(stringResource(R.string.markets_source), style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary, modifier = Modifier.padding(20.dp)) }
     }
 }

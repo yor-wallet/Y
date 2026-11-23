@@ -88,8 +88,7 @@ const OMXWithdraw = (() => {
   const OMRt = v => CurrencyEngine.format(v, 'OMR');
   const dt = ms => { try { return new Date(ms).toLocaleString(LANG === 'ar' ? 'ar-OM-u-nu-latn' : LANG === 'fr' ? 'fr-FR' : 'en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); } catch(e){ return ''; } };
   const ms = v => v ? new Date(v).getTime() : 0;
-  const top = (title, back) => '<div class="topbar omx-top"><button class="topbar-back" data-action="back" aria-label="' + escapeHtml(t('ui.back')) + '"><span class="dir-flip" style="display:inline-flex">' + icon('back', 20) + '</span></button>' +
-    '<span class="topbar-title">' + escapeHtml(title) + '</span><span style="width:calc(44px*var(--ui))"></span></div>';
+  const top = (title, back) => refTop(title, back);
   const errText = e => { const m = String(e && (e.message || e.code) || e || ''); const k = (m.match(/[a-z_]{5,}/g) || []).find(x => TR.en['wd.e.' + x]); return t(k ? 'wd.e.' + k : 'wd.e.unknown'); };
   const isNetErr = e => { const m = String(e && e.message || e || ''); return /Failed to fetch|NetworkError|network|timeout|aborted|Load failed/i.test(m) && !/[a-z]+_[a-z_]+/.test(m); };
   const bankName = b => b ? (b[LANG] || b.en || b.code) : '';

@@ -186,15 +186,7 @@ fun AssetDetailScreen(sym: String, onBack: () -> Unit, onDeposit: (String) -> Un
     val asset = Catalog.asset(sym)
     LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 32.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         item {
-            Row(Modifier.statusBarsPadding().padding(horizontal = 12.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                val back = stringResource(R.string.back)
-                Box(Modifier.size(44.dp).pressable(onClick = onBack).semantics { contentDescription = back }, contentAlignment = Alignment.Center) { OmIcon(OmIcons.Back, null) }
-                AssetLogo(sym, 36.dp)
-                Column {
-                    Text(asset?.name ?: sym, style = MaterialTheme.typography.titleLarge, color = OmColors.Ink)
-                    FeedBadge(s.mode, s.lastSync)
-                }
-            }
+            com.omwallet.core.design.RefHeader(asset?.name ?: sym, onBack, stringResource(R.string.back), trailing = { AssetLogo(sym, 46.dp) }, below = { FeedBadge(s.mode, s.lastSync) })
         }
         item {
             Column(Modifier.padding(horizontal = 20.dp)) {

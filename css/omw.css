@@ -424,3 +424,15 @@ html:root:root body .receipt-row.w-amt .receipt-row-value{padding:6px 14px;borde
 .w-rc-tile.w-press{transform:scale(.96)}
 .w-rc-more{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:14px}
 html:root:root body .receipt-benef{padding:6px 0}
+/* ---------- reference header on every inner page (logo line, large centred title, glass back square) ---------- */
+.w-reftop-logo{padding:10px 16px 0;margin:0}
+html:root:root body .topbar.w-reftop{min-height:74px;grid-template-columns:50px 1fr 50px!important;padding:6px 16px 10px!important;gap:10px}
+html:root:root body .topbar.w-reftop .topbar-title{font-size:clamp(24px,7.2vw,32px)!important;font-weight:800!important;line-height:1.12;letter-spacing:-.02em;transition:font-size .35s var(--w-ease)}
+html:root:root[dir="rtl"] body .topbar.w-reftop .topbar-title{letter-spacing:0}
+html:root:root body .screen.ios-scrolled > .topbar.w-reftop .topbar-title{font-size:19px!important}
+html:root:root body .topbar.w-reftop .w-sq{width:50px!important;height:50px!important;border-radius:18px!important;padding:0!important}
+html:root:root body .topbar.w-reftop .w-sp{width:50px}
+html:root:root body .topbar.w-reftop{height:auto!important;max-height:none!important;overflow:visible!important}
+html:root:root body .topbar.w-reftop .topbar-title{font-size:clamp(22px,6.4vw,30px)!important;overflow:visible!important;padding-block:2px}
+html:root:root body .topbar.w-reftop .topbar-title{overflow:hidden!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;line-height:1.18!important;padding-block:0!important}
+html:root:root body .topbar.w-reftop .topbar-title{height:auto!important;max-height:none!important;min-height:0!important;align-self:center}

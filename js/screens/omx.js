@@ -83,8 +83,7 @@ Object.assign(TR.ar, {
 
 const OMX = (() => {
   const S = { cur: 'BTC', tab: 'all', q: '', period: '1D', dep: { asset: null, net: null }, wdNets: null };
-  const top = (title, back) => '<div class="topbar omx-top">' + (back !== false ? '<button class="topbar-back" data-action="back" aria-label="' + escapeHtml(t('ui.back')) + '"><span class="dir-flip" style="display:inline-flex">' + icon('back', 20) + '</span></button>' : '<span style="width:calc(44px*var(--ui))"></span>') +
-    '<span class="topbar-title">' + escapeHtml(title) + '</span><span style="width:calc(44px*var(--ui))"></span></div>';
+  const top = (title, back) => refTop(title, back);
   /* ---------- holdings and totals (real) ---------- */
   function holdings(){
     const m = {};

@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -125,3 +126,15 @@ fun ReferenceRow(@DrawableRes icon: Int, label: String, modifier: Modifier = Mod
         OmIcon(OmIcons.Chevron, null, tint = OmColors.InkSecondary, size = 18.dp)
     }
 }
+
+/* Page header used by every inner screen (settings / assets references): the logo on its own line, then a large centred title between
+   a glass back square (when the page has a parent) and an optional trailing control. */
+@Composable
+fun RefHeader(title: String, onBack: (() -> Unit)? = null, backDescription: String = "", trailing: (@Composable () -> Unit)? = null, below: (@Composable () -> Unit)? = null) {
+    Column(Modifier.androidx_statusBars().padding(horizontal = 16.dp, vertical = 6.dp), verticalArrangement = Arrangement.spacedBy(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Row(Modifier.fillMaxWidth()) { BrandLockup(height = 36.dp) }
+        ReferenceTitle(title, start = onBack?.let { { GlassSquare(OmIcons.Back, backDescription, onClick = it) } }, end = trailing)
+        below?.invoke()
+    }
+}
+private fun Modifier.androidx_statusBars() = this.statusBarsPadding()

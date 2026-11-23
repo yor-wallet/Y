@@ -29,13 +29,13 @@ Object.assign(TR.fr, { 'nt.pend':'Transfert en cours', 'nt.pendMsg':'{a} pour {n
 Object.assign(TR.ar, { 'nt.pend':'تحويل قيد التنفيذ', 'nt.pendMsg':'{a} إلى {n} · قيد التنفيذ', 'nt.rej':'تم رفض التحويل', 'nt.rejMsg':'أُعيد {a} إلى رصيدك' });
 function renderNotifications(){
   const list = Runtime.notifications;
-  return '<div class="topbar"><button class="topbar-back" data-action="back" aria-label="' + t('ui.back') + '"><span class="dir-flip" style="display:inline-flex">' + icon('back', 20) + '</span></button><span class="topbar-title">' + t('ui.notifications') + '</span><button class="topbar-action" data-action="mark-notifs" aria-label="' + t('ui.markRead') + '">' + icon('check', 18) + '</button></div>' +
+  return refTop(t('ui.notifications'), true, '<button class="topbar-action w-sq" data-action="mark-notifs" aria-label="' + t('ui.markRead') + '">' + icon('check', 20) + '</button>') +
     '<div class="screen-body" style="padding-top:0">' +
       (list.length ? '<div class="glass" style="padding:calc(6px*var(--ui)) calc(18px*var(--ui))">' + list.map(n => { const v = notifView(n); return '<div class="item" style="cursor:default"><div class="tile">' + icon('bell', 20) + '</div><div class="item-body"><div class="item-title">' + escapeHtml(v.title) + '</div><div class="item-sub" style="white-space:normal">' + escapeHtml(v.message) + '</div><div class="caption" style="margin-top:calc(4px*var(--ui))">' + escapeHtml(timeAgo(n.createdAt)) + '</div></div></div>'; }).join('') + '</div>' : '<div class="rv-empty" style="padding-top:12vh"><div style="color:var(--accent)">' + icon('bell', 48) + '</div><div style="font-weight:800;font-size:calc(18px*var(--ui));margin-top:12px">' + V12.vt('notifEmpty') + '</div><div style="color:var(--text-2);margin-top:6px">' + V12.vt('notifEmptyD') + '</div></div>') +
     '</div>';
 }
 function infoScreenTop(titleKey){
-  return '<div class="topbar"><button class="topbar-back" data-action="back" aria-label="' + t('ui.back') + '"><span class="dir-flip" style="display:inline-flex">' + icon('back', 20) + '</span></button><span class="topbar-title">' + t(titleKey) + '</span><span style="width:calc(44px*var(--ui))"></span></div>';
+  return refTop(t(titleKey));
 }
 function renderPrivacy(){
   const blocks = [1, 2, 3].map(n =>
@@ -65,7 +65,7 @@ function renderAbout(){
 function renderDevices(){
   const current = DeviceEngine.current();
   const list = Runtime.devices || [];
-  return '<div class="topbar"><button class="topbar-back" data-action="back" aria-label="' + t('ui.back') + '"><span class="dir-flip" style="display:inline-flex">' + icon('back', 20) + '</span></button><span class="topbar-title">' + t('devices.title') + '</span><span style="width:calc(44px*var(--ui))"></span></div>' +
+  return refTop(t('devices.title')) +
     '<div class="screen-body" style="padding-top:0">' +
       '<div class="glass" style="padding:calc(6px*var(--ui)) calc(18px*var(--ui))">' + (list.length ? list.map(d => '<div class="item" style="cursor:default"><div class="tile">' + icon('device', 20) + '</div><div class="item-body"><div class="item-title">' + escapeHtml(d.platform || '—') + ' · ' + escapeHtml(d.browser || '—') + (d.deviceId === current ? ' <span class="badge badge-success" style="margin-inline-start:6px">' + t('devices.current') + '</span>' : '') + '</div><div class="item-sub">' + escapeHtml(d.deviceId || '') + '</div><div class="caption" style="margin-top:calc(4px*var(--ui))">' + t('devices.lastActive') + ' · ' + escapeHtml(timeAgo(d.lastSeen || Date.now())) + '</div></div></div>').join('') : '<div class="empty" style="padding:var(--sp-6) 0"><div class="empty-sub">—</div></div>') + '</div>' +
     '</div>';
@@ -73,7 +73,7 @@ function renderDevices(){
 function renderSessions(){
   const current = SessionEngine.current();
   const list = Runtime.sessions || [];
-  return '<div class="topbar"><button class="topbar-back" data-action="back" aria-label="' + t('ui.back') + '"><span class="dir-flip" style="display:inline-flex">' + icon('back', 20) + '</span></button><span class="topbar-title">' + t('sessions.title') + '</span><span style="width:calc(44px*var(--ui))"></span></div>' +
+  return refTop(t('sessions.title')) +
     '<div class="screen-body" style="padding-top:0">' +
       '<div class="glass" style="padding:calc(6px*var(--ui)) calc(18px*var(--ui))">' + (list.length ? list.map(s => '<div class="item" style="cursor:default"><div class="tile">' + icon('session', 20) + '</div><div class="item-body"><div class="item-title">' + escapeHtml(s.sessionId || '') + (s.sessionId === current ? ' <span class="badge badge-success" style="margin-inline-start:6px">' + t('sessions.current') + '</span>' : '') + '</div><div class="item-sub">' + escapeHtml(s.deviceId || '') + '</div><div class="caption" style="margin-top:calc(4px*var(--ui))">' + t('sessions.createdAt') + ' · ' + escapeHtml(timeAgo(s.createdAt || Date.now())) + ' · ' + escapeHtml(s.status || 'active') + '</div></div></div>').join('') : '<div class="empty" style="padding:var(--sp-6) 0"><div class="empty-sub">—</div></div>') + '</div>' +
     '</div>';

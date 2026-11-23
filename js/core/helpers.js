@@ -162,6 +162,16 @@ function signupPhone(dial, raw){
   if (full.length - dd.length < 5 || full.length < 8 || full.length > 15) return null;
   return '+' + full;
 }
+/* 14.4.0 — page header from the owner's references: the logo lockup on its own line, then a large centred title between a glass back
+   square and an equal empty side. It keeps the .topbar class and the back button's data-action, so navigation and the motion layer
+   work unchanged; while the page scrolls the title shrinks into a compact bar (css/omw.css). */
+function refTop(title, back, endHtml){
+  return '<div class="w-head w-reftop-logo"><span class="w-brand"><img class="w-l" src="assets/brand/om-logo-horizontal.png" alt="OM Wallet" width="150" height="54"><img class="w-d" src="assets/brand/om-logo-horizontal-white.png" alt="" width="150" height="54"></span><span></span></div>' +
+    '<div class="topbar w-reftop">' +
+      (back !== false ? '<button class="topbar-back w-sq" data-action="back" aria-label="' + escapeHtml(t('ui.back')) + '"><span class="dir-flip" style="display:inline-flex">' + icon('back', 22) + '</span></button>' : '<span class="w-sp"></span>') +
+      '<span class="topbar-title">' + escapeHtml(title) + '</span>' + (endHtml || '<span class="w-sp"></span>') +
+    '</div>';
+}
 /* small status pill: "success" is the normal case in a list, so lists only show it for pending / failed (see txRow) */
 function statusPill(state, withIcon, label){
   return '<span class="st st-' + state + '">' + (withIcon ? icon(TX_STATE_ICON[state], 11) : '') + escapeHtml(label || t('tx.st.' + state)) + '</span>';

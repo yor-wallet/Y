@@ -149,13 +149,8 @@ fun AdminScreen(onBack: () -> Unit) {
 
     LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 40.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
-            val back = stringResource(R.string.back)
-            Row(Modifier.statusBarsPadding().padding(horizontal = 12.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Box(Modifier.size(44.dp).pressable(onClick = onBack).semantics { contentDescription = back }, contentAlignment = Alignment.Center) { OmIcon(OmIcons.Back, null) }
-                Text(stringResource(R.string.admin_title), style = MaterialTheme.typography.headlineSmall, color = OmColors.Ink, modifier = Modifier.weight(1f))
-                val refresh = stringResource(R.string.refresh)
-                Box(Modifier.size(44.dp).pressable { vm.refresh() }.semantics { contentDescription = refresh }, contentAlignment = Alignment.Center) { OmIcon(OmIcons.Refresh, null) }
-            }
+            val back = stringResource(R.string.back); val refresh = stringResource(R.string.refresh)
+            com.omwallet.core.design.RefHeader(stringResource(R.string.admin_title), onBack, back, trailing = { com.omwallet.core.design.GlassSquare(OmIcons.Refresh, refresh) { vm.refresh() } })
         }
         if (!vm.isAdmin) { item { EmptyState(stringResource(R.string.adm_forbidden), "", Modifier.padding(16.dp)) }; return@LazyColumn }
         item {
