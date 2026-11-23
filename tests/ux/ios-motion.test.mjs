@@ -23,7 +23,7 @@ const state = (page, id) => page.evaluate(id => { const e = document.getElementB
     const v = await page.evaluate(() => ({ s: getComputedStyle(document.documentElement).getPropertyValue('--ios-smooth'), d: getComputedStyle(document.documentElement).getPropertyValue('--ios-snappy-d') }));
     assert.match(v.s, /linear\(|cubic-bezier/); assert.match(v.d, /\d+ms/);
   });
-  await ok('push home -> settings: both screens move, old one is parallaxed, then settles', async () => {
+  await ok('push home -> settings: the new screen comes forward out of the glass, the old one recedes, then both settle', async () => {
     await page.evaluate(() => R.go('settings'));
     await wait(110);
     const a = await state(page, 'settings'), b = await state(page, 'home');
@@ -33,16 +33,16 @@ const state = (page, id) => page.evaluate(id => { const e = document.getElementB
     const a2 = await state(page, 'settings'), b2 = await state(page, 'home');
     assert.ok(!/ios-(entering|leaving)/.test(a2.cls + b2.cls)); assert.equal(b2.vis, 'hidden'); assert.equal(a2.vis, 'visible');
   });
-  await ok('large title + back label', async () => {
-    assert.equal(await page.locator('#settings > .ios-lt').count(), 1);
-    assert.match(await page.locator('#settings .ios-back-t').innerText(), /Home/);
-    assert.ok(/ios-large/.test((await state(page, 'settings')).cls));
+  await ok('settings header from the owner reference: large centred title, glass back square, no slide label; bar reacts to scrolling', async () => {
+    assert.equal(await page.locator('#settings .w-title h1').count(), 1);
+    assert.equal(await page.locator('#settings .w-sq[data-action="back"]').count(), 1);
+    assert.equal(await page.locator('#settings .ios-back-t').count(), 0);
     await page.evaluate(() => { document.getElementById('settings').scrollTop = 120; }); await wait(250);
     assert.ok(/ios-collapsed/.test((await state(page, 'settings')).cls));
     await page.evaluate(() => { document.getElementById('settings').scrollTop = 0; }); await wait(250);
   });
-  await ok('pop (back button): settings slides out to the right while home returns', async () => {
-    await page.click('#settings .topbar-back'); await wait(110);
+  await ok('pop (back button): settings recedes into the glass while home comes forward', async () => {
+    await page.click('#settings [data-action="back"]'); await wait(110);
     const a = await state(page, 'settings'), b = await state(page, 'home');
     assert.ok(/ios-leaving/.test(a.cls) && b.active, 'during pop: ' + a.cls); assert.equal(a.vis, 'visible');
     await wait(800); assert.equal((await state(page, 'settings')).vis, 'hidden'); assert.equal(await page.evaluate(() => R.current()), 'home');

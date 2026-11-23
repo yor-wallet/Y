@@ -101,31 +101,35 @@ const IOS = (() => {
     const o = { duration: dur, easing: ez };
     const jobs = [];
     el.classList.add('ios-entering'); prevEl.classList.add('ios-leaving');
+    /* 14.4.0 — « glass depth »: screens no longer slide sideways. The new screen comes forward out of the glass (from slightly behind,
+       a little low, softly blurred), the old one recedes into it. Blur only on capable phones (html.w-lite turns it off). */
+    const lite = ROOT.classList.contains('w-lite'), B = v => lite ? 'none' : 'blur(' + v + 'px)';
+    const S = (y, s) => 'translate3d(0,' + y + ',0) scale(' + s + ')';
     if (kind === 'push'){
       el.style.zIndex = 3; prevEl.style.zIndex = 2; el.dataset.iosMode = 'push';
-      jobs.push(anim(el, [{ transform: T(d * 100 + '%', 0) }, { transform: T(0, 0) }], o));
-      jobs.push(anim(prevEl, [{ transform: T(0, 0) }, { transform: T(-d * 30 + '%', 0) }], o));
-      if (dm) jobs.push(anim(dm, [{ opacity: 0 }, { opacity: 1 }], o));
+      jobs.push(anim(el, [{ transform: S('26px', .92), opacity: 0, filter: B(8) }, { transform: S(0, 1), opacity: 1, filter: B(0) }], o));
+      jobs.push(anim(prevEl, [{ transform: S(0, 1), opacity: 1, filter: B(0) }, { transform: S('-10px', 1.04), opacity: 0, filter: B(6) }], o));
+      if (dm) jobs.push(anim(dm, [{ opacity: 0 }, { opacity: .6 }], o));
     } else if (kind === 'pop'){
       el.style.zIndex = 2; prevEl.style.zIndex = 3; prevEl.dataset.iosMode = 'push';
-      jobs.push(anim(prevEl, [{ transform: T(0, 0) }, { transform: T(d * 100 + '%', 0) }], o));
-      jobs.push(anim(el, [{ transform: T(-d * 30 + '%', 0) }, { transform: T(0, 0) }], o));
-      if (dm) jobs.push(anim(dm, [{ opacity: 1 }, { opacity: 0 }], o));
+      jobs.push(anim(prevEl, [{ transform: S(0, 1), opacity: 1, filter: B(0) }, { transform: S('26px', .9), opacity: 0, filter: B(8) }], o));
+      jobs.push(anim(el, [{ transform: S('-10px', 1.04), opacity: 0, filter: B(6) }, { transform: S(0, 1), opacity: 1, filter: B(0) }], o));
+      if (dm) jobs.push(anim(dm, [{ opacity: .6 }, { opacity: 0 }], o));
     } else if (kind === 'present'){
       el.style.zIndex = 3; prevEl.style.zIndex = 2; el.dataset.iosMode = 'sheet';
-      jobs.push(anim(el, [{ transform: T(0, '100%') }, { transform: T(0, 0) }], o));
-      jobs.push(anim(prevEl, [{ transform: T(0, 0, 1) }, { transform: T(0, 0, .94) }], o));
+      jobs.push(anim(el, [{ transform: T(0, '100%', .96) }, { transform: T(0, 0, 1) }], o));
+      jobs.push(anim(prevEl, [{ transform: T(0, 0, 1), filter: B(0) }, { transform: T(0, 0, .92), filter: B(4) }], o));
       if (dm) jobs.push(anim(dm, [{ opacity: 0 }, { opacity: 1 }], o));
     } else if (kind === 'dismiss'){
       el.style.zIndex = 2; prevEl.style.zIndex = 3; prevEl.dataset.iosMode = 'sheet';
-      jobs.push(anim(prevEl, [{ transform: T(0, 0) }, { transform: T(0, '100%') }], o));
-      jobs.push(anim(el, [{ transform: T(0, 0, .94) }, { transform: T(0, 0, 1) }], o));
+      jobs.push(anim(prevEl, [{ transform: T(0, 0, 1) }, { transform: T(0, '100%', .96) }], o));
+      jobs.push(anim(el, [{ transform: T(0, 0, .92), filter: B(4) }, { transform: T(0, 0, 1), filter: B(0) }], o));
       if (dm) jobs.push(anim(dm, [{ opacity: 1 }, { opacity: 0 }], o));
-    } else {                                    /* dissolve: tab switches, sign-in, anything unrelated */
+    } else {                                    /* tab switches, sign-in: the new screen rises a little while the old one fades */
       el.style.zIndex = 3; prevEl.style.zIndex = 2;
-      const od = { duration: reduced() ? 120 : 240, easing: 'ease-out' };
-      jobs.push(anim(el, [{ opacity: 0 }, { opacity: 1 }], od));
-      jobs.push(anim(prevEl, [{ opacity: 1 }, { opacity: 0 }], od));
+      const od = { duration: reduced() ? 120 : 360, easing: 'cubic-bezier(.22,1,.36,1)' };
+      jobs.push(anim(el, reduced() ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: S('14px', .985) }, { opacity: 1, transform: S(0, 1) }], od));
+      jobs.push(anim(prevEl, [{ opacity: 1 }, { opacity: 0 }], { duration: reduced() ? 120 : 220, easing: 'ease-out' }));
     }
     Promise.all(jobs).then(() => {
       el.classList.remove('ios-entering'); prevEl.classList.remove('ios-leaving');
@@ -149,7 +153,7 @@ const IOS = (() => {
   }
 
   /* ---------- large titles, collapsing bar, back label ---------- */
-  const LARGE = { history:1, notifications:1, settings:1, profile:1, cards:1, services:1 };
+  const LARGE = { history:1, notifications:1, profile:1, cards:1, services:1 };   /* settings has its own large header (14.4.0) */
   const screenTitle = el => {
     if (!el) return '';
     const n = el.querySelector('.ios-lt, .topbar-title, h1');

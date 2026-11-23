@@ -1,0 +1,106 @@
+/* OM Wallet 14.4.0 — the redesigned screens keep every action wired to the existing function:
+   - opening presentation: three screens, real buttons, « Skip » → sign-in, last button → sign-up, language switch
+   - sign-in: forgotten password → reset, create account → sign-up
+   - home: avatar → account, bell → notifications, four actions, three banners → deposit / send / markets
+   - My assets: details → asset page, search → markets, actions → deposit / send / withdraw / exchange
+   - settings: every category row opens its page or scrolls to its section; log out signs out
+   - messages: the new capsule is used by every toast() call */
+import assert from 'node:assert/strict';
+import { serve, launch, openApp } from './harness.mjs';
+const { srv, url } = await serve(); const browser = await launch();
+let failed = 0;
+const ok = (name, fn) => fn().then(() => console.log('  ok  ', name), e => { failed++; console.log('  FAIL', name, '\n      ', String(e.message).split('\n').slice(0, 4).join(' | ')); });
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const cur = page => page.evaluate(() => R.current());
+
+{
+  console.log('\n[ouverture et connexion]');
+  const { ctx, page, logs } = await openApp(browser, url, { lang: 'ar', signedOut: true, settle: 700 });
+  await wait(900);
+  await ok('présentation : 3 écrans, chacun son message et son bouton, « تخطي » visible', async () => {
+    assert.equal(await page.locator('.wp .wp-slide').count(), 3);
+    assert.equal(await page.locator('.wp [data-ob-cta]').count(), 3);
+    assert.equal((await page.locator('#ob-skip').innerText()).trim(), 'تخطي');
+    const titles = await page.$$eval('.wp .wp-glass h1', h => h.map(x => x.textContent));
+    assert.equal(new Set(titles).size, 3);
+  });
+  await ok('le bouton de chaque écran passe au suivant ; les points suivent', async () => {
+    await page.click('[data-ob-cta="0"]'); await wait(900);
+    assert.ok(await page.locator('.wp-slide[data-k="1"].on').count());
+    await page.click('[data-ob-cta="1"]'); await wait(900);
+    assert.ok(await page.locator('.wp-slide[data-k="2"].on').count());
+  });
+  await ok('changer de langue traduit la présentation (FR)', async () => {
+    await page.click('[data-ob-lang="fr"]'); await wait(400);
+    assert.equal((await page.locator('#ob-skip').textContent()).trim(), 'Passer');
+  });
+  await ok('« Passer » mène à la connexion', async () => {
+    await page.evaluate(() => { const s = document.getElementById('ob-skip'); s.style.visibility = 'visible'; s.click(); }); await wait(1200);
+    assert.equal(await page.locator('.wp').count(), 0);
+    assert.equal(await cur(page), 'login');
+  });
+  await ok('connexion : icône, titre, carte, mot de passe oublié → réinitialisation, créer un compte → inscription', async () => {
+    assert.equal(await page.locator('#login .w-auth-icon').count(), 1);
+    assert.equal(await page.locator('#login .w-auth-card #au-email').count(), 1);
+    await page.click('#au-to-reset'); await wait(700); assert.equal(await cur(page), 'reset');
+    await page.evaluate(() => R.go('login', { force: true })); await wait(600);
+    await page.click('#au-to-signup'); await wait(700); assert.equal(await cur(page), 'signup');
+  });
+  await ok('pas d’erreur de page', async () => { assert.deepEqual(logs, []); });
+  await ctx.close();
+}
+{
+  console.log('\n[accueil, actifs, paramètres]');
+  const { ctx, page, logs } = await openApp(browser, url, { lang: 'fr', settle: 900 });
+  const back = async () => { await page.evaluate(() => R.go('home', { force: true })); await wait(500); };
+  await ok('accueil : avatar → compte, cloche → notifications', async () => {
+    await page.click('#home .w-hdr [data-nav="account"]'); await wait(700); assert.equal(await cur(page), 'account');
+    await back(); await page.click('#home .w-hdr [data-action="notifications"]'); await wait(700); assert.equal(await cur(page), 'notifications');
+  });
+  await ok('accueil : les trois bannières ouvrent dépôt, envoi, marchés', async () => {
+    for (const [i, to] of [[0, 'deposit'], [1, 'send-internal'], [2, 'markets']]){
+      await back();
+      await page.evaluate(k => document.querySelectorAll('#home .w-promo-card')[k].click(), i); await wait(700);
+      assert.equal(await cur(page), to);
+    }
+  });
+  await ok('Mes actifs : « Voir les détails » ouvre l’actif, la loupe ouvre les marchés', async () => {
+    await page.evaluate(() => R.go('wallet', { force: true })); await wait(700);
+    await page.click('#wallet .w-pill[data-omx-asset="BTC"]'); await wait(800);
+    assert.equal(await cur(page), 'asset');
+    assert.match(await page.locator('#asset .omx-ah b').innerText(), /Bitcoin/);
+    await page.evaluate(() => R.go('wallet', { force: true })); await wait(700);
+    await page.click('#wallet .w-title [data-nav="markets"]'); await wait(700); assert.equal(await cur(page), 'markets');
+  });
+  await ok('Mes actifs : les quatre actions ouvrent dépôt, envoi, retrait, échange', async () => {
+    await page.evaluate(() => R.go('wallet', { force: true })); await wait(700);
+    assert.deepEqual(await page.$$eval('#wallet .w-hero .omx-act', b => b.map(x => x.getAttribute('data-nav'))), ['deposit', 'send-internal', 'withdraw', 'exchange']);
+  });
+  await ok('paramètres : chaque ligne ouvre sa page ou descend à sa section', async () => {
+    const want = { 'profile': 'profile', 'wallet': 'wallet', 'deposit': 'deposit', 'withdraw': 'withdraw', 'help': 'help' };
+    for (const [nav, to] of Object.entries(want)){
+      await page.evaluate(() => R.go('settings', { force: true })); await wait(600);
+      await page.click('#settings .w-list [data-nav="' + nav + '"]'); await wait(700);
+      assert.equal(await cur(page), to, nav);
+    }
+    await page.evaluate(() => R.go('settings', { force: true })); await wait(600);
+    for (const id of ['set-a-sec', 'set-a-notif', 'set-a-look']) assert.equal(await page.locator('#' + id).count(), 1, id);
+    await page.click('#settings [data-w-scroll="set-a-notif"]'); await wait(900);
+    assert.ok(await page.evaluate(() => document.getElementById('settings').scrollTop) > 100);
+  });
+  await ok('messages : toast() affiche la nouvelle capsule (icône, barre de temps)', async () => {
+    await page.evaluate(() => toast('Copié', 'success')); await wait(200);
+    assert.equal(await page.locator('#toasts .w-toast.success .w-ti svg').count(), 1);
+    assert.equal(await page.locator('#toasts .w-toast .w-tb').count(), 1);
+  });
+  await ok('paramètres : « Se déconnecter » déconnecte', async () => {
+    await page.evaluate(() => R.go('settings', { force: true })); await wait(600);
+    await page.click('#settings .w-out[data-action="sign-out"]'); await wait(3200);   /* sign-out waits up to 2 s for the phone alerts to be released */
+    assert.equal(await cur(page), 'login');
+  });
+  await ok('pas d’erreur de page', async () => { assert.deepEqual(logs, []); });
+  await ctx.close();
+}
+await browser.close(); srv.close();
+console.log(failed ? '\n' + failed + ' FAILED' : '\nALL PASSED');
+process.exit(failed ? 1 : 0);

@@ -33,9 +33,9 @@ const V12 = (() => {
   Object.assign(D.en, { active:'Active', tagline:'Your money. Anywhere. Instantly.', signupSub:'Create your account in minutes.', resetSub:'Enter your e-mail and we will send you a reset link.', createAccount:'Create account', language:'Language', notifEmpty:'You are all caught up', notifEmptyD:'New alerts about your money and security will appear here.' });
   Object.assign(D.fr, { active:'Active', tagline:'Votre argent. Partout. Instantan\u00e9ment.', signupSub:'Cr\u00e9ez votre compte en quelques minutes.', resetSub:'Saisissez votre e-mail, nous vous enverrons un lien de r\u00e9initialisation.', createAccount:'Cr\u00e9er un compte', language:'Langue', notifEmpty:'Vous \u00eates \u00e0 jour', notifEmptyD:'Les nouvelles alertes sur votre argent et votre s\u00e9curit\u00e9 appara\u00eetront ici.' });
   Object.assign(D.ar, { active:'\u0646\u0634\u0637\u0629', tagline:'\u0623\u0645\u0648\u0627\u0644\u0643. \u0641\u064a \u0643\u0644 \u0645\u0643\u0627\u0646. \u0641\u0648\u0631\u0627\u064b.', signupSub:'\u0623\u0646\u0634\u0626 \u062d\u0633\u0627\u0628\u0643 \u0641\u064a \u062f\u0642\u0627\u0626\u0642.', resetSub:'\u0623\u062f\u062e\u0644 \u0628\u0631\u064a\u062f\u0643 \u0627\u0644\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a \u0648\u0633\u0646\u0631\u0633\u0644 \u0644\u0643 \u0631\u0627\u0628\u0637 \u0625\u0639\u0627\u062f\u0629 \u0627\u0644\u062a\u0639\u064a\u064a\u0646.', createAccount:'\u0625\u0646\u0634\u0627\u0621 \u062d\u0633\u0627\u0628', language:'\u0627\u0644\u0644\u063a\u0629', notifEmpty:'\u0644\u0627 \u062c\u062f\u064a\u062f', notifEmptyD:'\u0633\u062a\u0638\u0647\u0631 \u0647\u0646\u0627 \u0627\u0644\u062a\u0646\u0628\u064a\u0647\u0627\u062a \u0627\u0644\u062c\u062f\u064a\u062f\u0629 \u0639\u0646 \u0623\u0645\u0648\u0627\u0644\u0643 \u0648\u0623\u0645\u0627\u0646\u0643.' });
-  Object.assign(D.en, { loginTitle:'Sign in', loginSub:'Your OM Wallet account', resetTitle:'Reset your password' });
-  Object.assign(D.fr, { loginTitle:'Connexion', loginSub:'Votre compte OM Wallet', resetTitle:'R\u00e9initialiser le mot de passe' });
-  Object.assign(D.ar, { loginTitle:'\u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644', loginSub:'\u062d\u0633\u0627\u0628\u0643 \u0641\u064a OM Wallet', resetTitle:'\u0625\u0639\u0627\u062f\u0629 \u062a\u0639\u064a\u064a\u0646 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631' });
+  Object.assign(D.en, { loginTitle:'Welcome back', loginSub:'Sign in to your wallet', resetTitle:'Reset your password' });
+  Object.assign(D.fr, { loginTitle:'Bon retour parmi nous', loginSub:'Connectez-vous à votre portefeuille', resetTitle:'R\u00e9initialiser le mot de passe' });
+  Object.assign(D.ar, { loginTitle:'أهلاً بك من جديد', loginSub:'سجّل دخولك إلى محفظتك', resetTitle:'إعادة تعيين كلمة المرور' });
 
   /* 12.4.0 — honest card states (a card is a "preview" until a real card issuer is connected), card details, themes */
   Object.assign(D.en, { idLabel:'OM card ID', idNote:'Reference of this card in OM Wallet. It is not a payment card number.',
@@ -372,8 +372,8 @@ const V12 = (() => {
     const oldLogo = body.querySelector('.logo-lockup'); if (oldLogo && oldLogo.parentElement !== body) oldLogo.parentElement.remove();
     const hero = document.createElement('div'); hero.className = 'rv-auth-hero';
     const brandName = LANG === 'ar' ? 'OM Wallet' : 'OM Wallet';
-    /* sober sign-in header: the logo lockup used as a logo only (small, one per theme), then a plain title and one line */
-    hero.innerHTML = '<img class="rv-auth-logo rv-l" src="assets/brand/om-logo-horizontal.png" alt="' + brandName + '" width="150" height="54"><img class="rv-auth-logo rv-d" src="assets/brand/om-logo-horizontal-white.png" alt="" aria-hidden="true" width="150" height="54"><h1>' + vt(id === 'login' ? 'loginTitle' : id === 'signup' ? 'createAccount' : 'resetTitle') + '</h1><p>' + vt(id === 'login' ? 'loginSub' : id === 'signup' ? 'signupSub' : 'resetSub') + '</p>';
+    /* sign-in header from the owner's reference: the glass app icon, the word mark, a greeting and one line */
+    hero.innerHTML = '<span class="w-auth-icon" role="img" aria-label="' + brandName + '"></span><p class="w-auth-word" aria-hidden="true">OM Wallet</p><h1>' + vt(id === 'login' ? 'loginTitle' : id === 'signup' ? 'createAccount' : 'resetTitle') + '</h1><p>' + vt(id === 'login' ? 'loginSub' : id === 'signup' ? 'signupSub' : 'resetSub') + '</p>';
     body.insertBefore(hero, body.firstChild);
     if (id === 'signup'){ const tt = root.querySelector('.topbar-title'); if (tt) tt.textContent = vt('createAccount'); }
     if (id !== 'reset'){

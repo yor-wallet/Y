@@ -8,15 +8,17 @@ function mainAccount(){
 }
 
 function renderLogin(){
+  /* sign-in, laid out like the owner's reference: glass icon, word mark, greeting, one glass card (e-mail, password, forgotten password, sign-in) */
   return '<div class="topbar"><span class="topbar-title">OM Wallet</span><span style="width:calc(44px*var(--ui))"></span></div>' +
-    '<div class="screen-body" style="padding-top:var(--sp-4);max-width:calc(460px*var(--ui));margin:0 auto;width:100%">' +
-      '<div style="display:flex;justify-content:center;padding:var(--sp-4) 0">' + logoLockup(56) + '</div>' +
-      '<div class="field"><label class="field-label" for="au-email">' + t('auth.username') + '</label><div class="field-box"><input type="email" id="au-email" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" class="ltr"></div></div>' +
-      '<div class="field"><label class="field-label" for="au-pass">' + t('auth.code') + '</label><div class="field-box"><input type="password" id="au-pass" autocomplete="current-password" class="ltr"><button type="button" class="field-icon" data-auth-toggle="au-pass" aria-label="' + t('auth.show') + '" style="padding:calc(6px*var(--ui))">' + icon('eye', 18) + '</button></div></div>' +
-      '<div class="field-err" id="login-err" style="text-align:center" role="alert"></div>' +
-      '<button class="btn btn-primary" id="au-submit" type="button">' + t('auth.signin') + '</button>' +
+    '<div class="screen-body">' +
+      '<section class="glass w-auth-card">' +
+        '<div class="field"><label class="field-label" for="au-email">' + t('auth.username') + '</label><div class="field-box">' + icon('mail', 22) + '<input type="email" id="au-email" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" class="ltr" placeholder="' + escapeHtml(t('auth.username')) + '"></div></div>' +
+        '<div class="field"><label class="field-label" for="au-pass">' + t('auth.code') + '</label><div class="field-box">' + icon('lock', 22) + '<input type="password" id="au-pass" autocomplete="current-password" class="ltr" placeholder="' + escapeHtml(t('auth.code')) + '"><button type="button" class="field-icon" data-auth-toggle="au-pass" aria-label="' + t('auth.show') + '" style="padding:calc(6px*var(--ui))">' + icon('eye', 20) + '</button></div></div>' +
+        '<button class="w-forgot" id="au-to-reset" type="button">' + t('auth.forgot') + '</button>' +
+        '<div class="field-err" id="login-err" role="alert"></div>' +
+        '<button class="btn btn-primary" id="au-submit" type="button">' + t('auth.signin') + '</button>' +
+      '</section>' +
       '<button class="btn btn-ghost" id="au-to-signup" type="button">' + t('auth.noAccount') + '</button>' +
-      '<button class="btn btn-ghost" id="au-to-reset" type="button" style="font-size:calc(13px*var(--ui))">' + t('auth.forgot') + '</button>' +
     '</div>';
 }
 

@@ -98,6 +98,9 @@ Object.assign(TR.ar, { 'set.c.look':'المظهر', 'set.c.lookD':'المظهر 
 function setCat(ic, title, desc){
   return '<div class="set-cat"><span class="set-cat-ic">' + icon(ic, 18) + '</span><div><h2>' + escapeHtml(title) + '</h2>' + (desc ? '<p>' + escapeHtml(desc) + '</p>' : '') + '</div></div>';
 }
+Object.assign(TR.en, { 'set.r.profile':'Personal account', 'set.r.security':'Security & sign-in', 'set.r.wallet':'Wallet & currencies', 'set.r.networks':'Networks & addresses', 'set.r.transfers':'Transfers & withdrawals', 'set.r.notifs':'Notifications', 'set.r.look':'Appearance & motion', 'set.r.lang':'Language & currency', 'set.r.help':'Help & learning', 'set.r.all':'All settings' });
+Object.assign(TR.fr, { 'set.r.profile':'Compte personnel', 'set.r.security':'Sécurité et connexion', 'set.r.wallet':'Portefeuille et devises', 'set.r.networks':'Réseaux et adresses', 'set.r.transfers':'Transferts et retraits', 'set.r.notifs':'Notifications', 'set.r.look':'Apparence et animations', 'set.r.lang':'Langue et devise', 'set.r.help':'Aide et apprentissage', 'set.r.all':'Tous les réglages' });
+Object.assign(TR.ar, { 'set.r.profile':'الحساب الشخصي', 'set.r.security':'الأمان وتسجيل الدخول', 'set.r.wallet':'المحفظة والعملات', 'set.r.networks':'الشبكات والعناوين', 'set.r.transfers':'التحويلات والسحب', 'set.r.notifs':'الإشعارات', 'set.r.look':'المظهر والحركة', 'set.r.lang':'اللغة والعملة', 'set.r.help':'المساعدة والتعلم', 'set.r.all':'جميع الإعدادات' });
 function renderSettings(){
   const setts = Runtime.settings || {};
   const sec = Runtime.security || {};
@@ -112,12 +115,18 @@ function renderSettings(){
   const yid = dispId(Runtime.ctx.yorId || '');
   const chipRow = inner => '<div class="set-chips">' + inner + '</div>';
 
-  let html = '<div class="topbar px-topbar">' +
-      '<button class="topbar-back" data-action="back" aria-label="' + t('ui.back') + '"><span class="dir-flip" style="display:inline-flex">' + icon('back', 20) + '</span></button>' +
-      '<span class="topbar-title">' + t('settings.title') + '</span>' +
-      '<span style="width:calc(44px*var(--ui))"></span>' +
-    '</div>' +
-    '<div class="screen-body set-body" style="padding-top:var(--sp-2)">';
+  /* header and category list from the owner's settings reference; every row opens a real page or the matching section below */
+  const sr = (k, ic, attr) => '<button type="button" class="w-row" ' + attr + '><span class="w-tile">' + icon(ic, 24) + '</span><b>' + escapeHtml(t('set.r.' + k)) + '</b><span class="w-chev dir-flip">' + icon('chev', 20) + '</span></button>';
+  let html = '<div class="screen-body set-body w-set">' +
+    '<div class="w-head">' + (typeof OMX !== 'undefined' ? '<span class="w-brand"><img class="w-l" src="assets/brand/om-logo-horizontal.png" alt="OM Wallet" width="150" height="54"><img class="w-d" src="assets/brand/om-logo-horizontal-white.png" alt="" width="150" height="54"></span>' : '') + '<span></span></div>' +
+    '<div class="w-title"><button class="w-sq" data-action="back" aria-label="' + t('ui.back') + '"><span class="dir-flip" style="display:inline-flex">' + icon('back', 22) + '</span></button><h1>' + t('settings.title') + '</h1><span class="w-sp"></span></div>' +
+    '<section class="glass w-list">' +
+      sr('profile', 'user', 'data-nav="profile"') + sr('security', 'shield', 'data-w-scroll="set-a-sec"') + sr('wallet', 'wallet', 'data-nav="wallet"') +
+      sr('networks', 'share', 'data-nav="deposit"') + sr('transfers', 'swap', 'data-nav="withdraw"') + sr('notifs', 'bell', 'data-w-scroll="set-a-notif"') +
+      sr('look', 'sparkle', 'data-w-scroll="set-a-look"') + sr('lang', 'globe', 'data-w-scroll="set-a-look"') + sr('help', 'help', 'data-nav="help"') +
+    '</section>' +
+    '<button type="button" class="glass w-out" data-action="sign-out">' + icon('logout', 22) + '<span>' + t('ac.logout') + '</span></button>' +
+    '<div class="w-sec-t">' + t('set.r.all') + '</div>';
 
   /* account summary -> profile */
   html += '<button class="set-me" type="button" data-nav="profile">' + (typeof pxAvatar === 'function' ? pxAvatar(p) : '') +
@@ -125,6 +134,7 @@ function renderSettings(){
     (isAdmin ? '<span class="badge badge-accent">ADMIN</span>' : '') + '<span class="settings-row-chev">' + icon('chev', 18) + '</span></button>';
 
   /* 1. Appearance */
+  html += '<div id="set-a-look" class="w-anchor"></div>';
   html += setCat('sparkle', t('set.c.look'), t('set.c.lookD'));
   html += '<div class="settings-group">' +
     '<div class="settings-row" style="cursor:default"><div class="tile">' + icon('sparkle', 20) + '</div><div class="settings-row-body"><div class="settings-row-title">' + t('settings.theme') + '</div><div class="settings-row-sub" id="set-theme-sub">' + t('theme.' + savedThemeMode()) + '</div></div></div>' +
@@ -137,6 +147,7 @@ function renderSettings(){
   '</div>';
 
   /* 2. Notifications — in-app, phone alerts (push), SMS: three distinct channels */
+  html += '<div id="set-a-notif" class="w-anchor"></div>';
   html += setCat('bell', t('set.c.notif'), t('set.c.notifD'));
   html += '<p class="set-note">' + icon('info', 15) + '<span>' + escapeHtml(t('set.chan')) + '</span></p>';
   html += '<div class="settings-group">' +
@@ -154,6 +165,7 @@ function renderSettings(){
   '</div>';
 
   /* 3. Security and privacy */
+  html += '<div id="set-a-sec" class="w-anchor"></div>';
   html += setCat('shield', t('set.c.sec'), t('set.c.secD'));
   html += '<div class="settings-group">' +
     '<button class="settings-row" type="button" data-px="pin"><div class="tile">' + icon('lock', 20) + '</div><div class="settings-row-body"><div class="settings-row-title">' + escapeHtml(t('px.pinChange')) + '</div><div class="settings-row-sub">' + escapeHtml(t('px.pinChangeD')) + '</div></div><span class="settings-row-chev">' + icon('chev', 18) + '</span></button>' +

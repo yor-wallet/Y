@@ -26,7 +26,9 @@ Object.assign(TR.en, {
   'omx.depInfo':'Your personal deposit address for this network: it belongs to your account only. Scan the QR code or copy the address.','omx.qrAlt':'QR code of your deposit address','omx.share':'Share',
   'omx.home':'Home',
   'omx.navCrypto':'Crypto',
-  'omx.back':'Back','omx.copy':'Copy','omx.copied':'Copied'
+  'omx.back':'Back','omx.copy':'Copy','omx.copied':'Copied',
+  'omx.details':'View details','omx.myAssets':'My assets','omx.digital':'Digital wallet',
+  'omx.pr1':'Deposit your crypto safely','omx.pr1d':'Your own address and QR code','omx.pr2':'Send to an OM Wallet user','omx.pr2d':'By e-mail, in a few steps','omx.pr3':'Follow the markets live','omx.pr3d':'Real prices from Binance'
 });
 Object.assign(TR.fr, {
   'omx.welcome':'Bienvenue, {n}','omx.total':'Total des actifs','omx.omr':'≈ {v} OMR','omx.chg':'24 h','omx.pfNote':'Valeur de vos avoirs actuels aux cours du marché (Binance)',
@@ -49,7 +51,9 @@ Object.assign(TR.fr, {
   'omx.depInfo':'Votre adresse de dépôt personnelle pour ce réseau : elle appartient à votre compte seulement. Scannez le QR code ou copiez l’adresse.','omx.qrAlt':'QR code de votre adresse de dépôt','omx.share':'Partager',
   'omx.home':'Accueil',
   'omx.navCrypto':'Crypto',
-  'omx.back':'Retour','omx.copy':'Copier','omx.copied':'Copié'
+  'omx.back':'Retour','omx.copy':'Copier','omx.copied':'Copié',
+  'omx.details':'Voir les détails','omx.myAssets':'Mes actifs','omx.digital':'Portefeuille numérique',
+  'omx.pr1':'Déposez vos cryptos en sécurité','omx.pr1d':'Votre adresse et votre QR code personnels','omx.pr2':'Envoyez à un utilisateur OM Wallet','omx.pr2d':'Par e-mail, en quelques étapes','omx.pr3':'Suivez les marchés en direct','omx.pr3d':'Cours réels Binance'
 });
 Object.assign(TR.ar, {
   'omx.welcome':'مرحباً، {n}','omx.total':'إجمالي الأصول','omx.omr':'≈ {v} ر.ع.','omx.chg':'24 ساعة','omx.pfNote':'قيمة أصولك الحالية بأسعار السوق (Binance)',
@@ -72,7 +76,9 @@ Object.assign(TR.ar, {
   'omx.depInfo':'عنوان الإيداع الشخصي لهذه الشبكة: يخص حسابك وحده. امسح رمز QR أو انسخ العنوان.','omx.qrAlt':'رمز QR لعنوان الإيداع','omx.share':'مشاركة',
   'omx.home':'الرئيسية',
   'omx.navCrypto':'الكريبتو',
-  'omx.back':'رجوع','omx.copy':'نسخ','omx.copied':'تم النسخ'
+  'omx.back':'رجوع','omx.copy':'نسخ','omx.copied':'تم النسخ',
+  'omx.details':'عرض التفاصيل','omx.myAssets':'أصولي','omx.digital':'المحفظة الرقمية',
+  'omx.pr1':'أودع عملاتك الرقمية بأمان','omx.pr1d':'عنوانك ورمز QR الخاص بك','omx.pr2':'أرسل إلى مستخدم OM Wallet','omx.pr2d':'عبر البريد الإلكتروني بخطوات قليلة','omx.pr3':'تابع الأسواق مباشرة','omx.pr3d':'أسعار حقيقية من Binance'
 });
 
 const OMX = (() => {
@@ -132,31 +138,39 @@ const OMX = (() => {
     const act = (nav, ic, lbl, p1) => '<button class="omx-act' + (p1 ? ' p' : '') + '" data-nav="' + nav + '"><i>' + icon(ic, 26) + '</i><span>' + escapeHtml(lbl) + '</span></button>';
     const totalTxt = hide ? '••••••' : (tt.missing && !OMXMarket.status().lastSync ? '—' : omxUsd(tt.usd, { dp: 2 }));
     const movers = OMX_ASSETS.filter(a => OMXMarket.get(a.sym)).sort((x, y) => Math.abs(OMXMarket.get(y.sym).pct || 0) - Math.abs(OMXMarket.get(x.sym).pct || 0)).slice(0, 4);
-    return '<div class="omx-home">' +
-      '<header class="omx-head"><button class="hub-circ" data-nav="account" aria-label="' + escapeHtml(t('px.openProfile')) + '">' + icon('user', 24) + '</button>' +
+    const promos = [['deposit', 'omx.pr1', 'omx.pr1d'], ['send-internal', 'omx.pr2', 'omx.pr2d'], ['markets', 'omx.pr3', 'omx.pr3d']];
+    return '<div class="omx-home w-home">' +
+      '<header class="omx-head w-hdr"><button class="hub-circ" data-nav="account" aria-label="' + escapeHtml(t('px.openProfile')) + '">' + icon('user', 24) + '</button>' +
         omxLogoLine() +
-        '<span class="omx-hr"><button class="hub-circ" data-px="search" aria-label="' + escapeHtml(t('px.search')) + '">' + icon('search', 22) + '</button>' +
-        '<button class="hub-circ" data-action="notifications" aria-label="' + escapeHtml(t('px.notifs')) + '">' + icon('bell', 22) + (unread ? '<span class="rv-bdg dot"></span>' : '') + '</button></span></header>' +
-      '<p class="omx-hello">' + escapeHtml(tf('omx.welcome', { n: name })) + '</p>' +
+        '<button class="hub-circ" data-action="notifications" aria-label="' + escapeHtml(t('px.notifs')) + '">' + icon('bell', 22) + (unread ? '<span class="rv-bdg dot"></span>' : '') + '</button></header>' +
+      '<div class="w-hello"><h2 class="omx-hello">' + escapeHtml(tf('omx.welcome', { n: name })) + '</h2><p>' + escapeHtml(t('hm.sub')) + '</p></div>' +
+      '<div class="w-scene" aria-hidden="true"></div>' +
       '<section class="omx-card omx-total" aria-label="' + escapeHtml(t('omx.total')) + '">' +
-        '<div class="omx-tl"><span>' + escapeHtml(t('omx.total')) + '</span><button class="ds-eye" data-action="toggle-balance" aria-pressed="' + (hide ? 'true' : 'false') + '" aria-label="' + escapeHtml(t(hide ? 'px.showBal' : 'px.hideBal')) + '">' + icon(hide ? 'eyeOff' : 'eye', 22) + '</button></div>' +
+        '<div class="omx-tl"><span>' + escapeHtml(t('omx.total')) + '</span><button class="ds-eye" data-action="toggle-balance" aria-pressed="' + (hide ? 'true' : 'false') + '" aria-label="' + escapeHtml(t(hide ? 'px.showBal' : 'px.hideBal')) + '">' + icon(hide ? 'eyeOff' : 'eye', 20) + '</button></div>' +
         '<div class="omx-tv ltr" id="omx-total-v" data-omx-total>' + escapeHtml(totalTxt) + '</div>' +
+        '<span class="w-emblem" aria-hidden="true"></span>' +
         '<div class="omx-ts">' + (hide ? '' : '<span class="ltr" data-omx-omr>≈ ' + moneyHtml(CurrencyEngine.format(Math.round(tt.omr * 1000) / 1000, 'OMR')) + '</span>' +
           (tt.pct != null && tt.hasCrypto ? '<span class="omx-chip ' + (tt.pct >= 0 ? 'up' : 'down') + '">' + escapeHtml(omxPct(tt.pct)) + ' · ' + escapeHtml(t('omx.chg')) + '</span>' : '')) + '</div>' +
         '<div class="omx-pf" id="omx-pf" aria-hidden="' + (hide ? 'true' : 'false') + '"></div>' +
         (tt.hasCrypto ? '<small class="omx-note">' + escapeHtml(t('omx.pfNote')) + '</small>' : '') +
       '</section>' +
       '<nav class="omx-acts" aria-label="' + escapeHtml(t('omx.total')) + '">' + act('deposit', 'receive', t('omx.deposit'), true) + act('withdraw', 'download', t('omx.withdraw')) + act('exchange', 'swap', t('omx.exchange')) + act('markets', 'chart', t('omx.markets')) + '</nav>' +
+      /* shortcut banners: each one opens a real screen (deposit, send to an OM Wallet user, markets) */
+      '<section class="omx-card w-promo" data-w-carousel aria-roledescription="carousel"><div class="w-promo-track">' +
+        promos.map((x, k) => '<button type="button" class="w-promo-card" data-nav="' + x[0] + '" aria-label="' + escapeHtml(t(x[1])) + '"' + (k ? ' tabindex="-1"' : '') + '><span class="w-promo-art" aria-hidden="true"></span>' +
+          '<span><b>' + escapeHtml(t(x[1])) + '</b><small>' + escapeHtml(t(x[2])) + '</small></span><span class="w-promo-go dir-flip" aria-hidden="true">' + icon('chev', 18) + '</span></button>').join('') +
+      '</div></section><div class="w-dots" aria-hidden="true">' + promos.map((x, k) => '<i class="' + (k ? '' : 'on') + '"></i>').join('') + '</div>' +
+      '<section class="omx-card omx-sec"><div class="omx-sh"><h2>' + escapeHtml(t('px.recent')) + '</h2><button data-nav="history">' + escapeHtml(t('px.seeAll')) + '</button></div>' +
+        ((visibleTransactions(Runtime.transactions || []).slice(0, 4)).length ? txGroupedHtml(visibleTransactions(Runtime.transactions || []).slice(0, 4), hide) : '<div class="rv-list">' + emptyState('history', V12.vt('noTx'), t('ds.nohist_body')) + '</div>') + '</section>' +
       '<section class="omx-card omx-sec"><div class="omx-sh"><h2>' + escapeHtml(t('omx.yourAssets')) + '</h2><button data-nav="wallet">' + escapeHtml(t('px.seeAll')) + '</button></div>' +
         (hs.length ? '<div class="omx-list">' + hs.slice(0, 4).map(h => assetRow(omxAsset(h.sym) || { sym: h.sym, name: h.sym }, { qty: h.qty, mask: hide })).join('') + '</div>'
           : '<div class="omx-empty">' + icon('crypto', 30) + '<b>' + escapeHtml(t('omx.noAssets')) + '</b><p>' + escapeHtml(t('omx.noAssetsD')) + '</p><button class="btn btn-secondary" data-nav="markets">' + escapeHtml(t('omx.seeMarkets')) + '</button></div>') + '</section>' +
       '<section class="omx-card omx-sec"><div class="omx-sh"><h2>' + escapeHtml(t('omx.movers')) + '</h2><button data-nav="markets">' + escapeHtml(t('px.seeAll')) + '</button></div>' + statusLine() +
         '<div class="omx-list" id="omx-home-mk">' + (movers.length ? movers.map(a => assetRow(a)).join('') : skeletonRows(3)) + '</div></section>' +
-      '<section class="omx-card omx-sec"><div class="omx-sh"><h2>' + escapeHtml(t('px.recent')) + '</h2><button data-nav="history">' + escapeHtml(t('px.seeAll')) + '</button></div>' +
-        ((visibleTransactions(Runtime.transactions || []).slice(0, 4)).length ? txGroupedHtml(visibleTransactions(Runtime.transactions || []).slice(0, 4), hide) : '<div class="rv-list">' + emptyState('history', V12.vt('noTx'), t('ds.nohist_body')) + '</div>') + '</section>' +
       '</div>';
   }
-  function omxLogoLine(){ return '<span class="omx-brand" role="img" aria-label="OM Wallet"><b>OM Wallet</b></span>'; }
+  /* the logo lockup heads the page, as in the owner's references (light and dark files) */
+  function omxLogoLine(){ return '<span class="omx-brand w-brand" role="img" aria-label="OM Wallet"><img class="w-l" src="assets/brand/om-logo-horizontal.png" alt="" width="150" height="54" decoding="async"><img class="w-d" src="assets/brand/om-logo-horizontal-white.png" alt="" width="150" height="54" decoding="async"></span>'; }
   async function paintPortfolio(){
     const host = document.getElementById('omx-pf'); if (!host || Runtime.hideBalance) return;
     const hs = holdings(); if (!hs.length){ host.innerHTML = ''; return; }
@@ -171,14 +185,22 @@ const OMX = (() => {
   /* ---------- CRYPTO (portfolio) ---------- */
   function renderWallet(){
     const hs = holdings(), held = new Set(hs.map(h => h.sym)), hide = !!Runtime.hideBalance, tt = totals();
-    return top(t('omx.crypto'), false) + '<div class="screen-body omx-page">' +
-      '<section class="omx-card omx-total sm"><div class="omx-tl"><span>' + escapeHtml(t('omx.total')) + '</span></div><div class="omx-tv ltr">' + escapeHtml(hide ? '••••••' : omxUsd(tt.usd, { dp: 2 })) + '</div>' +
-        '<div class="omx-acts mini">' + ['deposit:receive:omx.deposit', 'send-internal:send:si.short', 'withdraw:download:omx.withdraw', 'exchange:swap:omx.exchange'].map(x => { const s = x.split(':'); return '<button class="omx-act" data-nav="' + s[0] + '"><i>' + icon(s[1], 22) + '</i><span>' + escapeHtml(t(s[2])) + '</span></button>'; }).join('') + '</div></section>' +
-      '<section class="omx-card omx-sec"><div class="omx-sh"><h2>' + escapeHtml(t('omx.yourAssets')) + '</h2></div>' +
-        (hs.length ? '<div class="omx-list">' + hs.map(h => assetRow(omxAsset(h.sym) || { sym: h.sym, name: h.sym }, { qty: h.qty, mask: hide })).join('') + '</div>'
-          : '<div class="omx-empty">' + icon('crypto', 30) + '<b>' + escapeHtml(t('omx.noAssets')) + '</b><p>' + escapeHtml(t('omx.noAssetsD')) + '</p></div>') + '</section>' +
-      '<section class="omx-card omx-sec"><div class="omx-sh"><h2>' + escapeHtml(t('omx.markets')) + '</h2></div>' + statusLine() +
-        '<div class="omx-list">' + OMX_ASSETS.filter(a => !held.has(a.sym)).map(a => assetRow(a)).join('') + '</div></section></div>';
+    /* one glass card per asset: logo, symbol, name, « View details » (opens the real asset page) */
+    const card = (a, qty) => '<div class="omx-card w-arow">' + omxLogo(a.sym, 56) +
+      '<span class="w-an"><b>' + escapeHtml(a.sym) + '</b><small>' + escapeHtml(a.name) + '</small>' +
+        (qty != null ? '<span class="w-aq ltr" dir="ltr" data-omx-v="' + a.sym + '"' + (hide ? ' data-omx-mask="1"' : ' data-omx-q="' + qty + '"') + '>' + escapeHtml(hide ? '••••' : (OMXMarket.get(a.sym) ? omxUsd(qty * OMXMarket.get(a.sym).price) : omxQty(qty, a.sym))) + '</span>' : '') + '</span>' +
+      '<button type="button" class="w-pill" data-omx-asset="' + a.sym + '">' + escapeHtml(t('omx.details')) + '</button></div>';
+    return '<div class="w-assets">' +
+      '<div class="w-head">' + omxLogoLine() + '<span></span></div>' +
+      '<div class="w-title"><button class="w-sq" data-action="back" aria-label="' + escapeHtml(t('ui.back')) + '"><span class="dir-flip" style="display:inline-flex">' + icon('back', 22) + '</span></button>' +
+        '<h1>' + escapeHtml(t('omx.myAssets')) + '</h1><button class="w-sq" data-nav="markets" aria-label="' + escapeHtml(t('omx.search')) + '">' + icon('search', 22) + '</button></div>' +
+      '<section class="omx-card w-hero"><span class="w-hero-art" aria-hidden="true"></span><h2>' + escapeHtml(t('omx.digital')) + '</h2>' +
+        '<span class="w-hero-v ltr">' + escapeHtml(hide ? '••••••' : omxUsd(tt.usd, { dp: 2 })) + '</span>' +
+        '<div class="omx-acts mini">' + ['deposit:receive:omx.deposit', 'send-internal:send:si.short', 'withdraw:download:omx.withdraw', 'exchange:swap:omx.exchange'].map((x, k) => { const s2 = x.split(':'); return '<button class="omx-act' + (k ? '' : ' p') + '" data-nav="' + s2[0] + '"><i>' + icon(s2[1], 22) + '</i><span>' + escapeHtml(t(s2[2])) + '</span></button>'; }).join('') + '</div></section>' +
+      (hs.length ? '<div class="w-alist">' + hs.map(h => card(omxAsset(h.sym) || { sym: h.sym, name: h.sym }, h.qty)).join('') + '</div>'
+        : '<section class="omx-card omx-empty">' + icon('crypto', 30) + '<b>' + escapeHtml(t('omx.noAssets')) + '</b><p>' + escapeHtml(t('omx.noAssetsD')) + '</p></section>') +
+      '<h3 class="w-sec-t">' + escapeHtml(t('omx.markets')) + '</h3>' + statusLine() +
+      '<div class="w-alist">' + OMX_ASSETS.filter(a => !held.has(a.sym)).map(a => card(a, null)).join('') + '</div></div>';
   }
   /* ---------- MARKETS ---------- */
   function marketRows(){
