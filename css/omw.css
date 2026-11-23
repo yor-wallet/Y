@@ -170,7 +170,7 @@ html:root:root[data-theme="dark"] body .w-home .omx-total{background:linear-grad
 .w-home .omx-total .omx-tl{grid-column:1;display:flex;align-items:center;gap:10px;color:var(--w-ink2);font-weight:700;font-size:16px}
 .w-home .omx-total .omx-tv{grid-column:1;font-size:clamp(30px,9vw,44px);font-weight:800;color:var(--w-ink);letter-spacing:-.02em;line-height:1.05}
 .w-home .omx-total .omx-ts,.w-home .omx-total .omx-pf,.w-home .omx-total .omx-note{grid-column:1 / -1}
-.w-emblem{grid-column:2;grid-row:1 / span 3;width:96px;height:96px;border-radius:26px;background:url(../assets/brand/app-icon-glass-360.png) center/112% no-repeat;
+.w-emblem{grid-column:2;grid-row:1 / span 3;width:96px;height:96px;border-radius:26px;background:url(../assets/brand/app-icon-glass-hd.png) center/112% no-repeat;
   box-shadow:0 18px 30px -16px rgba(20,110,230,.65);transform:rotate(-6deg);animation:wFloat 6s ease-in-out infinite}
 @keyframes wFloat{0%,100%{transform:rotate(-6deg) translateY(0)}50%{transform:rotate(-3deg) translateY(-6px)}}
 html:root:root body .w-home .ds-eye{width:40px;height:40px;min-width:40px;border-radius:50%!important}
@@ -193,7 +193,7 @@ html:root:root body .omx-acts.mini .omx-act{min-height:84px;border-radius:22px!i
 .w-promo-card{flex:0 0 100%;display:grid;grid-template-columns:76px 1fr 40px;align-items:center;gap:14px;padding:18px 18px;cursor:pointer;border:0;background:transparent;color:inherit;text-align:start}
 .w-promo-card b{display:block;font-size:17px;font-weight:800;color:var(--w-ink)}
 .w-promo-card small{display:block;margin-top:4px;font-size:14px;color:var(--w-blue);font-weight:600}
-.w-promo-art{width:76px;height:76px;border-radius:22px;background:url(../assets/brand/app-icon-glass-360.png) center/118% no-repeat;transform:rotate(-8deg);box-shadow:0 14px 24px -14px rgba(20,110,230,.6)}
+.w-promo-art{width:76px;height:76px;border-radius:22px;background:url(../assets/brand/app-icon-glass-hd.png) center/118% no-repeat;transform:rotate(-8deg);box-shadow:0 14px 24px -14px rgba(20,110,230,.6)}
 .w-promo-go{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--w-glass3);color:var(--w-blue);border:1px solid var(--w-stroke)}
 .w-dots{display:flex;justify-content:center;gap:7px;margin-top:-6px}
 .w-dots i{width:8px;height:8px;border-radius:50%;background:rgba(26,132,245,.22);transition:width .35s var(--w-ease),background .3s}
@@ -250,7 +250,7 @@ html:root:root body .rv-auth{background:transparent!important}
 html:root:root body .rv-auth .screen-body{max-width:460px!important;padding:24px 20px calc(30px + var(--safe-b,0px))!important}
 html:root:root body #login.rv-auth .topbar{display:none}
 html:root:root body .rv-auth .rv-auth-hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:8px 0 22px}
-.w-auth-icon{width:min(44vw,190px);aspect-ratio:1;border-radius:26%;background:url(../assets/brand/app-icon-glass-360.png) center/100% no-repeat;filter:drop-shadow(0 22px 30px rgba(30,120,230,.35));
+.w-auth-icon{width:min(44vw,190px);aspect-ratio:1;border-radius:26%;background:url(../assets/brand/app-icon-glass-hd.png) center/100% no-repeat;filter:drop-shadow(0 22px 30px rgba(30,120,230,.35));
   animation:wIconIn .9s var(--w-spring) both}
 @keyframes wIconIn{0%{opacity:0;transform:translateY(18px) scale(.86)}100%{opacity:1;transform:none}}
 .w-auth-word{margin:10px 0 0;font-size:clamp(30px,9vw,40px);font-weight:800;letter-spacing:-.01em;background:linear-gradient(180deg,#1C5FD6,#0B2E7A);-webkit-background-clip:text;background-clip:text;color:transparent!important}
@@ -359,7 +359,7 @@ html:root:root body .btn.is-loading::before{content:"";position:absolute;left:50
 .wp-langs button{min-height:36px;padding:0 10px;border-radius:12px;border:1px solid #fff;background:rgba(255,255,255,.6);color:#0B1E54;font-weight:700;font-size:13px}
 .wp-langs button[aria-pressed="true"]{background:var(--w-grad);color:#fff;border-color:transparent}
 .wp-third{position:absolute;inset:0 0 auto 0;height:74%;display:grid;place-items:center}
-.wp-third .wp-icon{width:min(56vw,230px);aspect-ratio:1;border-radius:26%;background:url(../assets/brand/app-icon-glass-360.png) center/100% no-repeat;filter:drop-shadow(0 30px 40px rgba(30,120,230,.4));animation:wFloat3 6s ease-in-out infinite}
+.wp-third .wp-icon{width:min(56vw,230px);aspect-ratio:1;border-radius:26%;background:url(../assets/brand/app-icon-glass-hd.png) center/100% no-repeat;filter:drop-shadow(0 30px 40px rgba(30,120,230,.4));animation:wFloat3 6s ease-in-out infinite}
 .wp-ring{position:absolute;width:min(86vw,360px);aspect-ratio:1;border-radius:50%;border:1.5px solid rgba(255,255,255,.95);box-shadow:inset 0 0 60px rgba(120,190,255,.35);animation:wSpin 24s linear infinite}
 @keyframes wFloat3{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-12px) rotate(2deg)}}
 @keyframes wSpin{to{transform:rotate(360deg)}}
