@@ -19,6 +19,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 //     Chaque bouton ouvre la page de confirmation /admin-action avec un jeton personnel, créé AU MOMENT de l'envoi (issue_admin_action_links :
 //     seul le haché est stocké en base ; la file d'e-mails ne contient jamais de jeton utilisable ; un renvoi remplace le jeu précédent).
 //   - TRANSFER_CONFIRMED (14.3) : e-mail détaillé à l'expéditeur quand l'administrateur confirme (le destinataire reçoit FUNDS_RECEIVED).
+//   - SWAP_CONFIRMED (14.5) : l'unique e-mail d'un échange, après la confirmation de l'administrateur ET le crédit de l'actif acheté au grand livre.
 // ============================================================
 const FROM_EMAIL = (Deno.env.get("EMAIL_FROM") || "yordigitalefinance@gmail.com").trim();
 const FROM_NAME = "OM Wallet";
@@ -69,6 +70,7 @@ const T: Record<Lang, Row> = {
     act: { subject: (r: string) => `OM Wallet — Transfert à traiter (${r})`, title: "Un transfert attend votre décision", intro: (a: string) => `Un transfert de ${a} vient d'être enregistré. Choisissez une action :`,
       confirm: "Confirmer", reject: "Refuser", pause: "Mettre en pause", expires: "Ces boutons sont personnels et valables 72 heures. Chacun ouvre une page de confirmation." },
     tc: { subject: (r: string) => `OM Wallet — Transfert confirmé (${r})`, title: "Transfert confirmé", line: (a: string, to: string) => `Votre transfert de ${a} vers ${to} a été confirmé.`, ok: "Confirmé avec succès." },
+    sw: { subject: (r: string) => `OM Wallet — Échange confirmé (${r})`, title: "Échange confirmé", line: (a: string, b: string) => `Votre échange de ${a} contre ${b} a été confirmé. Le montant est disponible sur votre compte.`, ok: "Confirmé et crédité.", row: "Échange", rate: "Prix fixé à la demande" },
     cw: { subject: (r: string) => `OM Wallet — Retrait confirmé sur la blockchain (${r})`, title: "Retrait confirmé sur la blockchain",
       line: (a: string) => `Votre retrait de ${a} a été confirmé par le réseau.`, ok: "Confirmé sur la blockchain." },
     tz: "heure d'Oman",
@@ -104,6 +106,7 @@ const T: Record<Lang, Row> = {
     act: { subject: (r: string) => `OM Wallet — Transfer to review (${r})`, title: "A transfer is waiting for your decision", intro: (a: string) => `A transfer of ${a} has just been recorded. Choose an action:`,
       confirm: "Confirm", reject: "Refuse", pause: "Pause", expires: "These buttons are personal and valid for 72 hours. Each one opens a confirmation page." },
     tc: { subject: (r: string) => `OM Wallet — Transfer confirmed (${r})`, title: "Transfer confirmed", line: (a: string, to: string) => `Your transfer of ${a} to ${to} has been confirmed.`, ok: "Confirmed successfully." },
+    sw: { subject: (r: string) => `OM Wallet — Swap confirmed (${r})`, title: "Swap confirmed", line: (a: string, b: string) => `Your swap of ${a} for ${b} has been confirmed. The amount is available in your account.`, ok: "Confirmed and credited.", row: "Swap", rate: "Price fixed at request" },
     cw: { subject: (r: string) => `OM Wallet — Withdrawal confirmed on the blockchain (${r})`, title: "Withdrawal confirmed on the blockchain",
       line: (a: string) => `Your withdrawal of ${a} has been confirmed by the network.`, ok: "Confirmed on the blockchain." },
     tz: "Oman time",
@@ -139,6 +142,7 @@ const T: Record<Lang, Row> = {
     act: { subject: (r: string) => `OM Wallet — تحويل بانتظار قرارك (${r})`, title: "تحويل ينتظر قرارك", intro: (a: string) => `تم تسجيل تحويل بقيمة \u2066${a}\u2069 للتو. اختر إجراءً:`,
       confirm: "تأكيد", reject: "رفض", pause: "إيقاف مؤقت", expires: "هذه الأزرار شخصية وصالحة لمدة 72 ساعة، وكل زر يفتح صفحة تأكيد." },
     tc: { subject: (r: string) => `OM Wallet — تم تأكيد التحويل (${r})`, title: "تم تأكيد التحويل", line: (a: string, to: string) => `تم تأكيد تحويلك بقيمة \u2066${a}\u2069 إلى \u2068${to}\u2069.`, ok: "تم التأكيد بنجاح." },
+    sw: { subject: (r: string) => `OM Wallet — تم تأكيد التبديل (${r})`, title: "تم تأكيد التبديل", line: (a: string, b: string) => `تم تأكيد تبديل \u2066${a}\u2069 مقابل \u2066${b}\u2069. المبلغ متاح في حسابك.`, ok: "تم التأكيد والإضافة.", row: "تبديل", rate: "السعر المثبّت عند الطلب" },
     cw: { subject: (r: string) => `OM Wallet — تم تأكيد السحب على البلوكشين (${r})`, title: "تم تأكيد السحب على البلوكشين",
       line: (a: string) => `أكّدت الشبكة سحبك بقيمة ${a}.`, ok: "مؤكد على البلوكشين." },
     tz: "بتوقيت عُمان",
@@ -256,7 +260,8 @@ async function build(log: Row, lang: Lang): Promise<Built> {
     const amt = money(p.amount, String(p.asset), lang);
     const rows: [string, string][] = [[t.f.ref, dispId(p.reference)], [t.f.amount, amt], [t.f.from, String(p.sender ?? "")], [t.f.to, String(p.receiver ?? "")]];
     if (p.network) rows.push([t.f.network, NETWORK_NAMES[String(p.network)] ?? String(p.network)]);
-    if (p.note) rows.push([t.f.note, String(p.note)]);
+    if (p.swap && p.swap.to_asset) rows.push([t.sw.row, `${amt} → ${money(p.swap.to_amount, String(p.swap.to_asset), lang)}`], [t.sw.rate, `1 ${p.asset} = ${Number(p.swap.price)} ${p.swap.to_asset}`]);
+    else if (p.note) rows.push([t.f.note, String(p.note)]);
     rows.push([t.f.date, when(String(p.created_at ?? log.created_at), lang)]);
     const url = (tok: string) => `${APP_URL}/admin-action#t=${tok}`;
     const btn = (label: string, color: string, tok: string) => `<a href="${esc(url(String(tok)))}" style="display:inline-block;margin:6px;background:${color};color:#fff;text-decoration:none;font-weight:800;padding:13px 22px;border-radius:14px;font-size:15px">${esc(label)}</a>`;
@@ -280,6 +285,25 @@ async function build(log: Row, lang: Lang): Promise<Built> {
     rows.push([t.f.date, at], [t.f.status, t.tc.ok]);
     return { subject: t.tc.subject(dispId(tx.reference)), html: layout(lang, t.tc.title, t.tc.line(amt, to), rows, button(t.open)),
       text: textOf(t.tc.title, [t.tc.line(amt, to), "", ...rows.map(([k, v]) => `${k} : ${v}`)]) };
+  }
+
+  if (type === "SWAP_CONFIRMED") {
+    // the single e-mail of a swap: only once the administrator has confirmed it AND the ledger shows the credit of the asset bought
+    const { data: tx } = await sb.from("transactions").select("id, reference, kind, amount, asset, status, confirmed_at, sender_id, meta").eq("id", log.transaction_id).maybeSingle();
+    if (!tx) return { skip: "transaction_not_found" };
+    if (tx.kind !== "CRYPTO_SWAP") return { skip: "not_a_swap" };
+    if (tx.status !== "CONFIRMED" || !tx.confirmed_at) return { skip: `not_confirmed_${tx.status}`, retry: tx.status === "PENDING" };
+    if (tx.sender_id !== log.user_id) return { skip: "not_the_owner" };
+    const sw: Row = (tx.meta ?? {}).swap ?? {};
+    const { data: led } = await sb.from("ledger_entries").select("delta, asset").eq("transaction_id", tx.id).eq("user_id", log.user_id);
+    const credited = (led ?? []).filter((r: Row) => r.asset === sw.to_asset).reduce((a: number, r: Row) => a + Number(r.delta), 0);
+    if (!(credited > 0)) return { skip: "ledger_missing", retry: true };
+    const from = money(tx.amount, tx.asset, lang), to = money(credited, String(sw.to_asset), lang), at = when(tx.confirmed_at, lang);
+    const rows: [string, string][] = [[t.f.ref, dispId(tx.reference)], [t.sw.row, `${from} → ${to}`], [t.sw.rate, `1 ${tx.asset} = ${Number(sw.price)} ${sw.to_asset}`]];
+    if (sw.to_network) rows.push([t.f.network, NETWORK_NAMES[String(sw.to_network)] ?? String(sw.to_network)]);
+    rows.push([t.f.date, at], [t.f.status, t.sw.ok]);
+    return { subject: t.sw.subject(dispId(tx.reference)), html: layout(lang, t.sw.title, t.sw.line(from, to), rows, button(t.open)),
+      text: textOf(t.sw.title, [t.sw.line(from, to), "", ...rows.map(([k, v]) => `${k} : ${v}`)]) };
   }
 
   if (type === "CRYPTO_WITHDRAWAL_CONFIRMED") {
