@@ -74,6 +74,8 @@ class FakeBackend : Dispatcher() {
             else -> MockResponse().setResponseCode(404)
         }
     }
-    fun called(fn: String) = calls.count { it.first.startsWith("/rest/v1/rpc/$fn") }
-    fun bodyOf(fn: String) = calls.lastOrNull { it.first.startsWith("/rest/v1/rpc/$fn") }?.second
+    /* the server thread appends while the test thread reads: always read a snapshot taken under the list's lock */
+    fun snapshot(): List<Pair<String, String>> = synchronized(calls) { calls.toList() }
+    fun called(fn: String) = snapshot().count { it.first.startsWith("/rest/v1/rpc/$fn") }
+    fun bodyOf(fn: String) = snapshot().lastOrNull { it.first.startsWith("/rest/v1/rpc/$fn") }?.second
 }

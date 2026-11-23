@@ -55,33 +55,40 @@ function qrSvg(address: string): string {
   return q.createSvgTag({ cellSize: 6, margin: 2, scalable: true });
 }
 
-async function ensure(userId: string): Promise<{ network: string; address: string; qr_svg: string; created?: boolean }[]> {
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+async function ensure(userId: string): Promise<{ rows: { network: string; address: string; qr_svg: string }[]; failed: string[] }> {
   const { data: prof } = await sb.from("profiles").select("id").eq("id", userId).maybeSingle();
   if (!prof) throw new Error("profile_not_found");
   const { data: have } = await sb.from("wallet_addresses").select("network").eq("user_id", userId);
   const haveSet = new Set((have ?? []).map((r: { network: string }) => r.network));
+  const failed: string[] = [];
   for (const n of NETWORKS.filter((x) => !haveSet.has(x))) {
-    const d = derive(n as Network);
-    if (!addressOk(n as Network, d.address)) throw new Error("derived_address_invalid");         // never stored
-    const { error } = await sb.rpc("store_wallet_address", { p_user: userId, p_network: n, p_address: d.address, p_qr: qrSvg(d.address), p_cipher: await seal(d.privateKeyHex), p_format: d.format });
-    if (error) throw new Error("store_failed:" + error.message);                                 // a concurrent request may have won: store_wallet_address returns the existing row
+    // one network failing never blocks the others: what could be created is kept, the failed networks are reported
+    try {
+      const d = derive(n as Network);
+      if (!addressOk(n as Network, d.address)) throw new Error("derived_address_invalid");       // never stored
+      const { error } = await sb.rpc("store_wallet_address", { p_user: userId, p_network: n, p_address: d.address, p_qr: qrSvg(d.address), p_cipher: await seal(d.privateKeyHex), p_format: d.format });
+      if (error) throw new Error("store_failed:" + error.message);                               // a concurrent request may have won: store_wallet_address returns the existing row
+    } catch (e) { failed.push(n); console.error("wallet-addresses", n, String((e as Error).message).slice(0, 160)); }
   }
   const { data: rows } = await sb.from("wallet_addresses").select("network, address, qr_svg").eq("user_id", userId).order("network");
-  return (rows ?? []) as { network: string; address: string; qr_svg: string }[];
+  return { rows: (rows ?? []) as { network: string; address: string; qr_svg: string }[], failed };
 }
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
   if (req.method !== "POST") return json({ error: "method_not_allowed" }, 405);
   let body: Record<string, unknown> = {};
-  try { body = await req.json(); } catch { /* empty */ }
+  try { body = await req.json(); } catch { if ((req.headers.get("content-length") ?? "0") !== "0") return json({ error: "bad_request" }, 400); }
   let userId: string | null = null;
   const given = req.headers.get("x-webhook-secret") ?? "";
   if (given) {                                                   // internal call (database trigger / backfill)
     const { data: secret } = await sb.rpc("get_webhook_secret");
     if (!secret || !safeEqual(given, String(secret))) return json({ error: "unauthorized" }, 401);
-    userId = typeof body.user_id === "string" ? body.user_id : null;
-    if (body.audit && userId) return json({ ok: true, audit: await audit(userId) });
+    userId = typeof body.user_id === "string" && UUID.test(body.user_id) ? body.user_id : null;
+    if (!userId) return json({ error: "user_required" }, 400);
+    if (body.audit) return json({ ok: true, audit: await audit(userId) });
   } else {                                                       // the signed-in user: their own addresses only
     const jwt = (req.headers.get("authorization") ?? "").replace(/^Bearer\s+/i, "");
     const { data, error } = await sb.auth.getUser(jwt);
@@ -90,8 +97,9 @@ Deno.serve(async (req: Request) => {
   }
   if (!userId) return json({ error: "user_required" }, 400);
   try {
-    const addresses = await ensure(userId);
-    return json(given ? { ok: true, count: addresses.length } : { ok: true, addresses });
+    const { rows, failed } = await ensure(userId);
+    if (failed.length && !rows.length) return json({ error: "address_creation_failed" }, 500);
+    return json(given ? { ok: !failed.length, count: rows.length, failed } : { ok: !failed.length, addresses: rows, failed });
   } catch (e) {
     console.error("wallet-addresses", String((e as Error).message).slice(0, 200));
     return json({ error: "address_creation_failed" }, 500);

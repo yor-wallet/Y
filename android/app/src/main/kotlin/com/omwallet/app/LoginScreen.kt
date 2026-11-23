@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -79,7 +80,7 @@ fun LoginScreen() {
         Modifier.fillMaxSize().statusBarsPadding().imePadding().verticalScroll(rememberScrollState()).padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Image(painterResource(com.omwallet.app.R.drawable.ic_launcher_foreground), contentDescription = null, modifier = Modifier.size(132.dp).padding(top = 24.dp))
+        Image(painterResource(com.omwallet.app.R.drawable.om_logo_stacked), contentDescription = stringResource(R.string.app_name), modifier = Modifier.width(190.dp).padding(top = 24.dp))
         Text(stringResource(R.string.login_title), style = MaterialTheme.typography.displaySmall, color = OmColors.Ink)
         Text(stringResource(R.string.login_sub), style = MaterialTheme.typography.bodyLarge, color = OmColors.InkSecondary)
         GlassCard(Modifier.fillMaxWidth(), strong = true) {

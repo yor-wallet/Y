@@ -2,6 +2,7 @@ package com.omwallet.core.network
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -59,12 +60,12 @@ class SupabaseApi(
         })
     }
 
-    private fun parseError(code: Int, body: String): ApiException {
+    private fun parseError(code: Int, body: String, auth: Boolean = false): ApiException {
         val obj = runCatching { OmJson.parseToJsonElement(body).jsonObject }.getOrNull()
         val msg = obj?.get("message")?.jsonPrimitive?.content ?: obj?.get("msg")?.jsonPrimitive?.content
             ?: obj?.get("error_description")?.jsonPrimitive?.content ?: obj?.get("error")?.jsonPrimitive?.content ?: body.take(200)
         val explicit = (obj?.get("error_code") as? kotlinx.serialization.json.JsonPrimitive)?.content?.takeIf { it.contains('_') }
-        val key = explicit ?: Regex("[a-z]+(?:_[a-z]+)+").find(msg)?.value ?: when (code) { 400 -> "invalid_credentials"; 401 -> "unauthenticated"; 403 -> "forbidden"; else -> "server_error" }
+        val key = explicit ?: Regex("[a-z]+(?:_[a-z]+)+").find(msg)?.value ?: when (code) { 400 -> if (auth) "invalid_credentials" else "bad_request"; 401 -> "unauthenticated"; 403 -> "forbidden"; else -> "server_error" }
         return ApiException(key, msg, code)
     }
 
@@ -77,7 +78,7 @@ class SupabaseApi(
             .post(body.toString().toRequestBody(JSON)).build()
         execute(req).use { r ->
             val text = r.body?.string().orEmpty()
-            if (!r.isSuccessful) throw parseError(r.code, text)
+            if (!r.isSuccessful) throw parseError(r.code, text, auth = true)
             val o = OmJson.parseToJsonElement(text).jsonObject
             val user = o["user"]?.jsonObject
             Session(
@@ -99,10 +100,18 @@ class SupabaseApi(
         session = null; onSessionChanged(null)
     }
 
-    private suspend fun ensureFresh() {
-        val s = session ?: throw ApiException("unauthenticated", "not signed in", 401)
-        if (s.expiresAt > 0 && s.expiresAt - System.currentTimeMillis() / 1000 < 60) refresh(s.refreshToken)
+    /* Supabase rotates refresh tokens: two refreshes with the same token would make the second fail (or revoke the session). One refresh at a time,
+       and the expiry is checked again inside the lock — whoever waited finds the new token already in place. */
+    private val refreshLock = kotlinx.coroutines.sync.Mutex()
+    private suspend fun refreshIfStale(stale: Session?) {
+        refreshLock.withLock {
+            val cur = session ?: throw ApiException("unauthenticated", "not signed in", 401)
+            if (stale != null && cur.accessToken != stale.accessToken) return            /* somebody else already refreshed */
+            if (stale == null && !(cur.expiresAt > 0 && cur.expiresAt - System.currentTimeMillis() / 1000 < 60)) return
+            refresh(cur.refreshToken)
+        }
     }
+    private suspend fun ensureFresh() { refreshIfStale(null) }
 
     private fun authed(path: String): Request.Builder = Request.Builder().url("$baseUrl$path").header("apikey", anonKey)
         .header("Authorization", "Bearer ${session?.accessToken ?: anonKey}")
@@ -112,7 +121,7 @@ class SupabaseApi(
         ensureFresh()
         suspend fun once(): Response = execute(authed("/rest/v1/rpc/$fn").post(args.toString().toRequestBody(JSON)).build())
         var r = once()
-        if (r.code == 401) { r.close(); session?.let { refresh(it.refreshToken) }; r = once() }    /* expired token: refresh once */
+        if (r.code == 401) { val used = session; r.close(); refreshIfStale(used ?: Session("", "", "")); r = once() }    /* expired token: refresh once, shared with concurrent calls */
         r.use {
             val text = it.body?.string().orEmpty()
             if (!it.isSuccessful) throw parseError(it.code, text)

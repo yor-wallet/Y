@@ -149,7 +149,7 @@ class ScreensFrTest : ScreenTestBase() {
         startMarket()
         compose.setContent { OmTheme(reducedMotion = true) { AssetDetailScreen("BTC", {}, {}, {}, {}) } }
         waitText("Plus haut 24 h")
-        compose.waitUntil(10_000) { backend.calls.any { it.first.startsWith("/api/v3/klines") } }
+        compose.waitUntil(10_000) { backend.snapshot().any { it.first.startsWith("/api/v3/klines") } }
         idle(300)
         shot("04_asset_btc")
         click("Réseaux")
@@ -189,7 +189,7 @@ class ScreensFrTest : ScreenTestBase() {
         click("TRON")
         waitText("TZ2nw5y4azp1wkY89kPTBqUPtRhCguWhjY")
         assertTrue(has("Copier l’adresse") && has("Partager"))
-        assertTrue(backend.calls.count { it.first.startsWith("/functions/v1/wallet-addresses") } == 1)   /* created once, on the first request */
+        assertTrue(backend.snapshot().count { it.first.startsWith("/functions/v1/wallet-addresses") } == 1)   /* created once, on the first request */
         assertEquals(2, backend.called("get_receive_address"))
         shot("07b_deposit_address_qr")
     }

@@ -213,12 +213,13 @@ class MoneyRepository(private val api: SupabaseApi) {
         }
     }
 
-    /* Deposit: the address comes ONLY from the server. Today the server answers deposit_address_unavailable (no custody keys) — the app says so. */
-    sealed interface DepositAddress { data class Ready(val address: String) : DepositAddress; data object Unavailable : DepositAddress }
+    /* Deposit: the address comes ONLY from the server (the account's own address for this network, created by the server on the first request).
+       "Unavailable" is shown only when the server says it has none; an address that fails the local format check is reported as Invalid, never hidden. */
+    sealed interface DepositAddress { data class Ready(val address: String) : DepositAddress; data object Unavailable : DepositAddress; data object Invalid : DepositAddress }
     suspend fun depositAddress(asset: String, network: String): DepositAddress {
         suspend fun read(): DepositAddress {
             val a = (api.rpc("get_receive_address", buildJsonObject { put("p_asset", asset); put("p_network", network) }) as? JsonPrimitive)?.content?.trim().orEmpty()
-            return if (a.isNotEmpty() && Validation.addressOk(network, a)) DepositAddress.Ready(a) else DepositAddress.Unavailable
+            return if (a.isEmpty()) DepositAddress.Unavailable else if (Validation.addressOk(network, a)) DepositAddress.Ready(a) else DepositAddress.Invalid
         }
         return try { read() } catch (e: ApiException) {
             when (e.code) {

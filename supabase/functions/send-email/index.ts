@@ -16,7 +16,8 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 //   - CRYPTO_WITHDRAWAL_CONFIRMED : un e-mail après la confirmation réseau (hash réel enregistré).
 //   - TX_SENDER / TX_RECEIVER (ancien processus) : remplacés, jamais envoyés (statut SKIPPED, raison écrite).
 //   - ADMIN_TX_ACTION (14.3) : e-mail à chaque administrateur dès qu'un envoi est enregistré, avec trois boutons (Confirmer / Refuser / Pause).
-//     Chaque bouton ouvre admin-action.html (page de confirmation) avec un jeton personnel ; les jetons sont effacés de la file après l'envoi.
+//     Chaque bouton ouvre la page de confirmation /admin-action avec un jeton personnel, créé AU MOMENT de l'envoi (issue_admin_action_links :
+//     seul le haché est stocké en base ; la file d'e-mails ne contient jamais de jeton utilisable ; un renvoi remplace le jeu précédent).
 //   - TRANSFER_CONFIRMED (14.3) : e-mail détaillé à l'expéditeur quand l'administrateur confirme (le destinataire reçoit FUNDS_RECEIVED).
 // ============================================================
 const FROM_EMAIL = (Deno.env.get("EMAIL_FROM") || "yordigitalefinance@gmail.com").trim();
@@ -246,13 +247,12 @@ async function build(log: Row, lang: Lang): Promise<Built> {
   }
 
   if (type === "ADMIN_TX_ACTION") {
-    // three personal buttons; only while the transaction is still undecided (never offer a button for a closed transaction)
+    // three personal buttons; only while the transaction is still undecided (never offer a button for a closed transaction).
+    // The links are minted now (the database keeps only their hash); a null answer means: not pending any more, or not an active administrator.
     const p: Row = log.payload ?? {};
-    const { data: tx } = await sb.from("transactions").select("status").eq("id", log.transaction_id).maybeSingle();
-    if (!tx) return { skip: "transaction_not_found" };
-    if (tx.status !== "PENDING") return { skip: `already_${String(tx.status).toLowerCase()}` };
-    const tk: Row = p.tokens ?? {};
-    if (!tk.confirm || !tk.reject || !tk.pause) return { skip: "no_links" };
+    const { data: tk, error: linkErr } = await sb.rpc("issue_admin_action_links", { p_tx: log.transaction_id, p_admin: log.user_id });
+    if (linkErr) return { skip: "links_failed", retry: true };
+    if (!tk || !tk.confirm || !tk.reject || !tk.pause) return { skip: "already_decided_or_not_admin" };
     const amt = money(p.amount, String(p.asset), lang);
     const rows: [string, string][] = [[t.f.ref, dispId(p.reference)], [t.f.amount, amt], [t.f.from, String(p.sender ?? "")], [t.f.to, String(p.receiver ?? "")]];
     if (p.network) rows.push([t.f.network, NETWORK_NAMES[String(p.network)] ?? String(p.network)]);
@@ -458,13 +458,6 @@ async function deliver(m: Mail): Promise<{ sent?: Sent; errors: string[]; allCon
 
 const retryDelayMin = (attempts: number) => Math.min(2 ** attempts, 60);
 
-// the personal tokens only live in the queue until the e-mail has left (or will never leave)
-async function scrub(log: Row): Promise<void> {
-  if (log.email_type !== "ADMIN_TX_ACTION" || !log.payload?.tokens) return;
-  const { tokens: _t, ...rest } = log.payload as Row;
-  await sb.from("email_logs").update({ payload: rest }).eq("id", log.id);
-}
-
 async function process(log: Row, dryRun = false): Promise<Row> {
   const lang: Lang = await langOf(log.user_id);
   const built = await build(log, lang);
@@ -476,7 +469,6 @@ async function process(log: Row, dryRun = false): Promise<Row> {
       return { id: log.id, status: "FAILED", error: built.skip };
     }
     await sb.from("email_logs").update({ status: "SKIPPED", locked_at: null, error_message: built.skip, recipient_language: lang }).eq("id", log.id);
-    await scrub(log);
     return { id: log.id, status: "SKIPPED", reason: built.skip };
   }
   if (dryRun) return { id: log.id, lang, to: log.recipient_email, from: FROM_EMAIL, subject: built.subject, html: built.html, text: built.text };
@@ -485,7 +477,6 @@ async function process(log: Row, dryRun = false): Promise<Row> {
   if (out.sent && out.sent.ok) {
     await sb.from("email_logs").update({ status: "SENT", locked_at: null, sent_at: new Date().toISOString(), recipient_language: lang,
       brevo_message_id: `${out.sent.provider}:${out.sent.id ?? ""}`.slice(0, 200), error_message: null, attempts: log.attempts + 1 }).eq("id", log.id);
-    await scrub(log);
     if (log.email_type === "WELCOME") await sb.from("profiles").update({ welcome_email_sent_at: new Date().toISOString() }).eq("id", log.user_id).is("welcome_email_sent_at", null);
     return { id: log.id, status: "SENT", provider: out.sent.provider };
   }

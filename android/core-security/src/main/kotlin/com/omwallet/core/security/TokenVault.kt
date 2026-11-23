@@ -35,11 +35,20 @@ class KeystoreSecretStore(context: Context) : SecretStore {
         return gen.generateKey()
     }
 
+    private fun encrypt(value: String): String {
+        val c = Cipher.getInstance("AES/GCM/NoPadding").apply { init(Cipher.ENCRYPT_MODE, key()) }
+        return Base64.encodeToString(c.iv + c.doFinal(value.toByteArray(Charsets.UTF_8)), Base64.NO_WRAP)
+    }
+
+    /* A key the system invalidated (lock-screen reset, some OEM Keystore failures) must never block signing in: the dead key is removed,
+       a new one is created, and if even that fails the session is simply not remembered (the person signs in again next time). */
     override fun put(name: String, value: String?) {
         if (value == null) { prefs.edit().remove(name).apply(); return }
-        val c = Cipher.getInstance("AES/GCM/NoPadding").apply { init(Cipher.ENCRYPT_MODE, key()) }
-        val out = c.iv + c.doFinal(value.toByteArray(Charsets.UTF_8))
-        prefs.edit().putString(name, Base64.encodeToString(out, Base64.NO_WRAP)).apply()
+        val stored = runCatching { encrypt(value) }.getOrElse {
+            runCatching { KeyStore.getInstance("AndroidKeyStore").apply { load(null) }.deleteEntry(alias) }
+            runCatching { encrypt(value) }.getOrNull()
+        }
+        if (stored != null) prefs.edit().putString(name, stored).apply() else prefs.edit().remove(name).apply()
     }
 
     override fun get(name: String): String? = runCatching {

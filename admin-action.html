@@ -50,24 +50,28 @@ a.app{display:block;margin-top:16px;text-align:center;color:var(--sky);font-weig
           REJECT: ['Refuser ce transfert ?', 'Le montant est rendu à l’expéditeur.', 'Refuser'], PAUSE: ['Mettre ce transfert en pause ?', 'Le montant reste réservé. Vous pourrez ensuite le confirmer ou le refuser.', 'Mettre en pause'],
           done: { CONFIRM: 'Transfert confirmé. Le destinataire est crédité.', REJECT: 'Transfert refusé. Le montant est rendu à l’expéditeur.', PAUSE: 'Transfert mis en pause.' },
           already: { CONFIRMED: 'Ce transfert est déjà confirmé. Rien n’a été crédité deux fois.', REJECTED: 'Ce transfert est déjà refusé.' }, paused: 'Ce transfert est déjà en pause.',
+          used: 'Ce lien a déjà été utilisé ou remplacé par un e-mail plus récent. Utilisez le dernier e-mail ou Admin Control.',
           f: { ref: 'Référence', amount: 'Montant', from: 'De', to: 'À', net: 'Réseau', note: 'Note', date: 'Date et heure' }, reason: 'Motif (visible par le client, facultatif)',
           e: { invalid_link: 'Lien invalide.', expired: 'Lien expiré (72 h). Utilisez Admin Control dans l’application.', network: 'Connexion impossible. Réessayez.', forbidden: 'Ce compte n’est plus administrateur.', invalid_state: 'Ce transfert a déjà été traité.', server_error: 'Erreur du serveur. Réessayez.' }, open: 'Ouvrir Admin Control' },
     en: { CONFIRM: ['Confirm this transfer?', 'The recipient is credited at once and receives one e-mail. This cannot be undone.', 'Confirm'],
           REJECT: ['Refuse this transfer?', 'The amount goes back to the sender.', 'Refuse'], PAUSE: ['Pause this transfer?', 'The amount stays held. You can still confirm or refuse it afterwards.', 'Pause'],
           done: { CONFIRM: 'Transfer confirmed. The recipient is credited.', REJECT: 'Transfer refused. The amount went back to the sender.', PAUSE: 'Transfer paused.' },
           already: { CONFIRMED: 'This transfer is already confirmed. Nothing was credited twice.', REJECTED: 'This transfer is already refused.' }, paused: 'This transfer is already paused.',
+          used: 'This link was already used or replaced by a newer e-mail. Use the latest e-mail or Admin Control.',
           f: { ref: 'Reference', amount: 'Amount', from: 'From', to: 'To', net: 'Network', note: 'Note', date: 'Date and time' }, reason: 'Reason (shown to the customer, optional)',
           e: { invalid_link: 'Invalid link.', expired: 'Link expired (72 h). Use Admin Control in the app.', network: 'Could not connect. Try again.', forbidden: 'This account is no longer an administrator.', invalid_state: 'This transfer was already processed.', server_error: 'Server error. Try again.' }, open: 'Open Admin Control' },
     ar: { CONFIRM: ['تأكيد هذا التحويل؟', 'يُضاف المبلغ إلى المستلم فورًا ويتلقى رسالة بريد واحدة. لا يمكن التراجع.', 'تأكيد'],
           REJECT: ['رفض هذا التحويل؟', 'يعود المبلغ إلى المرسل.', 'رفض'], PAUSE: ['إيقاف هذا التحويل مؤقتًا؟', 'يبقى المبلغ محجوزًا. يمكنك لاحقًا تأكيده أو رفضه.', 'إيقاف مؤقت'],
           done: { CONFIRM: 'تم تأكيد التحويل. أُضيف المبلغ إلى المستلم.', REJECT: 'تم رفض التحويل. عاد المبلغ إلى المرسل.', PAUSE: 'تم إيقاف التحويل مؤقتًا.' },
           already: { CONFIRMED: 'هذا التحويل مؤكد مسبقًا. لم يُضف أي مبلغ مرتين.', REJECTED: 'هذا التحويل مرفوض مسبقًا.' }, paused: 'هذا التحويل متوقف مؤقتًا بالفعل.',
+          used: 'تم استخدام هذا الرابط مسبقًا أو استُبدل برسالة أحدث. استخدم أحدث رسالة أو لوحة المشرف.',
           f: { ref: 'المرجع', amount: 'المبلغ', from: 'من', to: 'إلى', net: 'الشبكة', note: 'ملاحظة', date: 'التاريخ والوقت' }, reason: 'السبب (يظهر للعميل، اختياري)',
           e: { invalid_link: 'رابط غير صالح.', expired: 'انتهت صلاحية الرابط (72 ساعة). استخدم لوحة المشرف في التطبيق.', network: 'تعذّر الاتصال. حاول مجددًا.', forbidden: 'هذا الحساب لم يعد مشرفًا.', invalid_state: 'تمت معالجة هذا التحويل مسبقًا.', server_error: 'خطأ في الخادم. حاول مجددًا.' }, open: 'فتح لوحة المشرف' }
   };
-  var lang = (new URLSearchParams(location.search).get('lang') || navigator.language || 'fr').slice(0, 2);
-  var T = L[lang] || L.fr;
-  document.documentElement.lang = L[lang] ? lang : 'fr';
+  var lang = (new URLSearchParams(location.search).get('lang') || navigator.language || 'fr').slice(0, 2).toLowerCase();
+  if (!L[lang]) lang = 'fr';                                   // only the languages we have : never an invalid locale tag
+  var T = L[lang];
+  document.documentElement.lang = lang;
   document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
   var card = document.getElementById('card');
   var m = /[#&]t=([0-9a-f]{64})/.exec(location.hash);
@@ -97,6 +101,7 @@ a.app{display:block;margin-top:16px;text-align:center;color:var(--sky);font-weig
     if (tx.status === 'CONFIRMED') { card.innerHTML = head + msg('info', T.already.CONFIRMED) + appLink; return; }
     if (tx.status === 'REJECTED') { card.innerHTML = head + msg('info', T.already.REJECTED) + appLink; return; }
     if (act === 'PAUSE' && tx.paused) { card.innerHTML = head + msg('info', T.paused) + appLink; return; }
+    if (info.used) { card.innerHTML = head + msg('info', T.used) + appLink; return; }
     card.innerHTML = head + '<p>' + esc(txt[1]) + '</p>' + (act === 'REJECT' ? '<textarea id="why" maxlength="300" aria-label="' + esc(T.reason) + '" placeholder="' + esc(T.reason) + '"></textarea>' : '') +
       '<button class="go ' + act + '" id="go" type="button">' + esc(txt[2]) + '</button><div id="out"></div>';
     var go = document.getElementById('go');
@@ -108,7 +113,11 @@ a.app{display:block;margin-top:16px;text-align:center;color:var(--sky);font-weig
         var out = document.getElementById('out');
         if (r && r.ok) {
           go.style.display = 'none'; if (why) why.style.display = 'none';
-          out.innerHTML = msg('ok', r.already ? (T.already[r.status] || T.done[act]) : T.done[act]) + appLink;
+          if (!r.already) out.innerHTML = msg('ok', T.done[act]) + appLink;
+          else if (act === 'CONFIRM' && r.status === 'CONFIRMED') out.innerHTML = msg('info', T.already.CONFIRMED) + appLink;
+          else if (act === 'REJECT' && r.status === 'REJECTED') out.innerHTML = msg('info', T.already.REJECTED) + appLink;
+          else if (act === 'PAUSE' && r.status === 'PENDING') out.innerHTML = msg('info', T.paused) + appLink;
+          else out.innerHTML = msg('info', T.used) + appLink;                  // never claim a result the server did not give
         } else {
           var code = (r && r.error) || 'network';
           if (code !== 'invalid_link' && code !== 'expired' && code !== 'forbidden') go.disabled = false;

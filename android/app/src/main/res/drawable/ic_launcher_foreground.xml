@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- OM Wallet mark (from assets/icons/icon.svg) -->
-<vector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:aapt="http://schemas.android.com/aapt" android:width="108dp" android:height="108dp" android:viewportWidth="512" android:viewportHeight="512">
-    <group android:pivotX="256" android:pivotY="256" android:scaleX="0.74" android:scaleY="0.74" android:translateX="-6" android:translateY="-8">
-        <path android:pathData="M170,196 a68,68 0 1,0 0.01,0 Z" android:strokeWidth="46" android:fillColor="#00000000"><aapt:attr name="android:strokeColor"><gradient android:type="linear" android:startX="100" android:startY="180" android:endX="440" android:endY="360"><item android:offset="0" android:color="#FF78C9F4"/><item android:offset="0.5" android:color="#FF369EDB"/><item android:offset="1" android:color="#FF1E5F9C"/></gradient></aapt:attr></path>
-        <path android:pathData="M292,332 V198 l66,82 66,-82 v134" android:strokeWidth="42" android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000"><aapt:attr name="android:strokeColor"><gradient android:type="linear" android:startX="100" android:startY="180" android:endX="440" android:endY="360"><item android:offset="0" android:color="#FF78C9F4"/><item android:offset="0.5" android:color="#FF369EDB"/><item android:offset="1" android:color="#FF1E5F9C"/></gradient></aapt:attr></path>
-    </group>
-</vector>

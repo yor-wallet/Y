@@ -67,8 +67,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-/* Deposit: asset → network → the address the SERVER gives for this account. No address is ever generated on the device;
-   while the server has no custody address it answers "deposit_address_unavailable" and the screen says exactly that. */
+/* Deposit: asset → network → the address the SERVER gives for this account (created by the server on the first request).
+   No address is ever generated on the device; if the server has none the screen says exactly that. */
 sealed interface AddressState {
     data object Idle : AddressState
     data object Loading : AddressState
@@ -89,7 +89,7 @@ class DepositViewModel(private val g: OmGraph, initialAsset: String?) : ViewMode
         if (n == null) return
         viewModelScope.launch {
             val r = try {
-                when (val d = g.money.depositAddress(a, n)) { is MoneyRepository.DepositAddress.Ready -> AddressState.Ready(d.address); else -> AddressState.Unavailable }
+                when (val d = g.money.depositAddress(a, n)) { is MoneyRepository.DepositAddress.Ready -> AddressState.Ready(d.address); MoneyRepository.DepositAddress.Invalid -> AddressState.Failed("invalid_address"); else -> AddressState.Unavailable }
             } catch (e: ApiException) { AddressState.Failed(e.code) }
             if (_s.value.network == n) _s.value = _s.value.copy(address = r)
         }

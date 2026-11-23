@@ -81,7 +81,9 @@ class ServerContractTest {
     @Test fun no_deposit_address_is_ever_made_up() = runTest {
         server.enqueue(json("""{"code":"22023","message":"deposit_address_unavailable"}""", 400))
         assertEquals(MoneyRepository.DepositAddress.Unavailable, MoneyRepository(api).depositAddress("USDT", "tron"))
-        server.enqueue(json("\"not-a-tron-address\""))
+        server.enqueue(json("\"not-a-tron-address\""))                  /* something came back but it is not a valid address: reported as Invalid, never shown, never hidden */
+        assertEquals(MoneyRepository.DepositAddress.Invalid, MoneyRepository(api).depositAddress("USDT", "tron"))
+        server.enqueue(json("\"\""))
         assertEquals(MoneyRepository.DepositAddress.Unavailable, MoneyRepository(api).depositAddress("USDT", "tron"))
         server.enqueue(json("\"TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t\""))
         assertEquals(MoneyRepository.DepositAddress.Ready("TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"), MoneyRepository(api).depositAddress("USDT", "tron"))
