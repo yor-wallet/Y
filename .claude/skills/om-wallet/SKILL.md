@@ -48,7 +48,7 @@ Le propriétaire a donné des consignes strictes et les a répétées plusieurs 
 | Serveur | Supabase projet `gebjmguoauvutiqvoswl` : migrations `supabase/migrations/`, fonctions Edge `send-email`, `wallet-addresses`, `admin-action` |
 | Déploiement | Vercel projet `prj_uRkEgOnfKYdXmpJ2D2161mbaJHpA` (équipe `team_b1invDzTYyVjIAUAWoEFnPIv`), site `https://yor-wallet.vercel.app` ; GitHub `yor-wallet/Y` |
 | Identité | `brand/` : originaux et visuels de référence (`brand/originals/`), `python3 brand/make_assets.py` régénère icônes web, favicon, logos, calques Android |
-| Design | `css/omw.css` (couche finale), `js/ui/omw.js` (interactions), `js/features/onboarding.js` (présentation), Android `core-design` (Theme, Components) et `app/OnboardingScreen.kt` |
+| Design | `css/omw.css`, `css/verre.css`, puis `css/liquid.css` (couche finale « verre liquide », 14.6.0), `js/ui/omw.js` (interactions), `js/ui/liquid.js` (menu flottant : affinage au défilement, lentille qui s'étire), Android `OmGlass` / `glassSheen()` dans `core-design`, `js/features/onboarding.js` (présentation), Android `core-design` (Theme, Components) et `app/OnboardingScreen.kt` |
 | Tests | `tests/ux/*.test.mjs` (Playwright + faux Supabase), `tests/keys` (vecteurs de dérivation d'adresses), Android `testDebugUnitTest` |
 
 Secrets : la clé Brevo est dans le Vault Supabase (`brevo_api_key`), la clé maître des portefeuilles dans `wallet_master_key`. Ne jamais les afficher, les écrire dans un fichier, un commit ou un message.
@@ -58,7 +58,7 @@ Secrets : la clé Brevo est dans le Vault Supabase (`brevo_api_key`), la clé ma
 ```bash
 # Web
 node tools/build.mjs                         # régénère js/app.js et css/app.css (obligatoire après tout changement de js/ ou css/)
-for t in shell smoke bugfix omx omw admin-console ios-motion admin-payouts; do node tests/ux/$t.test.mjs; done   # tout doit passer
+for t in shell smoke bugfix omx omw admin-console ios-motion admin-payouts trade liquid; do node tests/ux/$t.test.mjs; done   # tout doit passer
 cd tests/keys && npm install && npm test     # dérivation des adresses (Node 22)
 
 # Android (JDK 17+, SDK 35, ANDROID_HOME=/opt/android-sdk, Gradle dans /opt/gradle)

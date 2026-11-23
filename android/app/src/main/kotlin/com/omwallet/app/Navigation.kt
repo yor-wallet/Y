@@ -1,6 +1,14 @@
 package com.omwallet.app
 
 import androidx.compose.ui.platform.testTag
+import com.omwallet.core.design.glassSheen
+import com.omwallet.core.design.OmGlass
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.Animatable
 
 import androidx.compose.runtime.setValue
 
@@ -165,33 +173,51 @@ fun MainNav(isAdmin: Boolean) {
     }
 }
 
-/* Bottom bar from the owner's references: a full-width glass bar with rounded top corners; the active tab sits in a light glass tile
-   that glides (spatial spring) and its icon pops. */
+/* Bottom bar (14.6.0, « verre liquide »): a glass capsule floating above the content, away from the screen edges, with a light rim and a
+   sheen (nearly opaque: Compose has no backdrop blur, and the labels must stay readable over any content); the active tab sits in a glass lens that glides (spatial spring) and stretches while it travels; the touched tab swells slightly.
+   Same tabs, same order, same test tags and the same navigation as before: appearance only. */
 @Composable
 fun androidx.compose.foundation.layout.BoxScope.BottomBar(current: Tab?, onTab: (Tab) -> Unit) {
     val haptics = rememberOmHaptics()
     val reduced = com.omwallet.core.design.LocalOmMotion.current.reduced
-    val top = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)
+    val capsule = RoundedCornerShape(50)
     BoxWithConstraints(
         Modifier.align(Alignment.BottomCenter).fillMaxWidth()
-            .androidx_shadow(top)
-            .clip(top).background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(Color(0xEB2272E2), Color(0xF5114FBF))))
-            .border(1.dp, OmColors.Edge, top).navigationBarsPadding().padding(horizontal = 10.dp, vertical = 8.dp).height(68.dp),
+            .navigationBarsPadding().padding(start = 14.dp, end = 14.dp, bottom = 10.dp)
+            .androidx_shadow(capsule)
+            .clip(capsule).background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(Color(0xF22A7AE8), Color(0xF7124FBF))))
+            .glassSheen()
+            .border(1.dp, OmGlass.Rim, capsule).padding(6.dp).height(58.dp),
     ) {
         val w = maxWidth / Tab.entries.size
-        val x by animateDpAsState(w * (current?.ordinal ?: 0), OmSprings.spatial(), label = "tile")
-        if (current != null) Box(Modifier.offset(x = x).width(w).fillMaxHeight().padding(horizontal = 3.dp).clip(RoundedCornerShape(20.dp))
-            .background(androidx.compose.ui.graphics.Brush.linearGradient(listOf(Color(0x4DFFFFFF), Color(0x1FFFFFFF)))).border(1.dp, Color(0x66FFFFFF), RoundedCornerShape(20.dp)))
+        val x by animateDpAsState(w * (current?.ordinal ?: 0), OmSprings.spatial(), label = "lens")
+        /* the lens stretches while it moves to the newly chosen tab (not on the first display, not under « remove animations ») */
+        val stretch = remember { Animatable(1f) }
+        var previous by remember { mutableStateOf(current) }
+        LaunchedEffect(current) {
+            if (!reduced && previous != null && current != null && previous != current) {
+                stretch.snapTo(1f)
+                stretch.animateTo(1.18f, tween(150))
+                stretch.animateTo(1f, spring(dampingRatio = 0.45f, stiffness = Spring.StiffnessMediumLow))
+            }
+            previous = current
+        }
+        if (current != null) Box(
+            Modifier.offset(x = x).width(w).fillMaxHeight().padding(horizontal = 2.dp)
+                .graphicsLayer { scaleX = stretch.value; scaleY = 1f - (stretch.value - 1f) * 0.5f }
+                .clip(capsule).background(OmGlass.Lens).border(1.dp, OmGlass.RimStrong, capsule),
+        )
         Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly) {
             Tab.entries.forEach { t ->
                 val on = t == current
                 val pop by androidx.compose.animation.core.animateFloatAsState(if (on && !reduced) 1.12f else 1f, OmSprings.expressive(), label = "pop")
                 Column(
-                    Modifier.weight(1f).fillMaxHeight().testTag("tab_" + t.route).semantics { selected = on }.pressable(role = Role.Tab) { if (!on) haptics.tap(); onTab(t) },
+                    Modifier.weight(1f).fillMaxHeight().clip(capsule).testTag("tab_" + t.route).semantics { selected = on }
+                        .pressable(role = Role.Tab, grow = true) { if (!on) haptics.tap(); onTab(t) },
                     horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
                 ) {
-                    Box(Modifier.graphicsLayer { scaleX = pop; scaleY = pop }) { OmIcon(t.icon, null, tint = if (on) OmColors.Blue600 else OmColors.InkSecondary, size = 24.dp) }
-                    Text(stringResource(t.label), style = MaterialTheme.typography.labelSmall, color = if (on) OmColors.Blue600 else OmColors.InkSecondary, maxLines = 1)
+                    Box(Modifier.graphicsLayer { scaleX = pop; scaleY = pop }) { OmIcon(t.icon, null, tint = if (on) Color.White else OmColors.InkSecondary, size = 24.dp) }
+                    Text(stringResource(t.label), style = MaterialTheme.typography.labelSmall, color = if (on) Color.White else OmColors.InkSecondary, maxLines = 1)
                 }
             }
         }

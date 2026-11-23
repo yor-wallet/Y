@@ -21,7 +21,10 @@ const OMW = (() => {
   function capability(){
     try {
       const cores = navigator.hardwareConcurrency || 8, mem = navigator.deviceMemory || 8;
-      if (cores <= 4 || mem <= 2) ROOT.classList.add('w-lite');
+      /* 14.6.0: Safari can report a reduced core count on iPhone / iPad (privacy), so the core count alone could switch the glass blur
+         off on Apple devices, whose GPU composites blur natively. Memory is still checked where the browser reports it. */
+      const apple = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent || '');
+      if (mem <= 2 || (cores <= 4 && !apple)) ROOT.classList.add('w-lite');
     } catch(e){ /* rien */ }
   }
 
