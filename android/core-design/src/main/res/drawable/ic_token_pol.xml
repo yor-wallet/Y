@@ -1,0 +1,31 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- web3icons 4.0.61 (MIT), round-badge variant: official colours -->
+    <group>
+        <path
+            android:pathData="M12 0A12 12 0 1 0 12 24 12 12 0 1 0 12 0Z">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:type="linear"
+                    android:startX="4"
+                    android:startY="4.942"
+                    android:endX="18.006"
+                    android:endY="20.817">
+                    <item
+                        android:color="#FF8F34C2"
+                        android:offset="0"/>
+                    <item
+                        android:color="#FF7442DB"
+                        android:offset="1"/>
+                </gradient>
+            </aapt:attr>
+        </path>
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M7.925 9.254A1 1 0 0 1 8.932 9.254L11.232 10.629 12.795 11.523 15.101 12.897C15.393 13.075 15.779 13.075 16.103 12.897L17.934 11.824C18.23 11.645 18.588 11.316 18.588 10.958V8.84C18.588 8.483 18.258 8.153 17.929 7.974L16.132 6.93A1 1 0 0 0 15.129 6.93L13.327 7.974C13.035 8.154 12.941 8.483 12.941 8.84V10.21L11.529 9.287V7.91C11.529 7.552 11.435 7.223 11.765 7.044L15.1 5.076A1 1 0 0 1 16.102 5.076L19.495 7.043A0.97 0.97 0 0 1 19.999 7.913V11.885A0.98 0.98 0 0 1 19.495 12.751L16.102 14.718A1 1 0 0 1 15.1 14.718L12.794 13.377 11.232 12.45 8.926 11.108A1 1 0 0 0 7.924 11.108L6.126 12.153C5.83 12.332 5.411 12.661 5.411 13.019V15.137C5.411 15.494 5.801 15.824 6.126 16.003L7.924 17.076C8.22 17.254 8.606 17.254 8.931 17.076L10.728 16.031C11.025 15.852 11.528 15.523 11.528 15.165V13.795L12.94 14.718V16.092C12.94 16.45 12.62 16.779 12.295 16.958L8.894 18.92A0.98 0.98 0 0 1 7.892 18.92L4.499 16.953A1.04 1.04 0 0 1 4 16.092V12.12C4 11.763 4.179 11.433 4.504 11.254Z"/>
+    </group>
+</vector>

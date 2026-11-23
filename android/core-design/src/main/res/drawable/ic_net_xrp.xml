@@ -1,0 +1,13 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- XRP Ledger official symbol and black #141414 (XRPL Brand Kit 2026) -->
+    <path
+        android:fillColor="#FF141414"
+        android:pathData="M12 0A12 12 0 1 0 12 24 12 12 0 1 0 12 0Z"/>
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M13.846 9.106C13.362 9.604 12.746 9.88 12 9.88S10.638 9.605 10.154 9.107L7.534 6.37H5.4L9.015 9.984C9.813 10.783 10.861 11.294 12 11.294 13.14 11.294 14.187 10.783 14.986 9.984L18.6 6.37H16.466L13.847 9.106H13.846ZM16.466 17.631H18.6L14.986 14.017C14.186 13.218 13.139 12.707 12 12.707 10.86 12.707 9.813 13.218 9.014 14.017L5.4 17.63H7.534L10.154 14.893C10.637 14.396 11.254 14.121 11.999 14.121 12.746 14.121 13.361 14.396 13.846 14.893L16.464 17.63H16.465Z"/>
+</vector>

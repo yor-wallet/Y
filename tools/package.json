@@ -1,0 +1,2 @@
+{ "name": "friendly-pay-build", "private": true, "type": "module", "description": "Build tools only (the app itself has no runtime dependencies).",
+  "devDependencies": { "esbuild": "^0.28.2", "lightningcss": "^1.30.0" } }

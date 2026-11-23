@@ -1,0 +1,38 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- web3icons 4.0.61 (MIT), round-badge variant: official colours -->
+    <group>
+        <path
+            android:fillColor="#FF000000"
+            android:pathData="M12 0A12 12 0 1 0 12 24 12 12 0 1 0 12 0Z"/>
+        <path
+            android:fillColor="#FF8FFCF3"
+            android:pathData="M12 4V9.912L17 12.148Z"/>
+        <path
+            android:fillColor="#FFCABCF8"
+            android:pathData="M12 4L7 12.148 12 9.912Z"/>
+        <path
+            android:fillColor="#FFCBA7F5"
+            android:pathData="M12 15.98V20L17 13.08Z"/>
+        <path
+            android:fillColor="#FF74A0F3"
+            android:pathData="M12 20V15.98L7 13.08Z"/>
+        <path
+            android:fillColor="#FFCBA7F5"
+            android:pathData="M12 15.048L17 12.148 12 9.912Z"/>
+        <path
+            android:fillColor="#FF74A0F3"
+            android:pathData="M7 12.148L12 15.048V9.912Z"/>
+        <path
+            android:fillColor="#FF202699"
+            android:fillType="evenOdd"
+            android:pathData="M12 15.048L7 12.148 12 4 17 12.148ZM7.332 11.912L11.92 4.436V9.872ZM7.264 12.116L11.92 10.048V14.816ZM12.08 10.048V14.816L16.732 12.116ZM12.08 9.872L16.668 11.912 12.08 4.436Z"/>
+        <path
+            android:fillColor="#FF202699"
+            android:fillType="evenOdd"
+            android:pathData="M12 15.916L7 13.076 12 20 17 13.076ZM7.56 13.576L11.92 16.056V19.616ZM12.08 16.056V19.616L16.44 13.576Z"/>
+    </group>
+</vector>

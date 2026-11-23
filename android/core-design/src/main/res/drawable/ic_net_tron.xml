@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- web3icons 4.0.61 (MIT), round-badge variant: official colours -->
+    <group>
+        <path
+            android:fillColor="#FFC4342B"
+            android:pathData="M12 0A12 12 0 1 0 12 24 12 12 0 1 0 12 0Z"/>
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:fillType="evenOdd"
+            android:pathData="M5.261 4.165A0.5 0.5 0 0 1 5.753 4.015L16.333 6.605A0.5 0.5 0 0 1 16.509 6.687L18.662 8.257A0.504 0.504 0 0 1 18.782 8.944L11.374 19.78A0.5 0.5 0 0 1 10.487 19.664L5.161 4.669A0.5 0.5 0 0 1 5.261 4.166M7.007 6.871L10.704 17.281 11.313 11.887ZM12.303 12.061L11.685 17.549 16.915 9.896ZM17.387 8.567L14.017 10.149 16.275 7.757ZM15.257 7.373L7.032 5.361 11.855 10.977Z"/>
+    </group>
+</vector>

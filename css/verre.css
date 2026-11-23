@@ -1,0 +1,104 @@
+/* ==========================================================================
+   OM WALLET — « VERRE » (14.5.0)
+   Owner: « je veux une interface glass transparente, pas blanc qui fait mal aux yeux ».
+   Every surface is transparent glass over a luminous blue; no white panels. Two tones: « jour » (light setting, luminous blue)
+   and « nuit » (dark setting, deep blue). The page always runs on the light-text palette (data-theme="dark" on <html>, set by applyTheme).
+   Appearance only: markup hooks, scripts, data and server calls are unchanged. Loads after omw.css.
+   ========================================================================== */
+
+/* ---------- tokens ---------- */
+html:root:root[data-theme]{
+  --w-bg:#1A6FE6; --w-bg2:#0A3591; --w-ink:#FFFFFF; --w-ink2:rgba(234,243,255,.82); --w-ink3:rgba(214,230,255,.62);
+  --w-blue:#A6E1FF; --w-blue2:#79CBFF; --w-sky:#86D6FF; --w-sky2:rgba(160,215,255,.32);
+  --w-pos:#45E39A; --w-neg:#FF7D89; --w-warn:#FFC766; --w-violet:#B9A6FF;
+  --w-glass:rgba(255,255,255,.07); --w-glass2:rgba(255,255,255,.13); --w-glass3:rgba(255,255,255,.19);
+  --w-stroke:rgba(255,255,255,.30); --w-line:rgba(255,255,255,.14);
+  --w-shadow:0 18px 40px -22px rgba(2,18,70,.62),0 2px 8px -4px rgba(2,18,70,.22);
+  --w-shadow-lg:0 30px 70px -30px rgba(2,18,70,.72),0 4px 12px -6px rgba(2,18,70,.25);
+  --w-blur:blur(22px) saturate(170%);
+  --w-grad:linear-gradient(180deg,#8DE0FF 0%,#3EA8FF 46%,#1A70EC 100%);
+  --w-tile:linear-gradient(160deg,rgba(255,255,255,.24) 0%,rgba(255,255,255,.08) 100%);
+  --w-hi:inset 0 1px 0 rgba(255,255,255,.38);
+  --text:var(--w-ink); --text-2:var(--w-ink2); --text-3:var(--w-ink3); --accent:var(--w-blue); --tint:var(--w-blue);
+  --om-glass:var(--w-glass2); --om-border-glass:var(--w-stroke);
+  color-scheme:dark;
+}
+html:root:root[data-theme][data-tone="night"]{
+  --w-bg:#0C3488; --w-bg2:#041232; --w-glass:rgba(255,255,255,.05); --w-glass2:rgba(255,255,255,.10); --w-glass3:rgba(255,255,255,.15);
+  --w-stroke:rgba(175,212,255,.24); --w-line:rgba(175,212,255,.12); --w-hi:inset 0 1px 0 rgba(190,220,255,.22);
+}
+
+/* ---------- the page: luminous blue with soft aurora glows behind the glass ---------- */
+html:root:root[data-theme] body{background:
+  radial-gradient(60% 38% at 88% 4%,rgba(140,220,255,.55),transparent 72%),
+  radial-gradient(55% 36% at 4% 34%,rgba(130,112,255,.34),transparent 72%),
+  radial-gradient(75% 45% at 60% 104%,rgba(50,200,255,.34),transparent 72%),
+  linear-gradient(172deg,var(--w-bg) 0%,#1153C8 46%,var(--w-bg2) 100%) fixed!important;color:var(--w-ink)}
+html:root:root[data-theme][data-tone="night"] body{background:
+  radial-gradient(60% 38% at 88% 4%,rgba(60,150,255,.34),transparent 72%),
+  radial-gradient(55% 36% at 4% 34%,rgba(110,90,255,.24),transparent 72%),
+  radial-gradient(75% 45% at 60% 104%,rgba(20,160,255,.22),transparent 72%),
+  linear-gradient(172deg,var(--w-bg) 0%,#08225E 46%,var(--w-bg2) 100%) fixed!important}
+html:root:root[data-theme] body::before{background:radial-gradient(closest-side,rgba(170,225,255,.30),rgba(170,225,255,0))!important;border:1.5px solid rgba(255,255,255,.22)!important}
+html:root:root[data-theme] body::after{background:radial-gradient(closest-side,rgba(120,200,255,.26),rgba(120,200,255,0))!important;border:1.5px solid rgba(255,255,255,.16)!important}
+
+/* ---------- glass surfaces: see-through, a light edge, depth from shadow ---------- */
+html:root:root[data-theme] body :is(.omx-card,.settings-group,.rv-list,.ds-list,.glass,.glass-elevated,.hub-card,.faq-item,.contact-card,.receipt-panel,.rc-sheet,.pi-card,.card,.wd-card,.w-glass){
+  background:linear-gradient(160deg,var(--w-glass2),var(--w-glass))!important;border:1px solid var(--w-stroke)!important;
+  box-shadow:var(--w-shadow),var(--w-hi)!important;color:var(--w-ink)}
+html:root:root[data-theme] body :is(.hub-i,.hub-wi,.wd-mi,.ds-empty-ic,.tile,.w-tile){background:var(--w-tile)!important;border:1px solid var(--w-stroke)!important;
+  box-shadow:0 10px 20px -12px rgba(2,18,70,.6),var(--w-hi)!important;color:var(--w-blue)!important}
+html:root:root[data-theme] body :is(.hub-i,.hub-wi,.wd-mi,.tile,.w-tile) svg{color:var(--w-blue)!important}
+html:root:root[data-theme] body .w-home .omx-total{background:linear-gradient(150deg,rgba(255,255,255,.20),rgba(255,255,255,.06))!important;border-color:rgba(255,255,255,.34)!important}
+
+/* ---------- controls ---------- */
+html:root:root[data-theme] body .btn-primary,html:root:root[data-theme] body a.btn.btn-primary{background:var(--w-grad)!important;color:#fff!important;border:1px solid rgba(255,255,255,.55)!important;
+  box-shadow:0 18px 34px -16px rgba(40,170,255,.85),inset 0 1px 0 rgba(255,255,255,.65)!important;text-shadow:0 1px 2px rgba(4,40,120,.35)}
+html:root:root[data-theme] body .btn-secondary{background:linear-gradient(160deg,var(--w-glass3),var(--w-glass))!important;color:#fff!important;border:1px solid var(--w-stroke)!important}
+html:root:root[data-theme] body :is(.topbar-back,.hub-circ,.rv-circ,.ds-eye,.rv-cp,.hub-me-go,.yb-ic,.w-sq){background:linear-gradient(160deg,var(--w-glass3),var(--w-glass))!important;border:1px solid var(--w-stroke)!important;color:#fff!important;box-shadow:var(--w-shadow),var(--w-hi)!important}
+html:root:root[data-theme] body .omx-act{background:linear-gradient(160deg,var(--w-glass3),var(--w-glass))!important;border:1px solid var(--w-stroke)!important;color:#fff!important;box-shadow:var(--w-shadow),var(--w-hi)!important}
+html:root:root[data-theme] body .omx-act i{color:var(--w-blue)!important}
+html:root:root[data-theme] body .omx-act.p{background:var(--w-grad)!important;border-color:rgba(255,255,255,.55)!important;box-shadow:0 18px 30px -14px rgba(40,170,255,.85),inset 0 1px 0 rgba(255,255,255,.6)!important}
+html:root:root[data-theme] body .omx-act.p i{color:#fff!important}
+html:root:root[data-theme] body .chips{background:rgba(255,255,255,.08);border:1px solid var(--w-stroke);box-shadow:inset 0 1px 2px rgba(2,18,70,.2)}
+html:root:root[data-theme] body .chip{color:var(--w-ink2)!important}
+html:root:root[data-theme] body :is(.input,.field-box){background:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,.06))!important;border:1px solid var(--w-stroke)!important;color:#fff!important;box-shadow:inset 0 1px 3px rgba(2,18,70,.25)!important}
+html:root:root[data-theme] body :is(.input,.field-box):focus-within,html:root:root[data-theme] body .input:focus{box-shadow:0 0 0 4px rgba(140,215,255,.25),inset 0 1px 3px rgba(2,18,70,.25)!important;border-color:rgba(170,228,255,.7)!important}
+html:root:root[data-theme] body :is(input,textarea,select){color:#fff}
+html:root:root[data-theme] body :is(input,textarea)::placeholder{color:rgba(214,230,255,.55)!important}
+html:root:root[data-theme] body .switch{background:rgba(255,255,255,.18)!important;border:1px solid var(--w-stroke)!important}
+html:root:root[data-theme] body .w-pill{background:linear-gradient(160deg,rgba(255,255,255,.22),rgba(255,255,255,.08))!important;color:#fff!important;border-color:var(--w-stroke)!important}
+html:root:root[data-theme] body .receipt-row.w-amt .receipt-row-value{background:linear-gradient(160deg,rgba(255,255,255,.22),rgba(255,255,255,.08))!important;color:#fff!important}
+
+/* ---------- bars ---------- */
+html:root:root[data-theme] body .screen.ios-scrolled > .topbar{background:linear-gradient(180deg,rgba(20,90,215,.62),rgba(20,90,215,.18))!important;-webkit-backdrop-filter:blur(20px) saturate(170%);backdrop-filter:blur(20px) saturate(170%)}
+html:root:root[data-theme][data-tone="night"] body .screen.ios-scrolled > .topbar{background:linear-gradient(180deg,rgba(6,26,74,.7),rgba(6,26,74,.2))!important}
+html:root:root[data-theme] body #bottom-nav .nav-dock{background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.07))!important;border:1px solid var(--w-stroke)!important;
+  -webkit-backdrop-filter:blur(26px) saturate(180%)!important;backdrop-filter:blur(26px) saturate(180%)!important;box-shadow:0 -10px 30px -18px rgba(2,18,70,.55),var(--w-hi)!important}
+html:root:root[data-theme] body #bottom-nav .nav-ind{background:linear-gradient(160deg,rgba(255,255,255,.30),rgba(255,255,255,.12))!important;border-color:rgba(255,255,255,.4)!important}
+html:root:root[data-theme] body #bottom-nav .nav-item{color:rgba(225,238,255,.72)!important}
+html:root:root[data-theme] body #bottom-nav .nav-item.active,html:root:root[data-theme] body #bottom-nav .nav-item[aria-current="page"]{color:#fff!important}
+
+/* ---------- sheets, menus, toasts: more opaque glass so text stays readable ---------- */
+html:root:root[data-theme] body .ov-panel{background:linear-gradient(170deg,rgba(32,104,222,.90),rgba(12,50,140,.92))!important;border:1px solid rgba(255,255,255,.3)!important;color:#fff}
+html:root:root[data-theme] body .yd-p{background:linear-gradient(170deg,rgba(32,104,222,.92),rgba(12,50,140,.94))!important;color:#fff}
+html:root:root[data-theme][data-tone="night"] body :is(.ov-panel,.yd-p){background:linear-gradient(170deg,rgba(14,46,112,.94),rgba(6,24,66,.95))!important}
+html:root:root[data-theme] body .toast.w-toast{background:linear-gradient(160deg,rgba(30,100,220,.94),rgba(12,50,140,.94))!important;border-color:rgba(255,255,255,.32)!important;color:#fff!important}
+html:root:root[data-theme] body :is(.sk,.sk-act){background:linear-gradient(100deg,rgba(255,255,255,.08) 30%,rgba(255,255,255,.22) 50%,rgba(255,255,255,.08) 70%)!important;background-size:300% 100%!important}
+
+/* ---------- opening presentation: glass card over the photos, no white panel ---------- */
+html:root:root[data-theme] body .wp-glass{background:linear-gradient(165deg,rgba(26,100,225,.55),rgba(8,40,128,.62))!important;border:1px solid rgba(255,255,255,.34)!important;
+  -webkit-backdrop-filter:blur(24px) saturate(170%);backdrop-filter:blur(24px) saturate(170%);box-shadow:0 30px 60px -30px rgba(2,18,70,.75),inset 0 1px 0 rgba(255,255,255,.4)!important}
+html:root:root[data-theme] body .wp-glass h1{color:#fff}
+html:root:root[data-theme] body .wp-glass p{color:rgba(234,243,255,.86)}
+html:root:root[data-theme] body :is(.wp-skip,.wp-langs button){background:rgba(8,40,122,.66)!important;border:1px solid rgba(255,255,255,.4)!important;color:#fff!important;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+html:root:root[data-theme] body .wp-dots button{background:rgba(255,255,255,.38)!important}
+html:root:root[data-theme] body .wp-dots button[aria-current="true"]{background:#fff!important}
+html:root:root[data-theme] body .wp-wave{background:linear-gradient(180deg,rgba(40,130,240,.35),rgba(10,50,140,0))!important}
+
+/* ---------- gains / losses keep sign AND colour (readable on blue) ---------- */
+html:root:root[data-theme] body :is(.pos,.up,.omx-up,.chg-up){color:var(--w-pos)!important}
+html:root:root[data-theme] body :is(.neg,.down,.omx-down,.chg-down){color:var(--w-neg)!important}
+
+/* low-power devices: no blur (the colours alone still read as glass) */
+html.w-lite[data-theme] body :is(.omx-card,.settings-group,.glass,.card,.w-glass,.omx-act,.btn-secondary,#bottom-nav .nav-dock){-webkit-backdrop-filter:none!important;backdrop-filter:none!important}

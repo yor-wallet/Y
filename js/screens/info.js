@@ -1,0 +1,81 @@
+'use strict';
+
+Object.assign(TR.en, { 'nt.sent':'Transfer sent', 'nt.recv':'Money received', 'nt.sentMsg':'{a} sent to {n}', 'nt.recvMsg':'You received {a} from {n}' });
+Object.assign(TR.fr, { 'nt.sent':'Transfert envoyé', 'nt.recv':'Argent reçu', 'nt.sentMsg':'{a} envoyé à {n}', 'nt.recvMsg':'Vous avez reçu {a} de {n}' });
+Object.assign(TR.ar, { 'nt.sent':'تم إرسال التحويل', 'nt.recv':'تم استلام أموال', 'nt.sentMsg':'تم إرسال {a} إلى {n}', 'nt.recvMsg':'استلمت {a} من {n}' });
+/* The database stores these two notifications in English; the screen shows them in the language of the app, built from the REAL values saved with the event
+   (amount, currency, name). When a value is missing the stored text is shown as it is — nothing is invented. */
+function notifView(n){
+  const d = n.data || {}, amt = Number(d.amount);
+  if ((n.type === 'TRANSFER_SENT' || n.type === 'TRANSFER_RECEIVED') && isFinite(amt) && amt > 0){
+    const who = String(n.type === 'TRANSFER_SENT' ? d.to : d.from || '').trim();
+    if (who){
+      const a = CurrencyEngine.format(amt, String(d.currency || 'OMR'));
+      return { title: t(n.type === 'TRANSFER_SENT' ? 'nt.sent' : 'nt.recv'), message: t(n.type === 'TRANSFER_SENT' ? 'nt.sentMsg' : 'nt.recvMsg').replace('{a}', a).replace('{n}', who) };
+    }
+  }
+  /* 14.1.0 — a transfer waits for the administrator, or was refused (its amount is back on the balance) */
+  if ((n.type === 'TRANSFER_PENDING' || n.type === 'TRANSFER_REJECTED') && isFinite(amt) && amt > 0){
+    const cur = String(d.currency || d.asset || 'OMR').toUpperCase();
+    const a = /^(OMR|USD|AED|XOF|SAR)$/.test(cur) ? CurrencyEngine.format(amt, cur) : omxQty(amt, cur);
+    return n.type === 'TRANSFER_PENDING'
+      ? { title: t('nt.pend'), message: t('nt.pendMsg').replace('{a}', a).replace('{n}', String(d.to || '').trim()) }
+      : { title: t('nt.rej'), message: t('nt.rejMsg').replace('{a}', a) };
+  }
+  return { title: n.title, message: n.message };
+}
+Object.assign(TR.en, { 'nt.pend':'Transfer in progress', 'nt.pendMsg':'{a} to {n} · in progress', 'nt.rej':'Transfer refused', 'nt.rejMsg':'{a} returned to your balance' });
+Object.assign(TR.fr, { 'nt.pend':'Transfert en cours', 'nt.pendMsg':'{a} pour {n} · en cours', 'nt.rej':'Transfert refusé', 'nt.rejMsg':'{a} restitué sur votre solde' });
+Object.assign(TR.ar, { 'nt.pend':'تحويل قيد التنفيذ', 'nt.pendMsg':'{a} إلى {n} · قيد التنفيذ', 'nt.rej':'تم رفض التحويل', 'nt.rejMsg':'أُعيد {a} إلى رصيدك' });
+function renderNotifications(){
+  const list = Runtime.notifications;
+  return refTop(t('ui.notifications'), true, '<button class="topbar-action w-sq" data-action="mark-notifs" aria-label="' + t('ui.markRead') + '">' + icon('check', 20) + '</button>') +
+    '<div class="screen-body" style="padding-top:0">' +
+      (list.length ? '<div class="glass" style="padding:calc(6px*var(--ui)) calc(18px*var(--ui))">' + list.map(n => { const v = notifView(n); return '<div class="item" style="cursor:default"><div class="tile">' + icon('bell', 20) + '</div><div class="item-body"><div class="item-title">' + escapeHtml(v.title) + '</div><div class="item-sub" style="white-space:normal">' + escapeHtml(v.message) + '</div><div class="caption" style="margin-top:calc(4px*var(--ui))">' + escapeHtml(timeAgo(n.createdAt)) + '</div></div></div>'; }).join('') + '</div>' : '<div class="rv-empty" style="padding-top:12vh"><div style="color:var(--accent)">' + icon('bell', 48) + '</div><div style="font-weight:800;font-size:calc(18px*var(--ui));margin-top:12px">' + V12.vt('notifEmpty') + '</div><div style="color:var(--text-2);margin-top:6px">' + V12.vt('notifEmptyD') + '</div></div>') +
+    '</div>';
+}
+function infoScreenTop(titleKey){
+  return refTop(t(titleKey));
+}
+function renderPrivacy(){
+  const blocks = [1, 2, 3].map(n =>
+    '<div class="glass" style="padding:var(--sp-5)"><div class="settings-row-title" style="margin-bottom:calc(6px*var(--ui))">' + t('privacy.p' + n + 't') + '</div>' +
+    '<div class="settings-row-sub" style="line-height:1.6">' + t('privacy.p' + n) + '</div></div>').join('');
+  return infoScreenTop('privacy.title') +
+    '<div class="screen-body" style="padding-top:var(--sp-2)"><p class="caption" style="line-height:1.6">' + t('privacy.intro') + '</p>' + blocks + '<div style="height:var(--sp-6)"></div></div>';
+}
+function renderHelp(){
+  const faq = [1, 2, 3].map(n =>
+    '<details class="glass faq-item"><summary>' + t('help.q' + n) + '<span class="faq-chev">' + icon('chev', 16) + '</span></summary><div class="faq-a">' + t('help.a' + n) + '</div></details>').join('');
+  const email = 'yordigitalefinance@gmail.com';
+  return infoScreenTop('help.title') +
+    '<div class="screen-body" style="padding-top:var(--sp-2)"><p class="caption" style="line-height:1.6">' + t('help.intro') + '</p>' + faq +
+    '<a class="btn btn-primary" href="mailto:' + email + '" style="text-decoration:none;margin-top:var(--sp-2)">' + icon('mail', 18) + '<span>' + t('help.contact') + '</span></a>' +
+    '<div class="caption" style="text-align:center">' + t('help.contactDesc') + ' <span class="ltr">' + email + '</span></div>' +
+    '<div style="height:var(--sp-6)"></div></div>';
+}
+function renderAbout(){
+  return infoScreenTop('about.title') +
+    '<div class="screen-body" style="padding-top:var(--sp-2);align-items:center;text-align:center">' +
+      '<div style="margin:var(--sp-6) 0 var(--sp-4)">' + logoLockup(64) + '</div>' +
+      '<div class="glass" style="padding:var(--sp-5);width:100%"><div class="settings-row-sub">' + t('about.version') + '</div><div class="settings-row-title ltr" style="font-family:var(--font-mono)">v' + CONFIG.APP.version + '</div></div>' +
+      '<p class="caption" style="line-height:1.6">' + t('about.company') + '</p><p class="caption">' + t('about.rights') + '</p>' +
+    '</div>';
+}
+function renderDevices(){
+  const current = DeviceEngine.current();
+  const list = Runtime.devices || [];
+  return refTop(t('devices.title')) +
+    '<div class="screen-body" style="padding-top:0">' +
+      '<div class="glass" style="padding:calc(6px*var(--ui)) calc(18px*var(--ui))">' + (list.length ? list.map(d => '<div class="item" style="cursor:default"><div class="tile">' + icon('device', 20) + '</div><div class="item-body"><div class="item-title">' + escapeHtml(d.platform || '—') + ' · ' + escapeHtml(d.browser || '—') + (d.deviceId === current ? ' <span class="badge badge-success" style="margin-inline-start:6px">' + t('devices.current') + '</span>' : '') + '</div><div class="item-sub">' + escapeHtml(d.deviceId || '') + '</div><div class="caption" style="margin-top:calc(4px*var(--ui))">' + t('devices.lastActive') + ' · ' + escapeHtml(timeAgo(d.lastSeen || Date.now())) + '</div></div></div>').join('') : '<div class="empty" style="padding:var(--sp-6) 0"><div class="empty-sub">—</div></div>') + '</div>' +
+    '</div>';
+}
+function renderSessions(){
+  const current = SessionEngine.current();
+  const list = Runtime.sessions || [];
+  return refTop(t('sessions.title')) +
+    '<div class="screen-body" style="padding-top:0">' +
+      '<div class="glass" style="padding:calc(6px*var(--ui)) calc(18px*var(--ui))">' + (list.length ? list.map(s => '<div class="item" style="cursor:default"><div class="tile">' + icon('session', 20) + '</div><div class="item-body"><div class="item-title">' + escapeHtml(s.sessionId || '') + (s.sessionId === current ? ' <span class="badge badge-success" style="margin-inline-start:6px">' + t('sessions.current') + '</span>' : '') + '</div><div class="item-sub">' + escapeHtml(s.deviceId || '') + '</div><div class="caption" style="margin-top:calc(4px*var(--ui))">' + t('sessions.createdAt') + ' · ' + escapeHtml(timeAgo(s.createdAt || Date.now())) + ' · ' + escapeHtml(s.status || 'active') + '</div></div></div>').join('') : '<div class="empty" style="padding:var(--sp-6) 0"><div class="empty-sub">—</div></div>') + '</div>' +
+    '</div>';
+}
+
