@@ -132,8 +132,13 @@
 .tr-ttl .fg{fill:none;stroke:var(--w-sky,#86D6FF);stroke-width:3;stroke-linecap:round;stroke-dasharray:100;transition:stroke-dashoffset .5s linear}
 .tr-ttl.exp{color:var(--w-warn)} .tr-ttl.exp .fg{stroke:var(--w-warn)}
 
-/* home header: two controls on the end side */
-.w-hdr-end{display:inline-flex;gap:8px}
+/* home header: Account on one side, Activity + notifications on the other (equal side columns keep the logo centred) */
+html:root:root body .w-home .w-hdr{grid-template-columns:96px minmax(0,1fr) 96px;column-gap:4px}
+html:root:root body .w-home .w-hdr .hub-circ{width:45px!important;height:45px!important;min-width:45px!important}
+html:root:root body .w-home .w-hdr > .hub-circ:first-child{justify-self:start}
+.w-hdr-end{display:inline-flex;gap:6px;justify-self:end}
+html:root:root body .w-home .w-hdr .w-brand{min-width:0;max-width:100%}
+html:root:root body .w-home .w-hdr .w-brand img{height:auto;max-height:40px;width:100%;max-width:140px;object-fit:contain}
 
 @media (prefers-reduced-motion:reduce){
   .tr-dot.live,.tr-dot.wait,.tr-px.flash,.tr-out.flash,.tb-row.chg,.tt-row.fresh{animation:none!important}
