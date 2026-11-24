@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Looper
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
@@ -79,6 +80,9 @@ abstract class ScreenTestBase {
     }
     @After fun tearDown() { g.market.stop(); marketScope.cancel(); server.shutdown() }
 
+    /* a screen alone, on the same sky background as in the app (OmRoot draws every route on SkyBackground) */
+    protected fun inApp(content: @androidx.compose.runtime.Composable () -> Unit) =
+        compose.setContent { OmTheme(reducedMotion = true) { com.omwallet.core.design.SkyBackground(androidx.compose.ui.Modifier.fillMaxSize()) { content() } } }
     protected fun startMarket() { g.market.start(marketScope); compose.waitUntil(10_000) { g.market.state.value.quotes.isNotEmpty() } }
     protected fun waitText(t: String, substring: Boolean = false) =
         compose.waitUntil(10_000) { compose.onAllNodesWithText(t, substring = substring, useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty() }
@@ -90,6 +94,21 @@ abstract class ScreenTestBase {
     /* Saves what the screen shows — the activity window plus any open sheet / dialog window, with its dim — to
        app/build/screenshots/api<sdk>-<lang>/<name>.png. Rendered with View.draw on a real Skia canvas (Robolectric native graphics). */
     protected fun shot(name: String) {
+        val bmp = capture()
+        val dir = File("build/screenshots/api${Build.VERSION.SDK_INT}-${Locale.getDefault().language}").apply { mkdirs() }
+        File(dir, "$name.png").outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
+    }
+    /* reads the QR code really drawn on screen (pixels of the node tagged [tag]), as a phone camera would */
+    protected fun readQr(tag: String): String {
+        val bmp = capture()
+        val r = compose.onNodeWithTag(tag, useUnmergedTree = true).fetchSemanticsNode().boundsInWindow
+        val x = r.left.toInt().coerceAtLeast(0); val y = r.top.toInt().coerceAtLeast(0)
+        val w = minOf(r.width.toInt(), bmp.width - x); val h = minOf(r.height.toInt(), bmp.height - y)
+        val px = IntArray(w * h); bmp.getPixels(px, 0, w, x, y, w, h)
+        val src = com.google.zxing.RGBLuminanceSource(w, h, px)
+        return com.google.zxing.qrcode.QRCodeReader().decode(com.google.zxing.BinaryBitmap(com.google.zxing.common.HybridBinarizer(src))).text
+    }
+    private fun capture(): Bitmap {
         compose.waitForIdle(); idle(400)
         val wmg = Class.forName("android.view.WindowManagerGlobal").getMethod("getInstance").invoke(null)
         @Suppress("UNCHECKED_CAST") val names = wmg.javaClass.getMethod("getViewRootNames").invoke(wmg) as Array<String>
@@ -105,8 +124,7 @@ abstract class ScreenTestBase {
             val loc = IntArray(2); v.getLocationOnScreen(loc)
             canvas.save(); canvas.translate(loc[0].toFloat(), loc[1].toFloat()); v.draw(canvas); canvas.restore()
         }
-        val dir = File("build/screenshots/api${Build.VERSION.SDK_INT}-${Locale.getDefault().language}").apply { mkdirs() }
-        File(dir, "$name.png").outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
+        return bmp
     }
 }
 
@@ -222,10 +240,54 @@ class ScreensFrTest : ScreenTestBase() {
         waitText("E-mail ou mot de passe incorrect.")
         shot("00_login_error")
     }
+    @Test fun sign_up_in_the_app_with_mandatory_phone_then_check_your_inbox() {
+        runBlocking { g.auth.signOut() }
+        OnboardingPrefs.markSeen(ApplicationProvider.getApplicationContext())
+        compose.setContent { OmTheme(reducedMotion = true) { OmRoot() } }
+        waitText("Bon retour parmi nous")
+        click("Pas encore de compte ? Créer un compte")
+        waitText("Créer un compte")
+        click("Créer mon compte")                                      /* nothing is sent while a field is wrong */
+        waitText("Saisissez une adresse e-mail valide.")
+        assertTrue(has("Saisissez un numéro de téléphone valide pour ce pays.") && has("Le mot de passe doit contenir au moins 8 caractères."))
+        assertEquals(0, backend.snapshot().count { it.first.startsWith("/auth/v1/signup") })
+        type("Prénom", "Nadia"); type("Nom", "Al Said"); type("E-mail", "nadia@example.com")
+        type("Numéro de téléphone", "9123 4567"); type("Mot de passe", "secret-pass-1")
+        shot("00d_signup")
+        click("Créer mon compte")
+        waitText("Vérifiez votre boîte e-mail")                          /* e-mail confirmation required: the screen says so, nothing pretends the account is ready */
+        assertTrue(has("nadia@example.com", substring = true))
+        val body = backend.snapshot().last { it.first.startsWith("/auth/v1/signup") }.second
+        assertTrue(body, body.contains("\"phone\":\"+96891234567\"") && body.contains("\"country\":\"OM\"") && body.contains("\"first_name\":\"Nadia\"") &&
+            body.contains("\"last_name\":\"Al Said\"") && body.contains("\"language\":\"fr\"") && body.contains("\"email\":\"nadia@example.com\""))
+        assertEquals(1, backend.snapshot().count { it.first.startsWith("/auth/v1/signup") })
+        shot("00e_signup_check_inbox")
+        click("Se connecter")
+        waitText("Bon retour parmi nous")
+    }
+    @Test fun sign_up_another_country_server_error_then_signed_in_at_once() {
+        runBlocking { g.auth.signOut() }
+        OnboardingPrefs.markSeen(ApplicationProvider.getApplicationContext())
+        backend.signup = "exists"
+        compose.setContent { OmTheme(reducedMotion = true) { OmRoot() } }
+        waitText("Bon retour parmi nous")
+        click("Pas encore de compte ? Créer un compte")
+        waitText("Créer un compte")
+        compose.onNodeWithTag("signup_country").performClick()
+        compose.onNodeWithTag("country_CI").performClick()                  /* Côte d'Ivoire, +225 */
+        type("E-mail", "amina@example.com"); type("Numéro de téléphone", "07 08 09 10 11"); type("Mot de passe", "secret-pass-1")
+        click("Créer mon compte")
+        waitText("Un compte existe déjà avec cet e-mail. Connectez-vous.")
+        val body = backend.snapshot().last { it.first.startsWith("/auth/v1/signup") }.second
+        assertTrue(body, body.contains("\"phone\":\"+225708091011\"") && body.contains("\"country\":\"CI\""))
+        backend.signup = "session"                                          /* a project that signs the person in at once */
+        click("Créer mon compte")
+        waitText("Solde total")
+    }
 
     @Test fun asset_detail_with_real_chart_tabs_and_networks() {
         startMarket()
-        compose.setContent { OmTheme(reducedMotion = true) { AssetDetailScreen("BTC", {}, {}, {}, {}) } }
+        inApp { AssetDetailScreen("BTC", {}, {}, {}, {}) }
         waitText("Plus haut 24 h")
         compose.waitUntil(10_000) { backend.snapshot().any { it.first.startsWith("/api/v3/klines") } }
         idle(300)
@@ -236,7 +298,7 @@ class ScreensFrTest : ScreenTestBase() {
     }
 
     @Test fun activity_shows_honest_statuses_and_keeps_cfa_archived() {
-        compose.setContent { OmTheme(reducedMotion = true) { ActivityScreen(androidx.compose.foundation.layout.PaddingValues()) } }
+        inApp { ActivityScreen(androidx.compose.foundation.layout.PaddingValues()) }
         waitText("En cours")                                           /* the pending send AND the withdrawal being handled: only « En cours » */
         assertTrue(has("Transfert confirmé"))                          /* the incoming, confirmed one */
         assertTrue(!has("Autorisé admin") && !has("À confirmer") && !has("administrateur", substring = true))
@@ -251,7 +313,7 @@ class ScreensFrTest : ScreenTestBase() {
     }
 
     @Test fun deposit_never_shows_an_address_the_server_did_not_give() {
-        compose.setContent { OmTheme(reducedMotion = true) { DepositScreen("USDT") {} } }
+        inApp { DepositScreen("USDT") {} }
         waitText("Choisissez le réseau")
         click("TRON")
         waitText("Adresse de dépôt indisponible")
@@ -262,18 +324,20 @@ class ScreensFrTest : ScreenTestBase() {
 
     @Test fun first_deposit_request_creates_the_accounts_own_address_then_shows_it_with_its_qr() {
         backend.addr = "pending"
-        compose.setContent { OmTheme(reducedMotion = true) { DepositScreen("USDT") {} } }
+        inApp { DepositScreen("USDT") {} }
         waitText("Choisissez le réseau")
         click("TRON")
         waitText("TZ2nw5y4azp1wkY89kPTBqUPtRhCguWhjY")
         assertTrue(has("Copier l’adresse") && has("Partager"))
         assertTrue(backend.snapshot().count { it.first.startsWith("/functions/v1/wallet-addresses") } == 1)   /* created once, on the first request */
         assertEquals(2, backend.called("get_receive_address"))
+        /* 14.5.2: the QR code on screen is readable and gives exactly this address (it was drawn white on white in 14.5.0) */
+        assertEquals("TZ2nw5y4azp1wkY89kPTBqUPtRhCguWhjY", readQr("deposit_qr"))
         shot("07b_deposit_address_qr")
     }
 
     @Test fun crypto_withdrawal_errors_appear_under_the_fields() {
-        compose.setContent { OmTheme(reducedMotion = true) { WithdrawScreen("USDT") {} } }
+        inApp { WithdrawScreen("USDT") {} }
         waitText("Adresse de destination")
         click("TRC20")
         type("Adresse de destination", "0x52908400098527886E0F7030069857D2E4169EE7")
@@ -286,7 +350,7 @@ class ScreensFrTest : ScreenTestBase() {
     }
 
     @Test fun internal_send_by_email_stays_pending_until_the_admin_confirms() {
-        compose.setContent { OmTheme(reducedMotion = true) { SendScreen(null, {}, {}) } }
+        inApp { SendScreen(null, {}, {}) }
         waitText("E-mail du destinataire")
         type("E-mail du destinataire", "sara@example.com")
         idle(600)
@@ -312,7 +376,7 @@ class ScreensFrTest : ScreenTestBase() {
 
     @Test fun admin_one_confirm_one_credit_and_the_row_stays_in_place() {
         assertTrue((g.auth.state.value as AuthState.SignedIn).isAdmin)
-        compose.setContent { OmTheme(reducedMotion = true) { AdminScreen {} } }
+        inApp { AdminScreen {} }
         waitText("Amina Al Balushi → Sara Khalid")
         shot("11_admin_internal")
         click("Mettre en pause")                                       /* not final: stays pending, still confirmable and refusable */
@@ -379,7 +443,7 @@ class ScreensArTest : ScreenTestBase() {
         shot("02_markets")
     }
     @Test fun arabic_send_and_withdraw() {
-        compose.setContent { OmTheme(reducedMotion = true) { SendScreen(null, {}, {}) } }
+        inApp { SendScreen(null, {}, {}) }
         waitText("بريد المستلم")
         type("بريد المستلم", "sara@example.com")
         idle(600)

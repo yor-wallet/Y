@@ -16,6 +16,7 @@ class FakeBackend : Dispatcher() {
     @Volatile var confirmed = false
     @Volatile var paused = false
     @Volatile var swapOff = false
+    @Volatile var signup = "confirm"                          /* "confirm" · "session" · "exists" */
     /* deposit address: "unavailable" (server has none) · "pending" (created on first request) · "ok" */
     @Volatile var addr = "unavailable"
     @Volatile var addrCreated = false
@@ -33,6 +34,12 @@ class FakeBackend : Dispatcher() {
                 if (body.contains("wrong")) MockResponse().setResponseCode(400).setBody("""{"error":"invalid_grant","error_description":"Invalid login credentials"}""")
                 else ok("""{"access_token":"t-access","refresh_token":"t-refresh","expires_at":${Instant.now().epochSecond + 3600},"user":{"id":"u-1","email":"amina@example.com"}}""")
             path.startsWith("/auth/v1/logout") -> MockResponse().setResponseCode(204)
+            /* sign-up, as GoTrue answers it: e-mail confirmation required (user, no session) · signed in at once · e-mail already used */
+            path.startsWith("/auth/v1/signup") -> when (signup) {
+                "exists" -> MockResponse().setResponseCode(422).setHeader("Content-Type", "application/json").setBody("""{"code":422,"error_code":"user_already_exists","msg":"User already registered"}""")
+                "session" -> ok("""{"access_token":"t-access","refresh_token":"t-refresh","expires_at":${Instant.now().epochSecond + 3600},"user":{"id":"u-1","email":"amina@example.com"}}""")
+                else -> ok("""{"id":"u-new","aud":"authenticated","email":"nadia@example.com","confirmation_sent_at":"${ago(0)}","user_metadata":{}}""")
+            }
             path.startsWith("/rest/v1/profiles") -> ok("""[{"id":"u-1","yor_id":"OM7731","email":"amina@example.com","role":"user","first_name":"Amina","last_name":"Al Balushi","status":"ACTIVE"}]""")
             path.startsWith("/rest/v1/accounts") -> ok("""[{"currency":"OMR","balance":"25.500","available_balance":"20.500","reserved_balance":"5.000"},{"currency":"XOF","balance":"120000","available_balance":"120000","reserved_balance":"0"}]""")
             path.startsWith("/rest/v1/crypto_wallets") -> ok("""[{"asset":"BTC","network":"bitcoin","balance":"0.0123","available_balance":"0.0123","locked_balance":"0"},

@@ -1,3 +1,11 @@
+# OM Wallet 14.5.2 (Android) — QR code de dépôt visible, création de compte dans l'application
+
+Signalé par le propriétaire : « je ne peux pas créer un compte depuis l'application » et « je ne peux pas voir le QR code pour les dépôts ».
+
+- **QR code de dépôt (bug de la 14.5.0, corrigé)** : les carrés du QR étaient dessinés avec la couleur du texte de l'application, devenue blanche avec l'apparence verre → QR blanc sur blanc, invisible. Ils sont maintenant **toujours foncés sur fond blanc**, quel que soit le thème (contraste exigé par les lecteurs de QR). Nouveau test : l'image réellement affichée est **lue par un décodeur QR** (ZXing) et doit redonner exactement l'adresse de dépôt. Le web n'était pas touché (couleurs fixes).
+- **Créer un compte dans l'application** (auparavant le lien ouvrait le site) : prénom, nom, e-mail, téléphone **obligatoire** (pays + numéro, mêmes 15 pays et même règle que le site, contrôlée aussi par le serveur), mot de passe de 8 caractères minimum. Même envoi que le site (`/auth/v1/signup` avec prénom, nom, téléphone, pays, langue) : le serveur ouvre le profil, le compte OMR et les portefeuilles crypto. La confirmation par e-mail étant activée sur le projet, l'écran dit « Vérifiez votre boîte e-mail » (rien ne fait croire que le compte est prêt) ; si un jour elle est désactivée, la personne est connectée directement. Erreurs claires en ar / en / fr (e-mail déjà utilisé, mot de passe faible, trop d'essais…).
+- **Tests Android** : les écrans testés seuls sont maintenant dessinés sur le même fond bleu que dans l'application (les captures précédentes montraient un fond clair trompeur : dans l'application ces écrans étaient bien sur fond bleu) ; nouveaux tests de création de compte (champs obligatoires, rien n'est envoyé tant qu'un champ est faux, données envoyées, « vérifiez votre boîte e-mail », e-mail déjà utilisé, autre pays, connexion directe) et de la règle du téléphone (mêmes résultats que la fonction du site).
+
 # OM Wallet 14.5.1 — sécurité des échanges, marché en direct plus léger (web + Android)
 
 Demande du propriétaire : « termine, optimise, améliore, rends-le encore plus performant ». Fonctions, données, règles de confirmation et e-mails : inchangés.

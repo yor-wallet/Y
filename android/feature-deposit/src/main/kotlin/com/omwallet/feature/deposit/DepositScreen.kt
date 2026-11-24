@@ -16,6 +16,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
@@ -158,7 +161,10 @@ private fun AddressCard(sym: String, network: String, st: AddressState, retry: (
             is AddressState.Ready -> GlassCard(Modifier.padding(horizontal = 16.dp), strong = true) {
                 Text(stringResource(R.string.deposit_address, sym, n.name), style = MaterialTheme.typography.titleSmall, color = OmColors.Ink)
                 val matrix = remember(state.address) { qr(state.address) }
-                Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { QrImage(matrix, Modifier.size(220.dp)) }
+                val qrLabel = stringResource(R.string.deposit_qr_desc, sym, n.name)
+                Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    QrImage(matrix, Modifier.size(220.dp).clip(RoundedCornerShape(14.dp)).testTag("deposit_qr").semantics { contentDescription = qrLabel })
+                }
                 Text(state.address, style = MaterialTheme.typography.bodyLarge, color = OmColors.Ink, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                 Text(stringResource(R.string.deposit_warning, sym, n.name), style = MaterialTheme.typography.bodySmall, color = OmColors.Warning)
                 val copied = stringResource(R.string.copied)
@@ -178,11 +184,15 @@ private fun copy(ctx: Context, text: String) {
 /* Real QR code (ZXing encoder, error correction M), drawn as squares on a white quiet zone. */
 fun qr(text: String): BitMatrix = QRCodeWriter().encode(text, BarcodeFormat.QR_CODE, 0, 0, mapOf(EncodeHintType.ERROR_CORRECTION to ErrorCorrectionLevel.M, EncodeHintType.MARGIN to 2))
 
+/* 14.5.2 — the modules are ALWAYS dark on white, whatever the app theme: a scanner needs that contrast. (14.5.0 drew them with
+   the theme's text colour, which became white with the glass look: the code was invisible.) */
+val QR_DARK = Color(0xFF0B1B3F)
+
 @Composable
 private fun QrImage(m: BitMatrix, modifier: Modifier) {
     Canvas(modifier) {
         drawRect(Color.White)
         val cell = size.minDimension / m.width
-        for (y in 0 until m.height) for (x in 0 until m.width) if (m[x, y]) drawRect(OmColors.Ink, Offset(x * cell, y * cell), Size(cell + 0.5f, cell + 0.5f))
+        for (y in 0 until m.height) for (x in 0 until m.width) if (m[x, y]) drawRect(QR_DARK, Offset(x * cell, y * cell), Size(cell + 0.5f, cell + 0.5f))
     }
 }

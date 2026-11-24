@@ -52,6 +52,17 @@ class AuthRepository(private val api: SupabaseApi, private val sessions: Session
 
     suspend fun signIn(email: String, password: String) { api.signIn(email.trim(), password); loadProfile() }
 
+    /* true: the account is open and signed in; false: an e-mail confirmation link was sent first (the person then signs in) */
+    suspend fun signUp(email: String, password: String, firstName: String, lastName: String, phone: String, country: String, language: String): Boolean {
+        val data = kotlinx.serialization.json.buildJsonObject {
+            put("first_name", JsonPrimitive(firstName.trim().take(80))); put("last_name", JsonPrimitive(lastName.trim().take(80)))
+            put("phone", JsonPrimitive(phone)); put("country", JsonPrimitive(country.uppercase().take(2)))
+            put("language", JsonPrimitive(language.takeIf { it in setOf("fr", "en", "ar") } ?: "en"))
+        }
+        val s = api.signUp(email.trim(), password, data) ?: return false
+        loadProfile(); return s.accessToken.isNotEmpty()
+    }
+
     private suspend fun loadProfile() {
         val uid = api.session?.userId ?: throw ApiException("unauthenticated", "no session", 401)
         val row = api.select("profiles", "select=id,yor_id,email,role,first_name,last_name,status&id=eq.$uid").firstOrNull().obj()

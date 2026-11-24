@@ -62,7 +62,7 @@ import com.omwallet.core.ui.openUrl
 import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(onSignUp: () -> Unit = {}) {
     val g = omGraph()
     val scope = rememberCoroutineScope()
     val ctx = LocalContext.current
@@ -127,7 +127,7 @@ fun LoginScreen() {
         Spacer(Modifier.height(20.dp))
         Text(
             stringResource(R.string.login_signup), style = MaterialTheme.typography.titleSmall, color = OmColors.Blue600, textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth().pressable { openUrl(ctx, "https://yor-wallet.vercel.app/") }.padding(vertical = 12.dp),
+            modifier = Modifier.fillMaxWidth().pressable { onSignUp() }.padding(vertical = 12.dp),     /* 14.5.2: in the app itself */
         )
     }
 }

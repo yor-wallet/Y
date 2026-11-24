@@ -98,7 +98,9 @@ fun OmRoot() {
                 androidx.compose.animation.AnimatedContent(showIntro, transitionSpec = {
                     (fadeIn(OmSprings.fade(320)) + androidx.compose.animation.scaleIn(initialScale = 0.94f)) togetherWith (fadeOut(OmSprings.fade(220)) + androidx.compose.animation.scaleOut(targetScale = 1.04f))
                 }, label = "intro") { intro ->
-                    if (intro) OnboardingScreen { OnboardingPrefs.markSeen(ctx); showIntro = false } else LoginScreen()
+                    var signUp by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf(false) }
+                    if (intro) OnboardingScreen { OnboardingPrefs.markSeen(ctx); showIntro = false }
+                    else if (signUp) SignUpScreen(onBack = { signUp = false }) else LoginScreen(onSignUp = { signUp = true })
                 }
             }
             is AuthState.SignedIn -> {

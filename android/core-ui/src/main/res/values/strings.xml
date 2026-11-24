@@ -32,7 +32,7 @@
     <string name="login_btn">Sign in</string>
     <string name="login_e_email">Enter a valid e-mail address.</string>
     <string name="login_e_password">Enter your password.</string>
-    <string name="login_signup">No account yet? Create one on the OM Wallet website</string>
+    <string name="login_signup">No account yet? Create one</string>
     <string name="home_hello">Hello %1$s</string>
     <string name="home_total">Total balance</string>
     <string name="home_hide">Hide balances</string>
@@ -134,6 +134,7 @@
     <string name="deposit_unavailable_t">Deposit address not available</string>
     <string name="deposit_unavailable_b">OM Wallet does not yet have a custody address for %1$s on %2$s. No address is shown rather than one that would not receive your funds.</string>
     <string name="deposit_address">Your %1$s address · %2$s</string>
+    <string name="deposit_qr_desc">QR code of your %1$s deposit address on %2$s</string>
     <string name="withdraw_title">Withdraw</string>
     <string name="wd_tab_bank">Bank (OMR)</string>
     <string name="wd_tab_crypto">Crypto</string>
@@ -323,4 +324,23 @@
     <string name="tr_e_unsupported_pair">This pair is not available.</string>
     <string name="tr_e_amount_too_small">The amount is too small.</string>
     <string name="tr_e_no_wallet">You have no balance in this crypto.</string>
+    <string name="signup_title">Create an account</string>
+    <string name="signup_sub">A few details to open your wallet</string>
+    <string name="signup_first">First name</string>
+    <string name="signup_last">Last name</string>
+    <string name="signup_phone">Phone number</string>
+    <string name="signup_phone_hint">Required. Choose the country, then type the number.</string>
+    <string name="signup_country">Country</string>
+    <string name="signup_password_hint">At least 8 characters</string>
+    <string name="signup_btn">Create my account</string>
+    <string name="signup_have_account">Already have an account? Sign in</string>
+    <string name="signup_done_title">Check your inbox</string>
+    <string name="signup_done_body">We sent a confirmation link to %1$s. Open it, then sign in.</string>
+    <string name="signup_e_phone">Enter a valid phone number for this country.</string>
+    <string name="signup_e_password">The password must have at least 8 characters.</string>
+    <string name="e_user_exists">An account already exists with this e-mail. Sign in instead.</string>
+    <string name="e_weak_password">Password too weak: choose a longer one.</string>
+    <string name="e_email_invalid">This e-mail address was refused. Please check it.</string>
+    <string name="e_rate_limit">Too many attempts. Try again in a few minutes.</string>
+    <string name="e_signup_failed">The account could not be created. Check the phone number and try again.</string>
 </resources>

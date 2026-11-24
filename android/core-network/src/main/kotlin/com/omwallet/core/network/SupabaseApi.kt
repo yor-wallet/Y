@@ -73,6 +73,26 @@ class SupabaseApi(
     suspend fun signIn(email: String, password: String): Session = auth("password", buildJsonObject { put("email", email); put("password", password) })
     suspend fun refresh(refreshToken: String): Session = auth("refresh_token", buildJsonObject { put("refresh_token", refreshToken) })
 
+    /* Account creation (GoTrue /signup), same data as the web app. The server trigger handle_new_user creates the profile, the OMR
+       account and the crypto wallets, and refuses a sign-up without a valid phone. Returns the session when the project signs the
+       person in at once, or null when an e-mail confirmation is required first. */
+    suspend fun signUp(email: String, password: String, data: JsonObject): Session? = withContext(Dispatchers.IO) {
+        val body = buildJsonObject { put("email", email); put("password", password); put("data", data) }
+        val req = Request.Builder().url("$baseUrl/auth/v1/signup").header("apikey", anonKey).post(body.toString().toRequestBody(JSON)).build()
+        execute(req).use { r ->
+            val text = r.body?.string().orEmpty()
+            if (!r.isSuccessful) throw parseError(r.code, text)
+            val o = OmJson.parseToJsonElement(text).jsonObject
+            val access = o["access_token"]?.jsonPrimitive?.content ?: return@use null
+            val user = o["user"]?.jsonObject
+            Session(
+                accessToken = access, refreshToken = o["refresh_token"]!!.jsonPrimitive.content,
+                userId = user?.get("id")?.jsonPrimitive?.content.orEmpty(), email = user?.get("email")?.jsonPrimitive?.content,
+                expiresAt = (o["expires_at"]?.jsonPrimitive?.content?.toLongOrNull() ?: 0L),
+            ).also { session = it; onSessionChanged(it) }
+        }
+    }
+
     private suspend fun auth(grant: String, body: JsonObject): Session = withContext(Dispatchers.IO) {
         val req = Request.Builder().url("$baseUrl/auth/v1/token?grant_type=$grant").header("apikey", anonKey)
             .post(body.toString().toRequestBody(JSON)).build()

@@ -35,6 +35,24 @@ class RulesTest {
         assertFalse(Validation.emailOk("person@example"))
     }
 
+    /* same results as the web app's signupPhone(); every accepted value matches the server rule ^\+[0-9]{8,15}$ */
+    @Test fun sign_up_phone_like_the_web_and_the_server() {
+        assertEquals("+96891234567", Validation.signupPhone("+968", "9123 4567"))
+        assertEquals("+96891234567", Validation.signupPhone("+968", "+968 9123 4567"))
+        assertEquals("+96891234567", Validation.signupPhone("+968", "00968 91234567"))
+        assertEquals("+225708091011", Validation.signupPhone("+225", "07 08 09 10 11"))      /* the leading 0 is dropped */
+        assertEquals("+33612345678", Validation.signupPhone("+33", "06-12-34-56-78"))
+        assertNull(Validation.signupPhone("+968", ""))
+        assertNull(Validation.signupPhone("+968", "1234"))                                  /* too short */
+        assertNull(Validation.signupPhone("+968", "+971 50 123 4567"))                      /* another country's code */
+        assertNull(Validation.signupPhone("+968", "9123abc"))
+        assertNull(Validation.signupPhone("+1", "1234567890123456"))                         /* too long */
+        listOf("9123 4567", "+33 6 12 34 56 78").forEach { v ->
+            listOf("+968", "+33").forEach { d -> Validation.signupPhone(d, v)?.let { assertTrue(it, Regex("^\\+[0-9]{8,15}$").matches(it)) } }
+        }
+        assertEquals("OM", Countries.all.first().iso); assertEquals(15, Countries.all.size)
+    }
+
     @Test fun honest_status_wording() {
         assertEquals(Stage.Pending, Status.internal("PENDING"))
         assertEquals(Stage.Done, Status.internal("CONFIRMED"))

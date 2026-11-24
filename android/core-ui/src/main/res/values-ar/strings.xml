@@ -31,7 +31,7 @@
     <string name="login_btn">دخول</string>
     <string name="login_e_email">أدخل بريدًا إلكترونيًا صالحًا.</string>
     <string name="login_e_password">أدخل كلمة المرور.</string>
-    <string name="login_signup">ليس لديك حساب؟ أنشئه على موقع OM Wallet</string>
+    <string name="login_signup">ليس لديك حساب؟ أنشئ حسابًا</string>
     <string name="home_hello">مرحبًا %1$s</string>
     <string name="home_total">الرصيد الإجمالي</string>
     <string name="home_hide">إخفاء الأرصدة</string>
@@ -133,6 +133,7 @@
     <string name="deposit_unavailable_t">عنوان الإيداع غير متاح</string>
     <string name="deposit_unavailable_b">لا يملك OM Wallet بعد عنوان حفظ لـ %1$s على %2$s. لا نعرض أي عنوان بدلًا من عنوان لن يستقبل أموالك.</string>
     <string name="deposit_address">عنوان %1$s الخاص بك · %2$s</string>
+    <string name="deposit_qr_desc">رمز QR لعنوان إيداع %1$s على شبكة %2$s</string>
     <string name="withdraw_title">سحب</string>
     <string name="wd_tab_bank">بنك (ر.ع)</string>
     <string name="wd_tab_crypto">عملات رقمية</string>
@@ -322,4 +323,23 @@
     <string name="tr_e_unsupported_pair">هذا الزوج غير متاح.</string>
     <string name="tr_e_amount_too_small">المبلغ صغير جداً.</string>
     <string name="tr_e_no_wallet">ليس لديك رصيد من هذه العملة.</string>
+    <string name="signup_title">إنشاء حساب</string>
+    <string name="signup_sub">بعض المعلومات لفتح محفظتك</string>
+    <string name="signup_first">الاسم الأول</string>
+    <string name="signup_last">اسم العائلة</string>
+    <string name="signup_phone">رقم الهاتف</string>
+    <string name="signup_phone_hint">إلزامي. اختر الدولة ثم أدخل الرقم.</string>
+    <string name="signup_country">الدولة</string>
+    <string name="signup_password_hint">8 أحرف على الأقل</string>
+    <string name="signup_btn">إنشاء حسابي</string>
+    <string name="signup_have_account">لديك حساب؟ سجّل الدخول</string>
+    <string name="signup_done_title">تحقق من بريدك الإلكتروني</string>
+    <string name="signup_done_body">أرسلنا رابط تأكيد إلى %1$s. افتحه ثم سجّل الدخول.</string>
+    <string name="signup_e_phone">أدخل رقم هاتف صالحًا لهذه الدولة.</string>
+    <string name="signup_e_password">يجب أن تتكون كلمة المرور من 8 أحرف على الأقل.</string>
+    <string name="e_user_exists">يوجد حساب بهذا البريد الإلكتروني بالفعل. سجّل الدخول.</string>
+    <string name="e_weak_password">كلمة المرور ضعيفة: اختر كلمة أطول.</string>
+    <string name="e_email_invalid">تم رفض هذا البريد الإلكتروني. تحقق منه.</string>
+    <string name="e_rate_limit">محاولات كثيرة. أعد المحاولة بعد بضع دقائق.</string>
+    <string name="e_signup_failed">تعذّر إنشاء الحساب. تحقق من رقم الهاتف ثم أعد المحاولة.</string>
 </resources>

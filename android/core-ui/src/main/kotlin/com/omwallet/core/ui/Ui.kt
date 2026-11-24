@@ -90,6 +90,11 @@ fun errorRes(code: String?): Int = when (code) {
     "invalid_state", "already_processed" -> R.string.e_invalid_state
     "invalid_hash", "invalid_tx_hash" -> R.string.e_invalid_hash
     "market_unavailable" -> R.string.markets_error
+    "user_already_exists", "email_exists" -> R.string.e_user_exists
+    "weak_password" -> R.string.e_weak_password
+    "email_address_invalid", "email_address_not_authorized" -> R.string.e_email_invalid
+    "over_email_send_rate_limit", "over_request_rate_limit", "too_many_requests" -> R.string.e_rate_limit
+    "unexpected_failure", "phone_required", "signup_disabled", "validation_failed" -> R.string.e_signup_failed
     else -> R.string.e_unknown
 }
 

@@ -1,4 +1,4 @@
-# OM Wallet — passation (état au 24/11/2026, version 14.5.1)
+# OM Wallet — passation (état au 24/11/2026, web 14.5.1 · Android 14.5.2)
 
 Document pour la session suivante. À lire en entier avec la skill du projet `.claude/skills/om-wallet/SKILL.md` (règles du
 propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce soit.
@@ -14,7 +14,7 @@ propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce so
 |---|---|
 | Dernier commit | voir `git log -1` sur la branche |
 | Site en production | https://yor-wallet.vercel.app — version 14.5.1 (voir `changelog.md` ; contrôle : `curl -s https://yor-wallet.vercel.app/sw.js \| grep fp-shell` → `fp-shell-v14.5.1`) |
-| Version | 14.5.1 partout (`js/data/reference-data.js`, `sw.js`, `android/app/build.gradle.kts` 140501, `android/README.md`, `changelog.md`) |
+| Version | web 14.5.1 (`js/data/reference-data.js`, `sw.js`) · Android 14.5.2 (`android/app/build.gradle.kts` 140502, `android/README.md`) — la 14.5.2 ne touche que l'application Android (QR de dépôt visible, création de compte dans l'application), voir `changelog.md` |
 | Base Supabase `gebjmguoauvutiqvoswl` | `20261124_crypto_swap.sql` **appliquée** (par le propriétaire, éditeur SQL) ; `20261125_close_legacy_instant_trades.sql` **appliquée** le 23/11 et `20261126_close_legacy_crypto_to_bank.sql` **appliquée** le 24/11 (anciennes fonctions à prix figés fermées aux utilisateurs, rien supprimé, retours arrière fournis — voir `changelog.md` 14.5.1) |
 | Fonctions Edge | `crypto-swap` v1 (verify_jwt **true**) · `send-email` v59 (verify_jwt **false**, appelée par la base avec `x-webhook-secret`) · `wallet-addresses`, `admin-action` inchangées |
 | Tests web | 9 suites vertes le 24/11 : omw, omx, trade, smoke (138 écrans), shell, bugfix, ios-motion, admin-console, admin-payouts ; mesure `tests/ux/perf-spot.mjs` |

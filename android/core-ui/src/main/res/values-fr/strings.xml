@@ -31,7 +31,7 @@
     <string name="login_btn">Se connecter</string>
     <string name="login_e_email">Saisissez une adresse e-mail valide.</string>
     <string name="login_e_password">Saisissez votre mot de passe.</string>
-    <string name="login_signup">Pas encore de compte ? Créez-le sur le site OM Wallet</string>
+    <string name="login_signup">Pas encore de compte ? Créer un compte</string>
     <string name="home_hello">Bonjour %1$s</string>
     <string name="home_total">Solde total</string>
     <string name="home_hide">Masquer les soldes</string>
@@ -133,6 +133,7 @@
     <string name="deposit_unavailable_t">Adresse de dépôt indisponible</string>
     <string name="deposit_unavailable_b">OM Wallet n’a pas encore d’adresse de conservation pour %1$s sur %2$s. Aucune adresse n’est affichée plutôt qu’une adresse qui ne recevrait pas vos fonds.</string>
     <string name="deposit_address">Votre adresse %1$s · %2$s</string>
+    <string name="deposit_qr_desc">QR code de votre adresse de dépôt %1$s sur %2$s</string>
     <string name="withdraw_title">Retrait</string>
     <string name="wd_tab_bank">Banque (OMR)</string>
     <string name="wd_tab_crypto">Crypto</string>
@@ -322,4 +323,23 @@
     <string name="tr_e_unsupported_pair">Cette paire n’est pas disponible.</string>
     <string name="tr_e_amount_too_small">Le montant est trop petit.</string>
     <string name="tr_e_no_wallet">Vous n’avez pas de solde dans cette crypto.</string>
+    <string name="signup_title">Créer un compte</string>
+    <string name="signup_sub">Quelques informations pour ouvrir votre portefeuille</string>
+    <string name="signup_first">Prénom</string>
+    <string name="signup_last">Nom</string>
+    <string name="signup_phone">Numéro de téléphone</string>
+    <string name="signup_phone_hint">Obligatoire. Choisissez le pays, puis saisissez le numéro.</string>
+    <string name="signup_country">Pays</string>
+    <string name="signup_password_hint">8 caractères minimum</string>
+    <string name="signup_btn">Créer mon compte</string>
+    <string name="signup_have_account">Déjà un compte ? Se connecter</string>
+    <string name="signup_done_title">Vérifiez votre boîte e-mail</string>
+    <string name="signup_done_body">Nous avons envoyé un lien de confirmation à %1$s. Ouvrez-le, puis connectez-vous.</string>
+    <string name="signup_e_phone">Saisissez un numéro de téléphone valide pour ce pays.</string>
+    <string name="signup_e_password">Le mot de passe doit contenir au moins 8 caractères.</string>
+    <string name="e_user_exists">Un compte existe déjà avec cet e-mail. Connectez-vous.</string>
+    <string name="e_weak_password">Mot de passe trop faible : choisissez-en un plus long.</string>
+    <string name="e_email_invalid">Cette adresse e-mail a été refusée. Vérifiez-la.</string>
+    <string name="e_rate_limit">Trop d’essais. Réessayez dans quelques minutes.</string>
+    <string name="e_signup_failed">Le compte n’a pas pu être créé. Vérifiez le numéro de téléphone puis réessayez.</string>
 </resources>
