@@ -60,6 +60,10 @@ class SupabaseApi(
         })
     }
 
+    /* 14.5.2 — the reply body is read after the headers: a connection that drops in between throws an IOException there.
+       It becomes the same « network, outcome uncertain » error as a failed call (never an uncaught crash, never a guessed result). */
+    private fun Response.text(): String = try { body?.string().orEmpty() } catch (e: IOException) { throw ApiException("network", e.message ?: "network", uncertain = true) }
+
     private fun parseError(code: Int, body: String, auth: Boolean = false): ApiException {
         val obj = runCatching { OmJson.parseToJsonElement(body).jsonObject }.getOrNull()
         val msg = obj?.get("message")?.jsonPrimitive?.content ?: obj?.get("msg")?.jsonPrimitive?.content
@@ -80,7 +84,7 @@ class SupabaseApi(
         val body = buildJsonObject { put("email", email); put("password", password); put("data", data) }
         val req = Request.Builder().url("$baseUrl/auth/v1/signup").header("apikey", anonKey).post(body.toString().toRequestBody(JSON)).build()
         execute(req).use { r ->
-            val text = r.body?.string().orEmpty()
+            val text = r.text()
             if (!r.isSuccessful) throw parseError(r.code, text)
             val o = OmJson.parseToJsonElement(text).jsonObject
             val access = o["access_token"]?.jsonPrimitive?.content ?: return@use null
@@ -97,7 +101,7 @@ class SupabaseApi(
         val req = Request.Builder().url("$baseUrl/auth/v1/token?grant_type=$grant").header("apikey", anonKey)
             .post(body.toString().toRequestBody(JSON)).build()
         execute(req).use { r ->
-            val text = r.body?.string().orEmpty()
+            val text = r.text()
             if (!r.isSuccessful) throw parseError(r.code, text, auth = true)
             val o = OmJson.parseToJsonElement(text).jsonObject
             val user = o["user"]?.jsonObject
@@ -143,7 +147,7 @@ class SupabaseApi(
         var r = once()
         if (r.code == 401) { val used = session; r.close(); refreshIfStale(used ?: Session("", "", "")); r = once() }    /* expired token: refresh once, shared with concurrent calls */
         r.use {
-            val text = it.body?.string().orEmpty()
+            val text = it.text()
             if (!it.isSuccessful) throw parseError(it.code, text)
             if (text.isBlank()) JsonNull else OmJson.parseToJsonElement(text)
         }
@@ -153,7 +157,7 @@ class SupabaseApi(
     suspend fun ensureWalletAddresses() = withContext(Dispatchers.IO) {
         ensureFresh()
         execute(authed("/functions/v1/wallet-addresses").post("{}".toRequestBody(JSON)).build()).use {
-            val text = it.body?.string().orEmpty()
+            val text = it.text()
             if (!it.isSuccessful) throw ApiException("address_creation_failed", text.take(200), it.code)
         }
     }
@@ -162,7 +166,7 @@ class SupabaseApi(
     suspend fun function(name: String, body: JsonObject): JsonElement = withContext(Dispatchers.IO) {
         ensureFresh()
         execute(authed("/functions/v1/$name").post(body.toString().toRequestBody(JSON)).build()).use {
-            val text = it.body?.string().orEmpty()
+            val text = it.text()
             if (!it.isSuccessful) {
                 if (it.code == 404 && !text.contains("\"error\"")) throw ApiException("server_off", "function $name not deployed", 404)
                 throw parseError(it.code, text)
@@ -175,7 +179,7 @@ class SupabaseApi(
     suspend fun select(table: String, query: String): JsonArray = withContext(Dispatchers.IO) {
         ensureFresh()
         execute(authed("/rest/v1/$table?$query").get().build()).use {
-            val text = it.body?.string().orEmpty()
+            val text = it.text()
             if (!it.isSuccessful) throw parseError(it.code, text)
             OmJson.parseToJsonElement(text) as? JsonArray ?: JsonArray(emptyList())
         }
