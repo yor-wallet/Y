@@ -1,10 +1,12 @@
-# OM Wallet — passation (état au 24/11/2026, version 14.5.3 web + Android)
+# OM Wallet — passation (état au 24/11/2026, version 14.7.0 web + Android)
 
 Document pour la session suivante. À lire en entier avec la skill du projet `.claude/skills/om-wallet/SKILL.md` (règles du
 propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce soit.
 
-> **Le travail est sur la branche `claude/blissful-goldberg-426zi7`** (aucune pull request, rien n'est fusionné dans la branche
-> par défaut). Partir de cette branche : `git fetch origin claude/blissful-goldberg-426zi7 && git checkout -B <branche de la session> FETCH_HEAD`.
+> **Le travail le plus récent est sur la branche `claude/intelligent-keller-lrjxah`** (14.7.0, design « Clair » d'après l'image du
+> propriétaire), partie de `claude/blissful-goldberg-426zi7` (14.5.3). `main` contient une 14.6.0 « verre liquide » **abandonnée** (jamais
+> reprise ici : la branche l'a fusionnée sans ses changements). Partir de cette branche :
+> `git fetch origin claude/intelligent-keller-lrjxah && git checkout -B <branche de la session> FETCH_HEAD`.
 
 ---
 
@@ -13,12 +15,12 @@ propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce so
 | Élément | État |
 |---|---|
 | Dernier commit | voir `git log -1` sur la branche |
-| Site en production | https://yor-wallet.vercel.app — version 14.5.1 (voir `changelog.md` ; contrôle : `curl -s https://yor-wallet.vercel.app/sw.js \| grep fp-shell` → `fp-shell-v14.5.1`) |
-| Version | 14.5.3 partout (`js/data/reference-data.js`, `sw.js`, `android/app/build.gradle.kts` 140503, `android/README.md`, `changelog.md`) |
+| Site en production | https://yor-wallet.vercel.app — version 14.7.0 (contrôle : `curl -s https://yor-wallet.vercel.app/sw.js \| grep fp-shell` → `fp-shell-v14.7.0`) |
+| Version | 14.7.0 partout (`js/data/reference-data.js`, `sw.js`, `android/app/build.gradle.kts` 140700, `android/README.md`, `changelog.md`) |
 | Base Supabase `gebjmguoauvutiqvoswl` | `20261124_crypto_swap.sql` **appliquée** (par le propriétaire, éditeur SQL) ; `20261125_close_legacy_instant_trades.sql` **appliquée** le 23/11 et `20261126_close_legacy_crypto_to_bank.sql` **appliquée** le 24/11 (anciennes fonctions à prix figés fermées aux utilisateurs, rien supprimé, retours arrière fournis — voir `changelog.md` 14.5.1) |
 | Fonctions Edge | `crypto-swap` v1 (verify_jwt **true**) · `send-email` v59 (verify_jwt **false**, appelée par la base avec `x-webhook-secret`) · `wallet-addresses`, `admin-action` inchangées |
 | Tests web | 9 suites vertes le 24/11 : omw, omx, trade, smoke (138 écrans), shell, bugfix, ios-motion, admin-console, admin-payouts ; mesure `tests/ux/perf-spot.mjs` |
-| Tests Android | 53 tests Robolectric, 0 échec (24/11) ; APK debug 14.5.3, APK release (R8) et AAB release construits — release **non signés** (clé du propriétaire nécessaire) |
+| Tests Android | 53 tests Robolectric, 0 échec (24/11, 14.7.0) ; APK de publication 14.7.0 signé avec une **clé temporaire de session** (hors dépôt, perdue avec la session : la prochaine version devra être signée avec la clé du propriétaire, ce qui obligera à désinstaller puis réinstaller) |
 | Figma | fichier `sboQhYUgrVX2ocLBjlmNDu`, groupe `3:438` (cadres Marchés `3:2`, Spot `3:155`, Swap `3:357`), verre bleu + nouveau menu |
 
 ### Ce que fait la 14.5.0 (tout est en service)
@@ -33,6 +35,12 @@ propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce so
   Refus = montant rendu. Essai complet sur le serveur fait le 23/11 dans une transaction annulée : tout conforme (détail dans `changelog.md`).
 
 ---
+
+## 1 bis. Design 14.7.0 (24/11) — à lire avant toute retouche d'écran
+Consigne du propriétaire : reproduire l'image `brand/originals/ref-image-24-11.jpg` (voir la skill, section Design, et `changelog.md` 14.7.0).
+Fait : style global (web `css/clair.css`, Android jetons `OmColors`), menu à bouton central, accueil, portefeuille, conversion (pavé numérique),
+titres intérieurs. **Reste** : recomposer comme l'image les écrans intérieurs (dépôt, retrait, envoi, activité, détail d'un actif sur Android :
+« Current Rate », onglets 1H · 24H · 7D · 1M · 1Y, « Recent Transactions », bouton « Acheter »), puis vérifier en arabe et sur un vrai téléphone.
 
 ## 2. Ce qui reste à faire
 

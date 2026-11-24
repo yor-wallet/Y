@@ -21,6 +21,7 @@
     <string name="feed_idle">جارٍ الاتصال بالسوق…</string>
     <string name="nav_home">الرئيسية</string>
     <string name="nav_assets">الأصول</string>
+    <string name="nav_wallet">المحفظة</string>
     <string name="nav_markets">الأسواق</string>
     <string name="nav_activity">النشاط</string>
     <string name="nav_account">الحساب</string>
@@ -342,4 +343,18 @@
     <string name="e_email_invalid">تم رفض هذا البريد الإلكتروني. تحقق منه.</string>
     <string name="e_rate_limit">محاولات كثيرة. أعد المحاولة بعد بضع دقائق.</string>
     <string name="e_signup_failed">تعذّر إنشاء الحساب. تحقق من رقم الهاتف ثم أعد المحاولة.</string>
+    <string name="home_movers">الأكثر تحركاً</string>
+    <string name="home_watchlist">المفضلة</string>
+    <string name="home_change_24h">التغير خلال 24 ساعة</string>
+    <string name="wallet_title">محفظتك</string>
+    <string name="wallet_alloc">حصتها من محفظتك</string>
+    <string name="wallet_change_24h">%1$s خلال 24 ساعة</string>
+    <string name="wallet_my_assets">أصولي</string>
+    <string name="action_receive">استلام</string>
+    <string name="convert_title">تحويل %1$s</string>
+    <string name="convert_balance">الرصيد: %1$s</string>
+    <string name="convert_pay">تدفع</string>
+    <string name="convert_get">تستلم</string>
+    <string name="convert_preview">معاينة التحويل</string>
+    <string name="keypad_delete">حذف</string>
 </resources>

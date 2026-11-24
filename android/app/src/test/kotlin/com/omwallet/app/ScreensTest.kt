@@ -5,6 +5,9 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.os.Looper
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
@@ -144,13 +147,14 @@ class ScreensFrTest : ScreenTestBase() {
         /* no transfer feature on the home (the status « Transfert confirmé » of a confirmed send may appear in the recent activity) */
         assertTrue(!has("Transfert") && !has("Transférer") && !has("Envoyer de l’argent"))
         assertTrue(!has("XOF", substring = true) && !has("CFA", substring = true))
-        listOf("Dépôt", "Retrait", "Crypto", "Marchés").forEach { assertTrue(it, has(it)) }
+        /* 14.7.0 (owner's reference image): three round actions on the home, Markets in the menu */
+        listOf("Dépôt", "Retrait", "Envoyer", "Marchés").forEach { assertTrue(it, has(it)) }
         shot("01_home")
         click("Marchés")
         waitText("+1.37%"); waitText("−2.24%")
         shot("02_markets")
         compose.onNodeWithTag("tab_assets").performClick()
-        waitText("Mes actifs"); waitText("Voir les détails", substring = true)
+        waitText("Votre portefeuille"); waitText("Mes actifs"); waitText("Bitcoin")
         shot("02b_assets")
         /* 14.5: Account is on the home header (the main menu is Home · Markets · Spot · Swap · Assets) */
         compose.onNodeWithTag("tab_home").performClick(); idle(600)
@@ -171,10 +175,10 @@ class ScreensFrTest : ScreenTestBase() {
         compose.waitUntil(15_000) { has("91,243.50") }                    /* first ask of the order book (server snapshot) */
         idle(600); shot("15_spot")
         compose.onNodeWithTag("tab_swap").performClick()
-        waitText("Échanger")
-        compose.onNodeWithTag("swap_amount").performTextInput("50")
+        waitText("Vous payez", substring = true)
+        listOf("key_5", "key_0").forEach { compose.onNodeWithTag("swap").performScrollToNode(hasTestTag(it)); compose.onNodeWithTag(it).performClick() }      /* 14.7.0: the Convert keypad */
         idle(400); shot("16_swap")
-        compose.onNodeWithTag("swap_go").performClick()
+        compose.onNodeWithTag("swap").performScrollToNode(hasTestTag("swap_go")); compose.onNodeWithTag("swap_go").performClick()
         waitText("Vérifiez votre échange"); waitText("Prix valable", substring = true)
         assertTrue(has("0.000548", substring = true))
         shot("17_swap_review")
@@ -195,9 +199,9 @@ class ScreensFrTest : ScreenTestBase() {
         compose.setContent { OmTheme(reducedMotion = true) { OmRoot() } }
         waitText("Solde total")
         compose.onNodeWithTag("tab_swap").performClick()
-        waitText("Échanger")
-        compose.onNodeWithTag("swap_amount").performTextInput("10")
-        compose.onNodeWithTag("swap_go").performClick()
+        waitText("Vous payez", substring = true)
+        listOf("key_1", "key_0").forEach { compose.onNodeWithTag("swap").performScrollToNode(hasTestTag(it)); compose.onNodeWithTag(it).performClick() }
+        compose.onNodeWithTag("swap").performScrollToNode(hasTestTag("swap_go")); compose.onNodeWithTag("swap_go").performClick()
         waitText("L’échange n’est pas encore activé sur le serveur.")
         assertEquals(0, backend.called("swap_execute"))
     }

@@ -57,24 +57,29 @@ const cur = page => page.evaluate(() => R.current());
     await page.click('#home .w-hdr [data-nav="account"]'); await wait(700); assert.equal(await cur(page), 'account');
     await back(); await page.click('#home .w-hdr [data-action="notifications"]'); await wait(700); assert.equal(await cur(page), 'notifications');
   });
-  await ok('accueil : les trois bannières ouvrent dépôt, envoi, marchés', async () => {
-    for (const [i, to] of [[0, 'deposit'], [1, 'send-internal'], [2, 'markets']]){
+  await ok('accueil (14.7.0, image du propriétaire) : les trois actions rondes ouvrent dépôt, retrait, envoi ; une carte de variation ouvre l’actif', async () => {
+    for (const [i, to] of [[0, 'deposit'], [1, 'withdraw'], [2, 'send-internal']]){
       await back();
-      await page.evaluate(k => document.querySelectorAll('#home .w-promo-card')[k].click(), i); await wait(700);
+      await page.evaluate(k => document.querySelectorAll('#home .lt-acts .omx-act')[k].click(), i); await wait(700);
       assert.equal(await cur(page), to);
     }
+    await back(); await wait(600);
+    const sym = await page.evaluate(() => { const c = document.querySelector('#home .lt-mv'); c.click(); return c.getAttribute('data-omx-asset'); }); await wait(800);
+    assert.equal(await cur(page), 'asset');
+    assert.ok(sym);
   });
-  await ok('Mes actifs : « Voir les détails » ouvre l’actif, la loupe ouvre les marchés', async () => {
+  await ok('Portefeuille (14.7.0) : une ligne de « Mes actifs » ouvre l’actif, le menu ouvre le compte', async () => {
     await page.evaluate(() => R.go('wallet', { force: true })); await wait(700);
-    await page.click('#wallet .w-pill[data-omx-asset="BTC"]'); await wait(800);
+    await page.click('#wallet .omx-row[data-omx-asset="BTC"]'); await wait(800);
     assert.equal(await cur(page), 'asset');
     assert.match(await page.locator('#asset .omx-ah b').innerText(), /Bitcoin/);
     await page.evaluate(() => R.go('wallet', { force: true })); await wait(700);
-    await page.click('#wallet .w-title [data-nav="markets"]'); await wait(700); assert.equal(await cur(page), 'markets');
+    await page.click('#wallet .w-title [data-nav="account"]'); await wait(700); assert.equal(await cur(page), 'account');
   });
-  await ok('Mes actifs : les quatre actions ouvrent dépôt, envoi, retrait, échange', async () => {
+  await ok('Portefeuille (14.7.0) : Envoyer et Recevoir ouvrent l’envoi et les adresses de dépôt ; « + » ouvre le dépôt', async () => {
     await page.evaluate(() => R.go('wallet', { force: true })); await wait(700);
-    assert.deepEqual(await page.$$eval('#wallet .w-hero .omx-act', b => b.map(x => x.getAttribute('data-nav'))), ['deposit', 'send-internal', 'withdraw', 'exchange']);
+    assert.deepEqual(await page.$$eval('#wallet .lt-two .btn', b => b.map(x => x.getAttribute('data-nav'))), ['send-internal', 'deposit']);
+    assert.equal(await page.locator('#wallet .lt-plus[data-nav="deposit"]').count(), 1);
   });
   await ok('paramètres : chaque ligne ouvre sa page ou descend à sa section', async () => {
     const want = { 'profile': 'profile', 'wallet': 'wallet', 'deposit': 'deposit', 'withdraw': 'withdraw', 'help': 'help' };

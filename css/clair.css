@@ -1,0 +1,183 @@
+/* ==========================================================================
+   OM WALLET — « CLAIR » (14.7.0)
+   Owner (24/11): reproduce the reference image — white pages, light grey cards, one blue-violet accent, dark text, pill buttons,
+   a blue-violet header with the balance and round white actions on the home, a white menu with a raised round button in the middle.
+   Replaces the 14.5.0 blue glass (verre.css is no longer loaded). The design language only: real names, real data, real functions.
+   Appearance only: markup hooks (ids, data-*), handlers, data and server calls are unchanged. Loads LAST.
+   ========================================================================== */
+
+/* ---------- tokens ---------- */
+html:root:root:root{
+  --w-bg:#FFFFFF; --w-bg2:#FFFFFF; --w-ink:#11131F; --w-ink2:#5F6479; --w-ink3:#8A90A5;
+  --w-blue:#5A5DF0; --w-blue2:#4447D8; --w-sky:#8C8FFA; --w-sky2:#EEEFFF; --w-pos:#14A866; --w-neg:#EB4458; --w-warn:#E08F0B; --w-violet:#5A5DF0;
+  --w-glass:#F5F6FA; --w-glass2:#F5F6FA; --w-glass3:#FFFFFF; --w-stroke:#ECEEF4; --w-line:#EEF0F5;
+  --w-shadow:none; --w-shadow-lg:0 24px 60px -28px rgba(17,19,31,.32);
+  --w-blur:none;
+  --w-grad:linear-gradient(90deg,#6E71FF 0%,#5F62F4 55%,#5053E6 100%);
+  --w-tile:#EEEFFF;
+  --w-r-card:20px; --w-r-tile:16px; --w-r-btn:999px; --w-r-field:16px;
+  --lt-card:#F5F6FA; --lt-soft:#EEEFFF; --lt-edge:#ECEEF4; --lt-header:#5A5DF0; --lt-on-header:#FFFFFF; --lt-white:#FFFFFF;
+  --text:var(--w-ink); --text-2:var(--w-ink2); --text-3:var(--w-ink3); --ink:var(--w-ink); --accent:var(--w-blue); --tint:var(--w-blue);
+  --om-glass:var(--lt-card); --om-border-glass:var(--lt-edge);
+  color-scheme:light;
+}
+html:root:root:root[data-theme="dark"]{
+  --w-bg:#0E1022; --w-bg2:#0E1022; --w-ink:#F3F4FA; --w-ink2:#B4B8CC; --w-ink3:#8A8FA6;
+  --w-blue:#8D90FF; --w-blue2:#7275F5; --w-sky2:#22254A; --w-pos:#34D08A; --w-neg:#FF6B7C;
+  --w-glass:#181B30; --w-glass2:#181B30; --w-glass3:#1E2139; --w-stroke:#262A44; --w-line:#23263B;
+  --w-tile:#22254A; --lt-card:#181B30; --lt-soft:#22254A; --lt-edge:#262A44; --lt-header:#4B4EDC; --lt-white:#1E2139;
+  color-scheme:dark;
+}
+
+/* ---------- the page: plain white, no decoration behind ---------- */
+html:root:root:root body{background:var(--w-bg)!important;color:var(--w-ink)}
+html:root:root:root body::before,html:root:root:root body::after{display:none!important}
+html:root:root:root body .w-scene,html:root:root:root body .w-emblem,html:root:root:root body .w-hero-art{display:none!important}
+
+/* ---------- cards: flat light grey, large radius ---------- */
+html:root:root:root body :is(.omx-card,.settings-group,.rv-list,.ds-list,.glass,.glass-elevated,.hub-card,.faq-item,.contact-card,.receipt-panel,.rc-sheet,.pi-card,.card,.wd-card,.w-glass){
+  background:var(--lt-card)!important;border:1px solid transparent!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;color:var(--w-ink)}
+html:root:root:root body :is(.hub-i,.hub-wi,.wd-mi,.ds-empty-ic,.tile,.w-tile){background:var(--lt-soft)!important;border:0!important;box-shadow:none!important;color:var(--w-blue)!important;border-radius:50%!important}
+html:root:root:root body :is(.hub-i,.hub-wi,.wd-mi,.tile,.w-tile) svg{color:var(--w-blue)!important}
+
+/* ---------- round controls (back, menu, search, eye) ---------- */
+html:root:root:root body :is(.topbar-back,.hub-circ,.rv-circ,.rv-cp,.hub-me-go,.yb-ic,.w-sq){background:var(--lt-card)!important;border:0!important;box-shadow:none!important;color:var(--w-ink)!important;border-radius:50%!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html:root:root:root body .ds-eye{background:transparent!important;border:0!important;box-shadow:none!important;color:inherit!important}
+
+/* ---------- buttons: blue-violet pills ---------- */
+html:root:root:root body :is(.btn-primary,a.btn.btn-primary){background:var(--w-grad)!important;color:#fff!important;border:0!important;border-radius:999px!important;text-shadow:none!important;
+  box-shadow:0 12px 24px -14px rgba(90,93,240,.85)!important}
+html:root:root:root body .btn-secondary{background:var(--lt-soft)!important;color:var(--w-blue)!important;border:0!important;border-radius:999px!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html:root:root:root body .btn{border-radius:999px}
+
+/* ---------- segmented controls, chips, fields ---------- */
+html:root:root:root body .chips{background:transparent!important;border:0!important;box-shadow:none!important}
+html:root:root:root body .chip{background:transparent!important;color:var(--w-ink3)!important;border:0!important;box-shadow:none!important;border-radius:999px!important}
+html:root:root:root body :is(.chip[aria-pressed="true"],.chip.on){background:var(--lt-soft)!important;color:var(--w-blue)!important;box-shadow:none!important}
+html:root:root:root body :is(.input,.field-box){background:var(--lt-card)!important;border:1px solid transparent!important;color:var(--w-ink)!important;box-shadow:none!important}
+html:root:root:root body :is(.input,.field-box):focus-within,html:root:root:root body .input:focus{border-color:var(--w-blue)!important;box-shadow:0 0 0 4px var(--lt-soft)!important}
+html:root:root:root body :is(input,textarea,select){color:var(--w-ink)}
+html:root:root:root body :is(input,textarea)::placeholder{color:var(--w-ink3)!important}
+html:root:root:root body .switch{background:var(--lt-edge)!important;border:0!important}
+html:root:root:root body :is(.w-pill,.omx-chip){border:0!important;box-shadow:none!important}
+html:root:root:root body .omx-chip.up{background:#E3F6EC!important;color:#0E8A52!important}
+html:root:root:root body .omx-chip.down{background:#FDE8EB!important;color:#C8293D!important}
+html:root:root:root body :is(.pos,.up,.omx-up,.chg-up){color:var(--w-pos)!important}
+html:root:root:root body :is(.neg,.down,.omx-down,.chg-down){color:var(--w-neg)!important}
+
+/* ---------- page headers: white, a hairline once the page scrolls ---------- */
+html:root:root:root body .screen.ios-scrolled > .topbar{background:var(--w-bg)!important;box-shadow:0 1px 0 var(--w-line)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html:root:root:root body .topbar .topbar-title{color:var(--w-ink)}
+
+/* ---------- sheets, dialogs, messages ---------- */
+html:root:root:root body :is(.ov-panel,.yd-p){background:var(--lt-white)!important;color:var(--w-ink)!important;border:0!important;box-shadow:0 -12px 40px -20px rgba(17,19,31,.35)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html:root:root:root body .ov-backdrop{background:rgba(17,19,31,.42)!important}
+html:root:root:root body .toast.w-toast{background:#11131F!important;color:#fff!important;border:0!important}
+
+/* ---------- bottom menu: white bar, the active item dark, Swap raised in the middle ---------- */
+html:root:root:root body #bottom-nav{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;left:0!important;right:0!important;bottom:0!important;overflow:visible!important}
+html:root:root:root body #bottom-nav .nav-dock{height:calc(68px + env(safe-area-inset-bottom,0px))!important;width:100%!important;max-width:none!important;margin:0!important;
+  padding:6px 8px env(safe-area-inset-bottom,0px)!important;border-radius:26px 26px 0 0!important;background:var(--lt-white)!important;border:0!important;
+  box-shadow:0 -6px 24px -10px rgba(17,19,31,.18)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;align-items:center;overflow:visible!important}
+html:root:root:root body #bottom-nav .nav-dock::before,html:root:root:root body #bottom-nav .nav-ind{display:none!important}
+html:root:root:root body #bottom-nav .nav-item{color:var(--w-ink3)!important;background:transparent!important;box-shadow:none!important;height:56px;gap:3px}
+html:root:root:root body #bottom-nav .nav-item::before,html:root:root:root body #bottom-nav .nav-item::after{display:none!important}
+html:root:root:root body #bottom-nav .nav-item[aria-current="page"]{color:var(--w-ink)!important}
+html:root:root:root body #bottom-nav .nav-item[aria-current="page"] svg{animation:none}
+html:root:root:root body #bottom-nav .nav-lb{font-size:11.5px!important;font-weight:700!important}
+html:root:root:root body #bottom-nav .nav-cta{flex:0 0 76px!important;overflow:visible!important;height:56px;justify-content:flex-start}
+html:root:root:root body #bottom-nav .nav-cta .nav-cta-tile{width:62px!important;height:62px!important;margin:-30px 0 0!important;border-radius:50%!important;background:var(--w-grad)!important;
+  border:5px solid var(--lt-white)!important;box-shadow:0 12px 24px -10px rgba(90,93,240,.75)!important;display:flex;align-items:center;justify-content:center;color:#fff!important;transition:transform .3s var(--w-spring)}
+html:root:root:root body #bottom-nav .nav-cta .nav-cta-tile::after{display:none!important;animation:none!important}
+html:root:root:root body #bottom-nav .nav-cta svg{color:#fff!important;stroke:#fff!important}
+html:root:root:root body #bottom-nav .nav-cta .nav-lb{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important}
+html:root:root:root body #bottom-nav .nav-cta:active .nav-cta-tile{transform:scale(.92)}
+
+/* ---------- HOME (reference image) ---------- */
+html:root:root:root body .lt-home{padding:0 16px calc(110px + env(safe-area-inset-bottom,0px))!important;gap:0!important}
+html:root:root:root body .lt-home .lt-hero{margin:0 -16px;padding:calc(env(safe-area-inset-top,0px) + 8px) 18px 64px;border-radius:0 0 30px 30px;
+  background:linear-gradient(180deg,#6A6DF8 0%,var(--lt-header) 100%);color:var(--lt-on-header);text-align:center;position:relative}
+html:root:root:root body .lt-home .lt-top{display:flex!important;align-items:center;justify-content:space-between;gap:8px;margin:0!important;padding:0!important;background:transparent!important}
+html:root:root:root body .lt-home .lt-hb{width:44px!important;height:44px!important;background:rgba(255,255,255,.18)!important;color:#fff!important;position:relative}
+html:root:root:root body .lt-home .lt-hb svg{color:#fff!important;stroke:#fff!important}
+html:root:root:root body .lt-home .w-hdr-end{display:flex;gap:8px}
+html:root:root:root body .lt-badge{position:absolute;top:-4px;inset-inline-end:-4px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:#fff;color:var(--lt-header);font-size:11px;font-weight:800;line-height:20px;text-align:center}
+html:root:root:root body .lt-mark{display:inline-block;width:36px;height:36px;border-radius:11px;background:url(../assets/icons/apple-touch-icon.png) center/cover no-repeat,#fff}
+html:root:root:root body .lt-mark.sm{width:34px;height:34px;border-radius:10px}
+html:root:root:root body .lt-home .lt-bal{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:16px;color:rgba(255,255,255,.85);font-weight:600;font-size:14px}
+html:root:root:root body .lt-home .lt-bal .ds-eye{width:32px;height:32px;color:#fff!important}
+html:root:root:root body .lt-home .omx-tv{color:#fff!important;font-size:clamp(30px,9.5vw,40px)!important;font-weight:800!important;margin:2px 0 6px;text-align:center}
+html:root:root:root body .lt-home .omx-ts{display:flex;justify-content:center;align-items:center;gap:8px;color:rgba(255,255,255,.85);font-size:13px}
+html:root:root:root body .lt-home .omx-ts .omx-chip.up{background:#2BC48A!important;color:#fff!important}
+html:root:root:root body .lt-home .omx-ts .omx-chip.down{background:#EF5A6B!important;color:#fff!important}
+html:root:root:root body .lt-home .lt-acts{display:flex!important;justify-content:center;gap:clamp(18px,7vw,40px);margin:-44px 0 8px!important;padding:0!important;background:transparent!important;position:relative;z-index:2}
+html:root:root:root body .lt-home .lt-acts .omx-act,html:root:root:root body .lt-wallet .omx-act{background:transparent!important;border:0!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  display:flex;flex-direction:column;align-items:center;gap:8px;min-width:72px;padding:0!important;color:var(--w-ink)!important;font-weight:700;font-size:13px}
+html:root:root:root body .lt-home .lt-acts .omx-act i{width:62px!important;height:62px!important;border-radius:50%!important;background:var(--lt-white)!important;display:flex!important;align-items:center;justify-content:center;color:var(--w-ink)!important;
+  border:0!important;box-shadow:0 10px 24px -12px rgba(17,19,31,.35)!important}
+html:root:root:root body .lt-home .lt-acts .omx-act i svg{color:var(--w-ink)!important;stroke:var(--w-ink)!important}
+html:root:root:root body .lt-home .lt-sec{margin-top:18px}
+html:root:root:root body .lt-home .omx-sh,html:root:root:root body .lt-wallet .omx-sh{display:flex;align-items:center;justify-content:space-between;margin:0 0 8px}
+html:root:root:root body :is(.lt-home,.lt-wallet) .omx-sh h2{font-size:18px;font-weight:800;color:var(--w-ink);margin:0}
+html:root:root:root body :is(.lt-home,.lt-wallet) .omx-sh button{color:var(--w-blue);font-weight:700;background:transparent;border:0}
+html:root:root:root body .lt-movers{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding:4px 2px 10px;margin:0 -16px;padding-inline:16px;scroll-snap-type:x mandatory}
+html:root:root:root body .lt-movers::-webkit-scrollbar{display:none}
+html:root:root:root body .lt-mv{flex:0 0 172px;scroll-snap-align:start;display:flex;flex-direction:column;gap:8px;text-align:start;padding:14px;border-radius:18px;background:var(--lt-white);border:1px solid var(--lt-edge);color:var(--w-ink);cursor:pointer}
+html:root:root:root body .lt-mv-h{display:flex;align-items:center;gap:8px}
+html:root:root:root body .lt-mv-h b{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html:root:root:root body .lt-mv small{color:var(--w-ink3);font-size:12px;font-weight:600}
+html:root:root:root body .lt-mv-f{display:flex;align-items:center;justify-content:space-between;gap:6px}
+html:root:root:root body .lt-mv-f b{font-size:18px;font-weight:800;white-space:nowrap}
+html:root:root:root body .lt-mv .omx-rs{width:62px;height:28px}
+html:root:root:root body .lt-empty{color:var(--w-ink3);font-size:13px;margin:4px 2px}
+html:root:root:root body .lt-home .omx-list,html:root:root:root body .lt-wallet .omx-list{background:transparent!important}
+html:root:root:root body :is(.lt-home,.lt-wallet) .omx-row{background:transparent!important;border:0!important;box-shadow:none!important;padding-inline:2px!important}
+html:root:root:root body .lt-home .omx-status{margin:-2px 0 6px}
+
+/* ---------- WALLET (reference image « Your wallet » + « My Assets ») ---------- */
+html:root:root:root body .lt-wallet{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
+html:root:root:root body .lt-wallet .lt-title{display:grid!important;grid-template-columns:46px 1fr 46px;align-items:center;margin:4px 0 10px}
+html:root:root:root body .lt-wallet .lt-title h1{font-size:20px!important;font-weight:800;text-align:center;margin:0;color:var(--w-ink)}
+html:root:root:root body .lt-wallet .lt-title .lt-mark{justify-self:end}
+html:root:root:root body .lt-wbal{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+html:root:root:root body .lt-lbl{color:var(--w-ink3);font-weight:600;font-size:14px}
+html:root:root:root body .lt-wv{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+html:root:root:root body .lt-wv b{font-size:clamp(28px,8.5vw,36px);font-weight:800;color:var(--w-ink)}
+html:root:root:root body .lt-chg{margin:0;font-weight:700;font-size:14px}
+html:root:root:root body .lt-alloc{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:4px 0}
+html:root:root:root body .lt-al{display:inline-flex;align-items:center;gap:6px;flex-shrink:0;padding:4px 12px 4px 4px;border-radius:999px;border:1px solid var(--lt-edge);font-size:12.5px;font-weight:700;color:var(--w-ink)}
+html:root:root:root body .lt-two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+html:root:root:root body .lt-two .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px}
+html:root:root:root body .lt-two .btn svg{stroke:#fff;color:#fff}
+html:root:root:root body .lt-plus{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--w-blue)!important;color:var(--w-blue)!important;display:inline-flex;align-items:center;justify-content:center;padding:0}
+html:root:root:root body .lt-wallet .w-sec-t{font-size:16px;font-weight:800;color:var(--w-ink);margin:18px 0 6px}
+
+/* ---------- settings: « log out » aligned with the cards ---------- */
+html:root:root:root body .w-set > .w-out{margin-inline:0!important}
+
+/* ---------- accessibility ---------- */
+@media (prefers-reduced-motion:reduce){
+  html:root:root:root body #bottom-nav .nav-cta .nav-cta-tile{transition:none!important}
+}
+
+/* ---------- CONVERT (Swap, reference image) ---------- */
+html:root:root:root body .lt-conv .lt-convbal{text-align:center;color:var(--w-ink3);font-weight:600;margin:-4px 0 4px}
+html:root:root:root body .lt-conv .tr-sw{background:transparent!important;padding:8px 4px!important;border:0!important}
+html:root:root:root body .lt-conv .tr-lbl{color:var(--w-ink3);font-weight:700}
+html:root:root:root body .lt-conv .tr-asset{background:transparent!important;border:0!important;box-shadow:none!important;padding-inline:0!important}
+html:root:root:root body .lt-conv .tr-amt{font-size:30px!important;font-weight:800!important;text-align:end;background:transparent!important;border:0!important;box-shadow:none!important;color:var(--w-ink)!important}
+html:root:root:root body .lt-conv .tr-out{font-size:26px!important;font-weight:800!important;color:var(--w-ink)!important}
+html:root:root:root body .lt-conv .tr-flipw{position:relative}
+html:root:root:root body .lt-conv .tr-flipw::before{content:"";position:absolute;left:4px;right:4px;top:50%;border-top:1px dashed var(--lt-edge)}
+html:root:root:root body .lt-conv .tr-flip{position:relative;width:48px!important;height:48px!important;border-radius:50%!important;background:#11131F!important;color:#fff!important;border:0!important;box-shadow:none!important}
+html:root:root:root body .lt-conv .tr-flip svg{stroke:#fff!important;color:#fff!important}
+html:root:root:root body .lt-keys{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:8px 0 4px}
+html:root:root:root body .lt-key{height:58px;border:0;background:transparent;font:inherit;font-size:24px;font-weight:700;color:var(--w-ink);border-radius:16px;cursor:pointer}
+html:root:root:root body .lt-key:active{background:var(--lt-card)}
+html:root:root:root body .lt-key{display:flex;align-items:center;justify-content:center;text-align:center}
+/* inner page titles: the reference image's size (bold, ~22 px); the logo line above them stays (owner's rule: the logo on every screen) */
+html:root:root:root body .topbar.w-reftop .topbar-title{font-size:22px!important;font-weight:800!important}
+html:root:root:root body .screen.ios-scrolled > .topbar.w-reftop .topbar-title{font-size:18px!important}
+/* asset page: the period chips on one line, as in the reference image (1H · 4H · 1D · 1W · 1M · 1Y) */
+html:root:root:root body .chips.omx-per{display:flex!important;flex-wrap:nowrap!important;gap:4px;overflow:visible}
+html:root:root:root body .chips.omx-per .chip{flex:1 1 0;min-width:0;justify-content:center;padding-inline:4px!important}

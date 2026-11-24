@@ -1,3 +1,16 @@
+# OM Wallet 14.7.0 — design « Clair » d'après l'image du propriétaire (web + Android)
+
+Demande du propriétaire (24/11) : « reproduire exactement ce qui est dans l'image » (maquette d'un portefeuille crypto, copiée dans `brand/originals/ref-image-24-11.jpg`). Le verre bleu de la 14.5.0 est remplacé. Données, règles de confirmation, e-mails et serveur inchangés. Seule la composition et le style de l'image sont repris, avec le nom, le logo, les fonctions et les données réelles d'OM Wallet.
+
+- **Style (web + Android)** : pages blanches, cartes gris clair, un seul accent bleu-violet (#5A5DF0), texte foncé, boutons pilule. Web : nouvelle couche `css/clair.css` (dernière), `css/verre.css` n'est plus chargé, le réglage clair / sombre fonctionne de nouveau (sombre = bleu nuit). Android : palette `OmColors` claire (mêmes noms) + `Card`, `Track`, `AccentSoft`, `Header` ; icônes de barre d'état foncées.
+- **Menu** : Accueil · Marchés · **Swap (bouton rond surélevé au milieu)** · Portefeuille · Spot (« Portfolio » de l'image → Spot, demandé dans le menu en 14.5.0).
+- **Accueil** : en-tête bleu-violet (menu → Compte, logo, Activité, notifications avec leur nombre), solde total, sa variation sur 24 h, trois boutons ronds blancs à cheval sur le bord (Dépôt · Retrait · Envoyer — « Bonding » n'existe pas dans l'application), « Plus fortes variations » en cartes avec la vraie courbe 24 h (Binance), Favoris (les étoiles de Marchés), Activité récente.
+- **Portefeuille** : « Votre portefeuille » (montant des cryptos, variation sur 24 h en pourcentage et en valeur — calculée sur les vrais cours, jamais un « profit » inventé —, part de chaque actif, Envoyer / Recevoir = adresses de dépôt personnelles) puis « Mes actifs » avec la vraie courbe 24 h de chaque actif.
+- **Swap → « Convertir »** : vous payez / vous recevez, bouton rond noir d'inversion, « Aperçu de la conversion », pavé numérique (sur le web, il remplace le clavier du téléphone ; un clavier d'ordinateur écrit toujours dans le champ). Le parcours derrière est inchangé : prix fixé par le serveur (30 s), vérification, code PIN, « En cours » jusqu'à la confirmation de l'administrateur.
+- **Non repris de l'image** (n'existe pas dans l'application, rien n'est imité) : déverrouillage par empreinte (« Safe Mode »), « Over 500 cryptocurrencies » (13 actifs), écran d'accueil à cases cochées.
+- **Tests** : web — 9 suites vertes (menu, accueil, portefeuille, conversion mis à jour) ; Android — 53 tests verts, rendus Robolectric contrôlés (accueil, portefeuille, conversion). APK de publication 14.7.0 construit et signé avec une clé temporaire de session (hors dépôt).
+- **Non vérifié** : aucun essai sur un vrai téléphone ; écrans intérieurs restants (dépôt, retrait, envoi, activité, compte) seulement recolorés par les jetons, pas recomposés.
+
 # OM Wallet 14.5.3 — passe qualité visuelle (web + Android)
 
 Le propriétaire n'est pas satisfait de la qualité : audit écran par écran (27 écrans Android rendus sur leur vrai fond, 13 écrans web), corrections des défauts visibles, du plus voyant au moins voyant.

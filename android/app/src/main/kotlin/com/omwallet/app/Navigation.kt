@@ -1,6 +1,9 @@
 package com.omwallet.app
 
 import androidx.compose.ui.platform.testTag
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.foundation.shape.CircleShape
 
 import androidx.compose.runtime.setValue
 
@@ -78,8 +81,9 @@ import com.omwallet.feature.withdraw.WithdrawScreen
 
 enum class Tab(val route: String, val label: Int, val icon: Int) {
     /* 14.5 main menu (owner's request): Home · Markets · Spot · Swap · Assets. Activity and Account stay one tap away on the home header. */
-    Home("home", R.string.nav_home, OmIcons.Home), Markets("markets", R.string.nav_markets, OmIcons.Chart), Spot("spot", R.string.nav_spot, OmIcons.Trend),
-    Swap("swap", R.string.nav_swap, OmIcons.Swap), Assets("assets", R.string.nav_assets, OmIcons.Wallet),
+    /* 14.7.0 (owner's reference image): Home · Markets · Swap (raised circle in the middle) · Wallet (the assets page) · Spot */
+    Home("home", R.string.nav_home, OmIcons.Home), Markets("markets", R.string.nav_markets, OmIcons.Chart),
+    Swap("swap", R.string.nav_swap, OmIcons.Swap), Assets("assets", R.string.nav_wallet, OmIcons.Wallet), Spot("spot", R.string.nav_spot, OmIcons.Trend),
 }
 private const val ACTIVITY = "activity"
 private const val ACCOUNT = "account"
@@ -167,36 +171,46 @@ fun MainNav(isAdmin: Boolean) {
     }
 }
 
-/* Bottom bar from the owner's references: a full-width glass bar with rounded top corners; the active tab sits in a light glass tile
-   that glides (spatial spring) and its icon pops. */
+/* Bottom bar — 14.7.0 (owner's reference image): a white bar with a soft top shadow and rounded top corners; Home · Markets ·
+   [Swap: a raised blue-violet circle in the middle] · Wallet · Spot. The active tab is dark (icon + label), the others grey; the touched
+   item springs. Same destinations, same test tags and the same navigation as before: appearance only. */
 @Composable
 fun androidx.compose.foundation.layout.BoxScope.BottomBar(current: Tab?, onTab: (Tab) -> Unit) {
     val haptics = rememberOmHaptics()
     val reduced = com.omwallet.core.design.LocalOmMotion.current.reduced
-    val top = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)
-    BoxWithConstraints(
-        Modifier.align(Alignment.BottomCenter).fillMaxWidth()
-            .androidx_shadow(top)
-            .clip(top).background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(Color(0xEB2272E2), Color(0xF5114FBF))))
-            .border(1.dp, OmColors.Edge, top).navigationBarsPadding().padding(horizontal = 10.dp, vertical = 8.dp).height(68.dp),
-    ) {
-        val w = maxWidth / Tab.entries.size
-        val x by animateDpAsState(w * (current?.ordinal ?: 0), OmSprings.spatial(), label = "tile")
-        if (current != null) Box(Modifier.offset(x = x).width(w).fillMaxHeight().padding(horizontal = 3.dp).clip(RoundedCornerShape(20.dp))
-            .background(androidx.compose.ui.graphics.Brush.linearGradient(listOf(Color(0x4DFFFFFF), Color(0x1FFFFFFF)))).border(1.dp, Color(0x66FFFFFF), RoundedCornerShape(20.dp)))
-        Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly) {
+    val top = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp)
+    val swapLabel = stringResource(Tab.Swap.label)
+    Box(Modifier.align(Alignment.BottomCenter).fillMaxWidth()) {
+        Row(
+            Modifier.fillMaxWidth().padding(top = 24.dp)
+                .androidx_shadow(top).clip(top).background(Color.White)
+                .navigationBarsPadding().padding(horizontal = 6.dp).height(64.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically,
+        ) {
             Tab.entries.forEach { t ->
+                if (t == Tab.Swap) { Box(Modifier.weight(1f)) ; return@forEach }       /* the raised circle sits above this slot */
                 val on = t == current
-                val pop by androidx.compose.animation.core.animateFloatAsState(if (on && !reduced) 1.12f else 1f, OmSprings.expressive(), label = "pop")
+                val pop by androidx.compose.animation.core.animateFloatAsState(if (on && !reduced) 1.08f else 1f, OmSprings.expressive(), label = "pop")
                 Column(
-                    Modifier.weight(1f).fillMaxHeight().testTag("tab_" + t.route).semantics { selected = on }.pressable(role = Role.Tab) { if (!on) haptics.tap(); onTab(t) },
+                    Modifier.weight(1f).fillMaxHeight().clip(RoundedCornerShape(16.dp)).testTag("tab_" + t.route).semantics { selected = on }
+                        .pressable(role = Role.Tab) { if (!on) haptics.tap(); onTab(t) },
                     horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
                 ) {
-                    Box(Modifier.graphicsLayer { scaleX = pop; scaleY = pop }) { OmIcon(t.icon, null, tint = if (on) OmColors.Blue600 else OmColors.InkSecondary, size = 24.dp) }
-                    Text(stringResource(t.label), style = MaterialTheme.typography.labelSmall, color = if (on) OmColors.Blue600 else OmColors.InkSecondary, maxLines = 1)
+                    Box(Modifier.graphicsLayer { scaleX = pop; scaleY = pop }) { OmIcon(t.icon, null, tint = if (on) OmColors.Ink else OmColors.InkSecondary, size = 24.dp) }
+                    Text(stringResource(t.label), style = MaterialTheme.typography.labelSmall, color = if (on) OmColors.Ink else OmColors.InkSecondary, maxLines = 1)
                 }
             }
         }
+        /* Swap: the raised blue-violet circle in the middle of the bar, with a white ring */
+        val onSwap = current == Tab.Swap
+        Box(
+            Modifier.align(Alignment.TopCenter).size(66.dp).shadow(14.dp, CircleShape, ambientColor = Color(0x555A5DF0), spotColor = Color(0x885A5DF0))
+                .clip(CircleShape).background(Color.White).padding(5.dp).clip(CircleShape)
+                .background(androidx.compose.ui.graphics.Brush.linearGradient(listOf(OmColors.GradTop, OmColors.GradBottom)))
+                .testTag("tab_" + Tab.Swap.route).semantics { selected = onSwap; contentDescription = swapLabel }
+                .pressable(role = Role.Tab) { if (!onSwap) haptics.tap(); onTab(Tab.Swap) },
+            contentAlignment = Alignment.Center,
+        ) { OmIcon(Tab.Swap.icon, null, tint = Color.White, size = 26.dp) }
     }
 }
 

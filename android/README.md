@@ -1,6 +1,6 @@
 # OM Wallet — application Android native
 
-Kotlin 2.1 · Jetpack Compose (Material 3, identité « OM Glass ») · min SDK 26, cible SDK 35 · version 14.5.3 (code 140503).
+Kotlin 2.1 · Jetpack Compose (Material 3, design « Clair » d’après l’image du propriétaire) · min SDK 26, cible SDK 35 · version 14.7.0 (code 140700).
 Même serveur que l'application web (Supabase `gebjmguoauvutiqvoswl`) : le serveur reste la seule autorité pour les soldes, les statuts
 et les rôles. L'application n'invente aucune donnée : sans réponse, elle affiche « — » et l'état de la connexion.
 

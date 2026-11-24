@@ -17,9 +17,10 @@ const pin = async page => { await wait(700); for (const k of '482913') await pag
 {
   console.log('\n[menu principal, Spot en direct, ordre au marché]');
   const { ctx, page, logs } = await openApp(browser, url, { lang: 'fr', settle: 900, ws: 'live' });
-  await ok('menu principal : Accueil · Marchés · Spot · Swap · Actifs', async () => {
-    assert.deepEqual(await page.$$eval('#bottom-nav .nav-item', a => a.map(x => x.getAttribute('data-nav'))), ['home', 'markets', 'spot', 'exchange', 'wallet']);
-    assert.deepEqual(await page.$$eval('#bottom-nav .nav-item', a => a.map(x => x.textContent.trim())), ['Accueil', 'Marchés', 'Spot', 'Swap', 'Actifs']);
+  await ok('menu principal (14.7.0, image du propriétaire) : Accueil · Marchés · Swap (bouton rond au milieu) · Portefeuille · Spot', async () => {
+    assert.deepEqual(await page.$$eval('#bottom-nav .nav-item', a => a.map(x => x.getAttribute('data-nav'))), ['home', 'markets', 'exchange', 'wallet', 'spot']);
+    assert.deepEqual(await page.$$eval('#bottom-nav .nav-item', a => a.map(x => x.textContent.trim())), ['Accueil', 'Marchés', 'Swap', 'Portefeuille', 'Spot']);
+    assert.equal(await page.locator('#bottom-nav .nav-cta[data-nav="exchange"] .nav-cta-tile').count(), 1);
   });
   await ok('Activité et Compte restent à un geste depuis l’accueil', async () => {
     await page.click('#home .w-hdr [data-nav="history"]'); await wait(700); assert.equal(await cur(page), 'history');
@@ -139,16 +140,18 @@ const pin = async page => { await wait(700); for (const k of '482913') await pag
 {
   console.log('\n[verre, réduction des animations, arabe]');
   const { ctx, page, logs } = await openApp(browser, url, { lang: 'ar', settle: 900, ws: 'live', reduced: true });
-  await ok('apparence verre : texte clair sur fond bleu, cartes transparentes (pas de blanc)', async () => {
+  await ok('apparence claire (14.7.0, image du propriétaire) : page blanche, texte foncé, en-tête bleu-violet, bouton central rond', async () => {
+    await page.evaluate(() => R.go('home', { force: true })); await wait(700);
     const r = await page.evaluate(() => {
-      const bg = getComputedStyle(document.body).backgroundImage, c = document.querySelector('#home .omx-card, #home .w-glass, #home .omx-total');
-      const cb = c ? getComputedStyle(c).backgroundImage : '', col = getComputedStyle(document.body).color;
-      return { theme: document.documentElement.getAttribute('data-theme'), tone: document.documentElement.getAttribute('data-tone'), bg, cb, col };
+      const hero = document.querySelector('#home .lt-hero'), tile = document.querySelector('#bottom-nav .nav-cta .nav-cta-tile');
+      return { theme: document.documentElement.getAttribute('data-theme'), bg: getComputedStyle(document.body).backgroundColor, col: getComputedStyle(document.body).color,
+        hero: hero ? getComputedStyle(hero).backgroundImage : '', radius: tile ? getComputedStyle(tile).borderTopLeftRadius : '' };
     });
-    assert.equal(r.theme, 'dark'); assert.equal(r.tone, 'day');
-    assert.match(r.bg, /gradient/);
-    assert.ok(!/rgba\(255, 255, 255, 0\.(9|8|7)/.test(r.cb), 'card is not a white panel: ' + r.cb.slice(0, 120));
-    assert.equal(r.col, 'rgb(255, 255, 255)');
+    assert.equal(r.theme, 'light');
+    assert.equal(r.bg, 'rgb(255, 255, 255)');
+    assert.equal(r.col, 'rgb(17, 19, 31)');
+    assert.match(r.hero, /gradient/);
+    assert.equal(r.radius, '50%');
   });
   await ok('arabe : Spot s’affiche de droite à gauche, chiffres de gauche à droite', async () => {
     await page.click('#bottom-nav [data-nav="spot"]'); await wait(2000);

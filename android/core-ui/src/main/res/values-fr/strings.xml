@@ -21,6 +21,7 @@
     <string name="feed_idle">Connexion au marché…</string>
     <string name="nav_home">Accueil</string>
     <string name="nav_assets">Actifs</string>
+    <string name="nav_wallet">Portefeuille</string>
     <string name="nav_markets">Marchés</string>
     <string name="nav_activity">Activité</string>
     <string name="nav_account">Compte</string>
@@ -342,4 +343,18 @@
     <string name="e_email_invalid">Cette adresse e-mail a été refusée. Vérifiez-la.</string>
     <string name="e_rate_limit">Trop d’essais. Réessayez dans quelques minutes.</string>
     <string name="e_signup_failed">Le compte n’a pas pu être créé. Vérifiez le numéro de téléphone puis réessayez.</string>
+    <string name="home_movers">Plus fortes variations</string>
+    <string name="home_watchlist">Favoris</string>
+    <string name="home_change_24h">Variation sur 24 h</string>
+    <string name="wallet_title">Votre portefeuille</string>
+    <string name="wallet_alloc">Part de votre portefeuille</string>
+    <string name="wallet_change_24h">%1$s sur 24 h</string>
+    <string name="wallet_my_assets">Mes actifs</string>
+    <string name="action_receive">Recevoir</string>
+    <string name="convert_title">Convertir %1$s</string>
+    <string name="convert_balance">Solde : %1$s</string>
+    <string name="convert_pay">Vous payez</string>
+    <string name="convert_get">Vous recevez</string>
+    <string name="convert_preview">Aperçu de la conversion</string>
+    <string name="keypad_delete">Effacer</string>
 </resources>

@@ -68,12 +68,12 @@ function applyTheme(mode){
   let dark = false;
   try { dark = mode === 'system' ? !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) : mode === 'dark'; } catch(e){ dark = mode === 'dark'; }
   const eff = dark ? 'dark' : 'light';
-  /* 14.5.0 « Verre » : the interface is always transparent glass with light text (no white surfaces, at the owner's request);
-     the person's setting chooses the tone of the blue — « jour » (light) luminous, « nuit » (dark) deep. */
-  document.documentElement.setAttribute('data-theme', 'dark');
+  /* 14.7.0 « Clair » (owner's reference image, 24/11): white pages, light grey cards, blue-violet accent, dark text; the person's
+     setting chooses light or dark again (14.5.0 forced the blue glass with light text whatever the setting). */
+  document.documentElement.setAttribute('data-theme', eff);
   document.documentElement.setAttribute('data-tone', eff === 'dark' ? 'night' : 'day');
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute('content', eff === 'dark' ? '#0A2A6E' : '#1A6FE6');
+  if (meta) meta.setAttribute('content', eff === 'dark' ? '#0E1022' : '#FFFFFF');
   /* « Système » suit le téléphone en direct (nuit / jour), sans recharger */
   if (!_themeMq && window.matchMedia){
     try {

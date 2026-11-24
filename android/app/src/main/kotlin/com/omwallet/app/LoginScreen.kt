@@ -74,7 +74,7 @@ fun LoginScreen(onSignUp: () -> Unit = {}) {
     var error by rememberSaveable { mutableStateOf<String?>(null) }
     val emailErr = if (tried && !Validation.emailOk(email)) stringResource(R.string.login_e_email) else null
     val passErr = if (tried && password.isEmpty()) stringResource(R.string.login_e_password) else null
-    val colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = OmColors.Blue600, unfocusedBorderColor = OmColors.Edge, focusedContainerColor = Color(0x2EFFFFFF), unfocusedContainerColor = Color(0x1AFFFFFF), cursorColor = OmColors.Blue600, focusedLeadingIconColor = OmColors.Blue600)
+    val colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = OmColors.Blue600, unfocusedBorderColor = OmColors.Edge, focusedContainerColor = Color.White, unfocusedContainerColor = OmColors.Card, cursorColor = OmColors.Blue600, focusedLeadingIconColor = OmColors.Blue600)
 
     fun submit() {
         tried = true; error = null
@@ -95,7 +95,7 @@ fun LoginScreen(onSignUp: () -> Unit = {}) {
     ) {
         Image(painterResource(com.omwallet.app.R.drawable.app_icon_glass), contentDescription = stringResource(R.string.app_name),
             modifier = Modifier.padding(top = 18.dp).size(168.dp).riseIn(0).clip(RoundedCornerShape(percent = 26)))
-        Text("OM Wallet", style = MaterialTheme.typography.displaySmall.copy(brush = Brush.verticalGradient(listOf(Color(0xFFFFFFFF), Color(0xFFA6E1FF)))), modifier = Modifier.riseIn(1))
+        Text("OM Wallet", style = MaterialTheme.typography.displaySmall.copy(brush = Brush.verticalGradient(listOf(OmColors.Ink, OmColors.Blue600))), modifier = Modifier.riseIn(1))
         Spacer(Modifier.height(18.dp))
         Text(stringResource(R.string.login_title), style = MaterialTheme.typography.headlineMedium, color = OmColors.Ink, textAlign = TextAlign.Center, modifier = Modifier.riseIn(2))
         Spacer(Modifier.height(6.dp))

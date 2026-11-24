@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr" data-theme="dark" data-tone="day">
+<html lang="en" dir="ltr" data-theme="light" data-tone="day">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
-<meta name="theme-color" content="#1A6FE6">
+<meta name="theme-color" content="#FFFFFF">
 <meta name="apple-mobile-web-app-title" content="OM Wallet">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="description" content="OM Wallet — send money to a mobile number in Oman and manage your cards. Simple, secure, in English, Français and العربية.">
@@ -69,9 +69,10 @@
 <script>
 /* last theme used on this phone, applied before the first paint (the app confirms it once the account is known) */
 (function(){try{var t=localStorage.getItem('fp_theme'),d=document.documentElement;
-  /* 14.5.0 « Verre »: always glass with light text; the saved setting only picks the blue (day / night) */
-  d.setAttribute('data-theme','dark');
-  if(t==='dark'||(t==='system'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)){d.setAttribute('data-tone','night');var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content','#0A2A6E');}
+  /* 14.7.0 « Clair »: light by default, dark when the saved setting (or the phone, for « system ») asks for it */
+  var dk=t==='dark'||(t==='system'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+  d.setAttribute('data-theme',dk?'dark':'light');d.setAttribute('data-tone',dk?'night':'day');
+  if(dk){var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content','#0E1022');}
 }catch(e){}})();
 </script>
 <meta name="mobile-web-app-capable" content="yes">
@@ -126,8 +127,8 @@
 <link rel="stylesheet" href="css/glass.css">
 <link rel="stylesheet" href="css/omx.css">
 <link rel="stylesheet" href="css/omw.css">
-<link rel="stylesheet" href="css/verre.css">
 <link rel="stylesheet" href="css/trade.css">
+<link rel="stylesheet" href="css/clair.css">
 </head>
 <body>
 

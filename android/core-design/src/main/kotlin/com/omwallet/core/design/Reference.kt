@@ -50,17 +50,22 @@ import androidx.compose.ui.unit.dp
 
 /* The OM Wallet word mark heading a page (logo used as a logo). */
 @Composable
+fun LogoMark(modifier: Modifier = Modifier, size: Dp = 34.dp) {
+    /* the app icon alone (logo kept on every screen, at the owner's request) */
+    Image(painterResource(R.drawable.om_glass_icon), "OM Wallet", modifier.size(size).clip(RoundedCornerShape(percent = 26)), contentScale = androidx.compose.ui.layout.ContentScale.Crop)
+}
+
+@Composable
 fun BrandLockup(modifier: Modifier = Modifier, height: Dp = 40.dp) {
     Image(painterResource(R.drawable.om_logo_lockup), "OM Wallet", modifier.height(height))
 }
 
-/* Glass square / round control (back, search, avatar), as in the references. */
+/* Round header control (back, menu, avatar) — 14.7.0: a light grey circle with a dark line icon (owner's reference image). */
 @Composable
 fun GlassSquare(@DrawableRes icon: Int, description: String, modifier: Modifier = Modifier, round: Boolean = false, onClick: () -> Unit) {
-    val shape = if (round) CircleShape else RoundedCornerShape(18.dp)
+    val shape = CircleShape
     Box(
-        modifier.size(50.dp).shadow(10.dp, shape, ambientColor = Color(0x33145AB4), spotColor = Color(0x55145AB4)).clip(shape)
-            .background(Brush.linearGradient(listOf(Color(0x3DFFFFFF), Color(0x14FFFFFF)))).border(1.dp, OmColors.Edge, shape)
+        modifier.size(46.dp).clip(shape).background(OmColors.Card)
             .pressable(onClick = onClick).semantics { contentDescription = description },
         contentAlignment = Alignment.Center,
     ) { OmIcon(icon, null, tint = OmColors.Ink, size = 22.dp) }
@@ -70,27 +75,24 @@ fun GlassSquare(@DrawableRes icon: Int, description: String, modifier: Modifier 
 @Composable
 fun ReferenceTitle(title: String, modifier: Modifier = Modifier, start: (@Composable () -> Unit)? = null, end: (@Composable () -> Unit)? = null) {
     Row(modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Box(Modifier.width(50.dp)) { start?.invoke() }
-        Text(title, style = MaterialTheme.typography.displaySmall, color = OmColors.Ink, textAlign = TextAlign.Center, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
-        Box(Modifier.width(50.dp)) { end?.invoke() }
+        Box(Modifier.width(46.dp)) { start?.invoke() }
+        Text(title, style = MaterialTheme.typography.headlineSmall, color = OmColors.Ink, textAlign = TextAlign.Center, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+        Box(Modifier.width(46.dp), contentAlignment = Alignment.CenterEnd) { end?.invoke() }
     }
 }
 
-/* Square action tile; the first one of a row is filled blue (home reference). */
+/* Round action (14.7.0, owner's reference image): a white circle with a soft shadow and a dark line icon, the label under it.
+   `primary` fills the circle with the blue-violet accent. */
 @Composable
 fun ActionTile(@DrawableRes icon: Int, label: String, modifier: Modifier = Modifier, primary: Boolean = false, onClick: () -> Unit) {
-    val shape = RoundedCornerShape(24.dp)
-    Column(
-        modifier.aspectRatio(0.92f).shadow(if (primary) 18.dp else 12.dp, shape, ambientColor = Color(if (primary) 0x661677F2 else 0x33145AB4), spotColor = Color(if (primary) 0x991677F2 else 0x55145AB4))
-            .clip(shape)
-            .background(if (primary) Brush.verticalGradient(listOf(OmColors.GradTop, OmColors.GradMid, OmColors.GradBottom)) else Brush.linearGradient(listOf(Color(0x3DFFFFFF), Color(0x14FFFFFF))))
-            .border(1.dp, if (primary) Color(0x8CFFFFFF) else OmColors.Edge, shape)
-            .pressable(onClick = onClick).padding(6.dp),
-        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
-    ) {
-        OmIcon(icon, null, tint = if (primary) Color.White else OmColors.Blue600, size = 26.dp)
+    Column(modifier.clip(RoundedCornerShape(18.dp)).pressable(onClick = onClick).padding(vertical = 4.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(
+            Modifier.size(60.dp).shadow(10.dp, CircleShape, ambientColor = Color(0x2611131F), spotColor = Color(0x3311131F)).clip(CircleShape)
+                .background(if (primary) OmColors.Blue600 else Color.White),
+            contentAlignment = Alignment.Center,
+        ) { OmIcon(icon, null, tint = if (primary) Color.White else OmColors.Ink, size = 24.dp) }
         Spacer(Modifier.height(8.dp))
-        Text(label, style = MaterialTheme.typography.labelMedium, color = if (primary) Color.White else OmColors.Ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(label, style = MaterialTheme.typography.labelMedium.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold), color = OmColors.Ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }
 
@@ -132,13 +134,12 @@ fun ReferenceRow(@DrawableRes icon: Int, label: String, modifier: Modifier = Mod
     }
 }
 
-/* Page header used by every inner screen (settings / assets references): the logo on its own line, then a large centred title between
-   a glass back square (when the page has a parent) and an optional trailing control. */
+/* Page header used by every inner screen — 14.7.0 (owner's reference image): back control, centred bold title, trailing control.
+   The app logo stays on every screen (owner's rule): small, on the trailing side when the page has no control of its own. */
 @Composable
 fun RefHeader(title: String, onBack: (() -> Unit)? = null, backDescription: String = "", trailing: (@Composable () -> Unit)? = null, below: (@Composable () -> Unit)? = null) {
-    Column(Modifier.androidx_statusBars().padding(horizontal = 16.dp, vertical = 6.dp), verticalArrangement = Arrangement.spacedBy(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        Row(Modifier.fillMaxWidth()) { BrandLockup(height = 36.dp) }
-        ReferenceTitle(title, start = onBack?.let { { GlassSquare(OmIcons.Back, backDescription, onClick = it) } }, end = trailing)
+    Column(Modifier.androidx_statusBars().padding(horizontal = 16.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        ReferenceTitle(title, start = onBack?.let { { GlassSquare(OmIcons.Back, backDescription, onClick = it) } }, end = trailing ?: { LogoMark() })
         below?.invoke()
     }
 }
