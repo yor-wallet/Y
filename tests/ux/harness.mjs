@@ -83,7 +83,8 @@ export async function openApp(browser, base, opts = {}){
     return route.abort();
   });
   /* default: the live stream is refused (the app falls back to polling). opts.ws === 'live': a local stand-in of the Binance stream sends
-     trades, a depth snapshot and the current candle a few times a second, so real-time painting can be checked (still no internet). */
+     trades, a depth snapshot and the current candle a few times a second, so real-time painting can be checked (still no internet).
+     opts.wsRate (ms between ticks, default 350): a small value imitates a very busy market (BTC can send dozens of trades a second). */
   try { await page.routeWebSocket(/binance\.vision/, ws => {
     if (opts.ws !== 'live'){ ws.close(); return; }
     const u = ws.url(), pair = ((u.match(/streams=([a-z]+)@/) || [])[1] || 'btcusdt').toUpperCase(), m = MK[pair] || [1, 1];
@@ -95,7 +96,7 @@ export async function openApp(browser, base, opts = {}){
         if (/@depth/.test(u)) ws.send(JSON.stringify({ stream: pair.toLowerCase() + '@depth10@1000ms', data: { bids: Array.from({ length: 10 }, (_, k) => [String(p - st * (k + 1)), String(0.1 + ((k + i) % 4) * 0.2)]), asks: Array.from({ length: 10 }, (_, k) => [String(p + st * (k + 1)), String(0.12 + ((k + i) % 3) * 0.25)]) } }));
         if (/@kline/.test(u)) ws.send(JSON.stringify({ stream: pair.toLowerCase() + '@kline_1h', data: { e: 'kline', k: { t: Date.UTC(2026, 10, 20) + 63 * 3600e3, o: String(m[0]), h: String(p * 1.001), l: String(m[0] * 0.999), c: String(p), x: false } } }));
       } catch (e) { clearInterval(tick); }
-    }, 350);
+    }, Math.max(4, Number(opts.wsRate) || 350));
     if (tick.unref) tick.unref();          /* never keeps the test process alive */
     ws.onClose(() => clearInterval(tick)); page.once('close', () => clearInterval(tick));
   }); } catch (e) {}

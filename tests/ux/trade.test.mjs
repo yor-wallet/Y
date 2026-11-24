@@ -65,6 +65,17 @@ const pin = async page => { await wait(700); for (const k of '482913') await pag
     assert.equal(Number(w.availableBalance), 125, 'the amount paid is set aside');
     assert.equal(await page.evaluate(() => (Runtime.wallets || []).filter(x => x.asset === 'BTC').reduce((a, x) => a + Number(x.balance), 0)), 0.01, 'nothing is credited before the administrator');
   });
+  await ok('écran caché : le flux s’arrête (plus de données reçues) ; de retour : nouveau relevé puis « En direct »', async () => {
+    await page.evaluate(() => R.go('spot', { force: true })); await wait(2000);
+    const vis = v => page.evaluate(s => { Object.defineProperty(document, 'visibilityState', { value: s, configurable: true }); document.dispatchEvent(new Event('visibilitychange')); }, v);
+    await vis('hidden'); await wait(500);
+    const a = await page.locator('#tr-px').innerText(); await wait(1500); const b = await page.locator('#tr-px').innerText();
+    assert.equal(a, b, 'no stream while hidden');
+    await vis('visible'); await wait(2500);
+    assert.match(await page.locator('#tr-status').innerText(), /En direct/);
+    const c = await page.locator('#tr-px').innerText(); await wait(1200); const d = await page.locator('#tr-px').innerText();
+    assert.notEqual(c, d, 'the stream is back');
+  });
   await ok('pas d’erreur de page', async () => { assert.deepEqual(logs, []); });
   await ctx.close();
 }

@@ -95,8 +95,10 @@ const OMXTrade = (() => {
   /* price in USDT (USDT = 1, as the server counts it) */
   function px(sym){ if (sym === 'USDT') return 1; if (sym === S.base && M.last > 0 && M.pair === sym + 'USDT') return M.last; const k = OMXMarket.get(sym); return k && k.price > 0 ? k.price : null; }
   const dpOf = v => { const a = Math.abs(Number(v)); return a >= 1000 ? 2 : a >= 10 ? 3 : a >= 1 ? 4 : a >= 0.01 ? 5 : 8; };
-  const fmtP = v => !(Number(v) > 0) ? '—' : Number(v).toLocaleString('en-US', { minimumFractionDigits: dpOf(v), maximumFractionDigits: dpOf(v) });
-  const fmtQ = v => { const n = Number(v); if (!isFinite(n)) return '—'; const d = n >= 1000 ? 2 : n >= 1 ? 4 : 6; return n.toLocaleString('en-US', { maximumFractionDigits: d }); };
+  /* number formatters are built once per precision (toLocaleString with options builds one on every call: ~40 per frame here) */
+  const NF = {}, nf = (mn, mx) => NF[mn + ':' + mx] || (NF[mn + ':' + mx] = new Intl.NumberFormat('en-US', { minimumFractionDigits: mn, maximumFractionDigits: mx }));
+  const fmtP = v => !(Number(v) > 0) ? '—' : nf(dpOf(v), dpOf(v)).format(Number(v));
+  const fmtQ = v => { const n = Number(v); if (!isFinite(n)) return '—'; const d = n >= 1000 ? 2 : n >= 1 ? 4 : 6; return nf(0, d).format(n); };
   const cut8 = n => Math.floor(Number(n) * 1e8 + 1e-6) / 1e8;
   /* « 1 BTC = 96,972 USDT » rather than « 1 USDT = 0.00001 BTC »: the side worth more than 1 is named first */
   const rateTxt = (fa, ta, price, approx) => !(price > 0) ? '—' : price >= 1 ? '1 ' + fa + (approx ? ' ≈ ' : ' = ') + fmtP(price) + ' ' + ta : '1 ' + ta + (approx ? ' ≈ ' : ' = ') + fmtP(1 / price) + ' ' + fa;
@@ -125,8 +127,21 @@ const OMXTrade = (() => {
       .then(() => { if (M.tag === tag) connect(tag); });
   }
   function close(){
-    M.tag = ''; clearTimeout(M.timer); clearInterval(M.poll); M.poll = 0;
+    M.tag = ''; clearTimeout(M.timer); clearInterval(M.poll); M.poll = 0; clearTimeout(feedT); feedT = 0; pend.clear();
     if (M.ws){ const w = M.ws; M.ws = null; try { w.onclose = null; w.close(); } catch(e){} }
+  }
+  /* hidden tab / screen off: the stream is closed (no data, no battery spent); the figures stay, dated « Actualisé à … ».
+     Back on screen: a fresh snapshot, then the stream again. */
+  function pause(){
+    if (!M.tag) return;
+    clearTimeout(M.timer);
+    if (M.ws){ const w = M.ws; M.ws = null; try { w.onclose = null; w.close(); } catch(e){} }
+    if (M.at) M.state = 'delayed';
+  }
+  function resume(){
+    const tag = M.tag; if (!tag || M.ws || R.current() !== 'spot') return;
+    snapshot(tag).then(() => { if (M.tag === tag && M.state !== 'live'){ M.state = 'delayed'; paint('all'); } }).catch(() => {})
+      .then(() => { if (M.tag === tag && !M.ws && document.visibilityState !== 'hidden') connect(tag); });
   }
   function startPoll(tag){
     if (M.poll) return;
@@ -146,12 +161,12 @@ const OMXTrade = (() => {
       let m; try { m = JSON.parse(ev.data); } catch(e){ return; }
       const s = (m && m.stream) || '', d = m && m.data; if (!d) return;
       M.at = Date.now();
-      if (s.indexOf('@depth') !== -1){ M.bids = (d.bids || []).map(r => [+r[0], +r[1]]); M.asks = (d.asks || []).map(r => [+r[0], +r[1]]); paint('book'); }
-      else if (d.e === 'aggTrade'){ M.trades.unshift({ p: +d.p, q: +d.q, t: +d.T, sell: !!d.m, fresh: true }); if (M.trades.length > 16) M.trades.length = 16; setLast(+d.p); paint('trades'); paint('price'); }
+      if (s.indexOf('@depth') !== -1){ M.bids = (d.bids || []).map(r => [+r[0], +r[1]]); M.asks = (d.asks || []).map(r => [+r[0], +r[1]]); feed('book'); }
+      else if (d.e === 'aggTrade'){ M.trades.unshift({ p: +d.p, q: +d.q, t: +d.T, sell: !!d.m, fresh: true }); if (M.trades.length > 16) M.trades.length = 16; setLast(+d.p); feed('trades'); feed('price'); }
       else if (d.e === 'kline' && d.k){
         const k = d.k, c = { t: +k.t, o: +k.o, h: +k.h, l: +k.l, c: +k.c }, L = M.candles[M.candles.length - 1];
         if (L && L.t === c.t) Object.assign(L, c); else if (!L || c.t > L.t){ M.candles.push(c); if (M.candles.length > 64) M.candles.shift(); }
-        setLast(c.c); paint('chart'); paint('price');
+        setLast(c.c); feed('chart'); feed('price');
       }
       if (M.state !== 'live'){ M.state = 'live'; paint('status'); }
     };
@@ -170,6 +185,14 @@ const OMXTrade = (() => {
     M.last = p;
   }
 
+  /* stream updates are painted at most every FEED_MS: a busy market sends dozens of messages a second, the eye reads ~5 updates
+     (every message is still applied to the data at once, so nothing is lost or late by more than FEED_MS) */
+  const FEED_MS = 200, pend = new Set(); let feedT = 0, feedAt = 0;
+  function feed(part){
+    pend.add(part);
+    if (feedT) return;
+    feedT = setTimeout(() => { feedT = 0; feedAt = Date.now(); pend.forEach(p => paint(p)); pend.clear(); }, Math.max(0, feedAt + FEED_MS - Date.now()));
+  }
   /* batched painting: one frame for everything that changed */
   const dirty = new Set(); let raf = 0;
   function paint(part){
@@ -194,35 +217,47 @@ const OMXTrade = (() => {
     if (st === 'offline') return '<span class="tr-dot off"></span>' + escapeHtml(M.at ? tf('tr.offline', { t: hhmm(M.at) }) : t('tr.e.price_unavailable'));
     return '<span class="tr-dot wait"></span>' + escapeHtml(t('tr.connecting'));
   }
-  function paintStatus(){ const el = document.getElementById('tr-status'); if (el) el.innerHTML = statusHtml(); }
+  /* writes the HTML only when it changed (no needless layout) */
+  function setHtml(el, h){ if (el && el.__h !== h){ el.innerHTML = h; el.__h = h; } }
+  /* restarts a flash without forcing a layout: two identical animations, used in turn */
+  function flash(el){ if (reduced()) return; const f = el.classList.contains('flash') ? 'flash2' : 'flash'; el.classList.remove('flash', 'flash2'); el.classList.add(f); }
+  function paintStatus(){ setHtml(document.getElementById('tr-status'), statusHtml()); }
   function paintPrice(){
     const el = document.getElementById('tr-px'); if (!el) return;
     const txt = fmtP(M.last);
     if (el.textContent !== txt){
       el.textContent = txt;
       el.classList.toggle('up', M.dir > 0); el.classList.toggle('down', M.dir < 0);
-      if (!reduced()){ el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); }
+      flash(el);
     }
     const k = OMXMarket.get(S.base), u = document.getElementById('tr-pxu');
-    if (u) u.textContent = M.last > 0 ? '≈ ' + omxUsd(M.last) : '';
+    if (u){ const v = M.last > 0 ? '≈ ' + omxUsd(M.last) : ''; if (u.textContent !== v) u.textContent = v; }
     const c = document.getElementById('tr-chg');
-    if (c && k && k.pct != null){ c.textContent = omxPct(k.pct); c.classList.toggle('up', k.pct >= 0); c.classList.toggle('down', k.pct < 0); }
+    if (c && k && k.pct != null){ const v = omxPct(k.pct); if (c.textContent !== v){ c.textContent = v; c.classList.toggle('up', k.pct >= 0); c.classList.toggle('down', k.pct < 0); } }
     const st = document.getElementById('tr-stats');
-    if (st && k) st.innerHTML = stat(t('tr.h24'), fmtP(k.high)) + stat(t('tr.l24'), fmtP(k.low)) + stat(t('tr.v24'), k.qvol ? compact(k.qvol) : '—');
+    if (st && k) setHtml(st, stat(t('tr.h24'), fmtP(k.high)) + stat(t('tr.l24'), fmtP(k.low)) + stat(t('tr.v24'), k.qvol ? compact(k.qvol) : '—'));
   }
   const stat = (a, b) => '<div><small>' + escapeHtml(a) + '</small><b class="ltr">' + escapeHtml(b) + '</b></div>';
   function compact(n){ n = Number(n); if (!isFinite(n)) return '—'; const u = [[1e9, LANG === 'fr' ? ' Md' : 'B'], [1e6, LANG === 'fr' ? ' M' : 'M'], [1e3, LANG === 'fr' ? ' k' : 'K']]; for (const [v, s] of u) if (n >= v) return (n / v).toFixed(2) + s; return n.toFixed(2); }
 
   /* candlestick chart (canvas), with a live last-price line; touch / pointer shows the candle under the finger */
-  let hoverI = -1;
+  let hoverI = -1, cvW = 0, pal = null, palKey = '';
   function css(v, d){ try { return getComputedStyle(document.documentElement).getPropertyValue(v).trim() || d; } catch(e){ return d; } }
+  /* chart colours read once per tone (day / night), not on every frame */
+  function colors(){ const k = document.documentElement.getAttribute('data-tone') || ''; if (!pal || palKey !== k){ palKey = k; pal = { POS: css('--w-pos', '#45E39A'), NEG: css('--w-neg', '#FF7D89') }; } return pal; }
+  /* width of the chart's content box (inside the card padding), kept up to date by a ResizeObserver: no layout read per frame */
+  function chartWidth(cv){
+    if (cvW > 0) return cvW;
+    const p = cv.parentElement, s = getComputedStyle(p);
+    return (cvW = Math.round(p.clientWidth - (parseFloat(s.paddingLeft) || 0) - (parseFloat(s.paddingRight) || 0)));
+  }
   function drawChart(){
     const cv = document.getElementById('tr-cv'); if (!cv) return;
-    const W = Math.max(220, Math.round(cv.parentElement.clientWidth)), H = 200, dpr = Math.min(2, window.devicePixelRatio || 1);
+    const W = Math.max(220, chartWidth(cv)), H = 200, dpr = Math.min(2, window.devicePixelRatio || 1);
     if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)){ cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cv.style.width = W + 'px'; cv.style.height = H + 'px'; }
     const g = cv.getContext('2d'); if (!g) return;
     g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
-    const POS = css('--w-pos', '#45E39A'), NEG = css('--w-neg', '#FF7D89'), cs = M.candles;
+    const { POS, NEG } = colors(), cs = M.candles;
     g.font = '600 10px Sora, system-ui, sans-serif';
     if (!cs.length){ g.fillStyle = 'rgba(225,238,255,.6)'; g.textAlign = 'center'; g.fillText('—', W / 2, H / 2); g.textAlign = 'start'; return; }
     const padR = 64, padT = 12, padB = 20, n = cs.length, cw = (W - padR - 8) / n;
@@ -337,7 +372,7 @@ const OMXTrade = (() => {
   function paintSwapLive(){
     if (R.current() !== 'exchange') return;
     const s = S.sw, r = swapRate(), a = num(s.amt), o = document.getElementById('sw-out'), rt = document.getElementById('sw-rate'), lv = document.getElementById('sw-live');
-    if (o){ const v = a > 0 && r ? fmtQ(cut8(a * r)) : '—'; if (o.textContent !== v){ o.textContent = v; if (!reduced()){ o.classList.remove('flash'); void o.offsetWidth; o.classList.add('flash'); } } }
+    if (o){ const v = a > 0 && r ? fmtQ(cut8(a * r)) : '—'; if (o.textContent !== v){ o.textContent = v; flash(o); } }
     if (rt) rt.textContent = r ? t('tr.rateL') + ' ' + rateTxt(s.from, s.to, r, true) : '—';
     if (lv) lv.innerHTML = liveDot();
   }
@@ -473,7 +508,16 @@ const OMXTrade = (() => {
         cv.addEventListener('pointermove', hov); cv.addEventListener('pointerdown', hov);
         cv.addEventListener('pointerleave', () => { hoverI = -1; const o = document.getElementById('tr-ohlc'); if (o) o.textContent = ''; drawChart(); });
       }
-      const onR = () => paint('chart'); window.addEventListener('resize', onR); R.onLeave(() => { window.removeEventListener('resize', onR); close(); });
+      cvW = 0;
+      let ro = null;
+      if (cv && typeof ResizeObserver !== 'undefined'){
+        ro = new ResizeObserver(es => { const w = Math.round(es[0].contentRect.width); if (w > 0 && w !== cvW){ cvW = w; paint('chart'); } });
+        ro.observe(cv.parentElement);
+      }
+      const onR = () => { if (!ro){ cvW = 0; paint('chart'); } };
+      const onVis = () => { if (document.visibilityState === 'hidden') pause(); else resume(); };
+      window.addEventListener('resize', onR); document.addEventListener('visibilitychange', onVis);
+      R.onLeave(() => { window.removeEventListener('resize', onR); document.removeEventListener('visibilitychange', onVis); if (ro) ro.disconnect(); cvW = 0; close(); });
     }
     if (id === 'exchange'){ const a = el.querySelector('#sw-amt'); if (a) a.oninput = () => { S.sw.amt = a.value; paintSwapLive(); }; }
     if (id === 'trade-review'){

@@ -17,10 +17,12 @@
 .tr-status{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--w-ink2);text-align:end}
 .tr-status.sm{font-size:11px}
 .tr-dot{width:8px;height:8px;border-radius:50%;background:var(--w-warn);flex:none}
-.tr-dot.live{background:var(--w-pos);box-shadow:0 0 0 0 rgba(69,227,154,.6);animation:trPulse 1.8s ease-out infinite}
+/* « En direct » pulse: a ring that grows and fades (transform + opacity only: drawn by the GPU, no repaint of the page each frame) */
+.tr-dot.live{background:var(--w-pos);position:relative}
+.tr-dot.live::after{content:'';position:absolute;inset:0;border-radius:50%;background:rgba(69,227,154,.55);animation:trPulse 1.8s ease-out infinite;will-change:transform,opacity}
 .tr-dot.off{background:var(--w-neg)}
 .tr-dot.wait{background:var(--w-ink3);animation:trBlink 1.2s ease-in-out infinite}
-@keyframes trPulse{0%{box-shadow:0 0 0 0 rgba(69,227,154,.55)}70%{box-shadow:0 0 0 8px rgba(69,227,154,0)}100%{box-shadow:0 0 0 0 rgba(69,227,154,0)}}
+@keyframes trPulse{0%{transform:scale(1);opacity:.9}70%{transform:scale(3);opacity:0}100%{transform:scale(3);opacity:0}}
 @keyframes trBlink{50%{opacity:.35}}
 
 /* price */
@@ -29,8 +31,12 @@
 .tr-px{font-size:clamp(30px,9vw,40px);font-weight:800;letter-spacing:-.5px;color:var(--w-ink);border-radius:10px;padding:0 4px;margin:0 -4px;transition:color .3s ease}
 .tr-px.up{color:var(--w-pos)} .tr-px.down{color:var(--w-neg)}
 .tr-px.flash.up{animation:trFlashUp .7s ease-out} .tr-px.flash.down{animation:trFlashDown .7s ease-out}
+/* same flash under a second name: switching name restarts it without forcing a layout */
+.tr-px.flash2.up{animation:trFlashUp2 .7s ease-out} .tr-px.flash2.down{animation:trFlashDown2 .7s ease-out}
 @keyframes trFlashUp{0%{background:rgba(69,227,154,.32)}100%{background:transparent}}
 @keyframes trFlashDown{0%{background:rgba(255,125,137,.32)}100%{background:transparent}}
+@keyframes trFlashUp2{0%{background:rgba(69,227,154,.32)}100%{background:transparent}}
+@keyframes trFlashDown2{0%{background:rgba(255,125,137,.32)}100%{background:transparent}}
 .tr-head small{color:var(--w-ink3);font-size:13px;font-weight:600}
 .tr-chg{padding:6px 10px;border-radius:12px;font-weight:700;font-size:14px;background:rgba(255,255,255,.12);color:var(--w-ink)}
 .tr-chg.up{background:rgba(69,227,154,.18);color:var(--w-pos)} .tr-chg.down{background:rgba(255,125,137,.18);color:var(--w-neg)}
@@ -103,7 +109,7 @@
 .tr-amt{flex:1;min-width:0;border:0;background:transparent;color:var(--w-ink);font-size:clamp(24px,7.4vw,32px);font-weight:800;text-align:end;outline:none}
 .tr-amt::placeholder{color:rgba(214,230,255,.4)}
 .tr-out{flex:1;min-width:0;font-size:clamp(24px,7.4vw,32px);font-weight:800;text-align:end;color:var(--w-ink);overflow:hidden;text-overflow:ellipsis;border-radius:10px;padding:0 4px}
-.tr-out.flash{animation:trFlashUp .7s ease-out}
+.tr-out.flash{animation:trFlashUp .7s ease-out} .tr-out.flash2{animation:trFlashUp2 .7s ease-out}
 .tr-swm{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;font-size:12px;color:var(--w-ink3);font-weight:600}
 .tr-max{border:1px solid var(--w-stroke);background:rgba(255,255,255,.12);color:var(--w-ink);border-radius:10px;padding:5px 12px;font-weight:800;font-size:12px;cursor:pointer}
 .tr-flipw{display:flex;justify-content:center;margin:-22px 0;position:relative;z-index:2}
@@ -141,6 +147,7 @@ html:root:root body .w-home .w-hdr .w-brand{min-width:0;max-width:100%}
 html:root:root body .w-home .w-hdr .w-brand img{height:auto;max-height:40px;width:100%;max-width:140px;object-fit:contain}
 
 @media (prefers-reduced-motion:reduce){
-  .tr-dot.live,.tr-dot.wait,.tr-px.flash,.tr-out.flash,.tb-row.chg,.tt-row.fresh{animation:none!important}
+  .tr-dot.live,.tr-dot.wait,.tr-px.flash,.tr-px.flash2,.tr-out.flash,.tr-out.flash2,.tb-row.chg,.tt-row.fresh{animation:none!important}
+  .tr-dot.live::after{display:none}
   .tb-row i,.tr-flip,.tr-ttl .fg{transition:none!important}
 }

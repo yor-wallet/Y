@@ -62,6 +62,14 @@ for (const lang of ['en', 'ar']){
     }
     assert.equal(await page.evaluate(() => (window.__rpcLog || []).filter(x => /send|transfer/.test(x.name)).length), 0);
   });
+  await ok('un ancien lien d’achat / vente / échange ouvre le vrai Swap (aucune ancienne fonction appelée)', async () => {
+    for (const id of ['crypto-buy', 'crypto-buy-amount', 'crypto-sell', 'crypto-sell-amount', 'crypto-swap', 'crypto-swap-to', 'crypto-swap-amount']){
+      await page.evaluate(i => R.go(i, { force: true }), id); await wait(300);
+      assert.equal(await page.evaluate(() => R.current()), 'exchange', id);
+    }
+    assert.equal(await page.evaluate(() => (window.__rpcLog || []).filter(x => /^crypto_(buy|sell|swap)$/.test(x.name)).length), 0);
+    await page.evaluate(() => R.go('home', { force: true })); await wait(300);
+  });
   await ok('les anciens transferts restent dans l’historique', async () => {
     await page.evaluate(() => R.go('history', { force: true })); await wait(700);
     assert.match(await page.locator('#history').innerText(), /Salim Al Harthy/);

@@ -28,6 +28,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -52,7 +53,10 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.omwallet.core.data.FeedMode
@@ -87,7 +91,9 @@ import com.omwallet.core.ui.R
 import com.omwallet.core.ui.errorText
 import com.omwallet.core.ui.omGraph
 import com.omwallet.core.ui.omViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -112,6 +118,8 @@ object Trade {
         "USDC" to listOf("ethereum", "bsc", "polygon", "solana"), "BNB" to listOf("bsc"), "SOL" to listOf("solana"), "XRP" to listOf("xrp"), "LTC" to listOf("litecoin"))
     val DEF_NET = mapOf("BTC" to "bitcoin", "ETH" to "ethereum", "USDT" to "tron", "USDC" to "ethereum", "BNB" to "bsc", "SOL" to "solana", "XRP" to "xrp", "LTC" to "litecoin")
     val TFS = linkedMapOf("15m" to "15m", "1H" to "1h", "4H" to "4h", "1D" to "1d")
+    /* the live market reaches the screen at most every FEED_MS (same rhythm as the web app) */
+    const val FEED_MS = 200L
     fun price(v: Double?): String = if (v == null || v <= 0) "—" else {
         val dp = when { v >= 1000 -> 2; v >= 10 -> 3; v >= 1 -> 4; v >= 0.01 -> 5; else -> 8 }
         String.format(Locale.US, "%,.${dp}f", v)
@@ -180,11 +188,29 @@ class SpotViewModel(private val g: OmGraph) : ViewModel() {
     private val _s = MutableStateFlow(SpotState())
     val state: StateFlow<SpotState> = _s.asStateFlow()
     private var job: Job? = null
-    init { open() }
-    fun pair(base: String) { if (base != _s.value.base) { _s.value = SpotState(base = base, tf = _s.value.tf); open() } }
-    fun tf(tf: String) { if (tf != _s.value.tf) { _s.update { it.copy(tf = tf, candles = emptyList()) }; open() } }
-    private fun setLast(p: Double) = _s.update { it.copy(last = p, dir = it.last?.let { l -> if (p > l) 1 else if (p < l) -1 else it.dir } ?: 0) }
+    /* 14.5.1 — the feed runs only while the Spot screen is on screen (lifecycle STARTED): nothing is downloaded and no battery is
+       spent in the background or on another tab. Paused, the figures stay, shown as « updated at … ». */
+    private var active = false
+    fun active(on: Boolean) {
+        if (on == active) return
+        active = on
+        if (on) open() else {
+            job?.cancel(); job = null
+            _s.update { if (it.mode == FeedMode.Live) it.copy(mode = if (it.at > 0) FeedMode.Polling else FeedMode.Offline) else it }
+        }
+    }
+    fun pair(base: String) { if (base != _s.value.base) { _s.value = SpotState(base = base, tf = _s.value.tf); if (active) open() } }
+    fun tf(tf: String) { if (tf != _s.value.tf) { _s.update { it.copy(tf = tf, candles = emptyList()) }; if (active) open() } }
+    private fun withLast(s: SpotState, p: Double) = s.copy(last = p, dir = s.last?.let { l -> if (p > l) 1 else if (p < l) -1 else s.dir } ?: 0)
     private fun sane(c: Ohlc) = c.copy(open = if (c.open > 0) c.open else c.close, high = maxOf(c.high, c.open, c.close), low = listOf(c.low, c.open, c.close).filter { it > 0 }.minOrNull() ?: c.close)
+    private fun applyEvent(s: SpotState, ev: PairEvent): SpotState = when (ev) {
+        is PairEvent.BookEv -> s.copy(book = ev.book)
+        is PairEvent.TradeEv -> withLast(s.copy(trades = (listOf(ev.trade) + s.trades).take(16)), ev.trade.price)
+        is PairEvent.CandleEv -> {
+            val k = sane(ev.candle); val l = s.candles.lastOrNull()
+            withLast(s.copy(candles = if (l != null && l.time == k.time) s.candles.dropLast(1) + k else (s.candles + k).takeLast(64)), k.close)
+        }
+    }
     private fun open() {
         job?.cancel()
         val st = _s.value; val pair = st.base + "USDT"; val iv = Trade.TFS[st.tf] ?: "1h"
@@ -194,22 +220,23 @@ class SpotViewModel(private val g: OmGraph) : ViewModel() {
                 try {
                     val c = g.marketApi.ohlc(pair, iv, 64).map(::sane); val b = g.marketApi.depth(pair, 10); val t = g.marketApi.trades(pair, 16)
                     _s.update { it.copy(candles = c, book = b, trades = t, last = c.lastOrNull()?.close ?: it.last, mode = if (it.mode == FeedMode.Live) FeedMode.Live else FeedMode.Polling, at = System.currentTimeMillis()) }
-                } catch (e: Exception) { _s.update { it.copy(mode = FeedMode.Offline) } }
+                } catch (e: CancellationException) { throw e } catch (e: Exception) { _s.update { it.copy(mode = FeedMode.Offline) } }
                 try {
-                    g.marketApi.pairStream(pair, iv).collect { ev ->
-                        _s.update { it.copy(mode = FeedMode.Live, at = System.currentTimeMillis()) }
-                        when (ev) {
-                            is PairEvent.BookEv -> _s.update { it.copy(book = ev.book) }
-                            is PairEvent.TradeEv -> { _s.update { it.copy(trades = (listOf(ev.trade) + it.trades).take(16)) }; setLast(ev.trade.price) }
-                            is PairEvent.CandleEv -> {
-                                val k = sane(ev.candle)
-                                _s.update { s -> val l = s.candles.lastOrNull(); s.copy(candles = if (l != null && l.time == k.time) s.candles.dropLast(1) + k else (s.candles + k).takeLast(64)) }
-                                setLast(k.close)
+                    /* every message is applied at once to a working copy; the screen receives it at most every FEED_MS
+                       (a busy market sends dozens of messages a second: one recomposition per message is wasted work) */
+                    coroutineScope {
+                        var buf = _s.value; var dirty = false
+                        val tick = launch { while (true) { delay(Trade.FEED_MS); if (dirty) { _s.value = buf; dirty = false } } }
+                        try {
+                            g.marketApi.pairStream(pair, iv).collect { ev ->
+                                val first = buf.mode != FeedMode.Live
+                                buf = applyEvent(buf, ev).copy(mode = FeedMode.Live, at = System.currentTimeMillis())
+                                if (first) { _s.value = buf; dirty = false } else dirty = true      /* « Live » is shown at once */
+                                retry = 0
                             }
-                        }
-                        retry = 0
+                        } finally { tick.cancel(); if (dirty) _s.value = buf }
                     }
-                } catch (e: Exception) { /* stream ended: fall back to snapshots, then reconnect */ }
+                } catch (e: CancellationException) { throw e } catch (e: Exception) { /* stream ended: fall back to snapshots, then reconnect */ }
                 if (_s.value.mode == FeedMode.Live) _s.update { it.copy(mode = if (it.at > 0) FeedMode.Polling else FeedMode.Offline) }
                 delay(minOf(30_000L, 2_000L shl minOf(retry++, 4)))
             }
@@ -227,6 +254,13 @@ fun SpotScreen(contentPadding: PaddingValues) {
     val vm = omViewModel { SpotViewModel(it) }
     val tvm = omViewModel(key = "spot-trade") { TradeViewModel(it) }
     val s by vm.state.collectAsStateWithLifecycle()
+    /* live feed only while this screen is visible: started on ON_START, stopped on ON_STOP and when the screen is left */
+    val owner = LocalLifecycleOwner.current
+    DisposableEffect(owner, vm) {
+        val obs = LifecycleEventObserver { _, e -> if (e == Lifecycle.Event.ON_START) vm.active(true) else if (e == Lifecycle.Event.ON_STOP) vm.active(false) }
+        owner.lifecycle.addObserver(obs)
+        onDispose { owner.lifecycle.removeObserver(obs); vm.active(false) }
+    }
     val market by g.market.state.collectAsStateWithLifecycle()
     val wallet by g.wallet.state.collectAsStateWithLifecycle()
     val step by tvm.step.collectAsStateWithLifecycle()

@@ -34,6 +34,10 @@ const R = (() => {
   /* 14.0.0 — money transfers are retired from the app (their history and receipts stay readable). An old link, a saved screen or a
      shortcut to a transfer screen lands on the home screen; the server functions are not changed by this. */
   const RETIRED_RE = /^(country-select|service-select|identifier-input|tx-amount|tx-review|tx-result|receive|processing|tx-network-validation|tx-confirmation)$/;
+  /* 14.5.1 — the October buy / sell / swap screens (instant credit at a stored price) are closed on the server
+     (20261125_close_legacy_instant_trades.sql). An old link or shortcut to them opens the real Swap: price fixed by the server,
+     PIN, « En cours », confirmed by the administrator. */
+  const LEGACY_TRADE_RE = /^crypto-(buy|sell|swap)(-amount|-to)?$/;
   const NAV_KEYS = {
     'home':'home','services':'services','chain':'services','history':'history','cards':'cards','cards-add':'cards','card-settings':'cards','country-select':'country-select','service-select':'country-select','identifier-input':'country-select','tx-amount':'country-select','tx-review':'country-select','profile':'account','settings':'account','account':'account','dy-control':'account','payouts':'account','banks':'services','banks-add':'services','privacy':'settings','help':'settings','about':'settings',
     'notifications':'notifications','crypto':'crypto','crypto-market':'crypto-market','crypto-networks':'crypto-market','crypto-spot':'crypto-market',
@@ -89,6 +93,9 @@ const R = (() => {
     }
     if (RETIRED_RE.test(id)){
       return go('home', { reset:true, force:true });
+    }
+    if (LEGACY_TRADE_RE.test(id) && SCREENS.exchange){
+      return go('exchange', { reset:true, force:true });
     }
     if (!FEATURES.crypto && CRYPTO_SCREEN_RE.test(id)){
       return go('home', { reset:true, force:true });     /* crypto section hidden: an old link or a saved screen lands on the home screen */
