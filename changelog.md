@@ -1,3 +1,13 @@
+# OM Wallet 14.6.0 — site vitrine (/welcome), distinct de l'application et relié à elle
+
+Demande du propriétaire : « développer le site web de l'application pour que les visiteurs la prennent au sérieux » ; « l'application et le site sont deux choses différentes mais liées ».
+
+- **Site vitrine** : https://yor-wallet.vercel.app/welcome (`welcome/index.html`, `site.css`, `site.js`, `img/`). L'application reste à la racine (`/`), inchangée : utilisateurs, liens des e-mails et application installée ne sont pas touchés.
+- **Contenu, uniquement vrai** : présentation, marchés en direct (API publique Binance, actualisés toutes les 15 s ; réseau coupé → « cours indisponibles », jamais de prix inventé ; dernier cours daté s'il ne se met plus à jour), 6 fonctionnalités réelles, captures RÉELLES de l'application en fr / en / ar (mention « données d'exemple »), 3 étapes, sécurité (vérification avant crédit, code, prix fixés par le serveur, adresses réelles), questions fréquentes, avertissement sur la volatilité. Aucun faux avis, aucun faux chiffre, aucun faux bouton Google Play (« application Android en préparation »), le mot « administrateur » n'apparaît pas.
+- **Trois langues** (français, anglais, arabe de droite à gauche), langue de l'appareil par défaut, choix retenu ; police Sora / Tajawal comme l'application ; téléphone et ordinateur ; réduction des animations respectée ; aucune bibliothèque externe ; images WebP (≈ 45 Ko chacune).
+- **Liens site ↔ application** : « Créer mon compte » ouvre directement l'inscription (`/#/signup`), « Se connecter » la connexion (`/#/login`), sans repasser par la présentation ; la page de connexion de l'application propose « Découvrir OM Wallet » (vers `/welcome`).
+- Tests : nouveau `tests/ux/site.test.mjs` (chargement sans erreur avec la vraie politique de sécurité, pas de défilement horizontal, cours, réseau coupé, 3 langues, onglets, liens vers l'application) ; 10 suites web vertes.
+
 # OM Wallet 14.5.3 — passe qualité visuelle (web + Android)
 
 Le propriétaire n'est pas satisfait de la qualité : audit écran par écran (27 écrans Android rendus sur leur vrai fond, 13 écrans web), corrections des défauts visibles, du plus voyant au moins voyant.

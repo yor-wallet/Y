@@ -125,7 +125,10 @@ function boot(){
           const toLogin = () => R.go('login', { reset:true, force:true });
           const toSignup = () => R.go('signup', { reset:true, force:true });
           /* la présentation (une seule fois) mène directement à « créer mon compte » ou à « se connecter » */
-          const afterLang = () => { if (!Onboarding.seen()) Onboarding.show((to) => { if (to === 'signup') toSignup(); else toLogin(); }); else toLogin(); };
+          /* 14.6.0 — the showcase site (/welcome) links to « /#/signup » and « /#/login »: the visitor has already seen the presentation
+             there, so these links open the requested screen directly */
+          const want = (() => { try { return R.resolve(LAUNCH_HASH); } catch(e){ return null; } })();
+          const afterLang = () => { if (want === 'signup') toSignup(); else if (want === 'login') toLogin(); else if (!Onboarding.seen()) Onboarding.show((to) => { if (to === 'signup') toSignup(); else toLogin(); }); else toLogin(); };
           afterLang();        /* the app opens in the device language; it can be changed from the login screen or Settings */
         }
       }, splashWait());

@@ -19,6 +19,8 @@ function renderLogin(){
         '<button class="btn btn-primary" id="au-submit" type="button">' + t('auth.signin') + '</button>' +
       '</section>' +
       '<button class="btn btn-ghost" id="au-to-signup" type="button">' + t('auth.noAccount') + '</button>' +
+      /* 14.6.0 — the showcase site, separate from the app and linked to it */
+      '<a class="w-discover" href="/welcome">' + t('auth.discover') + '</a>' +
     '</div>';
 }
 

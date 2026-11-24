@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>OM Wallet — Portefeuille crypto simple et sûr</title>
+<meta name="description" content="OM Wallet : votre portefeuille crypto en arabe, anglais et français. Adresse de dépôt personnelle avec QR code, échange à prix fixé, marchés en direct, retraits vers la banque ou en crypto.">
+<meta name="theme-color" content="#1A6FE6">
+<link rel="icon" href="/public/branding/om-wallet-favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/public/branding/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="OM Wallet">
+<meta property="og:title" content="OM Wallet — Portefeuille crypto simple et sûr">
+<meta property="og:description" content="Déposez, échangez et suivez vos cryptos en arabe, anglais et français.">
+<meta property="og:image" content="/public/branding/om-wallet-icon-1024.png">
+<meta name="twitter:card" content="summary">
+<link rel="preload" href="/assets/fonts/sora-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/welcome/site.css">
+</head>
+<body>
+<a class="skip" href="#main" data-i="skip">Aller au contenu</a>
+
+<header class="top" id="top">
+  <div class="wrap top-in">
+    <a class="brand" href="/welcome" aria-label="OM Wallet"><img src="/assets/brand/om-logo-horizontal-white.png" alt="OM Wallet" width="150" height="43"></a>
+    <nav class="nav" aria-label="Menu">
+      <a href="#features" data-i="nav.features">Fonctionnalités</a>
+      <a href="#markets" data-i="nav.markets">Marchés</a>
+      <a href="#security" data-i="nav.security">Sécurité</a>
+      <a href="#faq" data-i="nav.faq">Questions</a>
+    </nav>
+    <div class="top-end">
+      <div class="langs" role="group" aria-label="Langue">
+        <button type="button" data-lang="fr" aria-pressed="true">FR</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+        <button type="button" data-lang="ar" aria-pressed="false" lang="ar">ع</button>
+      </div>
+      <a class="btn btn-ghost btn-sm" href="/#/login" data-i="cta.login">Se connecter</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-in">
+      <div class="hero-copy">
+        <p class="eyebrow" data-i="hero.eyebrow">Portefeuille crypto · Arabe · Anglais · Français</p>
+        <h1 data-i="hero.title">Votre portefeuille crypto, simple et sûr.</h1>
+        <p class="lead" data-i="hero.lead">Déposez, échangez et suivez vos cryptomonnaies au même endroit. Chaque opération est vérifiée avant d’être créditée, et vous voyez son état en temps réel.</p>
+        <div class="ctas">
+          <a class="btn btn-primary" href="/#/signup" data-i="cta.signup">Créer mon compte</a>
+          <a class="btn btn-ghost" href="/" data-i="cta.open">Ouvrir l’application</a>
+        </div>
+        <ul class="hero-facts">
+          <li><b data-i="fact1.b">Web</b><span data-i="fact1.s">sur téléphone et ordinateur</span></li>
+          <li><b data-i="fact2.b">0 frais</b><span data-i="fact2.s">sur les échanges (Swap)</span></li>
+          <li><b data-i="fact3.b">3 langues</b><span data-i="fact3.s">arabe, anglais, français</span></li>
+        </ul>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="glow"></div>
+        <figure class="phone p-back"><img data-shot="spot" src="/welcome/img/spot-fr.webp" alt="" width="300" height="649" decoding="async"></figure>
+        <figure class="phone p-front"><img data-shot="home" src="/welcome/img/home-fr.webp" alt="" width="300" height="649" decoding="async" fetchpriority="high"></figure>
+        <div class="chip chip-live"><span class="dot"></span><span data-i="chip.live">Cours en direct · Binance</span></div>
+        <div class="chip chip-ok"><span class="tick">✓</span><span data-i="chip.ok">Échange confirmé</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIVE MARKETS -->
+  <section class="markets" id="markets" aria-labelledby="mk-t">
+    <div class="wrap">
+      <div class="sec-head row">
+        <h2 id="mk-t" data-i="mk.title">Les marchés, en direct</h2>
+        <p class="mk-status" id="mk-status" aria-live="polite"><span class="dot wait"></span><span data-i="mk.loading">Chargement des cours…</span></p>
+      </div>
+      <div class="ticker" id="ticker" role="list"></div>
+      <p class="note" data-i="mk.note">Cours publics de Binance (paires contre USDT), actualisés toutes les 15 secondes. Les cryptomonnaies sont volatiles : leur valeur peut baisser comme monter.</p>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features" id="features" aria-labelledby="ft-t">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-i="ft.eyebrow">Fonctionnalités</p>
+        <h2 id="ft-t" data-i="ft.title">Tout ce qu’il faut, rien de superflu</h2>
+      </div>
+      <div class="grid">
+        <article class="card"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3h-3zM18 18h3v3h-3zM18 14h3M14 18v3"/></svg></span>
+          <h3 data-i="f1.t">Votre adresse de dépôt</h3><p data-i="f1.p">Une adresse personnelle par réseau, créée par notre serveur pour votre compte, avec son QR code. Bitcoin, Ethereum, USDT et XRP.</p></article>
+        <article class="card"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg></span>
+          <h3 data-i="f2.t">Swap à prix fixé</h3><p data-i="f2.p">Le prix est fixé par le serveur au moment de la demande et reste valable 30 secondes. Aucun frais d’échange. Vous voyez exactement ce que vous recevrez.</p></article>
+        <article class="card"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 4 8-8"/><path d="M15 8h5v5"/></svg></span>
+          <h3 data-i="f3.t">Spot et marchés en direct</h3><p data-i="f3.p">Graphiques, carnet d’ordres et dernières transactions en temps réel pour BTC, ETH, BNB, SOL, XRP, LTC et USDC.</p></article>
+        <article class="card"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
+          <h3 data-i="f4.t">Envoyer à un utilisateur</h3><p data-i="f4.p">Envoyez des cryptos à un autre utilisateur OM Wallet avec son identifiant ou son adresse e-mail, sans adresse blockchain à recopier.</p></article>
+        <article class="card"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 10l9-6 9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/></svg></span>
+          <h3 data-i="f5.t">Retraits banque et crypto</h3><p data-i="f5.p">Retirez vers un compte bancaire en rial omanais ou vers une adresse crypto. Chaque demande est suivie étape par étape.</p></article>
+        <article class="card"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg></span>
+          <h3 data-i="f6.t">Arabe, anglais, français</h3><p data-i="f6.p">L’application et les e-mails parlent votre langue, avec une mise en page de droite à gauche pour l’arabe.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHOWCASE -->
+  <section class="show" aria-labelledby="sh-t">
+    <div class="wrap show-in">
+      <div class="show-copy">
+        <p class="eyebrow" data-i="sh.eyebrow">L’application</p>
+        <h2 id="sh-t" data-i="sh.title">Pensée pour le téléphone</h2>
+        <p class="lead" data-i="sh.lead">Une interface claire en verre et bleu, des montants lisibles, et l’état de chaque opération toujours visible : soumise, en cours, confirmée.</p>
+        <div class="tabs" role="tablist" aria-label="Écrans">
+          <button role="tab" aria-selected="true" data-tab="home" data-i="tab.home">Accueil</button>
+          <button role="tab" aria-selected="false" data-tab="markets" data-i="tab.markets">Marchés</button>
+          <button role="tab" aria-selected="false" data-tab="spot" data-i="tab.spot">Spot</button>
+          <button role="tab" aria-selected="false" data-tab="swap" data-i="tab.swap">Swap</button>
+        </div>
+        <p class="note" data-i="sh.note">Captures réelles de l’application (données d’exemple).</p>
+      </div>
+      <figure class="phone p-show"><img id="show-img" src="/welcome/img/home-fr.webp" alt="" width="300" height="649" loading="lazy" decoding="async"></figure>
+    </div>
+  </section>
+
+  <!-- HOW -->
+  <section class="how" aria-labelledby="hw-t">
+    <div class="wrap">
+      <div class="sec-head"><p class="eyebrow" data-i="hw.eyebrow">Démarrer</p><h2 id="hw-t" data-i="hw.title">Trois étapes</h2></div>
+      <ol class="steps">
+        <li><span class="n">1</span><h3 data-i="s1.t">Créez votre compte</h3><p data-i="s1.p">Nom, e-mail, numéro de téléphone et mot de passe. Confirmez votre adresse e-mail grâce au lien reçu.</p></li>
+        <li><span class="n">2</span><h3 data-i="s2.t">Protégez-le par un code</h3><p data-i="s2.p">Choisissez votre code à 6 chiffres : il protège chaque opération sensible (envoi, échange, retrait).</p></li>
+        <li><span class="n">3</span><h3 data-i="s3.t">Déposez et échangez</h3><p data-i="s3.p">Copiez votre adresse de dépôt ou scannez son QR code, puis suivez vos actifs et les marchés en direct.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- SECURITY -->
+  <section class="security" id="security" aria-labelledby="sc-t">
+    <div class="wrap sec-grid">
+      <div class="sec-head"><p class="eyebrow" data-i="sc.eyebrow">Sécurité</p><h2 id="sc-t" data-i="sc.title">Votre argent n’est crédité qu’une fois vérifié</h2>
+        <p class="lead" data-i="sc.lead">Nous préférons une opération « en cours » honnête à une fausse confirmation.</p></div>
+      <ul class="checks">
+        <li><b data-i="k1.t">Vérification avant crédit</b><span data-i="k1.p">Envois, échanges et retraits restent « en cours » jusqu’à leur vérification ; un seul crédit, un seul e-mail de confirmation.</span></li>
+        <li><b data-i="k2.t">Code à chaque opération sensible</b><span data-i="k2.p">Votre code à 6 chiffres est demandé pour envoyer, échanger ou retirer.</span></li>
+        <li><b data-i="k3.t">Prix fixés côté serveur</b><span data-i="k3.p">Le prix d’un échange vient de Binance et est fixé par notre serveur, jamais par l’appareil.</span></li>
+        <li><b data-i="k4.t">Adresses réelles uniquement</b><span data-i="k4.p">Une adresse de dépôt n’est jamais inventée : si le serveur n’en a pas, l’application le dit clairement.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq" id="faq" aria-labelledby="fq-t">
+    <div class="wrap narrow">
+      <div class="sec-head"><p class="eyebrow" data-i="fq.eyebrow">Questions</p><h2 id="fq-t" data-i="fq.title">Questions fréquentes</h2></div>
+      <details><summary data-i="q1">Comment créer un compte ?</summary><p data-i="a1">Touchez « Créer mon compte », indiquez votre nom, votre e-mail, votre numéro de téléphone et un mot de passe d’au moins 8 caractères, puis ouvrez le lien de confirmation envoyé par e-mail.</p></details>
+      <details><summary data-i="q2">Quelles cryptomonnaies puis-je utiliser ?</summary><p data-i="a2">Dépôts en Bitcoin, Ethereum, USDT et XRP. Échanges et marchés : BTC, ETH, USDT, USDC, BNB, SOL, XRP et LTC.</p></details>
+      <details><summary data-i="q3">Y a-t-il des frais ?</summary><p data-i="a3">Les échanges (Swap) sont sans frais. Pour un retrait, les frais éventuels (par exemple les frais de réseau) sont affichés avant que vous confirmiez.</p></details>
+      <details><summary data-i="q4">Pourquoi mon opération est-elle « en cours » ?</summary><p data-i="a4">Chaque opération est vérifiée avant d’être créditée. Elle passe ensuite à « Confirmé », et vous recevez un e-mail dans votre langue.</p></details>
+      <details><summary data-i="q5">Existe-t-il une application Android ?</summary><p data-i="a5">L’application fonctionne dès maintenant dans le navigateur de votre téléphone et de votre ordinateur. Une application Android est en préparation.</p></details>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="final">
+    <div class="wrap final-in">
+      <img src="/welcome/img/app-icon.webp" alt="" width="96" height="96" decoding="async">
+      <h2 data-i="fn.title">Prêt à commencer ?</h2>
+      <p data-i="fn.p">Créez votre compte en quelques minutes.</p>
+      <div class="ctas center"><a class="btn btn-primary" href="/#/signup" data-i="cta.signup">Créer mon compte</a><a class="btn btn-ghost" href="/" data-i="cta.open">Ouvrir l’application</a></div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <div><img src="/assets/brand/om-logo-horizontal-white.png" alt="OM Wallet" width="130" height="37" loading="lazy">
+      <p data-i="ftr.p">Portefeuille crypto en arabe, anglais et français.</p></div>
+    <div class="foot-links">
+      <a href="/" data-i="cta.open">Ouvrir l’application</a>
+      <a href="/#/signup" data-i="cta.signup">Créer mon compte</a>
+      <a href="mailto:yordigitalefinance@gmail.com" data-i="ftr.contact">Nous contacter</a>
+    </div>
+  </div>
+  <div class="wrap foot-legal">
+    <p data-i="ftr.risk">Les cryptomonnaies sont des actifs volatils : leur valeur peut baisser. N’investissez que ce que vous pouvez vous permettre de perdre. Cours affichés : API publique de Binance.</p>
+    <p>© <span id="yr">2026</span> OM Wallet</p>
+  </div>
+</footer>
+<script src="/welcome/site.js" defer></script>
+</body>
+</html>

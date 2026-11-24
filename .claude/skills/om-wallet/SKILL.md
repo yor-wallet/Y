@@ -50,6 +50,7 @@ Le propriétaire a donné des consignes strictes et les a répétées plusieurs 
 | Serveur | Supabase projet `gebjmguoauvutiqvoswl` : migrations `supabase/migrations/`, fonctions Edge `send-email` (verify_jwt false), `wallet-addresses`, `admin-action`, `crypto-swap` (prix d'échange fixé côté serveur) |
 | Spot / Swap (14.5) | web `js/screens/omx-trade.js`, `css/trade.css` ; Android `feature-markets/TradeScreens.kt` ; serveur `20261124_crypto_swap.sql` (`swap_execute`, `admin_tx_confirm` branche CRYPTO_SWAP, e-mail `SWAP_CONFIRMED`). Anciennes fonctions à prix figés (`crypto_buy/sell/swap`, `crypto_to_bank`) fermées aux utilisateurs en 14.5.1 : ne pas les rouvrir |
 | Passation | `PASSATION.md` à la racine : état, reste à faire, fiche technique |
+| Site vitrine (14.6) | `welcome/` → https://yor-wallet.vercel.app/welcome ; distinct de l'application, relié par `/#/signup`, `/#/login` ; contenu uniquement vrai (pas de faux avis, chiffres, ni bouton Google Play) ; test `tests/ux/site.test.mjs` |
 | Déploiement | Vercel projet `prj_uRkEgOnfKYdXmpJ2D2161mbaJHpA` (équipe `team_b1invDzTYyVjIAUAWoEFnPIv`), site `https://yor-wallet.vercel.app` ; GitHub `yor-wallet/Y` |
 | Identité | `brand/` : originaux et visuels de référence (`brand/originals/`), `python3 brand/make_assets.py` régénère icônes web, favicon, logos, calques Android |
 | Design | `css/omw.css` (couche finale), `js/ui/omw.js` (interactions), `js/features/onboarding.js` (présentation), Android `core-design` (Theme, Components) et `app/OnboardingScreen.kt` |
@@ -62,7 +63,7 @@ Secrets : la clé Brevo est dans le Vault Supabase (`brevo_api_key`), la clé ma
 ```bash
 # Web
 node tools/build.mjs                         # régénère js/app.js et css/app.css (obligatoire après tout changement de js/ ou css/)
-for t in shell smoke bugfix omx omw trade admin-console ios-motion admin-payouts; do node tests/ux/$t.test.mjs; done   # tout doit passer
+for t in shell smoke bugfix omx omw trade admin-console ios-motion admin-payouts site; do node tests/ux/$t.test.mjs; done   # tout doit passer
 node tests/ux/perf-spot.mjs 3                # coût du marché en direct (14.5.1 : ~100 ms de script / 6 s sur un marché très actif)
 cd tests/keys && npm install && npm test     # dérivation des adresses (Node 22)
 

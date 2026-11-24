@@ -1,4 +1,4 @@
-# OM Wallet — passation (état au 24/11/2026, version 14.5.3 web + Android)
+# OM Wallet — passation (état au 24/11/2026, web 14.6.0 · Android 14.5.3)
 
 Document pour la session suivante. À lire en entier avec la skill du projet `.claude/skills/om-wallet/SKILL.md` (règles du
 propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce soit.
@@ -14,7 +14,8 @@ propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce so
 |---|---|
 | Dernier commit | voir `git log -1` sur la branche |
 | Site en production | https://yor-wallet.vercel.app — version 14.5.1 (voir `changelog.md` ; contrôle : `curl -s https://yor-wallet.vercel.app/sw.js \| grep fp-shell` → `fp-shell-v14.5.1`) |
-| Version | 14.5.3 partout (`js/data/reference-data.js`, `sw.js`, `android/app/build.gradle.kts` 140503, `android/README.md`, `changelog.md`) |
+| Version | web 14.6.0 (`js/data/reference-data.js`, `sw.js`) · Android 14.5.3 (`android/app/build.gradle.kts` 140503, `android/README.md`) · voir `changelog.md` |
+| Site vitrine | https://yor-wallet.vercel.app/welcome — dossier `welcome/` (HTML + CSS + JS sans bibliothèque, captures réelles `welcome/img/*-{fr,en,ar}.webp`), test `tests/ux/site.test.mjs`. Distinct de l'application (racine `/`), relié par `/#/signup`, `/#/login` et le lien « Découvrir OM Wallet » de la page de connexion |
 | Base Supabase `gebjmguoauvutiqvoswl` | `20261124_crypto_swap.sql` **appliquée** (par le propriétaire, éditeur SQL) ; `20261125_close_legacy_instant_trades.sql` **appliquée** le 23/11 et `20261126_close_legacy_crypto_to_bank.sql` **appliquée** le 24/11 (anciennes fonctions à prix figés fermées aux utilisateurs, rien supprimé, retours arrière fournis — voir `changelog.md` 14.5.1) |
 | Fonctions Edge | `crypto-swap` v1 (verify_jwt **true**) · `send-email` v59 (verify_jwt **false**, appelée par la base avec `x-webhook-secret`) · `wallet-addresses`, `admin-action` inchangées |
 | Tests web | 9 suites vertes le 24/11 : omw, omx, trade, smoke (138 écrans), shell, bugfix, ios-motion, admin-console, admin-payouts ; mesure `tests/ux/perf-spot.mjs` |
@@ -70,6 +71,12 @@ Encore vu, non corrigé :
 3. Web Historique : noms coupés (« Salim Al … ») dans les lignes ; prévoir 2 lignes pour le nom.
 4. Aucun essai sur un vrai téléphone (rendus Robolectric et Chromium seulement) : à faire avec le propriétaire (Android 12-15, petit écran).
 5. Vérifier en arabe (droite à gauche) les nouveaux écrans : inscription Android, Spot / Swap web.
+
+### P2c — Site vitrine : suites possibles (seulement si le propriétaire le demande)
+- Nom de domaine propre (ex. omwallet.com) : à acheter et relier par le propriétaire ; le site peut alors devenir la page d'accueil du domaine.
+- Pages légales (conditions, confidentialité) : textes à fournir ou valider par le propriétaire — ne jamais en inventer.
+- Bouton Google Play : seulement le jour où l'application y est publiée (aucun bouton factice avant).
+- Captures à refaire quand l'interface change : script de captures (voir changelog 14.6.0), 390×844 à ×2, fr / en / ar.
 
 ### P3 — Points connus, non bloquants (à signaler, pas à « corriger » sans demande)
 - Brevo : l'adresse `EMAIL_FROM` n'est pas un expéditeur vérifié du compte ; `send-email` bascule seul sur l'expéditeur vérifié
@@ -131,7 +138,7 @@ faux Supabase `tests/ux/mock-supabase.js`), Android `ScreensTest.kt` + `FakeBack
 **Commandes.**
 ```bash
 node tools/build.mjs
-for t in shell smoke bugfix omx omw trade admin-console ios-motion admin-payouts; do node tests/ux/$t.test.mjs; done
+for t in shell smoke bugfix omx omw trade admin-console ios-motion admin-payouts site; do node tests/ux/$t.test.mjs; done
 cd android && gradle testDebugUnitTest :app:assembleDebug     # 53 tests attendus
 ```
 Le bouton `.btn` ignore un second appui pendant 450 ms (anti double appui) : en test, attendre ~1,3 s entre deux appuis sur le même bouton.
