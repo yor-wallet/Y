@@ -28,8 +28,9 @@ Object.assign(TR.ar, {
   'ac.about':'عن OM Wallet','ac.aboutD':'إصدار التطبيق، الشروط والسياسات','ac.logout':'تسجيل الخروج','ac.admin':'لوحة التحكم الإدارية','ac.adminD':'إعدادات التحويل والدفعات','ac.edit':'تعديل الملف'
 });
 
-/* the OM PAY logo of the reference, light and dark variants (the stylesheet shows the one that matches the theme) */
-function omLogoHtml(w){ const h = Math.round(w * 0.73); return '<span class="px-logo" role="img" aria-label="OM Wallet"><img class="lg-l" src="assets/brand/om-pay-logo.png" alt="" width="' + w + '" height="' + h + '" decoding="async"><img class="lg-d" src="assets/brand/om-pay-logo-dark.png" alt="" width="' + w + '" height="' + h + '" decoding="async"></span>'; }
+/* 14.5.3 — the app's own logo (OM Wallet, horizontal lock-up), never the old « OM PAY » mark: light and dark variants
+   (the stylesheet shows the one that matches the theme; the glass look always uses the white one) */
+function omLogoHtml(w){ const W = Math.round(w * 1.7), h = Math.round(W * 136 / 480); return '<span class="px-logo om-h" role="img" aria-label="OM Wallet" style="width:' + W + 'px"><img class="lg-l" src="assets/brand/om-logo-horizontal.png" alt="" width="' + W + '" height="' + h + '" decoding="async"><img class="lg-d" src="assets/brand/om-logo-horizontal-white.png" alt="" width="' + W + '" height="' + h + '" decoding="async"></span>'; }
 function renderAccount(){
   const p = Runtime.profile || {}, main = (typeof mainAccount === 'function') ? mainAccount() : {};
   const hide = !!Runtime.hideBalance;

@@ -111,10 +111,10 @@ fun GlassEmblem(modifier: Modifier = Modifier, size: Dp = 84.dp) {
 @Composable
 fun WalletArt(modifier: Modifier = Modifier) {
     Box(modifier.fillMaxWidth(0.62f).aspectRatio(338f / 295f)) {
-        /* the photo's light edges fade to transparent, so only the glass wallet shows on the blue (no white box) */
-        Image(painterResource(R.drawable.om_wallet_glass), null, Modifier.matchParentSizeCompat()
-            .graphicsLayer { compositingStrategy = androidx.compose.ui.graphics.CompositingStrategy.Offscreen }
-            .drawWithContent { drawContent(); drawRect(Brush.radialGradient(0.40f to Color.Black, 0.70f to Color(0x88000000), 0.96f to Color.Transparent), blendMode = androidx.compose.ui.graphics.BlendMode.DstIn) })
+        /* the photo's light edges fade to transparent, so only the glass wallet shows on the blue (no white box).
+           14.5.3: the fade is baked into the image (transparent WebP) instead of an off-screen layer with a blend mode on every
+           frame — cheaper, and identical on every device (the run-time mask could show a black square on some renderers). */
+        Image(painterResource(R.drawable.om_wallet_glass), null, Modifier.matchParentSizeCompat())
     }
 }
 private fun Modifier.matchParentSizeCompat() = this.fillMaxWidth().aspectRatio(338f / 295f)

@@ -75,10 +75,14 @@ fun ActivityScreen(contentPadding: PaddingValues) {
     val today = LocalDate.now()
     val fmt = remember { DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL) }
 
-    val refreshing = w.loading && w.syncedAt > 0
+    /* 14.5.3: the spinner answers a pull only. The automatic refresh on opening (and every 20 s) is silent: the « updated … »
+       line says it; before, the spinner sat over the first operation each time the screen opened. */
+    var pulled by remember { mutableStateOf(false) }
+    LaunchedEffect(w.loading) { if (!w.loading) pulled = false }
+    val refreshing = pulled && w.loading
     val pull = androidx.compose.material3.pulltorefresh.rememberPullToRefreshState()
     /* the refresh indicator appears under the large title, never over it */
-    PullToRefreshBox(isRefreshing = refreshing, onRefresh = { vm.refresh() }, modifier = Modifier.fillMaxSize(), state = pull,
+    PullToRefreshBox(isRefreshing = refreshing, onRefresh = { pulled = true; vm.refresh() }, modifier = Modifier.fillMaxSize(), state = pull,
         indicator = { androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator(state = pull, isRefreshing = refreshing, modifier = Modifier.align(androidx.compose.ui.Alignment.TopCenter).padding(top = 150.dp)) }) {
         LazyColumn(Modifier.fillMaxSize(), contentPadding = contentPadding) {
             item {

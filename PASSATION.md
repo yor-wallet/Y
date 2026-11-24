@@ -1,4 +1,4 @@
-# OM Wallet — passation (état au 24/11/2026, web 14.5.1 · Android 14.5.2)
+# OM Wallet — passation (état au 24/11/2026, version 14.5.3 web + Android)
 
 Document pour la session suivante. À lire en entier avec la skill du projet `.claude/skills/om-wallet/SKILL.md` (règles du
 propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce soit.
@@ -14,11 +14,11 @@ propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce so
 |---|---|
 | Dernier commit | voir `git log -1` sur la branche |
 | Site en production | https://yor-wallet.vercel.app — version 14.5.1 (voir `changelog.md` ; contrôle : `curl -s https://yor-wallet.vercel.app/sw.js \| grep fp-shell` → `fp-shell-v14.5.1`) |
-| Version | web 14.5.1 (`js/data/reference-data.js`, `sw.js`) · Android 14.5.2 (`android/app/build.gradle.kts` 140502, `android/README.md`) — la 14.5.2 ne touche que l'application Android (QR de dépôt visible, création de compte dans l'application), voir `changelog.md` |
+| Version | 14.5.3 partout (`js/data/reference-data.js`, `sw.js`, `android/app/build.gradle.kts` 140503, `android/README.md`, `changelog.md`) |
 | Base Supabase `gebjmguoauvutiqvoswl` | `20261124_crypto_swap.sql` **appliquée** (par le propriétaire, éditeur SQL) ; `20261125_close_legacy_instant_trades.sql` **appliquée** le 23/11 et `20261126_close_legacy_crypto_to_bank.sql` **appliquée** le 24/11 (anciennes fonctions à prix figés fermées aux utilisateurs, rien supprimé, retours arrière fournis — voir `changelog.md` 14.5.1) |
 | Fonctions Edge | `crypto-swap` v1 (verify_jwt **true**) · `send-email` v59 (verify_jwt **false**, appelée par la base avec `x-webhook-secret`) · `wallet-addresses`, `admin-action` inchangées |
 | Tests web | 9 suites vertes le 24/11 : omw, omx, trade, smoke (138 écrans), shell, bugfix, ios-motion, admin-console, admin-payouts ; mesure `tests/ux/perf-spot.mjs` |
-| Tests Android | 53 tests Robolectric, 0 échec (24/11) ; APK debug 14.5.2, APK release (R8) et AAB release construits — release **non signés** (clé du propriétaire nécessaire) |
+| Tests Android | 53 tests Robolectric, 0 échec (24/11) ; APK debug 14.5.3, APK release (R8) et AAB release construits — release **non signés** (clé du propriétaire nécessaire) |
 | Figma | fichier `sboQhYUgrVX2ocLBjlmNDu`, groupe `3:438` (cadres Marchés `3:2`, Spot `3:155`, Swap `3:357`), verre bleu + nouveau menu |
 
 ### Ce que fait la 14.5.0 (tout est en service)
@@ -59,6 +59,17 @@ from public.transactions t where t.kind = 'CRYPTO_SWAP' order by t.created_at de
 ```
 Attendu : CONFIRMED, deux lignes de grand livre (− actif payé, + actif reçu), e-mails = un seul `SWAP_CONFIRMED` SENT
 (+ les `ADMIN_TX_ACTION` des administrateurs à la création).
+
+### P2b — Suite de la passe qualité (audit du 24/11, à continuer dans cet ordre)
+Méthode : rendre TOUS les écrans (Android : `gradle testDebugUnitTest` puis `app/build/screenshots/api31-fr/*.png` ; web : script de
+captures comme `tests/ux/tour.mjs`, 390×844, `fullPage`), en faire une planche, corriger du plus voyant au moins voyant, re-capturer.
+Corrigé en 14.5.3 : logo « OM PAY » (web Compte/admin), carte profil (contraste), carré noir (Android Mes actifs), indicateur sur Activité.
+Encore vu, non corrigé :
+1. Web « Envoyer à un utilisateur OM Wallet » : titre coupé (« … OM… ») → titre plus court ou 3 lignes permises.
+2. Android Retrait crypto : l'adresse longue est coupée dans le champ (une ligne) → afficher l'adresse complète sous le champ.
+3. Web Historique : noms coupés (« Salim Al … ») dans les lignes ; prévoir 2 lignes pour le nom.
+4. Aucun essai sur un vrai téléphone (rendus Robolectric et Chromium seulement) : à faire avec le propriétaire (Android 12-15, petit écran).
+5. Vérifier en arabe (droite à gauche) les nouveaux écrans : inscription Android, Spot / Swap web.
 
 ### P3 — Points connus, non bloquants (à signaler, pas à « corriger » sans demande)
 - Brevo : l'adresse `EMAIL_FROM` n'est pas un expéditeur vérifié du compte ; `send-email` bascule seul sur l'expéditeur vérifié

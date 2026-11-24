@@ -1,3 +1,13 @@
+# OM Wallet 14.5.3 — passe qualité visuelle (web + Android)
+
+Le propriétaire n'est pas satisfait de la qualité : audit écran par écran (27 écrans Android rendus sur leur vrai fond, 13 écrans web), corrections des défauts visibles, du plus voyant au moins voyant.
+
+- **Web, page Compte / Profil** : l'en-tête montrait encore l'ancien logo **« OM PAY »** → logo OM Wallet (version blanche sur le verre) ; même correction dans la console admin (même composant). Texte « À propos » : « OM Wallet » seul.
+- **Web, carte du profil** : pastilles « Utilisateur OM Wallet » / « Compte vérifié » lisibles (bleu sur bleu auparavant) ; avatar au dégradé ciel avec initiales blanches et anneau de verre (au lieu d'un disque pâle aux lettres sombres).
+- **Android, « Mes actifs »** : l'image du portefeuille de verre pouvait apparaître dans un **carré noir** (fondu calculé à chaque image par un calque hors écran) → fondu intégré une fois pour toutes dans l'image (WebP transparent, 35 Ko au lieu de 55 Ko) : identique sur tous les téléphones et moins coûteux.
+- **Android, « Activité »** : l'indicateur de rafraîchissement se posait sur la première opération à chaque ouverture (et coupait « Il y a 12 min ») → il n'apparaît plus que lorsqu'on tire l'écran vers le bas ; la mise à jour automatique reste silencieuse (« Mis à jour … »).
+- Tests : web 9 suites vertes ; Android 53 tests, 0 échec.
+
 # OM Wallet 14.5.2 (Android) — QR code de dépôt visible, création de compte dans l'application
 
 Signalé par le propriétaire : « je ne peux pas créer un compte depuis l'application » et « je ne peux pas voir le QR code pour les dépôts ».
