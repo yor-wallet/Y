@@ -67,7 +67,7 @@ node tests/ux/perf-spot.mjs 3                # coût du marché en direct (14.5.
 cd tests/keys && npm install && npm test     # dérivation des adresses (Node 22)
 
 # Android (JDK 17+, SDK 35, ANDROID_HOME=/opt/android-sdk, Gradle dans /opt/gradle)
-cd android && gradle testDebugUnitTest :app:assembleDebug :app:bundleRelease :app:assembleRelease   # 48 tests attendus
+cd android && gradle testDebugUnitTest :app:assembleDebug :app:bundleRelease :app:assembleRelease   # 53 tests attendus
 ```
 
 Les rendus d'écran Android (Robolectric, pas un émulateur) sont dans `android/app/build/screenshots/`. Les regarder après toute modification d'interface.

@@ -18,7 +18,7 @@ propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce so
 | Base Supabase `gebjmguoauvutiqvoswl` | `20261124_crypto_swap.sql` **appliquée** (par le propriétaire, éditeur SQL) ; `20261125_close_legacy_instant_trades.sql` **appliquée** le 23/11 et `20261126_close_legacy_crypto_to_bank.sql` **appliquée** le 24/11 (anciennes fonctions à prix figés fermées aux utilisateurs, rien supprimé, retours arrière fournis — voir `changelog.md` 14.5.1) |
 | Fonctions Edge | `crypto-swap` v1 (verify_jwt **true**) · `send-email` v59 (verify_jwt **false**, appelée par la base avec `x-webhook-secret`) · `wallet-addresses`, `admin-action` inchangées |
 | Tests web | 9 suites vertes le 24/11 : omw, omx, trade, smoke (138 écrans), shell, bugfix, ios-motion, admin-console, admin-payouts ; mesure `tests/ux/perf-spot.mjs` |
-| Tests Android | 48 tests Robolectric, 0 échec (24/11) ; APK debug 14.5.1, APK release (R8) et AAB release construits — release **non signés** (clé du propriétaire nécessaire) |
+| Tests Android | 53 tests Robolectric, 0 échec (24/11) ; APK debug 14.5.2, APK release (R8) et AAB release construits — release **non signés** (clé du propriétaire nécessaire) |
 | Figma | fichier `sboQhYUgrVX2ocLBjlmNDu`, groupe `3:438` (cadres Marchés `3:2`, Spot `3:155`, Swap `3:357`), verre bleu + nouveau menu |
 
 ### Ce que fait la 14.5.0 (tout est en service)
@@ -121,7 +121,7 @@ faux Supabase `tests/ux/mock-supabase.js`), Android `ScreensTest.kt` + `FakeBack
 ```bash
 node tools/build.mjs
 for t in shell smoke bugfix omx omw trade admin-console ios-motion admin-payouts; do node tests/ux/$t.test.mjs; done
-cd android && gradle testDebugUnitTest :app:assembleDebug     # 48 tests attendus
+cd android && gradle testDebugUnitTest :app:assembleDebug     # 53 tests attendus
 ```
 Le bouton `.btn` ignore un second appui pendant 450 ms (anti double appui) : en test, attendre ~1,3 s entre deux appuis sur le même bouton.
 
