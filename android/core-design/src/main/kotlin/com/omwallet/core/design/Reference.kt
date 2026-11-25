@@ -60,12 +60,12 @@ fun BrandLockup(modifier: Modifier = Modifier, height: Dp = 40.dp) {
     Image(painterResource(R.drawable.om_logo_lockup), "OM Wallet", modifier.height(height))
 }
 
-/* Round header control (back, menu, avatar) — 14.7.0: a light grey circle with a dark line icon (owner's reference image). */
+/* Round header control (back, menu, avatar) — 14.8.0: a dark grey circle with a light line icon. */
 @Composable
 fun GlassSquare(@DrawableRes icon: Int, description: String, modifier: Modifier = Modifier, round: Boolean = false, onClick: () -> Unit) {
     val shape = CircleShape
     Box(
-        modifier.size(46.dp).clip(shape).background(OmColors.Card)
+        modifier.size(46.dp).clip(shape).background(OmColors.Track)
             .pressable(onClick = onClick).semantics { contentDescription = description },
         contentAlignment = Alignment.Center,
     ) { OmIcon(icon, null, tint = OmColors.Ink, size = 22.dp) }
@@ -81,16 +81,16 @@ fun ReferenceTitle(title: String, modifier: Modifier = Modifier, start: (@Compos
     }
 }
 
-/* Round action (14.7.0, owner's reference image): a white circle with a soft shadow and a dark line icon, the label under it.
-   `primary` fills the circle with the blue-violet accent. */
+/* Round action (14.8.0, Liv X style): a dark circle with a yellow line icon and a hairline edge, the label under it.
+   `primary` fills the circle with the yellow (dark icon on it). */
 @Composable
 fun ActionTile(@DrawableRes icon: Int, label: String, modifier: Modifier = Modifier, primary: Boolean = false, onClick: () -> Unit) {
     Column(modifier.clip(RoundedCornerShape(18.dp)).pressable(onClick = onClick).padding(vertical = 4.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Box(
-            Modifier.size(60.dp).shadow(10.dp, CircleShape, ambientColor = Color(0x2611131F), spotColor = Color(0x3311131F)).clip(CircleShape)
-                .background(if (primary) OmColors.Blue600 else Color.White),
+            Modifier.size(60.dp).clip(CircleShape).background(if (primary) OmColors.Blue600 else OmColors.Track)
+                .border(1.dp, if (primary) Color.Transparent else OmColors.Edge, CircleShape),
             contentAlignment = Alignment.Center,
-        ) { OmIcon(icon, null, tint = if (primary) Color.White else OmColors.Ink, size = 24.dp) }
+        ) { OmIcon(icon, null, tint = if (primary) OmColors.OnAccent else OmColors.Blue600, size = 24.dp) }
         Spacer(Modifier.height(8.dp))
         Text(label, style = MaterialTheme.typography.labelMedium.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold), color = OmColors.Ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }

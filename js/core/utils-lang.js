@@ -54,26 +54,26 @@ function applyI18n(){
     if (val) el.textContent = val;
   });
 }
-/* Thème enregistré de la personne ; « clair » tant qu'elle n'a rien choisi (c'est ce que l'application affiche au démarrage). */
+/* Thème enregistré de la personne ; « sombre » (noir & jaune) tant qu'elle n'a rien choisi (14.8.0). */
 function savedThemeMode(){
   const s = (typeof Runtime !== 'undefined' && Runtime) ? Runtime.settings : null;
   const m = s && s.theme;
-  return (m === 'dark' || m === 'light' || m === 'system') ? m : 'light';
+  return (m === 'dark' || m === 'light' || m === 'system') ? m : 'dark';
 }
-let _themeMode = 'light', _themeMq = null;
+let _themeMode = 'dark', _themeMq = null;
 function applyTheme(mode){
-  mode = (mode === 'dark' || mode === 'light' || mode === 'system') ? mode : 'light';
+  mode = (mode === 'dark' || mode === 'light' || mode === 'system') ? mode : 'dark';
   _themeMode = mode;
   try { localStorage.setItem('fp_theme', mode); } catch(e){ /* rien */ }
   let dark = false;
   try { dark = mode === 'system' ? !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) : mode === 'dark'; } catch(e){ dark = mode === 'dark'; }
   const eff = dark ? 'dark' : 'light';
-  /* 14.7.0 « Clair » (owner's reference image, 24/11): white pages, light grey cards, blue-violet accent, dark text; the person's
-     setting chooses light or dark again (14.5.0 forced the blue glass with light text whatever the setting). */
+  /* 14.8.0 « Noir & Jaune » (owner, 24/11: yellow and black like Liv X and Binance): dark by default, a cream-yellow light mode;
+     the person's setting chooses light, dark or system. */
   document.documentElement.setAttribute('data-theme', eff);
   document.documentElement.setAttribute('data-tone', eff === 'dark' ? 'night' : 'day');
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute('content', eff === 'dark' ? '#0E1022' : '#FFFFFF');
+  if (meta) meta.setAttribute('content', eff === 'dark' ? '#0B0A07' : '#FFFBF0');
   /* « Système » suit le téléphone en direct (nuit / jour), sans recharger */
   if (!_themeMq && window.matchMedia){
     try {

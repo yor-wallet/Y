@@ -139,19 +139,42 @@ const pin = async page => { await wait(700); for (const k of '482913') await pag
 }
 {
   console.log('\n[verre, réduction des animations, arabe]');
-  const { ctx, page, logs } = await openApp(browser, url, { lang: 'ar', settle: 900, ws: 'live', reduced: true });
-  await ok('apparence claire (14.7.0, image du propriétaire) : page blanche, texte foncé, en-tête bleu-violet, bouton central rond', async () => {
+  const { ctx, page, logs } = await openApp(browser, url, { lang: 'ar', settle: 900, ws: 'live', reduced: true, theme: 'dark' });
+  await ok('apparence Noir & Jaune (14.8.0) : fond noir, texte clair, jaune pour l’action principale (texte foncé dessus), bouton central rond jaune', async () => {
     await page.evaluate(() => R.go('home', { force: true })); await wait(700);
     const r = await page.evaluate(() => {
-      const hero = document.querySelector('#home .lt-hero'), tile = document.querySelector('#bottom-nav .nav-cta .nav-cta-tile');
-      return { theme: document.documentElement.getAttribute('data-theme'), bg: getComputedStyle(document.body).backgroundColor, col: getComputedStyle(document.body).color,
-        hero: hero ? getComputedStyle(hero).backgroundImage : '', radius: tile ? getComputedStyle(tile).borderTopLeftRadius : '' };
+      const tile = document.querySelector('#bottom-nav .nav-cta .nav-cta-tile'), act = document.querySelector('#home .lt-acts .omx-act i');
+      const px = el => el ? getComputedStyle(el) : null;
+      return { theme: document.documentElement.getAttribute('data-theme'), bg: px(document.body).backgroundColor, col: px(document.body).color,
+        tileBg: px(tile).backgroundImage, tileRadius: px(tile).borderTopLeftRadius, tileInk: px(tile).color, actBg: px(act).backgroundColor, meta: document.querySelector('meta[name="theme-color"]').getAttribute('content') };
     });
-    assert.equal(r.theme, 'light');
-    assert.equal(r.bg, 'rgb(255, 255, 255)');
-    assert.equal(r.col, 'rgb(17, 19, 31)');
-    assert.match(r.hero, /gradient/);
-    assert.equal(r.radius, '50%');
+    assert.equal(r.theme, 'dark');
+    assert.equal(r.bg, 'rgb(11, 10, 7)');
+    assert.equal(r.col, 'rgb(245, 243, 238)');
+    assert.match(r.tileBg, /rgb\(255, 2\d\d, \d+\)|rgb\(245, 184, 0\)/);   /* the yellow gradient */
+    assert.equal(r.tileRadius, '50%');
+    assert.equal(r.tileInk, 'rgb(20, 17, 10)');                                  /* dark glyph ON the yellow */
+    assert.equal(r.actBg, 'rgb(37, 35, 30)');                                    /* round dark action buttons */
+    assert.equal(r.meta, '#0B0A07');
+  });
+  await ok('mode clair (réglage de la personne) : page crème, texte noir, même jaune', async () => {
+    await page.evaluate(() => { Runtime.settings = Object.assign({}, Runtime.settings, { theme: 'light' }); applyTheme('light'); }); await wait(400);
+    const r = await page.evaluate(() => ({ theme: document.documentElement.getAttribute('data-theme'), bg: getComputedStyle(document.body).backgroundColor, col: getComputedStyle(document.body).color,
+      tile: getComputedStyle(document.querySelector('#bottom-nav .nav-cta .nav-cta-tile')).backgroundImage }));
+    assert.equal(r.theme, 'light'); assert.equal(r.bg, 'rgb(255, 251, 240)'); assert.equal(r.col, 'rgb(20, 17, 10)');
+    assert.match(r.tile, /rgb\(255, 2\d\d, \d+\)|rgb\(245, 184, 0\)/);
+    await page.evaluate(() => { Runtime.settings = Object.assign({}, Runtime.settings, { theme: 'dark' }); applyTheme('dark'); }); await wait(300);
+  });
+  await ok('sans réglage enregistré, l’application s’ouvre en noir et jaune (sombre par défaut)', async () => {
+    const o = await openApp(browser, url, { lang: 'fr', settle: 700, theme: 'none' });
+    const th = await o.page.evaluate(() => ({ t: document.documentElement.getAttribute('data-theme'), bg: getComputedStyle(document.body).backgroundColor }));
+    assert.equal(th.t, 'dark'); assert.equal(th.bg, 'rgb(11, 10, 7)');
+    await o.ctx.close();
+  });
+  await ok('le solde garde son texte exact, décimales plus légères', async () => {
+    await page.evaluate(() => R.go('home', { force: true })); await wait(700);
+    const r = await page.evaluate(() => { const b = document.querySelector('#home [data-omx-total]'); const d = b.querySelector('.lt-dec'); return { txt: b.innerText, dec: d ? d.innerText : null, w: d ? getComputedStyle(d).fontWeight : null }; });
+    assert.match(r.txt, /^\$[\d,]+\.\d{2}$|^[•\s]+$/);
   });
   await ok('arabe : Spot s’affiche de droite à gauche, chiffres de gauche à droite', async () => {
     await page.click('#bottom-nav [data-nav="spot"]'); await wait(2000);

@@ -5,7 +5,7 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
@@ -23,40 +23,45 @@ import androidx.compose.ui.unit.sp
 
 /* ============================================================
    OM GLASS — design tokens (cahier OM Wallet Android).
-   Material 3 surfaces as the technical base; 14.7.0: white pages, light grey cards, blue-violet accent (owner's reference image).
+   Material 3 surfaces as the technical base; 14.8.0: black page, dark grey cards, yellow accent (Liv X / Binance).
    ============================================================ */
 object OmColors {
-    /* 14.7.0 « Clair » — the owner's reference image (24/11): white pages, light grey cards, one blue-violet accent, dark text, pill buttons.
-       Replaces the 14.5.0 blue glass at the owner's request. Token NAMES are unchanged, so every screen follows without being rewritten. */
-    val Surface = Color(0xFFFFFFFF)            // page
-    val SurfaceBright = Color(0xFFF5F6FA)      // card fill
-    val GlassWhite = Color(0xFFF7F8FB)         // soft card
-    val GlassStrong = Color(0xFFEEF0F6)        // stronger card
-    val Sky100 = Color(0xFFF0F1F7)             // chips, tracks
-    val Sky300 = Color(0xFFD9DCE8)             // edges, disabled fill
-    val Sky500 = Color(0xFF8C8FFA)             // light accent
-    val Blue600 = Color(0xFF5A5DF0)            // the accent (links, icons, selected states)
-    val Blue700 = Color(0xFF4447D8)            // pressed accent
-    val SkyGlow = Color(0xFF9EA0FF)
-    val Ink = Color(0xFF11131F)                // text
-    val InkSecondary = Color(0xFF8A90A5)       // secondary text
-    val Success = Color(0xFF14A866)
-    val Warning = Color(0xFFE08F0B)
-    val Error = Color(0xFFEB4458)
-    val Hairline = Color(0xFFEEF0F5)
-    val Sheet = Color(0xFFFFFFFF)
-    val PageMid = Color(0xFFFFFFFF)
-    val PageBottom = Color(0xFFFFFFFF)
-    val GradTop = Color(0xFF6E71FF)            // primary button: blue-violet
-    val GradMid = Color(0xFF5F62F4)
-    val GradBottom = Color(0xFF5053E6)
-    val Edge = Color(0xFFECEEF4)               // 1 dp edge where a surface needs one
-    /* 14.7.0 additions */
-    val Card = Color(0xFFF5F6FA)               // light grey card on the white page
-    val Track = Color(0xFFF0F1F6)              // field / segmented track
-    val AccentSoft = Color(0xFFEEEFFF)         // light accent fill (secondary buttons, selected chips)
-    val Header = Color(0xFF5A5DF0)             // the blue-violet header of the home screen
-    val OnHeader = Color(0xFFFFFFFF)           // text on that header
+    /* 14.8.0 « Noir & Jaune » — the owner (24/11): yellow and black like Liv X (Emirates NBD) and Binance. A warm near-black page, dark grey
+       cards, ONE vivid yellow for the most important thing on a screen (primary button, active tab, active segment, centre button) with dark
+       text ON the yellow, green / red for gains / losses. Token NAMES are unchanged, so every screen follows without being rewritten. */
+    val Surface = Color(0xFF0B0A07)            // page
+    val SurfaceBright = Color(0xFF1B1A16)      // card fill
+    val GlassWhite = Color(0xFF1B1A16)         // soft card
+    val GlassStrong = Color(0xFF25231E)        // stronger card
+    val Sky100 = Color(0xFF25231E)             // chips, tracks
+    val Sky300 = Color(0xFF3A372D)             // edges, disabled fill
+    val Sky500 = Color(0xFFFFD84A)             // light accent
+    val Blue600 = Color(0xFFFFC800)            // THE accent (links, icons, selected states, fills)
+    val Blue700 = Color(0xFFF5B800)            // pressed accent
+    val SkyGlow = Color(0xFFFFD84A)
+    val Ink = Color(0xFFF5F3EE)                // text
+    val InkSecondary = Color(0xFFA7A397)       // secondary text
+    val Success = Color(0xFF0ECB81)
+    val Warning = Color(0xFFFFB020)
+    val Error = Color(0xFFF6465D)
+    val Hairline = Color(0xFF2F2D26)
+    val Sheet = Color(0xFF1B1A16)
+    val PageMid = Color(0xFF0B0A07)
+    val PageBottom = Color(0xFF0B0A07)
+    val GradTop = Color(0xFFFFD84A)            // primary button: yellow
+    val GradMid = Color(0xFFFFC800)
+    val GradBottom = Color(0xFFF5B800)
+    val Edge = Color(0xFF2F2D26)               // 1 dp edge of cards
+    val Card = Color(0xFF1B1A16)               // dark grey card on the black page
+    val Track = Color(0xFF25231E)              // field / segmented track / round buttons
+    val AccentSoft = Color(0xFF2B2410)         // yellow-tinted dark fill (secondary buttons, selected chips)
+    val Header = Color(0xFF0B0A07)
+    val OnHeader = Color(0xFFF5F3EE)
+    val OnAccent = Color(0xFF14110A)           // text and icons ON the yellow
+    val Nav = Color(0xFF12110D)                // bottom bar
+    val ChipUp = Color(0xFF0E2E23)             // gain chip fill
+    val ChipDown = Color(0xFF35151B)           // loss chip fill
+    val Glow = Color(0xFFFFC800)               // the soft yellow light behind the balance
 }
 
 object OmRadius { val S = 14.dp; val M = 20.dp; val L = 28.dp; val XL = 34.dp }
@@ -74,15 +79,15 @@ val OmArabicFont = FontFamily(
 )
 val OmFont = OmLatinFont
 
-private val OmColorScheme: ColorScheme = lightColorScheme(
-    primary = OmColors.Blue600, onPrimary = Color.White,
-    primaryContainer = OmColors.AccentSoft, onPrimaryContainer = OmColors.Blue700,
-    secondary = OmColors.Sky500, onSecondary = Color.White,
+private val OmColorScheme: ColorScheme = darkColorScheme(
+    primary = OmColors.Blue600, onPrimary = OmColors.OnAccent,
+    primaryContainer = OmColors.AccentSoft, onPrimaryContainer = OmColors.Blue600,
+    secondary = OmColors.Sky500, onSecondary = OmColors.OnAccent,
     background = OmColors.Surface, onBackground = OmColors.Ink,
     surface = OmColors.Surface, onSurface = OmColors.Ink,
     surfaceVariant = OmColors.Card, onSurfaceVariant = OmColors.InkSecondary,
-    surfaceContainerLowest = Color.White, surfaceContainerLow = Color(0xFFFAFAFC),
-    surfaceContainer = OmColors.Card, surfaceContainerHigh = Color(0xFFF0F1F6), surfaceContainerHighest = Color(0xFFEBECF2),
+    surfaceContainerLowest = OmColors.Surface, surfaceContainerLow = Color(0xFF14130F),
+    surfaceContainer = OmColors.Card, surfaceContainerHigh = OmColors.Track, surfaceContainerHighest = Color(0xFF2F2D26),
     outline = OmColors.Sky300, outlineVariant = OmColors.Hairline,
     error = OmColors.Error, onError = Color.White,
 )

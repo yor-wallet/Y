@@ -72,16 +72,16 @@ import androidx.compose.ui.unit.dp
    Used on the dashboard, sheets and wallet cards; financial input screens use the stronger, calmer variant (strong = true). */
 @Composable
 fun GlassCard(modifier: Modifier = Modifier, strong: Boolean = false, padding: Dp = OmSpace.L, fill: Boolean = true, rise: Int = 0, content: @Composable ColumnScope.() -> Unit) {
-    /* 14.7.0 (owner's reference image): a flat light grey card on the white page, large rounded corners, no rim and no glow;
-       the stronger variant (financial input screens) is white with a hairline edge. The card still rises into place when it first appears. */
+    /* 14.8.0: a dark grey card on the black page with a hairline edge; the stronger variant (financial input screens) is one step lighter.
+       The card still rises into place when it first appears. */
     val shape = RoundedCornerShape(OmRadius.M)
     Column(
         modifier
             .then(if (fill) Modifier.fillMaxWidth() else Modifier)
             .riseIn(rise)
             .clip(shape)
-            .background(if (strong) Color.White else OmColors.Card)
-            .then(if (strong) Modifier.border(BorderStroke(1.dp, OmColors.Edge), shape) else Modifier)
+            .background(if (strong) OmColors.Track else OmColors.Card)
+            .border(BorderStroke(1.dp, OmColors.Edge), shape)
             .padding(padding),
         content = content,
     )
@@ -90,7 +90,7 @@ fun GlassCard(modifier: Modifier = Modifier, strong: Boolean = false, padding: D
 /* Sky background with two very diffuse halos (login / dashboard). */
 @Composable
 fun SkyBackground(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
-    /* 14.7.0: a plain white page, as in the owner's reference image (the 14.5 blue gradient and glass waves are gone) */
+    /* 14.8.0: a plain black page (the 14.5 blue gradient and glass waves are gone) */
     Box(modifier.background(OmColors.Surface)) { content() }
 }
 
@@ -141,27 +141,27 @@ fun LoadingDots(color: Color = Color.White) {
 
 @Composable
 fun OmPrimaryButton(text: String, modifier: Modifier = Modifier, enabled: Boolean = true, loading: Boolean = false, onClick: () -> Unit) {
-    /* 14.7.0 (owner's reference image): a blue-violet pill, soft violet shadow, white text */
+    /* 14.8.0: a yellow pill, a soft yellow glow, dark text ON the yellow (Binance / Liv X) */
     val shape = RoundedCornerShape(50)
     Box(
         modifier
             .heightIn(min = 56.dp)
             .fillMaxWidth()
-            .shadow(if (enabled) 12.dp else 0.dp, shape, ambientColor = Color(0x405A5DF0), spotColor = Color(0x665A5DF0))
+            .shadow(if (enabled) 12.dp else 0.dp, shape, ambientColor = Color(0x66FFC800), spotColor = Color(0x99FFC800))
             .clip(shape)
             .background(if (enabled) Brush.horizontalGradient(listOf(OmColors.GradTop, OmColors.GradMid, OmColors.GradBottom)) else Brush.horizontalGradient(listOf(OmColors.Sky300, OmColors.Sky300)))
             .pressable(enabled = enabled && !loading, onClick = onClick)
             .semantics { if (loading) contentDescription = text },
         contentAlignment = Alignment.Center,
     ) {
-        if (loading) LoadingDots()
-        else Text(text, style = MaterialTheme.typography.labelLarge, color = Color.White, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 16.dp))
+        if (loading) LoadingDots(OmColors.OnAccent)
+        else Text(text, style = MaterialTheme.typography.labelLarge, color = if (enabled) OmColors.OnAccent else OmColors.InkSecondary, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 16.dp))
     }
 }
 
 @Composable
 fun OmSecondaryButton(text: String, modifier: Modifier = Modifier, enabled: Boolean = true, onClick: () -> Unit) {
-    /* 14.7.0: a light violet pill with violet text (secondary action next to the blue-violet primary pill) */
+    /* 14.8.0: a yellow-tinted pill with yellow text (secondary action next to the yellow primary pill) */
     val shape = RoundedCornerShape(50)
     Box(
         modifier.heightIn(min = 52.dp).fillMaxWidth().clip(shape)
@@ -173,7 +173,7 @@ fun OmSecondaryButton(text: String, modifier: Modifier = Modifier, enabled: Bool
 /* Icon tile (14.7.0): light violet circle with a violet line icon. */
 @Composable
 fun GlassTile(@DrawableRes icon: Int, modifier: Modifier = Modifier, size: Dp = 52.dp, tint: Color = OmColors.Blue600) {
-    /* 14.7.0: a light violet circle with a violet line icon */
+    /* 14.8.0: a yellow-tinted circle with a yellow line icon */
     val shape = CircleShape
     Box(
         modifier.size(size).clip(shape).background(OmColors.AccentSoft),
@@ -185,7 +185,7 @@ fun GlassTile(@DrawableRes icon: Int, modifier: Modifier = Modifier, size: Dp = 
 @Composable
 fun AssetLogo(symbol: String, size: Dp = 40.dp, modifier: Modifier = Modifier) {
     val res = tokenLogo(symbol)
-    Box(modifier.size(size).clip(CircleShape).background(Color.White), contentAlignment = Alignment.Center) {
+    Box(modifier.size(size).clip(CircleShape).background(OmColors.Track), contentAlignment = Alignment.Center) {
         /* 14.5.0: the official round coin badge fills the circle, as on the projects' own sites and on exchanges */
         if (res != null) Image(painterResource(res), contentDescription = null, modifier = Modifier.size(size))
         else Text(symbol.take(3), style = MaterialTheme.typography.labelSmall, color = OmColors.InkSecondary)
@@ -195,7 +195,7 @@ fun AssetLogo(symbol: String, size: Dp = 40.dp, modifier: Modifier = Modifier) {
 @Composable
 fun NetworkLogo(network: String, size: Dp = 28.dp, modifier: Modifier = Modifier) {
     val res = networkLogo(network)
-    Box(modifier.size(size).clip(CircleShape).background(Color.White), contentAlignment = Alignment.Center) {
+    Box(modifier.size(size).clip(CircleShape).background(OmColors.Track), contentAlignment = Alignment.Center) {
         if (res != null) Image(painterResource(res), contentDescription = null, modifier = Modifier.size(size))
     }
 }
@@ -217,9 +217,9 @@ enum class ChipTone { Success, Pending, Failed, Neutral }
 @Composable
 fun StatusChip(text: String, tone: ChipTone, modifier: Modifier = Modifier, animated: Boolean = false) {
     val (bg, fg) = when (tone) {
-        ChipTone.Success -> Color(0xFFE3F6EC) to Color(0xFF0E8A52)
-        ChipTone.Pending -> Color(0xFFFFF3DC) to Color(0xFFA86A00)
-        ChipTone.Failed -> Color(0xFFFDE8EB) to Color(0xFFC8293D)
+        ChipTone.Success -> OmColors.ChipUp to OmColors.Success
+        ChipTone.Pending -> Color(0xFF3A2D0A) to OmColors.Warning
+        ChipTone.Failed -> OmColors.ChipDown to OmColors.Error
         ChipTone.Neutral -> OmColors.Track to OmColors.InkSecondary
     }
     androidx.compose.foundation.layout.Row(

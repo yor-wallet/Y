@@ -408,10 +408,10 @@ fun SwapScreen(contentPadding: PaddingValues) {
         item {
             Box(Modifier.fillMaxWidth().height(56.dp), contentAlignment = Alignment.Center) {
                 Box(Modifier.fillMaxWidth().padding(horizontal = 20.dp).height(1.dp).background(OmColors.Hairline))
-                Box(Modifier.size(48.dp).graphicsLayer { rotationZ = turn }.clip(CircleShape).background(OmColors.Ink)
+                Box(Modifier.size(48.dp).graphicsLayer { rotationZ = turn }.clip(CircleShape).background(Brush.verticalGradient(listOf(OmColors.GradTop, OmColors.GradMid, OmColors.GradBottom)))
                     .pressable(role = Role.Button) { val x = fromSym; fromSym = toSym; toSym = x; amount = ""; spin = !spin }
                     .semantics { contentDescription = "flip" }.testTag("swap_flip"), contentAlignment = Alignment.Center) {
-                    Text("⇅", color = Color.White, style = MaterialTheme.typography.titleLarge)
+                    Text("⇅", color = OmColors.OnAccent, style = MaterialTheme.typography.titleLarge)
                 }
             }
         }
@@ -573,7 +573,7 @@ fun errorTextTr(code: String): String = when (code) {
 }
 @Composable private fun Seg(text: String, on: Boolean, modifier: Modifier, onClick: () -> Unit) = Box(
     modifier.clip(RoundedCornerShape(14.dp)).background(if (on) Brush.verticalGradient(listOf(OmColors.GradTop, OmColors.GradMid, OmColors.GradBottom)) else androidx.compose.ui.graphics.SolidColor(Color.Transparent))
-        .pressable(role = Role.Tab, onClick = onClick).padding(vertical = 9.dp), contentAlignment = Alignment.Center) { Text(text, style = MaterialTheme.typography.labelLarge, color = if (on) Color.White else OmColors.InkSecondary) }
+        .pressable(role = Role.Tab, onClick = onClick).padding(vertical = 9.dp), contentAlignment = Alignment.Center) { Text(text, style = MaterialTheme.typography.labelLarge, color = if (on) OmColors.OnAccent else OmColors.InkSecondary) }
 @Composable private fun SideSeg(text: String, on: Boolean, buy: Boolean, modifier: Modifier, onClick: () -> Unit) = Box(
     modifier.clip(RoundedCornerShape(11.dp)).background(if (!on) androidx.compose.ui.graphics.SolidColor(Color.Transparent) else Brush.verticalGradient(if (buy) listOf(Color(0xFF5BEAA6), Color(0xFF1FB673)) else listOf(Color(0xFFFF98A2), Color(0xFFE8505E))))
         .pressable(role = Role.Tab, onClick = onClick).padding(vertical = 8.dp), contentAlignment = Alignment.Center) { Text(text, style = MaterialTheme.typography.labelLarge, color = if (on) Color(if (buy) 0xFF04301C else 0xFF3A0610) else OmColors.InkSecondary) }

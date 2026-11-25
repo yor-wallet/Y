@@ -1,0 +1,233 @@
+/* ==========================================================================
+   OM WALLET — « NOIR & JAUNE » (14.8.0)
+   Owner (24/11): dominant colours yellow and black, like Liv X (Emirates NBD) and Binance; "not weird", precise, high quality.
+   Looked at online before writing (published visuals of Liv X, public palettes of Binance):
+   - black with a warm tint, dark grey cards, ONE vivid yellow (#FFC800) for the single most important thing on a screen
+     (primary button, active segment, active tab, the centre button), dark text ON the yellow, thin line icons, round dark action buttons,
+     big balance with light decimals, small-caps labels;
+   - green #0ECB81 / red #F6465D for gains / losses (Binance), readable on black;
+   - light mode = cream yellow page, white cards, black text, the same yellow (Liv X light screens).
+   What is NOT taken: their mascots, line art, photos, logos, names, screens. Real OM Wallet data and functions only.
+   Appearance only: markup hooks (ids, data-*), handlers, data and server calls are unchanged. Loads LAST (replaces clair.css).
+   ========================================================================== */
+
+/* ---------- tokens: LIGHT (cream yellow) ---------- */
+html:root:root:root{
+  --lt-yellow:#FFC800; --lt-yellow-hi:#FFD84A; --lt-yellow-lo:#F5B800; --lt-on-yellow:#14110A;
+  --lt-bg:#FFFBF0; --lt-card:#FFFFFF; --lt-card2:#F8F0D6; --lt-edge:#EEE3C0;
+  --lt-ink:#14110A; --lt-ink2:#5C5748; --lt-ink3:#8C8672; --lt-link:#8A6500; --lt-soft:#FFEFB8; --lt-active:#14110A;
+  --lt-pos:#0A9F63; --lt-neg:#D9344A; --lt-chip-up:#DDF5EA; --lt-chip-dn:#FCE3E7;
+  --lt-hero:linear-gradient(180deg,#FFE48A 0%,#FFF1C2 58%,#FFFBF0 100%);
+  --lt-nav:#FFFFFF; --lt-glow:0 12px 28px -12px rgba(245,184,0,.75); --lt-lift:0 10px 26px -14px rgba(90,65,0,.35);
+  --w-bg:var(--lt-bg); --w-bg2:var(--lt-bg); --w-ink:var(--lt-ink); --w-ink2:var(--lt-ink2); --w-ink3:var(--lt-ink3);
+  --w-blue:var(--lt-link); --w-blue2:var(--lt-link); --w-sky:var(--lt-yellow); --w-sky2:var(--lt-soft);
+  --w-pos:var(--lt-pos); --w-neg:var(--lt-neg); --w-warn:#C98A00; --w-violet:var(--lt-yellow);
+  --w-glass:var(--lt-card); --w-glass2:var(--lt-card); --w-glass3:var(--lt-card2); --w-stroke:var(--lt-edge); --w-line:var(--lt-edge);
+  --w-shadow:none; --w-shadow-lg:0 24px 60px -28px rgba(20,17,10,.4); --w-blur:none;
+  --w-grad:linear-gradient(180deg,var(--lt-yellow-hi) 0%,var(--lt-yellow-lo) 100%); --w-tile:var(--lt-soft);
+  --w-r-card:20px; --w-r-tile:16px; --w-r-btn:999px; --w-r-field:16px;
+  --text:var(--w-ink); --text-2:var(--w-ink2); --text-3:var(--w-ink3); --ink:var(--w-ink); --accent:var(--w-blue); --tint:var(--w-blue);
+  --om-glass:var(--lt-card); --om-border-glass:var(--lt-edge);
+  /* older layers (glass.css, omx.css): blue → yellow, navy text → the new ink */
+  --om-bg:var(--lt-bg); --om-surface:var(--lt-card); --om-sky:var(--lt-yellow); --om-sky-light:var(--lt-soft); --om-sky-accent:var(--lt-link); --om-blue-deep:var(--lt-ink);
+  --om-text:var(--lt-ink); --om-text-2:var(--lt-ink2); --om-success:var(--lt-pos); --om-warning:var(--w-warn); --om-danger:var(--lt-neg);
+  --omx-up:var(--lt-pos); --omx-down:var(--lt-neg);
+  color-scheme:light;
+}
+/* ---------- tokens: DARK (black and yellow — the default) ---------- */
+html:root:root:root[data-theme="dark"]{
+  --lt-bg:#0B0A07; --lt-card:#1B1A16; --lt-card2:#25231E; --lt-edge:#2F2D26;
+  --lt-ink:#F5F3EE; --lt-ink2:#A7A397; --lt-ink3:#77746B; --lt-link:#FFC800; --lt-soft:#2B2410; --lt-active:#FFC800;
+  --lt-pos:#0ECB81; --lt-neg:#F6465D; --lt-chip-up:#0E2E23; --lt-chip-dn:#35151B;
+  --lt-hero:radial-gradient(90% 75% at 50% -10%,rgba(255,200,0,.27) 0%,rgba(255,200,0,.08) 46%,transparent 74%);
+  --lt-nav:#12110D; --lt-glow:0 12px 30px -14px rgba(255,200,0,.6); --lt-lift:0 14px 30px -18px rgba(0,0,0,.8);
+  --w-warn:#FFB020; --w-shadow-lg:0 30px 70px -28px rgba(0,0,0,.9);
+  color-scheme:dark;
+}
+
+/* ---------- the page: plain, nothing decorative behind ---------- */
+html:root:root:root body{background:var(--lt-bg)!important;color:var(--lt-ink)}
+html:root:root:root body::before,html:root:root:root body::after{display:none!important}
+html:root:root:root body .w-scene,html:root:root:root body .w-emblem,html:root:root:root body .w-hero-art{display:none!important}
+
+/* ---------- cards ---------- */
+html:root:root:root body :is(.omx-card,.settings-group,.rv-list,.ds-list,.glass,.glass-elevated,.hub-card,.faq-item,.contact-card,.receipt-panel,.rc-sheet,.pi-card,.card,.wd-card,.w-glass){
+  background:var(--lt-card)!important;border:1px solid var(--lt-edge)!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;color:var(--lt-ink)}
+html:root:root:root body :is(.hub-i,.hub-wi,.wd-mi,.ds-empty-ic,.tile,.w-tile){background:var(--lt-soft)!important;border:0!important;box-shadow:none!important;color:var(--lt-link)!important;border-radius:50%!important}
+html:root:root:root body :is(.hub-i,.hub-wi,.wd-mi,.tile,.w-tile) svg{color:var(--lt-link)!important}
+
+/* ---------- round controls (back, menu, search) ---------- */
+html:root:root:root body :is(.topbar-back,.hub-circ,.rv-circ,.rv-cp,.hub-me-go,.yb-ic,.w-sq){background:var(--lt-card2)!important;border:0!important;box-shadow:none!important;color:var(--lt-ink)!important;border-radius:50%!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html:root:root:root body .ds-eye{background:transparent!important;border:0!important;box-shadow:none!important;color:inherit!important}
+
+/* ---------- buttons: yellow pill, dark text ON the yellow ---------- */
+html:root:root:root body :is(.btn-primary,a.btn.btn-primary){background:var(--w-grad)!important;color:var(--lt-on-yellow)!important;border:0!important;border-radius:999px!important;text-shadow:none!important;font-weight:800!important;box-shadow:var(--lt-glow)!important}
+html:root:root:root body :is(.btn-primary,a.btn.btn-primary) :is(svg,span,i,b){color:inherit!important;stroke:currentColor}
+html:root:root:root body .btn-secondary{background:var(--lt-soft)!important;color:var(--lt-link)!important;border:0!important;border-radius:999px!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;font-weight:700!important}
+html:root:root:root body .btn{border-radius:999px}
+html:root:root:root body .btn:disabled,html:root:root:root body .btn[disabled]{opacity:.5;box-shadow:none!important}
+
+/* ---------- segments, chips, fields ---------- */
+html:root:root:root body .chips{background:var(--lt-card2)!important;border:0!important;box-shadow:none!important;border-radius:999px!important;padding:3px!important}
+html:root:root:root body .chip{background:transparent!important;color:var(--lt-ink3)!important;border:0!important;box-shadow:none!important;border-radius:999px!important;font-weight:700}
+html:root:root:root body :is(.chip[aria-pressed="true"],.chip.on){background:var(--lt-yellow)!important;color:var(--lt-on-yellow)!important;box-shadow:none!important}
+html:root:root:root body :is(.input,.field-box){background:var(--lt-card2)!important;border:1px solid var(--lt-edge)!important;color:var(--lt-ink)!important;box-shadow:none!important}
+html:root:root:root body :is(.input,.field-box):focus-within,html:root:root:root body .input:focus{border-color:var(--lt-yellow)!important;box-shadow:0 0 0 4px rgba(255,200,0,.2)!important}
+html:root:root:root body :is(input,textarea,select){color:var(--lt-ink)}
+html:root:root:root body :is(input,textarea)::placeholder{color:var(--lt-ink3)!important}
+html:root:root:root body .switch{background:var(--lt-edge)!important;border:0!important}
+html:root:root:root body :is(.w-pill,.omx-chip){border:0!important;box-shadow:none!important}
+html:root:root:root body .omx-chip.up{background:var(--lt-chip-up)!important;color:var(--lt-pos)!important}
+html:root:root:root body .omx-chip.down{background:var(--lt-chip-dn)!important;color:var(--lt-neg)!important}
+html:root:root:root body :is(.pos,.up,.omx-up,.chg-up){color:var(--lt-pos)!important}
+html:root:root:root body :is(.neg,.down,.omx-down,.chg-down){color:var(--lt-neg)!important}
+
+/* ---------- page headers ---------- */
+html:root:root:root body .screen.ios-scrolled > .topbar{background:var(--lt-bg)!important;box-shadow:0 1px 0 var(--lt-edge)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html:root:root:root body .topbar .topbar-title{color:var(--lt-ink)}
+
+/* ---------- sheets, dialogs, messages ---------- */
+html:root:root:root body :is(.ov-panel,.yd-p){background:var(--lt-card)!important;color:var(--lt-ink)!important;border:1px solid var(--lt-edge)!important;border-bottom:0!important;box-shadow:0 -14px 44px -20px rgba(0,0,0,.6)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html:root:root:root body .ov.is-modal .ov-panel{border-bottom:1px solid var(--lt-edge)!important}
+html:root:root:root body .ov-backdrop{background:rgba(5,4,2,.66)!important}
+html:root:root:root body .toast.w-toast{background:#26241D!important;color:#fff!important;border:1px solid #3A372D!important}
+
+/* ---------- bottom menu: dark bar, active tab yellow, Swap = the raised yellow button ---------- */
+html:root:root:root body #bottom-nav{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;left:0!important;right:0!important;bottom:0!important;overflow:visible!important}
+html:root:root:root body #bottom-nav .nav-dock{height:calc(68px + env(safe-area-inset-bottom,0px))!important;width:100%!important;max-width:none!important;margin:0!important;
+  padding:6px 8px env(safe-area-inset-bottom,0px)!important;border-radius:24px 24px 0 0!important;background:var(--lt-nav)!important;border:0!important;border-top:1px solid var(--lt-edge)!important;
+  box-shadow:0 -10px 30px -16px rgba(0,0,0,.45)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;align-items:center;overflow:visible!important}
+html:root:root:root body #bottom-nav .nav-dock::before,html:root:root:root body #bottom-nav .nav-ind{display:none!important}
+html:root:root:root body #bottom-nav .nav-item{color:var(--lt-ink3)!important;background:transparent!important;box-shadow:none!important;height:56px;gap:3px}
+html:root:root:root body #bottom-nav .nav-item::before,html:root:root:root body #bottom-nav .nav-item::after{display:none!important}
+html:root:root:root body #bottom-nav .nav-item[aria-current="page"]{color:var(--lt-active)!important}
+html:root:root:root body #bottom-nav .nav-item[aria-current="page"] svg{animation:none}
+html:root:root:root body #bottom-nav .nav-lb{font-size:11.5px!important;font-weight:700!important}
+html:root:root:root body #bottom-nav .nav-cta{flex:0 0 76px!important;overflow:visible!important;height:56px;justify-content:flex-start}
+html:root:root:root body #bottom-nav .nav-cta .nav-cta-tile{width:62px!important;height:62px!important;margin:-30px 0 0!important;border-radius:50%!important;background:var(--w-grad)!important;
+  border:5px solid var(--lt-nav)!important;box-shadow:var(--lt-glow)!important;display:flex;align-items:center;justify-content:center;color:var(--lt-on-yellow)!important;transition:transform .3s var(--w-spring)}
+html:root:root:root body #bottom-nav .nav-cta .nav-cta-tile::after{display:none!important;animation:none!important}
+html:root:root:root body #bottom-nav .nav-cta svg{color:var(--lt-on-yellow)!important;stroke:var(--lt-on-yellow)!important}
+html:root:root:root body #bottom-nav .nav-cta .nav-lb{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important}
+html:root:root:root body #bottom-nav .nav-cta:active .nav-cta-tile{transform:scale(.92)}
+
+/* ---------- HOME ---------- */
+html:root:root:root body .lt-home{padding:0 16px calc(110px + env(safe-area-inset-bottom,0px))!important;gap:0!important}
+html:root:root:root body .lt-home .lt-hero{margin:0 -16px;padding:calc(env(safe-area-inset-top,0px) + 8px) 18px 14px;background:var(--lt-hero);color:var(--lt-ink);text-align:center;position:relative}
+html:root:root:root body .lt-home .lt-top{display:flex!important;align-items:center;justify-content:space-between;gap:8px;margin:0!important;padding:0!important;background:transparent!important}
+html:root:root:root body .lt-home .lt-hb{width:44px!important;height:44px!important;position:relative}
+html:root:root:root body .lt-home .w-hdr-end{display:flex;gap:8px}
+html:root:root:root body .lt-badge{position:absolute;top:-4px;inset-inline-end:-4px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:var(--lt-yellow);color:var(--lt-on-yellow);font-size:11px;font-weight:800;line-height:20px;text-align:center}
+html:root:root:root body .lt-mark{display:inline-block;width:36px;height:36px;border-radius:11px;background:url(../assets/icons/apple-touch-icon.png) center/cover no-repeat,var(--lt-card)}
+html:root:root:root body .lt-mark.sm{width:34px;height:34px;border-radius:10px}
+html:root:root:root body .lt-home .lt-bal{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:20px;color:var(--lt-ink2);font-weight:700;font-size:12px;letter-spacing:.09em;text-transform:uppercase}
+html:root:root:root body .lt-home .lt-bal .ds-eye{width:30px;height:30px;color:var(--lt-ink2)!important}
+html:root:root:root body .lt-home .omx-tv{color:var(--lt-ink)!important;font-size:clamp(34px,10.5vw,46px)!important;font-weight:800!important;margin:2px 0 8px;text-align:center;letter-spacing:-.01em}
+html:root:root:root body .lt-dec{font-weight:400;opacity:.62}
+html:root:root:root body .lt-home .omx-ts{display:flex;justify-content:center;align-items:center;gap:8px;color:var(--lt-ink2);font-size:13px}
+html:root:root:root body .lt-home .lt-acts{display:flex!important;justify-content:center;gap:clamp(18px,7vw,40px);margin:12px 0 6px!important;padding:0!important;background:transparent!important}
+html:root:root:root body .lt-home .lt-acts .omx-act,html:root:root:root body .lt-wallet .omx-act{background:transparent!important;border:0!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  display:flex;flex-direction:column;align-items:center;gap:8px;min-width:72px;padding:0!important;color:var(--lt-ink)!important;font-weight:700;font-size:13px}
+html:root:root:root body .lt-home .lt-acts .omx-act i{width:60px!important;height:60px!important;border-radius:50%!important;background:var(--lt-card2)!important;display:flex!important;align-items:center;justify-content:center;color:var(--lt-link)!important;border:1px solid var(--lt-edge)!important;box-shadow:none!important}
+html:root:root:root body .lt-home .lt-acts .omx-act i svg{color:var(--lt-link)!important;stroke:currentColor!important}
+html:root:root:root body .lt-home .lt-sec{margin-top:20px}
+html:root:root:root body :is(.lt-home,.lt-wallet) .omx-sh{display:flex;align-items:center;justify-content:space-between;margin:0 0 8px}
+html:root:root:root body :is(.lt-home,.lt-wallet) .omx-sh h2{font-size:18px;font-weight:800;color:var(--lt-ink);margin:0}
+html:root:root:root body :is(.lt-home,.lt-wallet) .omx-sh button{color:var(--lt-link);font-weight:700;background:transparent;border:0}
+html:root:root:root body .lt-movers{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding:4px 2px 10px;margin:0 -16px;padding-inline:16px;scroll-snap-type:x mandatory}
+html:root:root:root body .lt-movers::-webkit-scrollbar{display:none}
+html:root:root:root body .lt-mv{flex:0 0 172px;scroll-snap-align:start;display:flex;flex-direction:column;gap:8px;text-align:start;padding:14px;border-radius:18px;background:var(--lt-card);border:1px solid var(--lt-edge);color:var(--lt-ink);cursor:pointer}
+html:root:root:root body .lt-mv-h{display:flex;align-items:center;gap:8px}
+html:root:root:root body .lt-mv-h b{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html:root:root:root body .lt-mv small{color:var(--lt-ink3);font-size:12px;font-weight:600}
+html:root:root:root body .lt-mv-f{display:flex;align-items:center;justify-content:space-between;gap:6px}
+html:root:root:root body .lt-mv-f b{font-size:18px;font-weight:800;white-space:nowrap}
+html:root:root:root body .lt-mv .omx-rs{width:62px;height:28px}
+html:root:root:root body .lt-empty{color:var(--lt-ink3);font-size:13px;margin:4px 2px}
+html:root:root:root body :is(.lt-home,.lt-wallet) .omx-list{background:transparent!important}
+html:root:root:root body :is(.lt-home,.lt-wallet) .omx-row{background:transparent!important;border:0!important;box-shadow:none!important;padding-inline:2px!important}
+html:root:root:root body .lt-home .omx-status{margin:-2px 0 6px}
+
+/* ---------- WALLET ---------- */
+html:root:root:root body .lt-wallet{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
+html:root:root:root body .lt-wallet .lt-title{display:grid!important;grid-template-columns:46px 1fr 46px;align-items:center;margin:4px 0 10px}
+html:root:root:root body .lt-wallet .lt-title h1{font-size:20px!important;font-weight:800;text-align:center;margin:0;color:var(--lt-ink)}
+html:root:root:root body .lt-wallet .lt-title .lt-mark{justify-self:end}
+html:root:root:root body .lt-wbal{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+html:root:root:root body .lt-lbl{color:var(--lt-ink2);font-weight:700;font-size:12px;letter-spacing:.09em;text-transform:uppercase}
+html:root:root:root body .lt-wv{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+html:root:root:root body .lt-wv b{font-size:clamp(30px,9vw,38px);font-weight:800;color:var(--lt-ink)}
+html:root:root:root body .lt-chg{margin:0;font-weight:700;font-size:14px}
+html:root:root:root body .lt-alloc{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:4px 0}
+html:root:root:root body .lt-al{display:inline-flex;align-items:center;gap:6px;flex-shrink:0;padding:4px 12px 4px 4px;border-radius:999px;border:1px solid var(--lt-edge);background:var(--lt-card);font-size:12.5px;font-weight:700;color:var(--lt-ink)}
+html:root:root:root body .lt-two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+html:root:root:root body .lt-two .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px}
+html:root:root:root body .lt-two .btn svg{stroke:currentColor;color:inherit}
+html:root:root:root body .lt-plus{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--lt-yellow)!important;color:var(--lt-link)!important;display:inline-flex;align-items:center;justify-content:center;padding:0}
+html:root:root:root body .lt-wallet .w-sec-t{font-size:16px;font-weight:800;color:var(--lt-ink);margin:18px 0 6px}
+
+/* ---------- CONVERT (Swap) ---------- */
+html:root:root:root body .lt-conv .lt-convbal{text-align:center;color:var(--lt-ink3);font-weight:600;margin:-4px 0 4px}
+html:root:root:root body .lt-conv .tr-sw{background:transparent!important;padding:8px 4px!important;border:0!important}
+html:root:root:root body .lt-conv .tr-lbl{color:var(--lt-ink3);font-weight:700}
+html:root:root:root body .lt-conv .tr-asset{background:transparent!important;border:0!important;box-shadow:none!important;padding-inline:0!important}
+html:root:root:root body .lt-conv .tr-amt{font-size:30px!important;font-weight:800!important;text-align:end;background:transparent!important;border:0!important;box-shadow:none!important;color:var(--lt-ink)!important}
+html:root:root:root body .lt-conv .tr-out{font-size:26px!important;font-weight:800!important;color:var(--lt-ink)!important}
+html:root:root:root body .lt-conv .tr-flipw{position:relative}
+html:root:root:root body .lt-conv .tr-flipw::before{content:"";position:absolute;left:4px;right:4px;top:50%;border-top:1px dashed var(--lt-edge)}
+html:root:root:root body .lt-conv .tr-flip{position:relative;width:48px!important;height:48px!important;border-radius:50%!important;background:var(--w-grad)!important;color:var(--lt-on-yellow)!important;border:0!important;box-shadow:var(--lt-glow)!important}
+html:root:root:root body .lt-conv .tr-flip svg{stroke:var(--lt-on-yellow)!important;color:var(--lt-on-yellow)!important}
+html:root:root:root body .lt-keys{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:8px 0 4px}
+html:root:root:root body .lt-key{display:flex;align-items:center;justify-content:center;text-align:center;height:58px;border:0;background:transparent;font:inherit;font-size:24px;font-weight:700;color:var(--lt-ink);border-radius:16px;cursor:pointer}
+html:root:root:root body .lt-key:active{background:var(--lt-card2)}
+html:root:root:root body .tr-side button.on.buy,html:root:root:root body .tr-side button.on.sell{color:#fff}
+html:root:root:root body .tr-side{background:var(--lt-card2)!important;border-color:var(--lt-edge)!important}
+
+/* inner page titles + the period chips on one line */
+html:root:root:root body .topbar.w-reftop .topbar-title{font-size:22px!important;font-weight:800!important}
+html:root:root:root body .screen.ios-scrolled > .topbar.w-reftop .topbar-title{font-size:18px!important}
+html:root:root:root body .chips.omx-per{display:flex!important;flex-wrap:nowrap!important;gap:4px;overflow:visible}
+html:root:root:root body .chips.omx-per .chip{flex:1 1 0;min-width:0;justify-content:center;padding-inline:4px!important}
+
+/* settings: « log out » aligned with the cards */
+html:root:root:root body .w-set > .w-out{margin-inline:0!important}
+
+/* market status line: warm greys, green when live, yellow when polling / connecting, red when offline */
+html:root:root:root body .omx-status,html:root:root:root body .omx-status small{color:var(--lt-ink2)}
+html:root:root:root body .omx-status i{background:var(--lt-ink3)}
+html:root:root:root body .omx-status.st-live i{background:var(--lt-pos)}
+html:root:root:root body :is(.omx-status.st-polling,.omx-status.st-connecting) i{background:var(--lt-yellow)}
+html:root:root:root body :is(.omx-status.st-offline,.omx-status.st-error) i{background:var(--lt-neg)}
+html:root:root:root body .omx-retry{color:var(--lt-link)}
+
+/* text that older layers hard-coded in navy (#102A43): invisible on black, so it follows the ink */
+html:root:root:root body :is(.adm-nl b,.adm-sl b,.adm-ht b,.adm-mt b,.adm-notes b,.adm-sv,.adm-ttl h1,.hub-amt,.hub-head h1,.hub-t b,.hub-two b,.hub-who b,.px-welcome h1,.rv-h h2,.rv-promo h3,.omx-act i){color:var(--lt-ink)}
+/* info boxes, notes and empty states: yellow tint instead of the old sky blue */
+html:root:root:root body :is(.omx-info,.omx-note){background:var(--lt-soft)!important;border:1px solid var(--lt-edge)!important;color:var(--lt-ink2)!important}
+html:root:root:root body :is(.omx-info,.omx-note) svg{color:var(--lt-link)!important;stroke:currentColor}
+html:root:root:root body :is(.omx-empty,.wd-empty,.ds-empty) svg{color:var(--lt-link)}
+html:root:root:root body :is(.tr-max,.omx-max){background:var(--lt-soft)!important;color:var(--lt-link)!important;border:0!important;border-radius:999px!important;font-weight:800}
+html:root:root:root body :is(.omx-pick.on,.omx-net.pick.on,.omx-pick[aria-pressed="true"],.omx-net[aria-pressed="true"],.tr-asset.on){border-color:var(--lt-yellow)!important;box-shadow:0 0 0 2px rgba(255,200,0,.25)!important}
+
+/* ---------- OPENING PRESENTATION: always black and yellow (photos are baked black / yellow duotones) ---------- */
+html:root:root:root body .wp{background:#0B0A07}
+html:root:root:root body .wp-photo::after{background:linear-gradient(180deg,rgba(11,10,7,0) 50%,rgba(11,10,7,.82) 82%,#0B0A07 100%)!important}
+html:root:root:root body .wp-wave{display:none!important}
+html:root:root:root body .wp-ring{border-color:rgba(255,200,0,.55)!important;box-shadow:inset 0 0 60px rgba(255,200,0,.18)!important}
+html:root:root:root body .wp-glass{background:rgba(18,17,13,.82)!important;border:1px solid #2F2D26!important;box-shadow:0 30px 60px -30px rgba(0,0,0,.9)!important;-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+html:root:root:root body .wp-glass h1{color:#F5F3EE!important}
+html:root:root:root body .wp-glass p{color:#A7A397!important}
+html:root:root:root body :is(.wp-skip,.wp-langs button){background:rgba(18,17,13,.78)!important;border:1px solid #2F2D26!important;color:#F5F3EE!important;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+html:root:root:root body .wp-skip{color:var(--lt-yellow)!important}
+html:root:root:root body .wp-langs button[aria-pressed="true"]{background:var(--lt-yellow)!important;color:var(--lt-on-yellow)!important;border-color:transparent!important}
+html:root:root:root body .wp-dots button{background:#3A372D!important}
+html:root:root:root body .wp-dots button[aria-current="true"]{background:var(--lt-yellow)!important}
+
+/* sign-in / sign-up: the wordmark and the glow follow the palette (white to yellow on black, black to gold on cream) */
+html:root:root:root body .w-auth-icon{filter:drop-shadow(0 22px 34px rgba(255,200,0,.28))!important}
+html:root:root:root body .w-auth-word,html:root:root:root[data-theme="dark"] body .w-auth-word{background:linear-gradient(180deg,#FFFFFF 10%,#FFC800 100%)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important}
+html:root:root:root[data-theme="light"] body .w-auth-word,html:root:root:root:not([data-theme="dark"]) body .w-auth-word{background:linear-gradient(180deg,#14110A 20%,#8A6500 100%)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important}
+
+@media (prefers-reduced-motion:reduce){
+  html:root:root:root body #bottom-nav .nav-cta .nav-cta-tile{transition:none!important}
+}

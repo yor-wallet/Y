@@ -139,7 +139,7 @@ class ScreensFrTest : ScreenTestBase() {
     @Test fun home_counts_only_real_values_and_has_no_transfer_or_cfa() {
         compose.setContent { OmTheme(reducedMotion = true) { OmRoot() } }
         startMarket()
-        waitText("Solde total")
+        waitText("SOLDE TOTAL")
         waitText("$", substring = true)
         /* 0.0123 BTC × 91 234.50 + 150.25 USDT ÷ 0.9998 + 0.5 ETH × 3 050.10 + 20.500 OMR × 2.6008 */
         val expected = 0.0123 * 91234.5 + 150.25 / 0.9998 + 0.5 * 3050.1 + 20.5 * 2.6008
@@ -166,7 +166,7 @@ class ScreensFrTest : ScreenTestBase() {
     @Test fun spot_live_market_and_swap_stays_in_progress_until_the_admin() {
         compose.setContent { OmTheme(reducedMotion = true) { OmRoot() } }
         startMarket()
-        waitText("Solde total")
+        waitText("SOLDE TOTAL")
         listOf("tab_home", "tab_markets", "tab_spot", "tab_swap", "tab_assets").forEach { compose.onNodeWithTag(it).assertExists() }
         compose.onNodeWithTag("tab_spot").performClick()
         waitText("BTC/USDT"); waitText("Carnet d’ordres")
@@ -197,7 +197,7 @@ class ScreensFrTest : ScreenTestBase() {
     @Test fun swap_not_activated_on_the_server_says_so_and_records_nothing() {
         backend.swapOff = true
         compose.setContent { OmTheme(reducedMotion = true) { OmRoot() } }
-        waitText("Solde total")
+        waitText("SOLDE TOTAL")
         compose.onNodeWithTag("tab_swap").performClick()
         waitText("Vous payez", substring = true)
         listOf("key_1", "key_0").forEach { compose.onNodeWithTag("swap").performScrollToNode(hasTestTag(it)); compose.onNodeWithTag(it).performClick() }
@@ -286,7 +286,7 @@ class ScreensFrTest : ScreenTestBase() {
         assertTrue(body, body.contains("\"phone\":\"+225708091011\"") && body.contains("\"country\":\"CI\""))
         backend.signup = "session"                                          /* a project that signs the person in at once */
         click("Créer mon compte")
-        waitText("Solde total")
+        waitText("SOLDE TOTAL")
     }
 
     @Test fun asset_detail_with_real_chart_tabs_and_networks() {
@@ -412,7 +412,7 @@ class NonAdminTest : ScreenTestBase() {
     @Test fun the_admin_entry_only_exists_for_a_server_confirmed_admin() {
         assertTrue(!(g.auth.state.value as AuthState.SignedIn).isAdmin)
         compose.setContent { OmTheme(reducedMotion = true) { OmRoot() } }
-        waitText("Solde total")
+        waitText("SOLDE TOTAL")
         compose.onNodeWithTag("home_account").performClick()
         idle(900); shot("99_nonadmin_account")
         /* the taller glass layout puts « Se déconnecter » below the fold of the lazy list: scroll to it */

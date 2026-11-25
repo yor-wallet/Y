@@ -92,7 +92,7 @@ fun SignUpScreen(onBack: () -> Unit) {
     val emailErr = if (tried && !Validation.emailOk(email)) stringResource(R.string.login_e_email) else null
     val phoneErr = if (tried && fullPhone == null) stringResource(R.string.signup_e_phone) else null
     val passErr = if (tried && password.length < Validation.PASSWORD_MIN) stringResource(R.string.signup_e_password) else null
-    val colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = OmColors.Blue600, unfocusedBorderColor = OmColors.Edge, focusedContainerColor = Color.White, unfocusedContainerColor = OmColors.Card, cursorColor = OmColors.Blue600, focusedLeadingIconColor = OmColors.Blue600)
+    val colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = OmColors.Blue600, unfocusedBorderColor = OmColors.Edge, focusedContainerColor = OmColors.Track, unfocusedContainerColor = OmColors.Card, cursorColor = OmColors.Blue600, focusedLeadingIconColor = OmColors.Blue600)
     BackHandler { if (!busy) onBack() }
 
     fun submit() {

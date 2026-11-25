@@ -130,8 +130,8 @@ fun AssetsScreen(onAsset: (String) -> Unit, onDeposit: () -> Unit, onSend: () ->
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     Text(if (s.loading) "…" else money(if (priced.isEmpty()) null else total, s.currency, s.hidden), style = MaterialTheme.typography.displaySmall, color = OmColors.Ink, maxLines = 1)
                     pct?.let { c ->
-                        Text(Fmt.pct(c), style = MaterialTheme.typography.labelMedium, color = if (c >= 0) Color(0xFF0E8A52) else Color(0xFFC8293D),
-                            modifier = Modifier.clip(RoundedCornerShape(50)).background(if (c >= 0) Color(0xFFE3F6EC) else Color(0xFFFDE8EB)).padding(horizontal = 10.dp, vertical = 3.dp))
+                        Text(Fmt.pct(c), style = MaterialTheme.typography.labelMedium, color = if (c >= 0) OmColors.Success else OmColors.Error,
+                            modifier = Modifier.clip(RoundedCornerShape(50)).background(if (c >= 0) OmColors.ChipUp else OmColors.ChipDown).padding(horizontal = 10.dp, vertical = 3.dp))
                     }
                 }
                 if (pct != null) {

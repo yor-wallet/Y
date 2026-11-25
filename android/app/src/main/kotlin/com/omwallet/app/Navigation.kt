@@ -171,9 +171,9 @@ fun MainNav(isAdmin: Boolean) {
     }
 }
 
-/* Bottom bar — 14.7.0 (owner's reference image): a white bar with a soft top shadow and rounded top corners; Home · Markets ·
-   [Swap: a raised blue-violet circle in the middle] · Wallet · Spot. The active tab is dark (icon + label), the others grey; the touched
-   item springs. Same destinations, same test tags and the same navigation as before: appearance only. */
+/* Bottom bar — 14.8.0 (Noir & Jaune): a near-black bar with a hairline top edge and rounded top corners; Home · Markets ·
+   [Swap: a raised YELLOW circle in the middle, dark glyph on it] · Wallet · Spot. The active tab is yellow (icon + label), the others grey;
+   the touched item springs. Same destinations, same test tags and the same navigation as before: appearance only. */
 @Composable
 fun androidx.compose.foundation.layout.BoxScope.BottomBar(current: Tab?, onTab: (Tab) -> Unit) {
     val haptics = rememberOmHaptics()
@@ -183,7 +183,7 @@ fun androidx.compose.foundation.layout.BoxScope.BottomBar(current: Tab?, onTab: 
     Box(Modifier.align(Alignment.BottomCenter).fillMaxWidth()) {
         Row(
             Modifier.fillMaxWidth().padding(top = 24.dp)
-                .androidx_shadow(top).clip(top).background(Color.White)
+                .androidx_shadow(top).clip(top).background(OmColors.Nav).border(1.dp, OmColors.Edge, top)
                 .navigationBarsPadding().padding(horizontal = 6.dp).height(64.dp),
             horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -196,22 +196,22 @@ fun androidx.compose.foundation.layout.BoxScope.BottomBar(current: Tab?, onTab: 
                         .pressable(role = Role.Tab) { if (!on) haptics.tap(); onTab(t) },
                     horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
                 ) {
-                    Box(Modifier.graphicsLayer { scaleX = pop; scaleY = pop }) { OmIcon(t.icon, null, tint = if (on) OmColors.Ink else OmColors.InkSecondary, size = 24.dp) }
-                    Text(stringResource(t.label), style = MaterialTheme.typography.labelSmall, color = if (on) OmColors.Ink else OmColors.InkSecondary, maxLines = 1)
+                    Box(Modifier.graphicsLayer { scaleX = pop; scaleY = pop }) { OmIcon(t.icon, null, tint = if (on) OmColors.Blue600 else OmColors.InkSecondary, size = 24.dp) }
+                    Text(stringResource(t.label), style = MaterialTheme.typography.labelSmall, color = if (on) OmColors.Blue600 else OmColors.InkSecondary, maxLines = 1)
                 }
             }
         }
-        /* Swap: the raised blue-violet circle in the middle of the bar, with a white ring */
+        /* Swap: the raised yellow circle in the middle of the bar, ringed with the bar colour */
         val onSwap = current == Tab.Swap
         Box(
-            Modifier.align(Alignment.TopCenter).size(66.dp).shadow(14.dp, CircleShape, ambientColor = Color(0x555A5DF0), spotColor = Color(0x885A5DF0))
-                .clip(CircleShape).background(Color.White).padding(5.dp).clip(CircleShape)
-                .background(androidx.compose.ui.graphics.Brush.linearGradient(listOf(OmColors.GradTop, OmColors.GradBottom)))
+            Modifier.align(Alignment.TopCenter).size(66.dp).shadow(16.dp, CircleShape, ambientColor = Color(0x66FFC800), spotColor = Color(0x99FFC800))
+                .clip(CircleShape).background(OmColors.Nav).padding(5.dp).clip(CircleShape)
+                .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(OmColors.GradTop, OmColors.GradMid, OmColors.GradBottom)))
                 .testTag("tab_" + Tab.Swap.route).semantics { selected = onSwap; contentDescription = swapLabel }
                 .pressable(role = Role.Tab) { if (!onSwap) haptics.tap(); onTab(Tab.Swap) },
             contentAlignment = Alignment.Center,
-        ) { OmIcon(Tab.Swap.icon, null, tint = Color.White, size = 26.dp) }
+        ) { OmIcon(Tab.Swap.icon, null, tint = OmColors.OnAccent, size = 26.dp) }
     }
 }
 
-private fun Modifier.androidx_shadow(shape: androidx.compose.ui.graphics.Shape) = this.then(Modifier.shadow(24.dp, shape, ambientColor = Color(0x55145AB4), spotColor = Color(0x77145AB4)))
+private fun Modifier.androidx_shadow(shape: androidx.compose.ui.graphics.Shape) = this.then(Modifier.shadow(24.dp, shape, ambientColor = Color(0x66000000), spotColor = Color(0x99000000)))

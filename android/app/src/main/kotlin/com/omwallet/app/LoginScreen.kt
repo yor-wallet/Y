@@ -74,7 +74,7 @@ fun LoginScreen(onSignUp: () -> Unit = {}) {
     var error by rememberSaveable { mutableStateOf<String?>(null) }
     val emailErr = if (tried && !Validation.emailOk(email)) stringResource(R.string.login_e_email) else null
     val passErr = if (tried && password.isEmpty()) stringResource(R.string.login_e_password) else null
-    val colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = OmColors.Blue600, unfocusedBorderColor = OmColors.Edge, focusedContainerColor = Color.White, unfocusedContainerColor = OmColors.Card, cursorColor = OmColors.Blue600, focusedLeadingIconColor = OmColors.Blue600)
+    val colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = OmColors.Blue600, unfocusedBorderColor = OmColors.Edge, focusedContainerColor = OmColors.Track, unfocusedContainerColor = OmColors.Card, cursorColor = OmColors.Blue600, focusedLeadingIconColor = OmColors.Blue600)
 
     fun submit() {
         tried = true; error = null

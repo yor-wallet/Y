@@ -1,10 +1,9 @@
-# OM Wallet — passation (état au 24/11/2026, version 14.7.0 web + Android)
+# OM Wallet — passation (état au 24/11/2026, version 14.8.0 web + Android)
 
 Document pour la session suivante. À lire en entier avec la skill du projet `.claude/skills/om-wallet/SKILL.md` (règles du
 propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce soit.
 
-> **Le travail le plus récent est sur la branche `claude/intelligent-keller-lrjxah`** (14.7.0, design « Clair » d'après l'image du
-> propriétaire), partie de `claude/blissful-goldberg-426zi7` (14.5.3). `main` contient une 14.6.0 « verre liquide » **abandonnée** (jamais
+> **Le travail le plus récent est sur la branche `claude/intelligent-keller-lrjxah`** (14.8.0, design « Noir & Jaune » : jaune et noir comme Liv X et Binance), partie de `claude/blissful-goldberg-426zi7` (14.5.3). `main` contient une 14.6.0 « verre liquide » **abandonnée** (jamais
 > reprise ici : la branche l'a fusionnée sans ses changements). Partir de cette branche :
 > `git fetch origin claude/intelligent-keller-lrjxah && git checkout -B <branche de la session> FETCH_HEAD`.
 
@@ -15,8 +14,8 @@ propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce so
 | Élément | État |
 |---|---|
 | Dernier commit | voir `git log -1` sur la branche |
-| Site en production | https://yor-wallet.vercel.app — version 14.7.0 (contrôle : `curl -s https://yor-wallet.vercel.app/sw.js \| grep fp-shell` → `fp-shell-v14.7.0`) |
-| Version | 14.7.0 partout (`js/data/reference-data.js`, `sw.js`, `android/app/build.gradle.kts` 140700, `android/README.md`, `changelog.md`) |
+| Site en production | https://yor-wallet.vercel.app — version 14.8.0 (contrôle : `curl -s https://yor-wallet.vercel.app/sw.js \| grep fp-shell` → `fp-shell-v14.8.0`) |
+| Version | 14.8.0 partout (`js/data/reference-data.js`, `sw.js`, `android/app/build.gradle.kts` 140700, `android/README.md`, `changelog.md`) |
 | Base Supabase `gebjmguoauvutiqvoswl` | `20261124_crypto_swap.sql` **appliquée** (par le propriétaire, éditeur SQL) ; `20261125_close_legacy_instant_trades.sql` **appliquée** le 23/11 et `20261126_close_legacy_crypto_to_bank.sql` **appliquée** le 24/11 (anciennes fonctions à prix figés fermées aux utilisateurs, rien supprimé, retours arrière fournis — voir `changelog.md` 14.5.1) |
 | Fonctions Edge | `crypto-swap` v1 (verify_jwt **true**) · `send-email` v59 (verify_jwt **false**, appelée par la base avec `x-webhook-secret`) · `wallet-addresses`, `admin-action` inchangées |
 | Tests web | 9 suites vertes le 24/11 : omw, omx, trade, smoke (138 écrans), shell, bugfix, ios-motion, admin-console, admin-payouts ; mesure `tests/ux/perf-spot.mjs` |
@@ -36,11 +35,13 @@ propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce so
 
 ---
 
-## 1 bis. Design 14.7.0 (24/11) — à lire avant toute retouche d'écran
-Consigne du propriétaire : reproduire l'image `brand/originals/ref-image-24-11.jpg` (voir la skill, section Design, et `changelog.md` 14.7.0).
-Fait : style global (web `css/clair.css`, Android jetons `OmColors`), menu à bouton central, accueil, portefeuille, conversion (pavé numérique),
-titres intérieurs. **Reste** : recomposer comme l'image les écrans intérieurs (dépôt, retrait, envoi, activité, détail d'un actif sur Android :
-« Current Rate », onglets 1H · 24H · 7D · 1M · 1Y, « Recent Transactions », bouton « Acheter »), puis vérifier en arabe et sur un vrai téléphone.
+## 1 bis. Design 14.8.0 (24/11) — à lire avant toute retouche d'écran
+Consigne du propriétaire : **jaune et noir comme Liv X (Emirates NBD) et Binance**, « pas bizarre », précis ; **regarder en ligne avant d'écrire** (fait : voir `changelog.md` 14.8.0 et la skill, section Design). Fait : palette + composants web et Android, menu à bouton Swap jaune, accueil, portefeuille, conversion, connexion, présentation d'ouverture (photos converties en duotone noir / jaune). **Reste** : recomposer comme Liv X / Binance les écrans intérieurs (dépôt, retrait, envoi, activité, détail d'actif Android) ; mode clair crème sur Android ; vérifier en arabe et sur un vrai téléphone.
+
+### Demandes du propriétaire pas encore faites (décidées, à faire par étapes — ne pas les présenter comme faites)
+1. **« L'app garde les clés »** (réponse du 24/11) : un portefeuille personnel sur le téléphone (phrase de 12 mots chiffrée dans le Keystore, adresses par réseau, envoi signé sur le téléphone), **à côté** du compte actuel (le compte OM Wallet reste à confirmation par l'administrateur, comme Binance garde son compte et son portefeuille Web3). Étapes proposées : (a) création / sauvegarde / adresses, vérifiées sur des vecteurs de test publics ; (b) lecture des soldes par des nœuds publics ; (c) envoi sur UN réseau, d'abord sur réseau de test ; (d) les autres réseaux. **Ne jamais livrer l'envoi réel sans essai sur réseau de test** : une erreur ici fait perdre de l'argent sans retour possible. Les soldes déjà sur le serveur ne bougent pas.
+2. **Plus d'images, de vidéos, d'animations, de modes, de fonctionnalités** « plus précis et plus qualitatifs » : proposés — vidéos de présentation enregistrées depuis l'application elle-même (ar / fr / en), animations de chiffres et de courbes, mode clair crème sur Android.
+3. **« Au moins 111 Mo »** : le propriétaire a choisi du **vrai contenu** (images, vidéos, fonctionnalités), pas du remplissage. L'APK pèse ~5 Mo parce qu'il est optimisé ; ne pas gonfler avec un fichier inutile sans qu'il le redemande après explication.
 
 ## 2. Ce qui reste à faire
 

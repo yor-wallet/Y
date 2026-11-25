@@ -131,6 +131,8 @@ const OMX = (() => {
       if (v && el.isConnected){ const k = OMXMarket.get(s); el.innerHTML = OMXChart.spark(v, k ? k.pct >= 0 : v[v.length - 1] >= v[0]); }
     });
   }
+  /* the balance with its decimals in a lighter weight (Liv X / Binance style); the text of the figure is exactly omxUsd()'s */
+  function balHtml(txt){ const m = /^(.*?)(\.\d+)$/.exec(String(txt)); return m ? escapeHtml(m[1]) + '<span class="lt-dec">' + escapeHtml(m[2]) + '</span>' : escapeHtml(txt); }
   /* ---------- HOME ---------- */
   function renderHome(){
     const p = Runtime.profile || {}, hide = !!Runtime.hideBalance, tt = totals();
@@ -158,7 +160,7 @@ const OMX = (() => {
           '<span class="w-hdr-end"><button class="hub-circ lt-hb" data-nav="history" aria-label="' + escapeHtml(t('tr.activity')) + '">' + icon('history', 20) + '</button>' +
           '<button class="hub-circ lt-hb" data-action="notifications" aria-label="' + escapeHtml(t('px.notifs')) + '">' + icon('bell', 20) + (unread ? '<span class="lt-badge ltr">' + (unread > 99 ? '99+' : unread) + '</span>' : '') + '</button></span></header>' +
         '<div class="omx-tl lt-bal"><span>' + escapeHtml(t('omx.total')) + '</span><button class="ds-eye" data-action="toggle-balance" aria-pressed="' + (hide ? 'true' : 'false') + '" aria-label="' + escapeHtml(t(hide ? 'px.showBal' : 'px.hideBal')) + '">' + icon(hide ? 'eyeOff' : 'eye', 18) + '</button></div>' +
-        '<div class="omx-tv ltr" id="omx-total-v" data-omx-total>' + escapeHtml(totalTxt) + '</div>' +
+        '<div class="omx-tv ltr" id="omx-total-v" data-omx-total>' + balHtml(totalTxt) + '</div>' +
         '<div class="omx-ts">' + (hide ? '' : (tt.pct != null && tt.hasCrypto ? '<span class="omx-chip ' + (tt.pct >= 0 ? 'up' : 'down') + '">' + escapeHtml(omxPct(tt.pct)) + '</span>' : '') +
           '<span class="ltr" data-omx-omr>≈ ' + moneyHtml(CurrencyEngine.format(Math.round(tt.omr * 1000) / 1000, 'OMR')) + '</span>') + '</div>' +
       '</section>' +
@@ -199,7 +201,7 @@ const OMX = (() => {
       '<div class="w-title lt-title"><button class="w-sq" data-nav="account" aria-label="' + escapeHtml(t('px.openProfile')) + '">' + icon('menu', 22) + '</button>' +
         '<h1>' + escapeHtml(t('lt.wallet')) + '</h1><span class="lt-mark sm" role="img" aria-label="OM Wallet"></span></div>' +
       '<section class="lt-wbal"><span class="lt-lbl">' + escapeHtml(t('omx.total')) + '</span>' +
-        '<div class="lt-wv"><b class="ltr" data-omx-total>' + escapeHtml(hide ? '••••••' : omxUsd(tt.usd, { dp: 2 })) + '</b>' +
+        '<div class="lt-wv"><b class="ltr" data-omx-total>' + (hide ? '••••••' : balHtml(omxUsd(tt.usd, { dp: 2 }))) + '</b>' +
           (!hide && tt.pct != null && tt.hasCrypto ? '<span class="omx-chip ' + (tt.pct >= 0 ? 'up' : 'down') + '">' + escapeHtml(omxPct(tt.pct)) + '</span>' : '') + '</div>' +
         (!hide && before > 0 ? '<p class="lt-chg ' + (diff >= 0 ? 'up' : 'down') + '">' + (diff >= 0 ? '↗ ' : '↘ ') + escapeHtml(tf('lt.chg24', { v: '\u2066' + (diff >= 0 ? '+' : '−') + omxUsd(Math.abs(diff), { dp: 2 }) + '\u2069' })) + '</p>' : '') +
         (!hide && sum > 0 ? '<div class="lt-alloc" aria-label="' + escapeHtml(t('lt.share')) + '">' + vals.map(x => '<span class="lt-al">' + omxLogo(x.sym, 18) + '<span class="ltr">' + escapeHtml(x.sym + ': ' + (x.v / sum * 100).toFixed(1) + '%') + '</span></span>').join('') + '</div>' : '') +
@@ -345,7 +347,7 @@ const OMX = (() => {
         const q = el.getAttribute('data-omx-q');
         el.textContent = q != null ? omxUsd(Number(q) * k.price) : omxUsd(k.price);
       });
-      const tv = document.querySelector('[data-omx-total]'); if (tv && !Runtime.hideBalance){ const tt = totals(); tv.textContent = omxUsd(tt.usd, { dp: 2 }); const o = document.querySelector('[data-omx-omr]'); if (o) o.innerHTML = '≈ ' + moneyHtml(CurrencyEngine.format(Math.round(tt.omr * 1000) / 1000, 'OMR')); }
+      const tv = document.querySelector('[data-omx-total]'); if (tv && !Runtime.hideBalance){ const tt = totals(); document.querySelectorAll('[data-omx-total]').forEach(x => { x.innerHTML = balHtml(omxUsd(tt.usd, { dp: 2 })); }); const o = document.querySelector('[data-omx-omr]'); if (o) o.innerHTML = '≈ ' + moneyHtml(CurrencyEngine.format(Math.round(tt.omr * 1000) / 1000, 'OMR')); }
       const mk = document.getElementById('omx-home-mk');
       if (mk && mk.querySelector('.sk-row')){ const movers = OMX_ASSETS.filter(a => OMXMarket.get(a.sym)).sort((x, y) => Math.abs(OMXMarket.get(y.sym).pct || 0) - Math.abs(OMXMarket.get(x.sym).pct || 0)).slice(0, 6); mk.innerHTML = movers.map(a => (S.moverCard ? S.moverCard(a) : assetRow(a))).join(''); fillSparks(mk); }
     }

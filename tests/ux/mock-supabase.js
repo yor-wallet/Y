@@ -37,7 +37,7 @@
       { id: 'n-2', type: 'TRANSFER_SENT', title: 'Transfer sent', message: 'OMR 25.500 sent to Salim Al Harthy', read: true, transaction_id: 'tx-1', data: { amount: 25.5, currency: 'OMR', to: 'Salim Al Harthy' }, created_at: new Date(NOW - 9 * H).toISOString() }
     ],
     user_docs: [
-      { user_id: uid, doc_name: 'preferences', data: { language: FX.lang || 'en', theme: FX.theme || 'light', notifications: true, hideBalances: false, vibration: true } },
+      { user_id: uid, doc_name: 'preferences', data: { language: FX.lang || 'en', theme: FX.theme === 'none' ? undefined : (FX.theme || 'light'), notifications: true, hideBalances: false, vibration: true } },
       { user_id: uid, doc_name: 'security', data: {} }
     ],
     user_items: FX.emptyTx ? [] : [
