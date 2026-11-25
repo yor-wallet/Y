@@ -17,9 +17,10 @@ function renderSidebar(){
     { nav:'settings', icon:'settings', key:'settings.title' }
   ];
   const nav = document.getElementById('side-nav');
-  nav.innerHTML = items.filter(it => FEATURES.crypto || !CRYPTO_SCREEN_RE.test(it.nav)).map(it => '<a class="side-item" data-nav="' + it.nav + '">' + icon(it.icon, 20) + '<span>' + t(it.key) + '</span></a>').join('');
+  nav.innerHTML = items.filter(it => FEATURES.crypto || !CRYPTO_SCREEN_RE.test(it.nav)).map(it => '<a class="side-item" href="#/' + it.nav + '" data-nav="' + it.nav + '">' + icon(it.icon, 20) + '<span>' + t(it.key) + '</span></a>').join('');
   nav.querySelectorAll('[data-nav]').forEach(el => {
-    el.onclick = () => {
+    el.onclick = ev => {
+      if (ev && ev.preventDefault) ev.preventDefault();          /* the link has a real address (#/route: crawlable, openable in a new tab); the router does the navigation */
       R.go(el.getAttribute('data-nav'));
     };
   });

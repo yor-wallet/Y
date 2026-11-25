@@ -1,3 +1,15 @@
+# OM Wallet 15.2.1 (web) — accessibilité et liens de la première page, mesurés avec Lighthouse
+
+Mesure Lighthouse mobile sur le site en ligne (15.2.0), puis correction de ce qu'elle a trouvé sur la première page de l'application :
+- **Boutons de langue de la présentation** : leur nom accessible (« English », « Français ») ne contenait pas les lettres visibles « EN » / « FR » — la commande vocale « clique EN » échouait (WCAG 2.5.3). Le nom est maintenant « EN English », « FR Français », « ع العربية ».
+- **Points du pager de la présentation** : 10 × 10 px, trop petits à toucher (WCAG 2.2, cible de 24 px) ; la cible est de 24 × 24 px, seul le centre de 10 px est dessiné, comme avant.
+- **Menus (du bas et latéral)** : les entrées étaient des `<a>` sans adresse ; ce sont de vrais liens `#/route` (indexables, ouvrables dans un nouvel onglet) ; le clic navigue toujours une seule fois, sans entrée d'historique en trop (test).
+- **Résultat** — première page de l'application : accessibilité 96 → **100**, SEO 92 → **100**, bonnes pratiques 100. Vitrine `/welcome` : accessibilité 100, bonnes pratiques 100, SEO 100, décalage de mise en page 0 (performance 87 à travers le proxy de la session, 96 en local).
+- **Pas touché** : le temps d'affichage du plus grand élément de la première page (≈ 3,9 s) vient surtout de l'écran de lancement voulu et d'une image de présentation de 254 Ko ; une version plus légère de l'image serait possible, mais c'est un choix de qualité à valider. Cartes de cache plus longues pour les polices, logos de jetons et images de la vitrine : déjà en 15.2.0.
+- Test : `tests/ux/a11y.test.mjs`. Android : inchangé (15.2.0).
+
+---
+
 # OM Wallet 15.2.0 — vitrine refaite en Noir & Jaune, petits téléphones, statuts toujours visibles, détails d'arabe — web + Android
 
 Demande du propriétaire (25/11) : « continue à améliorer le site et la version mobile ». Méthode : **mesurer avant de corriger** (axe-core, tests de débordement à 320 / 360 px, rendus Android à 320 dp, lint Android) ; chaque défaut trouvé a maintenant un test.

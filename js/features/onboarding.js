@@ -51,7 +51,7 @@ const Onboarding = (() => {
       el.setAttribute('dir', rtl ? 'rtl' : 'ltr'); el.setAttribute('lang', lang); el.setAttribute('aria-label', 'OM Wallet');
       el.innerHTML =
         '<div class="wp-top"><div class="wp-langs" role="group" aria-label="' + escapeHtml(T.lang) + '">' +
-          LANGS.map(([c, l]) => '<button type="button" data-ob-lang="' + c + '" lang="' + c + '" aria-label="' + NAMES[c] + '" aria-pressed="' + (c === lang) + '">' + l + '</button>').join('') + '</div>' +
+          LANGS.map(([c, l]) => '<button type="button" data-ob-lang="' + c + '" lang="' + c + '" aria-label="' + escapeHtml(l + ' ' + NAMES[c]) + '" aria-pressed="' + (c === lang) + '">' + l + '</button>').join('') + '</div>' +
           '<button type="button" class="wp-skip ob-skip" id="ob-skip">' + escapeHtml(T.skip) + '</button></div>' +
         '<div class="wp-track" id="ob-track">' +
           T.slides.map((s, k) => {

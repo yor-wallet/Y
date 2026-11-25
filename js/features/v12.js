@@ -57,9 +57,10 @@ const V12 = (() => {
     const nav = document.getElementById('bottom-nav');
     if (!nav || nav.getAttribute('data-v12') === LANG) return;
     nav.setAttribute('data-v12', LANG);
+    /* 15.2.0: every menu entry is a real link (#/route: crawlable, openable in a new tab); the click below prevents the jump and the router navigates */
     const it = (nav2, ic, lbl, cta) => cta
-      ? '<a class="nav-item nav-cta" data-nav="' + nav2 + '"><span class="nav-cta-tile">' + icon(ic, 26) + '</span><span class="nav-lb">' + lbl + '</span></a>'
-      : '<a class="nav-item" data-nav="' + nav2 + '"><span class="nav-ic">' + icon(ic, 24) + '</span><span class="nav-lb">' + lbl + '</span></a>';
+      ? '<a class="nav-item nav-cta" href="#/' + nav2 + '" data-nav="' + nav2 + '"><span class="nav-cta-tile">' + icon(ic, 26) + '</span><span class="nav-lb">' + lbl + '</span></a>'
+      : '<a class="nav-item" href="#/' + nav2 + '" data-nav="' + nav2 + '"><span class="nav-ic">' + icon(ic, 24) + '</span><span class="nav-lb">' + lbl + '</span></a>';
     /* 14.7.0 (owner's reference image): Home · Markets · Swap (raised round button in the middle) · Wallet · Spot */
     nav.innerHTML = '<div class="nav-dock">' + it('home', 'home', t('omx.home')) + it('markets', 'chart', t('omx.markets')) + it('exchange', 'swap', t('tr.swap'), true) + it('wallet', 'wallet', t('lt.walletTab')) + it('spot', 'trending', t('tr.spot')) + '<i class="nav-ind" aria-hidden="true"></i></div>';
     requestAnimationFrame(placeInd);

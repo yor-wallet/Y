@@ -1,4 +1,4 @@
-# OM Wallet — passation (état au 25/11/2026, version 15.2.0 web + Android)
+# OM Wallet — passation (état au 25/11/2026, version web 15.2.1 · Android 15.2.0)
 
 Document pour la session suivante. À lire en entier avec la skill du projet `.claude/skills/om-wallet/SKILL.md` (règles du
 propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce soit.
@@ -14,7 +14,7 @@ propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce so
 | Élément | État |
 |---|---|
 | Dernier commit | voir `git log -1` sur la branche |
-| Site en production | https://yor-wallet.vercel.app — version 15.2.0 (contrôle : `curl -s https://yor-wallet.vercel.app/sw.js \| grep fp-shell` → `fp-shell-v15.2.0`) |
+| Site en production | https://yor-wallet.vercel.app — version 15.2.1 (contrôle : `curl -s https://yor-wallet.vercel.app/sw.js \| grep fp-shell` → `fp-shell-v15.2.1`) |
 | Version | 15.2.0 partout (`js/data/reference-data.js`, `sw.js`, `android/app/build.gradle.kts` 150100, `android/README.md`, `changelog.md`) |
 | Base Supabase `gebjmguoauvutiqvoswl` | `20261124_crypto_swap.sql` **appliquée** (par le propriétaire, éditeur SQL) ; `20261125_close_legacy_instant_trades.sql` **appliquée** le 23/11 et `20261126_close_legacy_crypto_to_bank.sql` **appliquée** le 24/11 (anciennes fonctions à prix figés fermées aux utilisateurs, rien supprimé, retours arrière fournis — voir `changelog.md` 14.5.1) |
 | Fonctions Edge | `crypto-swap` v1 (verify_jwt **true**) · `send-email` v59 (verify_jwt **false**, appelée par la base avec `x-webhook-secret`) · `wallet-addresses`, `admin-action` inchangées |
@@ -37,7 +37,7 @@ propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce so
 
 ## 1 quinquies. 15.2.0 (25/11) — vitrine, petits téléphones, statuts, arabe : méthode et règles à garder
 - **La vitrine `/welcome` est en Noir & Jaune** (`welcome/site.css`, mêmes classes qu'avant). Ses captures viennent de l'application réelle : `NODE_PATH=$(npm root -g) node tools/site-shots.mjs` (à relancer quand un écran change). Elle montre des données d'exemple — le dire. Ne jamais la repasser en bleu : `tests/ux/site.test.mjs` détecte les couleurs bleues.
-- **Mesurer avant de corriger** : `axe-core` (installé hors dépôt) pour l'accessibilité ; un test de débordement à 320 / 360 px ; rendus Android `SmallPhoneTest` ; `gradle lintDebug` **sans `--offline`** (le modèle de test androidTest veut des dépendances non en cache). Les pages `offline.html`, `404.html`, `admin-action.html` suivent aussi l'identité.
+- **Mesurer avant de corriger** : Lighthouse mobile (`npm i lighthouse` hors dépôt, `CHROME_PATH=/opt/pw-browsers/chromium-*/chrome-linux64/chrome`, `--chrome-flags="--headless=new --no-sandbox --proxy-server=http://127.0.0.1:36363"` pour atteindre le site en ligne) ; `axe-core` (installé hors dépôt) pour l'accessibilité ; un test de débordement à 320 / 360 px ; rendus Android `SmallPhoneTest` ; `gradle lintDebug` **sans `--offline`** (le modèle de test androidTest veut des dépendances non en cache). Les pages `offline.html`, `404.html`, `admin-action.html` suivent aussi l'identité.
 - **Règles ajoutées** : (1) le statut d'une opération (« En cours », « Échouée », « Terminée ») a **sa propre ligne** dans une liste — jamais collé à un texte sur une ligne tronquée ; (2) un clavier numérique **n'est jamais inversé** en arabe (1 2 3 de gauche à droite) ; (3) un message qui contient un nombre s'accorde avec lui (`tp()` sur le web, `plurals` sur Android — l'arabe a six formes) ; (4) les balises de partage (`og:image`, `canonical`) pointent le **domaine en ligne** (`yor-wallet.vercel.app`), jamais un ancien domaine.
 - **Reste** : déverrouillage biométrique Android (empreinte / visage via `BiometricPrompt`, code chiffré par une clé du Keystore liée à la biométrie — comme la version web « Face ID » ; le serveur garde seul la décision par `verify_pin`) — à faire avec essai sur appareil ; Android : écran de transfert de crédit si le propriétaire le demande ; essai sur un vrai téléphone.
 
