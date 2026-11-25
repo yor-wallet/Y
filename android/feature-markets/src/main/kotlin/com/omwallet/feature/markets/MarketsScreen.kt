@@ -1,7 +1,5 @@
 package com.omwallet.feature.markets
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,11 +12,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,8 +22,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -48,9 +42,13 @@ import com.omwallet.core.design.EmptyState
 import com.omwallet.core.design.OmColors
 import com.omwallet.core.design.OmIcon
 import com.omwallet.core.design.OmIcons
-import com.omwallet.core.design.OmSprings
+import com.omwallet.core.design.OmPullRefresh
+import com.omwallet.core.design.LiveText
 import com.omwallet.core.design.SkeletonRows
+import com.omwallet.core.design.SlidingSegments
+import com.omwallet.core.design.holdRefresh
 import com.omwallet.core.design.pressable
+import com.omwallet.core.design.rememberLiveTick
 import com.omwallet.core.design.rememberOmHaptics
 import com.omwallet.core.ui.FeedBadge
 import com.omwallet.core.ui.R
@@ -69,6 +67,8 @@ class MarketsViewModel(private val g: OmGraph) : ViewModel() {
         MarketsUiState(Catalog.assets.map { MarketRow(it, m.quotes[it.sym], it.sym in p.favorites) }, m.mode, m.lastSync, p.currency)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), MarketsUiState())
     fun toggleFavorite(sym: String) = viewModelScope.launch { g.prefs.toggleFavorite(sym) }
+    /** pull to refresh: the prices are really read again (the live stream keeps running) */
+    suspend fun reload() { g.market.refreshNow() }
 }
 
 @Composable
@@ -77,15 +77,15 @@ fun MarketsScreen(onAsset: (String) -> Unit, contentPadding: PaddingValues) {
     val s by vm.state.collectAsStateWithLifecycle()
     var favOnly by rememberSaveable { mutableStateOf(false) }
     val rows = if (favOnly) s.rows.filter { it.favorite } else s.rows
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    var refreshing by remember { mutableStateOf(false) }
 
+    OmPullRefresh(refreshing, { scope.launch { refreshing = true; try { holdRefresh { vm.reload() } } finally { refreshing = false } } }) {
     LazyColumn(Modifier.fillMaxSize(), contentPadding = contentPadding) {
         item {
             com.omwallet.core.design.RefHeader(stringResource(R.string.markets_title), below = {
                 FeedBadge(s.mode, s.lastSync)
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Segment(stringResource(R.string.filter_all), !favOnly) { favOnly = false }
-                    Segment(stringResource(R.string.filter_fav), favOnly) { favOnly = true }
-                }
+                SlidingSegments(listOf(stringResource(R.string.filter_all), stringResource(R.string.filter_fav)), if (favOnly) 1 else 0, { favOnly = it == 1 })
             })
         }
         if (s.mode == FeedMode.Idle && s.rows.all { it.quote == null }) item { SkeletonRows(6, Modifier.padding(horizontal = 20.dp)) }
@@ -97,30 +97,19 @@ fun MarketsScreen(onAsset: (String) -> Unit, contentPadding: PaddingValues) {
         items(rows, key = { it.asset.sym }) { r -> com.omwallet.core.design.GlassCard(Modifier.padding(horizontal = 16.dp, vertical = 6.dp), padding = 4.dp) { MarketItem(r, s.currency, onClick = { onAsset(r.asset.sym) }, onStar = { vm.toggleFavorite(r.asset.sym) }) } }
         item { Text(stringResource(R.string.markets_source), style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary, modifier = Modifier.padding(20.dp)) }
     }
-}
-
-@Composable
-private fun Segment(text: String, on: Boolean, onClick: () -> Unit) {
-    /* selected: luminous gradient pill (« Verre »); not selected: clear glass */
-    Box(Modifier.clip(RoundedCornerShape(50)).background(if (on) androidx.compose.ui.graphics.Brush.verticalGradient(listOf(OmColors.GradTop, OmColors.GradMid, OmColors.GradBottom)) else androidx.compose.ui.graphics.SolidColor(OmColors.Sky100))
-        .pressable(role = Role.Tab, onClick = onClick).padding(horizontal = 14.dp, vertical = 7.dp)) {
-        Text(text, style = MaterialTheme.typography.labelLarge, color = if (on) OmColors.OnAccent else OmColors.InkSecondary)
     }
 }
 
 /* Each row is keyed by its symbol and only reads its own quote: when one price changes, only that row is recomposed.
-   The price flashes softly green / red for the direction of the change (colour only — no bounce). */
+   15.1.0: the price and the percentage flash green / red for the direction of the move, nudge 2 dp and settle back (LiveText); nothing moves under « remove animations ». */
 @Composable
 private fun MarketItem(r: MarketRow, cur: DisplayCurrency, onClick: () -> Unit, onStar: () -> Unit) {
     val q = r.quote
-    var last by remember { mutableStateOf(q?.price) }
-    var flash by remember { mutableStateOf(0) }
-    LaunchedEffect(q?.price) {
-        val p = q?.price; val l = last
-        if (p != null && l != null && p != l) { flash = if (p > l) 1 else -1; kotlinx.coroutines.delay(650); flash = 0 }
-        last = p
-    }
-    val priceColor by animateColorAsState(when (flash) { 1 -> OmColors.Success; -1 -> OmColors.Error; else -> OmColors.Ink }, OmSprings.fade(220), label = "flash")
+    val priceText = Fmt.money(q?.price, cur)
+    val priceTick = rememberLiveTick(q?.price, priceText)
+    val ch = q?.changePct
+    val pctText = Fmt.pct(ch)
+    val pctTick = rememberLiveTick(ch, pctText)
     val haptics = rememberOmHaptics()
     val favLabel = stringResource(if (r.favorite) R.string.fav_remove else R.string.fav_add)
     Row(Modifier.fillMaxWidth().pressable(onClick = onClick).padding(horizontal = 20.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -130,9 +119,8 @@ private fun MarketItem(r: MarketRow, cur: DisplayCurrency, onClick: () -> Unit, 
             Text(r.asset.sym + if (q?.derived == true) " · USDC/USDT" else "", style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary)
         }
         Column(horizontalAlignment = Alignment.End) {
-            Text(Fmt.money(q?.price, cur), style = MaterialTheme.typography.titleSmall, color = priceColor)
-            val ch = q?.changePct
-            Text(Fmt.pct(ch), style = MaterialTheme.typography.labelMedium, color = if (ch == null) OmColors.InkSecondary else if (ch >= 0) OmColors.Success else OmColors.Error)
+            LiveText(priceText, priceTick, style = MaterialTheme.typography.titleSmall)
+            LiveText(pctText, pctTick, style = MaterialTheme.typography.labelMedium, base = if (ch == null) OmColors.InkSecondary else if (ch >= 0) OmColors.Success else OmColors.Error)
         }
         Box(Modifier.size(36.dp).pressable(role = Role.Checkbox) { haptics.tap(); onStar() }.semantics { contentDescription = favLabel }, contentAlignment = Alignment.Center) {
             OmIcon(if (r.favorite) OmIcons.StarFilled else OmIcons.Star, null, tint = if (r.favorite) OmColors.Warning else OmColors.InkSecondary, size = 20.dp)

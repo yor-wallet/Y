@@ -70,13 +70,19 @@ import com.omwallet.core.design.AssetLogo
 import com.omwallet.core.design.EmptyState
 import com.omwallet.core.design.GlassCard
 import com.omwallet.core.design.NetworkLogo
+import com.omwallet.core.design.OmPullRefresh
+import com.omwallet.core.design.holdRefresh
 import com.omwallet.core.design.OmColors
 import com.omwallet.core.design.OmIcon
 import com.omwallet.core.design.OmIcons
 import com.omwallet.core.design.OmPrimaryButton
 import com.omwallet.core.design.OmSecondaryButton
 import com.omwallet.core.design.OmSprings
+import com.omwallet.core.design.LiveText
 import com.omwallet.core.design.SkeletonRows
+import com.omwallet.core.design.SlidingSegments
+import com.omwallet.core.design.rememberCountedValue
+import com.omwallet.core.design.rememberLiveTick
 import com.omwallet.core.design.pressable
 import com.omwallet.core.ui.FeedBadge
 import com.omwallet.core.ui.R
@@ -218,6 +224,12 @@ class AssetDetailViewModel(private val g: OmGraph, private val sym: String) : Vi
         load(Period.D1)
         viewModelScope.launch { runCatching { g.money.cryptoOverview() }.onSuccess { o -> fees.value = o.networks.filter { it.asset == sym }.associate { it.network to it.fee } } }
     }
+    /** pull to refresh: the price AND the curve of the chosen period are really read again */
+    suspend fun reload() {
+        g.market.refreshNow()
+        val p = chart.value.first
+        runCatching { g.market.history(sym, p).map { it.close } }.onSuccess { if (it.size > 1 && chart.value.first == p) chart.value = Triple(p, it, 1) }
+    }
     fun load(p: Period) {
         job?.cancel()
         chart.value = Triple(p, chart.value.second, 0)
@@ -234,15 +246,27 @@ fun AssetDetailScreen(sym: String, onBack: () -> Unit, onDeposit: (String) -> Un
     var tab by rememberSaveable { mutableStateOf(0) }
     var detail by remember { mutableStateOf<Tx?>(null) }
     val asset = Catalog.asset(sym)
+    /* 15.1.0 — a finger on the curve shows that point's price in the header (and its change since the start of the period); a live price rolls to its
+       new value and flashes green / red for the direction of the move */
+    var scrub by remember { mutableStateOf<Int?>(null) }
+    LaunchedEffect(s.chart) { scrub = null }
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    var refreshing by remember { mutableStateOf(false) }
+    val live = s.quote?.price
+    val rolled = rememberCountedValue(live, resetKey = s.currency, ms = 450)
+    val scrubbed = scrub?.let { s.chart.getOrNull(it) }
+    val priceTick = rememberLiveTick(live, Fmt.money(live, s.currency))
+    OmPullRefresh(refreshing, { scope.launch { refreshing = true; try { holdRefresh { vm.reload() } } finally { refreshing = false } } }) {
     LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 32.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         item {
             com.omwallet.core.design.RefHeader(asset?.name ?: sym, onBack, stringResource(R.string.back), trailing = { AssetLogo(sym, 46.dp) }, below = { FeedBadge(s.mode, s.lastSync) })
         }
         item {
             Column(Modifier.padding(horizontal = 20.dp)) {
-                Text(Fmt.money(s.quote?.price, s.currency), style = MaterialTheme.typography.displaySmall, color = OmColors.Ink)
-                val ch = s.quote?.changePct
-                Text(Fmt.pct(ch) + " · 24 h", style = MaterialTheme.typography.labelLarge, color = if (ch == null) OmColors.InkSecondary else if (ch >= 0) OmColors.Success else OmColors.Error)
+                LiveText(Fmt.money(scrubbed ?: rolled, s.currency), priceTick, style = MaterialTheme.typography.displaySmall)
+                val ch = if (scrubbed != null && s.chart.firstOrNull()?.let { it > 0 } == true) (scrubbed / s.chart.first() - 1) * 100 else s.quote?.changePct
+                val span = if (scrubbed != null) stringResource(when (s.period) { Period.D1 -> R.string.period_d1; Period.W1 -> R.string.period_w1; Period.M1 -> R.string.period_m1; else -> R.string.period_y1 }) else "24 h"
+                Text(Fmt.pct(ch) + " · " + span, style = MaterialTheme.typography.labelLarge, color = if (ch == null) OmColors.InkSecondary else if (ch >= 0) OmColors.Success else OmColors.Error)
                 if (s.quote?.derived == true) Text(stringResource(R.string.usdt_derived), style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary)
             }
         }
@@ -255,20 +279,14 @@ fun AssetDetailScreen(sym: String, onBack: () -> Unit, onDeposit: (String) -> Un
                         Crossfade(targetState = Triple(s.chart, s.chartLoading, s.chartError), animationSpec = OmSprings.fade(220), label = "chart") { (values, loading, error) ->
                             Box(Modifier.fillMaxWidth().height(180.dp), contentAlignment = Alignment.Center) {
                                 when {
-                                    values.size > 1 -> AreaChart(values, Modifier.fillMaxSize(), if (values.last() >= values.first()) OmColors.Success else OmColors.Error)
+                                    values.size > 1 -> AreaChart(values, Modifier.fillMaxSize(), if (values.last() >= values.first()) OmColors.Success else OmColors.Error, onScrub = { scrub = it })
                                     loading -> SkeletonRows(2)
                                     error -> Text(stringResource(R.string.chart_unavailable), style = MaterialTheme.typography.bodyMedium, color = OmColors.InkSecondary)
                                 }
                             }
                         }
-                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                            listOf(Period.D1 to R.string.period_d1, Period.W1 to R.string.period_w1, Period.M1 to R.string.period_m1, Period.Y1 to R.string.period_y1).forEach { (p, label) ->
-                                val on = p == s.period
-                                Box(Modifier.clip(RoundedCornerShape(50)).background(if (on) OmColors.Sky100 else androidx.compose.ui.graphics.Color.Transparent).pressable(role = Role.Tab) { vm.load(p) }.padding(horizontal = 14.dp, vertical = 6.dp)) {
-                                    Text(stringResource(label), style = MaterialTheme.typography.labelLarge, color = if (on) OmColors.Blue600 else OmColors.InkSecondary)
-                                }
-                            }
-                        }
+                        val periods = listOf(Period.D1 to R.string.period_d1, Period.W1 to R.string.period_w1, Period.M1 to R.string.period_m1, Period.Y1 to R.string.period_y1)
+                        SlidingSegments(periods.map { stringResource(it.second) }, periods.indexOfFirst { it.first == s.period }.coerceAtLeast(0), { vm.load(periods[it].first) }, Modifier.fillMaxWidth().padding(top = 8.dp), spread = true)
                     }
                 }
                 item {
@@ -314,6 +332,7 @@ fun AssetDetailScreen(sym: String, onBack: () -> Unit, onDeposit: (String) -> Un
                 }
             }
         }
+    }
     }
     detail?.let { TxDetailSheet(it, s.hidden) { detail = null } }
 }

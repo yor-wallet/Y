@@ -52,6 +52,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -140,9 +144,11 @@ fun LoadingDots(color: Color = Color.White) {
 }
 
 @Composable
-fun OmPrimaryButton(text: String, modifier: Modifier = Modifier, enabled: Boolean = true, loading: Boolean = false, onClick: () -> Unit) {
-    /* 14.8.0: a yellow pill, a soft yellow glow, dark text ON the yellow (Binance / Liv X) */
+fun OmPrimaryButton(text: String, modifier: Modifier = Modifier, enabled: Boolean = true, loading: Boolean = false, successText: String? = null, onClick: () -> Unit) {
+    /* 14.8.0: a yellow pill, a soft yellow glow, dark text ON the yellow (Binance / Liv X).
+       14.10.0: [successText] morphs the pill — it turns green and a check is written before the words (a copy, a saved choice…). */
     val shape = RoundedCornerShape(50)
+    val ok by animateFloatAsState(if (successText != null) 1f else 0f, tween(260), label = "btn-ok")
     Box(
         modifier
             .heightIn(min = 56.dp)
@@ -150,11 +156,16 @@ fun OmPrimaryButton(text: String, modifier: Modifier = Modifier, enabled: Boolea
             .shadow(if (enabled) 12.dp else 0.dp, shape, ambientColor = Color(0x66FFC800), spotColor = Color(0x99FFC800))
             .clip(shape)
             .background(if (enabled) Brush.horizontalGradient(listOf(OmColors.GradTop, OmColors.GradMid, OmColors.GradBottom)) else Brush.horizontalGradient(listOf(OmColors.Sky300, OmColors.Sky300)))
+            .drawBehind { if (ok > 0f) drawRect(OmColors.Success.copy(alpha = ok)) }
             .pressable(enabled = enabled && !loading, onClick = onClick)
             .semantics { if (loading) contentDescription = text },
         contentAlignment = Alignment.Center,
     ) {
         if (loading) LoadingDots(OmColors.OnAccent)
+        else if (successText != null) Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(horizontal = 16.dp)) {
+            CheckGlyph(OmColors.OnAccent)
+            Text(successText, style = MaterialTheme.typography.labelLarge, color = OmColors.OnAccent, textAlign = TextAlign.Center)
+        }
         else Text(text, style = MaterialTheme.typography.labelLarge, color = if (enabled) OmColors.OnAccent else OmColors.InkSecondary, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 16.dp))
     }
 }
@@ -275,14 +286,16 @@ fun ErrorState(message: String, retry: String, modifier: Modifier = Modifier, on
 /* Loading placeholder: shape only, never fake data. */
 @Composable
 fun SkeletonRows(count: Int = 3, modifier: Modifier = Modifier) {
+    /* 15.1.0: one soft light sweeps over every placeholder together (still under « remove animations ») */
+    val phase = rememberShimmerPhase()
     Column(modifier, verticalArrangement = Arrangement.spacedBy(12.dp)) {
         repeat(count) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(Modifier.size(40.dp).clip(CircleShape).background(OmColors.Sky100))
+                Box(Modifier.size(40.dp).clip(CircleShape).background(OmColors.Sky100).shimmerWith(phase))
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Box(Modifier.fillMaxWidth(0.6f).height(12.dp).clip(RoundedCornerShape(6.dp)).background(OmColors.Sky100))
-                    Box(Modifier.fillMaxWidth(0.35f).height(10.dp).clip(RoundedCornerShape(6.dp)).background(OmColors.Sky100))
+                    Box(Modifier.fillMaxWidth(0.6f).height(12.dp).clip(RoundedCornerShape(6.dp)).background(OmColors.Sky100).shimmerWith(phase))
+                    Box(Modifier.fillMaxWidth(0.35f).height(10.dp).clip(RoundedCornerShape(6.dp)).background(OmColors.Sky100).shimmerWith(phase))
                 }
             }
         }
@@ -305,16 +318,55 @@ fun Sparkline(values: List<Double>, up: Boolean, modifier: Modifier = Modifier.w
     }
 }
 
+/* 15.1.0: the curve is drawn from left to right when it first appears (and when the period changes); a finger moving along it shows a cursor, a dot on the
+   curve and a light tick for every point it passes — [onScrub] receives the index (null when the finger lifts) so the screen can show that point's
+   figure in its header. Only horizontal drags are taken, so the page still scrolls vertically. Nothing is invented: the points are the real closes. */
 @Composable
-fun AreaChart(values: List<Double>, modifier: Modifier = Modifier, lineColor: Color = OmColors.Blue600) {
-    Canvas(modifier) {
+fun AreaChart(values: List<Double>, modifier: Modifier = Modifier, lineColor: Color = OmColors.Blue600, onScrub: ((Int?) -> Unit)? = null) {
+    val reduced = LocalOmMotion.current.reduced
+    val haptics = rememberOmHaptics()
+    val reveal = remember { Animatable(if (reduced) 1f else 0f) }
+    LaunchedEffect(values.size, values.firstOrNull(), reduced) {
+        if (reduced) { reveal.snapTo(1f); return@LaunchedEffect }
+        reveal.snapTo(0f); reveal.animateTo(1f, tween(750, easing = FastOutSlowInEasing))
+    }
+    var cursor by remember { mutableStateOf<Int?>(null) }
+    val cursorA by animateFloatAsState(if (cursor != null) 1f else 0f, tween(140), label = "cursor")
+    var width by remember { mutableStateOf(1f) }
+    fun at(x: Float) {
+        if (values.size < 2) return
+        val i = Math.round(x / width * (values.size - 1)).coerceIn(0, values.size - 1)
+        if (i != cursor) { cursor = i; haptics.tick(); onScrub?.invoke(i) }
+    }
+    fun lift() { if (cursor != null) { cursor = null; onScrub?.invoke(null) } }
+    Canvas(
+        modifier.onSizeChanged { width = it.width.toFloat().coerceAtLeast(1f) }
+            .pointerInput(values.size) {
+                detectHorizontalDragGestures(onDragStart = { at(it.x) }, onDragEnd = { lift() }, onDragCancel = { lift() }) { change, _ -> change.consume(); at(change.position.x) }
+            },
+    ) {
         if (values.size < 2) return@Canvas
         val min = values.min(); val max = values.max(); val span = (max - min).takeIf { it > 0 } ?: 1.0
         val pts = values.mapIndexed { i, v -> Offset(i / (values.size - 1f) * size.width, (1 - ((v - min) / span)).toFloat() * (size.height - 8f) + 4f) }
         val line = Path().apply { pts.forEachIndexed { i, p -> if (i == 0) moveTo(p.x, p.y) else lineTo(p.x, p.y) } }
         val area = Path().apply { addPath(line); lineTo(size.width, size.height); lineTo(0f, size.height); close() }
-        drawPath(area, Brush.verticalGradient(listOf(lineColor.copy(alpha = 0.22f), Color.Transparent)))
-        drawPath(line, lineColor, style = Stroke(width = 2.2.dp.toPx(), cap = StrokeCap.Round))
+        val head = reveal.value
+        clipRect(right = size.width * head) {
+            drawPath(area, Brush.verticalGradient(listOf(lineColor.copy(alpha = 0.22f), Color.Transparent)))
+            drawPath(line, lineColor, style = Stroke(width = 2.2.dp.toPx(), cap = StrokeCap.Round))
+        }
+        if (head in 0.01f..0.99f) {                                                    // the pen that draws the curve
+            val f = head * (pts.size - 1); val a = pts[f.toInt().coerceIn(0, pts.size - 1)]; val b = pts[(f.toInt() + 1).coerceIn(0, pts.size - 1)]
+            val k = f - f.toInt(); val pen = Offset(a.x + (b.x - a.x) * k, a.y + (b.y - a.y) * k)
+            drawCircle(lineColor.copy(alpha = 0.25f), 8.dp.toPx(), pen); drawCircle(lineColor, 3.dp.toPx(), pen)
+        }
+        cursor?.let { i ->
+            val p = pts[i.coerceIn(0, pts.size - 1)]
+            drawLine(lineColor.copy(alpha = 0.55f * cursorA), Offset(p.x, 0f), Offset(p.x, size.height), 1.dp.toPx())
+            drawCircle(lineColor.copy(alpha = 0.25f * cursorA), 10.dp.toPx(), p)
+            drawCircle(OmColors.Surface, 5.5.dp.toPx(), p)
+            drawCircle(lineColor, 3.8.dp.toPx(), p)
+        }
     }
 }
 

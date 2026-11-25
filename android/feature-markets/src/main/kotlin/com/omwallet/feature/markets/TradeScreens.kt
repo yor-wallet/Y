@@ -525,6 +525,8 @@ private fun TradeFlow(tvm: TradeViewModel, step: TradeStep, contentPadding: Padd
                     val st = tvm.status(step.id)
                     val confirmed = st == "CONFIRMED" || st == "SUCCESS"; val refused = st == "REJECTED" || st == "REFUNDED"
                     GlassCard(Modifier.padding(horizontal = 16.dp), padding = 18.dp) {
+                        /* the check draws itself ONLY when the administrator really confirmed; « in progress » keeps its pulsing dots */
+                        if (confirmed) Box(Modifier.fillMaxWidth().padding(bottom = 8.dp), contentAlignment = Alignment.Center) { com.omwallet.core.design.SuccessMark(size = 64.dp) }
                         Text(Trade.qty(step.q.fromAmount) + " " + step.q.fromAsset + " → " + Trade.qty(step.q.toAmount) + " " + step.q.toAsset, style = MaterialTheme.typography.titleLarge, color = OmColors.Ink)
                         Spacer(Modifier.height(10.dp))
                         StatusChip(stringResource(if (confirmed) R.string.tr_s_confirmed else if (refused) R.string.tr_s_rejected else R.string.tr_s_pending),

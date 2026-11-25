@@ -1,4 +1,4 @@
-# OM Wallet — passation (état au 25/11/2026, version 15.1.0 web · Android 14.9.1)
+# OM Wallet — passation (état au 25/11/2026, version 15.1.0 web + Android)
 
 Document pour la session suivante. À lire en entier avec la skill du projet `.claude/skills/om-wallet/SKILL.md` (règles du
 propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce soit.
@@ -15,7 +15,7 @@ propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce so
 |---|---|
 | Dernier commit | voir `git log -1` sur la branche |
 | Site en production | https://yor-wallet.vercel.app — version 15.1.0 (contrôle : `curl -s https://yor-wallet.vercel.app/sw.js \| grep fp-shell` → `fp-shell-v15.1.0`) |
-| Version | web 15.1.0 (`js/data/reference-data.js`, `sw.js`, `changelog.md`) ; **Android encore 14.9.1** (`android/app/build.gradle.kts` 140901, `android/README.md`) : le mouvement Android est à faire |
+| Version | 15.1.0 partout (`js/data/reference-data.js`, `sw.js`, `android/app/build.gradle.kts` 150100, `android/README.md`, `changelog.md`) |
 | Base Supabase `gebjmguoauvutiqvoswl` | `20261124_crypto_swap.sql` **appliquée** (par le propriétaire, éditeur SQL) ; `20261125_close_legacy_instant_trades.sql` **appliquée** le 23/11 et `20261126_close_legacy_crypto_to_bank.sql` **appliquée** le 24/11 (anciennes fonctions à prix figés fermées aux utilisateurs, rien supprimé, retours arrière fournis — voir `changelog.md` 14.5.1) |
 | Fonctions Edge | `crypto-swap` v1 (verify_jwt **true**) · `send-email` v59 (verify_jwt **false**, appelée par la base avec `x-webhook-secret`) · `wallet-addresses`, `admin-action` inchangées |
 | Tests web | 9 suites vertes le 24/11 : omw, omx, trade, smoke (138 écrans), shell, bugfix, ios-motion, admin-console, admin-payouts ; mesure `tests/ux/perf-spot.mjs` |
@@ -47,7 +47,7 @@ propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce so
 - **Restes à supprimer — demandent l'accord explicite du propriétaire (la migration est bloquée tant qu'il n'a pas confirmé un DROP)** : fonctions `_topup_sms_claim`, `_topup_sms_done`, `_dispatch_topup_notice`, `admin_topup_list`, `admin_topup_mark_delivered`, `admin_topup_refund` (EXECUTE déjà retiré aux utilisateurs), fonction Edge `topup-notice` (inactive), ligne de réglage `credit_topup_mode`. Rien de réel n'y est lié.
 - **Pas d'écran Android** pour le transfert de crédit : à faire seulement si le propriétaire le demande (circuit administrateur sur le web aujourd'hui).
 
-**Mouvement web 15.1.0** : voir `changelog.md` ; code dans `js/ui/motion.js` + `css/motion.css` ; test `tests/ux/motion.test.mjs`. Règle : tout mouvement respecte « Réduire les animations » (`prefers-reduced-motion` et réglage de l'application) et `html.w-lite`. Cartes virtuelles retirées du web (aucune donnée supprimée). **Reste (Android)** : le jeu équivalent est commencé (`git stash` « WIP » de la session : `core-design/LiveMotion.kt`, `Motion.kt`, `Sheets.kt`, `Components.kt` — non terminé, ne compile pas tant que `CheckGlyph` n'est pas défini) ; à terminer, tester (`gradle testDebugUnitTest`, 53 tests) puis construire l'APK signé.
+**Mouvement 15.1.0 (web + Android)** : voir `changelog.md` ; web : `js/ui/motion.js` + `css/motion.css`, test `tests/ux/motion.test.mjs` ; Android : `core-design/LiveMotion.kt` (LiveTick / LiveText, rememberCountedValue, SlidingSegments, shimmer, SuccessMark, StepBadge, OmPullRefresh), `AreaChart` interactif (Components.kt), `BrandHero` à deux calques, test `app/src/test/.../MotionTest.kt` (8 tests, horloge de test arrêtée : une écriture d'état depuis le test passe par `runOnIdle` + `Snapshot.sendApplyNotifications()`). Règle : tout mouvement respecte « Réduire les animations » (`prefers-reduced-motion` / réglage de l'application ; Android : `LocalOmMotion.reduced`) et `html.w-lite` (web). **Une coche de réussite ne se dessine que sur une vraie confirmation** (jamais sur « en cours »). Cartes virtuelles retirées du web (aucune donnée supprimée ; l'Android n'en avait pas d'écran). Reste : essai sur un vrai téléphone (ressorts, vibrations, indicateur de rafraîchissement).
 
 ## 1 ter. Identité 14.9.0 (25/11) — à lire avant toute retouche de logo ou d'image
 Consigne du propriétaire : « le logo est uniquement pour l'icône, le reste, crée un inédit ». **Deux couches** (détail et emplacements : skill `om-brand`) :

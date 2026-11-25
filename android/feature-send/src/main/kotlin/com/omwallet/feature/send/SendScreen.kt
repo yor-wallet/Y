@@ -168,6 +168,8 @@ fun SendScreen(initialAsset: String?, onBack: () -> Unit, onActivity: () -> Unit
         if (sent != null) {
             item {
                 GlassCard(Modifier.padding(horizontal = 16.dp), strong = true) {
+                    /* the check draws itself ONLY when the transfer is really done (confirmed by the administrator) */
+                    if ((s.sentStage ?: Stage.Pending) == Stage.Done) Box(Modifier.fillMaxWidth().padding(bottom = 8.dp), contentAlignment = Alignment.Center) { com.omwallet.core.design.SuccessMark(size = 64.dp) }
                     Text(stringResource(R.string.send_done_t), style = MaterialTheme.typography.titleLarge, color = OmColors.Ink)
                     Text(sent.amount + " → " + sent.to, style = MaterialTheme.typography.headlineSmall, color = OmColors.Ink)
                     sent.reference?.let { Text(stringResource(R.string.detail_reference) + " " + it, style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary) }

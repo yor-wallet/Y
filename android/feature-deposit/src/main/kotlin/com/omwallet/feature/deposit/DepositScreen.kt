@@ -25,7 +25,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -167,8 +169,11 @@ private fun AddressCard(sym: String, network: String, st: AddressState, retry: (
                 }
                 Text(state.address, style = MaterialTheme.typography.bodyLarge, color = OmColors.Ink, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                 Text(stringResource(R.string.deposit_warning, sym, n.name), style = MaterialTheme.typography.bodySmall, color = OmColors.Warning)
+                /* 15.1.0 — the button itself answers: it turns green and a check is written before « Copied », then it goes back (no toast) */
                 val copied = stringResource(R.string.copied)
-                OmPrimaryButton(stringResource(R.string.copy)) { copy(ctx, state.address); haptics.confirm(); android.widget.Toast.makeText(ctx, copied, android.widget.Toast.LENGTH_SHORT).show() }
+                var done by remember(state.address) { mutableStateOf(false) }
+                androidx.compose.runtime.LaunchedEffect(done) { if (done) { kotlinx.coroutines.delay(1800); done = false } }
+                OmPrimaryButton(stringResource(R.string.copy), successText = if (done) copied else null) { copy(ctx, state.address); haptics.confirm(); done = true }
                 OmSecondaryButton(stringResource(R.string.share)) {
                     ctx.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, state.address), null).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
                 }
@@ -186,7 +191,7 @@ fun qr(text: String): BitMatrix = QRCodeWriter().encode(text, BarcodeFormat.QR_C
 
 /* 14.5.2 — the modules are ALWAYS dark on white, whatever the app theme: a scanner needs that contrast. (14.5.0 drew them with
    the theme's text colour, which became white with the glass look: the code was invisible.) */
-val QR_DARK = Color(0xFF0B1B3F)
+val QR_DARK = Color(0xFF14110A)       // 15.1.0: warm black (the old navy is gone from the identity); still very dark on white = a scanner reads it
 
 @Composable
 private fun QrImage(m: BitMatrix, modifier: Modifier) {

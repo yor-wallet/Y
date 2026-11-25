@@ -59,7 +59,7 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
     const html0 = await page.evaluate(() => document.querySelector('#home [data-omx-total]').innerHTML);
     assert.match(html0, /lt-dec/, 'decimals are in their own span');
     await page.evaluate(() => { const el = document.querySelector('#home [data-omx-total]'); el.innerHTML = '$3,000.50<span class="lt-dec"></span>'.replace('$3,000.50<span class="lt-dec"></span>', '$3,000<span class="lt-dec">.50</span>'); });
-    const seen = new Set(); for (let i = 0; i < 14; i++){ await wait(45); seen.add(await page.evaluate(() => document.querySelector('#home [data-omx-total]').textContent)); }
+    const seen = new Set(); for (let i = 0; i < 24; i++){ await wait(30); seen.add(await page.evaluate(() => document.querySelector('#home [data-omx-total]').textContent)); }
     assert.ok(seen.size > 2, 'the figure rolled through ' + seen.size + ' values');
     await wait(700);
     assert.equal(await page.evaluate(() => document.querySelector('#home [data-omx-total]').textContent), '$3,000.50');

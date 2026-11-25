@@ -177,6 +177,8 @@ class MarketRepository(private val market: MarketApi, private val db: OmDatabase
             }
         }
     }
+    /** One immediate read of all the prices (pull to refresh): the same data as the poll, applied at once. True when the market answered. */
+    suspend fun refreshNow(): Boolean = runCatching { apply(market.tickers(Catalog.pairs)); persist() }.isSuccess
     fun stop() { job?.cancel(); job = null; _state.update { it.copy(mode = if (it.quotes.isEmpty()) FeedMode.Idle else FeedMode.Offline) } }
 
     private suspend fun persist() {

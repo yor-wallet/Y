@@ -119,18 +119,14 @@ fun PinPad(title: String, subtitle: String, error: String?, busy: Boolean, onCom
     }
 }
 
-/* Real-status steps: done / current / to do / failed. The current step pulses only when motion is allowed. */
+/* Real-status steps: done / current / to do / failed. The check is written when a step becomes done; the current step breathes (only when motion is allowed). */
 enum class StepState { Done, Current, Todo, Failed }
 @Composable
 fun StatusSteps(steps: List<Pair<String, StepState>>, modifier: Modifier = Modifier) {
     Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         steps.forEach { (label, st) ->
             Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                val c = when (st) { StepState.Done -> OmColors.Success; StepState.Current -> OmColors.Blue600; StepState.Failed -> OmColors.Error; StepState.Todo -> OmColors.Sky300 }
-                Box(Modifier.size(22.dp).clip(CircleShape).background(if (st == StepState.Todo) Color.Transparent else c).border(2.dp, c, CircleShape), contentAlignment = Alignment.Center) {
-                    if (st == StepState.Done) Text("✓", color = Color.White, style = MaterialTheme.typography.labelSmall)
-                    if (st == StepState.Failed) Text("✕", color = Color.White, style = MaterialTheme.typography.labelSmall)
-                }
+                StepBadge(st)
                 Text(label, style = MaterialTheme.typography.labelSmall, color = if (st == StepState.Todo) OmColors.InkSecondary else OmColors.Ink, textAlign = TextAlign.Center)
             }
         }

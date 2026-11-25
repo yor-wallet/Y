@@ -2,6 +2,7 @@ package com.omwallet.app
 
 import androidx.compose.ui.platform.testTag
 import androidx.compose.foundation.layout.size
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.foundation.shape.CircleShape
 
@@ -180,11 +181,17 @@ fun androidx.compose.foundation.layout.BoxScope.BottomBar(current: Tab?, onTab: 
     val reduced = com.omwallet.core.design.LocalOmMotion.current.reduced
     val top = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp)
     val swapLabel = stringResource(Tab.Swap.label)
+    /* 15.1.0 — a small yellow tab hangs from the top edge of the bar over the active destination and glides (spring) to the next one;
+       it fades out on Activity / Account. Drawn only (no layout); it jumps instead of gliding under « remove animations ». */
+    val slot = Tab.entries.indexOf(current).coerceAtLeast(0)
+    val glide by androidx.compose.animation.core.animateFloatAsState(slot.toFloat(), if (reduced) androidx.compose.animation.core.snap() else OmSprings.standard(), label = "indicator")
+    val shown by androidx.compose.animation.core.animateFloatAsState(if (current != null && current != Tab.Swap) 1f else 0f, androidx.compose.animation.core.tween(if (reduced) 0 else 180), label = "indicator-a")
     Box(Modifier.align(Alignment.BottomCenter).fillMaxWidth()) {
         Row(
             Modifier.fillMaxWidth().padding(top = 24.dp)
                 .androidx_shadow(top).clip(top).background(OmColors.Nav).border(1.dp, OmColors.Edge, top)
-                .navigationBarsPadding().padding(horizontal = 6.dp).height(64.dp),
+                .navigationBarsPadding().padding(horizontal = 6.dp).height(64.dp)
+                .androidx_drawIndicator(glide, shown, Tab.entries.size),
             horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically,
         ) {
             Tab.entries.forEach { t ->
@@ -213,5 +220,12 @@ fun androidx.compose.foundation.layout.BoxScope.BottomBar(current: Tab?, onTab: 
         ) { OmIcon(Tab.Swap.icon, null, tint = OmColors.OnAccent, size = 26.dp) }
     }
 }
+
+private fun Modifier.androidx_drawIndicator(slot: Float, alpha: Float, count: Int) = this.then(Modifier.androidx_drawBehind {
+    if (alpha <= 0.01f) return@androidx_drawBehind
+    val cx = (slot + 0.5f) / count * size.width
+    drawRoundRect(OmColors.Blue600.copy(alpha = alpha), androidx.compose.ui.geometry.Offset(cx - 14.dp.toPx(), -1.dp.toPx()), androidx.compose.ui.geometry.Size(28.dp.toPx(), 3.5.dp.toPx()), androidx.compose.ui.geometry.CornerRadius(2.dp.toPx()))
+})
+private fun Modifier.androidx_drawBehind(block: androidx.compose.ui.graphics.drawscope.DrawScope.() -> Unit) = this.then(Modifier.drawBehind(block))
 
 private fun Modifier.androidx_shadow(shape: androidx.compose.ui.graphics.Shape) = this.then(Modifier.shadow(24.dp, shape, ambientColor = Color(0x66000000), spotColor = Color(0x99000000)))

@@ -25,6 +25,8 @@ object OmSprings {
 /* Native haptics: action-oriented predefined effects, never long "buzzy" vibrations. CONFIRM / REJECT exist from Android 11 (API 30). */
 class OmHaptics(private val view: View) {
     fun tap() { view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY) }
+    /** a very light tick while a finger moves over a chart or a slider */
+    fun tick() { view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK) }
     fun confirm() {
         view.performHapticFeedback(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) HapticFeedbackConstants.CONFIRM else HapticFeedbackConstants.CONTEXT_CLICK)
     }

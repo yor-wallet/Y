@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.offset
 import com.omwallet.core.design.LogoMark
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloat
 import kotlinx.coroutines.delay
 import com.omwallet.core.design.riseIn
@@ -30,9 +29,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.Image
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -85,7 +81,14 @@ import com.omwallet.core.design.OmIcon
 import com.omwallet.core.design.OmIcons
 import com.omwallet.core.design.OmRadius
 import com.omwallet.core.design.SectionTitle
+import com.omwallet.core.design.LiveText
+import com.omwallet.core.design.OmPullRefresh
+import com.omwallet.core.design.holdRefresh
 import com.omwallet.core.design.SkeletonRows
+import com.omwallet.core.design.SlidingSegments
+import com.omwallet.core.design.rememberCountedValue
+import com.omwallet.core.design.rememberLiveTick
+import com.omwallet.core.design.shimmer
 import com.omwallet.core.design.pressable
 import com.omwallet.core.design.rememberOmHaptics
 import com.omwallet.core.ui.FeedBadge
@@ -146,6 +149,8 @@ class HomeViewModel(private val g: OmGraph) : ViewModel() {
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeUiState())
 
     fun refresh() = viewModelScope.launch { g.auth.userId?.let { g.wallet.refresh(it) } }
+    /** pull to refresh: the account (balances, activity) AND the live prices are really read again */
+    suspend fun reload() { g.auth.userId?.let { g.wallet.refresh(it) }; g.market.refreshNow() }
     fun toggleHidden() = viewModelScope.launch { g.prefs.setHidden(!state.value.prefs.hideBalance) }
     fun toggleCurrency() = viewModelScope.launch { g.prefs.setCurrency(if (state.value.prefs.currency == DisplayCurrency.USD) DisplayCurrency.OMR else DisplayCurrency.USD) }
 }
@@ -160,10 +165,13 @@ fun HomeScreen(actions: HomeActions, contentPadding: PaddingValues) {
     LaunchedEffect(Unit) { vm.refresh() }
     var detail by remember { mutableStateOf<Tx?>(null) }
     val haptics = rememberOmHaptics()
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    var refreshing by remember { mutableStateOf(false) }
 
     /* 14.7.0 — composition of the owner's reference image, with the real content: a blue-violet header with the balance, three round
        actions overlapping its edge, the biggest market moves, the favourites, then the recent activity. Every figure comes from the
        server (balances) or the live market (prices, 24 h changes); nothing is invented. */
+    OmPullRefresh(refreshing, { scope.launch { refreshing = true; try { holdRefresh { vm.reload() } } finally { refreshing = false } } }) {
     LazyColumn(Modifier.fillMaxSize(), contentPadding = contentPadding, verticalArrangement = Arrangement.spacedBy(14.dp)) {
         item {
             /* 14.8.0 — Liv X / Binance: header buttons, a small-caps label, the big balance with light decimals, the 24 h change, then
@@ -191,14 +199,13 @@ fun HomeScreen(actions: HomeActions, contentPadding: PaddingValues) {
                         contentAlignment = Alignment.Center,
                     ) { OmIcon(if (s.prefs.hideBalance) OmIcons.EyeOff else OmIcons.Eye, null, tint = OmColors.InkSecondary, size = 18.dp) }
                 }
-                if (s.loading) Box(Modifier.padding(vertical = 8.dp).width(180.dp).height(34.dp).clip(RoundedCornerShape(10.dp)).background(OmColors.Track))
-                else AnimatedContent(money(s.totalUsd, s.prefs.currency, s.prefs.hideBalance), transitionSpec = { fadeIn() togetherWith fadeOut() }, label = "total") { v ->
-                    Text(lightDecimals(v), style = MaterialTheme.typography.displayLarge, color = OmColors.Ink, maxLines = 1, modifier = Modifier.padding(top = 2.dp).semantics { contentDescription = v })
-                }
+                if (s.loading) Box(Modifier.padding(vertical = 8.dp).width(180.dp).height(34.dp).clip(RoundedCornerShape(10.dp)).background(OmColors.Track).shimmer())
+                else BalanceText(s.totalUsd, s.prefs.currency, s.prefs.hideBalance)
                 Row(Modifier.padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     s.change24h?.let { c ->
                         val d = stringResource(R.string.home_change_24h)
-                        Text(Fmt.pct(c), style = MaterialTheme.typography.labelMedium, color = if (c >= 0) OmColors.Success else OmColors.Error,
+                        val tick = rememberLiveTick(c, Fmt.pct(c))
+                        LiveText(Fmt.pct(c), tick, style = MaterialTheme.typography.labelMedium, base = if (c >= 0) OmColors.Success else OmColors.Error,
                             modifier = Modifier.clip(RoundedCornerShape(50)).background(if (c >= 0) OmColors.ChipUp else OmColors.ChipDown)
                                 .padding(horizontal = 10.dp, vertical = 3.dp).semantics { contentDescription = d + " " + Fmt.pct(c) })
                     }
@@ -249,7 +256,18 @@ fun HomeScreen(actions: HomeActions, contentPadding: PaddingValues) {
             }
         }
     }
+    }
     detail?.let { TxDetailSheet(it, s.prefs.hideBalance) { detail = null } }
+}
+
+/* The balance (15.1.0): it counts up from zero when it first appears (and each time the eye is opened), rolls to every new value instead of jumping,
+   and flashes green / red for the direction of a live move. Only this Text is recomposed while it counts. TalkBack reads the final figure. */
+@Composable
+private fun BalanceText(totalUsd: Double?, cur: DisplayCurrency, hidden: Boolean) {
+    val shown = rememberCountedValue(totalUsd, resetKey = cur, restartKey = hidden)
+    val final = money(totalUsd, cur, hidden)
+    val tick = rememberLiveTick(totalUsd, final)
+    LiveText(lightDecimals(money(shown, cur, hidden)), tick, style = MaterialTheme.typography.displayLarge, modifier = Modifier.padding(top = 2.dp).semantics { contentDescription = final })
 }
 
 /* The balance with its decimals in a lighter weight (Liv X / Binance); the characters are exactly those of the figure. */
@@ -285,9 +303,11 @@ private fun MoverCard(q: Quote, hidden: Boolean, onClick: () -> Unit) {
             AssetLogo(q.sym, 30.dp)
             Text(Catalog.asset(q.sym)?.name ?: q.sym, style = MaterialTheme.typography.titleSmall, color = OmColors.Ink, maxLines = 1)
         }
-        Text(q.sym + "  " + Fmt.money(q.price), style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary, maxLines = 1)
+        val priceTick = rememberLiveTick(q.price, Fmt.money(q.price))
+        val pctTick = rememberLiveTick(q.changePct, Fmt.pct(q.changePct))
+        LiveText(q.sym + "  " + Fmt.money(q.price), priceTick, style = MaterialTheme.typography.bodySmall, base = OmColors.InkSecondary)
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Text(Fmt.pct(q.changePct), style = MaterialTheme.typography.titleLarge, color = if (up) OmColors.Success else OmColors.Error, modifier = Modifier.weight(1f), maxLines = 1)
+            LiveText(Fmt.pct(q.changePct), pctTick, style = MaterialTheme.typography.titleLarge, base = if (up) OmColors.Success else OmColors.Error, modifier = Modifier.weight(1f))
             MiniSpark(q.sym, up)
         }
     }
@@ -301,29 +321,21 @@ fun QuoteRow(q: Quote, onClick: () -> Unit) {
         AssetLogo(q.sym, 42.dp)
         Column(Modifier.weight(1f)) {
             Text(Catalog.asset(q.sym)?.name ?: q.sym, style = MaterialTheme.typography.titleSmall, color = OmColors.Ink, maxLines = 1)
-            Text(Fmt.pct(q.changePct) + " (24 h)", style = MaterialTheme.typography.bodySmall, color = if (up) OmColors.Success else OmColors.Error)
+            LiveText(Fmt.pct(q.changePct) + " (24 h)", rememberLiveTick(q.changePct, Fmt.pct(q.changePct)), style = MaterialTheme.typography.bodySmall, base = if (up) OmColors.Success else OmColors.Error)
         }
         MiniSpark(q.sym, up)
-        Text(Fmt.money(q.price), style = MaterialTheme.typography.titleSmall, color = OmColors.Ink, textAlign = TextAlign.End, modifier = Modifier.width(96.dp))
+        LiveText(Fmt.money(q.price), rememberLiveTick(q.price, Fmt.money(q.price)), style = MaterialTheme.typography.titleSmall, textAlign = TextAlign.End, modifier = Modifier.width(96.dp))
     }
 }
 
 
-/* USD / OMR selector: a two-segment switch; the active segment slides (spring), the other stays readable. */
+/* USD / OMR selector: a two-option switch; the yellow pill glides (spring) to the active option. Any tap toggles, as before. */
 @Composable
 private fun CurrencyPill(cur: DisplayCurrency, onClick: () -> Unit) {
     val desc = stringResource(R.string.acc_currency)
-    Row(
-        Modifier.clip(RoundedCornerShape(50)).background(OmColors.Sky100).pressable(role = Role.Switch, onClick = onClick).padding(3.dp)
-            .semantics { contentDescription = desc + " " + cur.name },
-    ) {
-        listOf(DisplayCurrency.USD, DisplayCurrency.OMR).forEach { c ->
-            val on = c == cur
-            Box(Modifier.clip(RoundedCornerShape(50)).background(if (on) OmColors.Blue600 else androidx.compose.ui.graphics.Color.Transparent).padding(horizontal = 10.dp, vertical = 4.dp)) {
-                Text(c.name, style = MaterialTheme.typography.labelMedium, color = if (on) OmColors.OnAccent else OmColors.InkSecondary)
-            }
-        }
-    }
+    SlidingSegments(
+        listOf(DisplayCurrency.USD.name, DisplayCurrency.OMR.name), if (cur == DisplayCurrency.USD) 0 else 1, { onClick() },
+        Modifier.semantics { contentDescription = desc + " " + cur.name }, pill = Brush.verticalGradient(listOf(OmColors.Blue600, OmColors.Blue600)),
+        style = MaterialTheme.typography.labelMedium, hPad = 10.dp, vPad = 4.dp,
+    )
 }
-
-

@@ -25,6 +25,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
@@ -121,8 +123,17 @@ fun FeedBadge(mode: FeedMode, lastSync: Long, modifier: Modifier = Modifier) {
     }
     val reduced = LocalOmMotion.current.reduced
     val a by animateFloatAsState(if (mode == FeedMode.Live || reduced) 1f else 0.6f, OmSprings.fade(), label = "feed")
+    /* 15.1.0 — a live feed breathes: a ring spreads out of the dot, and the dot beats each time fresh prices arrive. Still under « remove animations ». */
+    val ring = if (mode == FeedMode.Live && !reduced) androidx.compose.animation.core.rememberInfiniteTransition(label = "feed-ring")
+        .animateFloat(0f, 1f, androidx.compose.animation.core.infiniteRepeatable(androidx.compose.animation.core.tween(1800, easing = androidx.compose.animation.core.LinearEasing)), label = "ring") else null
+    val beat = remember { androidx.compose.animation.core.Animatable(0f) }
+    LaunchedEffect(lastSync, mode) { if (!reduced && mode == FeedMode.Live) { beat.snapTo(1f); beat.animateTo(0f, androidx.compose.animation.core.tween(500)) } }
     Row(modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-        Box(Modifier.size(8.dp).graphicsLayer { alpha = a }.clip(CircleShape).background(color))
+        androidx.compose.foundation.Canvas(Modifier.size(16.dp).graphicsLayer { alpha = a }) {
+            val c = center
+            ring?.let { r -> drawCircle(color.copy(alpha = 0.45f * (1f - r.value)), radius = 4.dp.toPx() + 4.dp.toPx() * r.value, center = c) }
+            drawCircle(color, radius = 4.dp.toPx() * (1f + 0.4f * beat.value), center = c)
+        }
         Text(txt, style = MaterialTheme.typography.labelMedium, color = OmColors.InkSecondary)
     }
 }
