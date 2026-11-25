@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /offline.html
 Disallow: /404.html
+Sitemap: https://yor-wallet.vercel.app/sitemap.xml

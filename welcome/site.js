@@ -20,7 +20,7 @@
       'f4.t':'Send to a user','f4.p':'Send crypto to another OM Wallet user with their ID or e-mail address, with no blockchain address to copy.',
       'f5.t':'Bank and crypto withdrawals','f5.p':'Withdraw to a bank account in Omani rial or to a crypto address. Every request is followed step by step.',
       'f6.t':'Arabic, English, French','f6.p':'The app and the e-mails speak your language, with a right-to-left layout for Arabic.',
-      'sh.eyebrow':'The app','sh.title':'Designed for the phone','sh.lead':'A clear glass-and-blue interface, readable amounts, and the status of every operation always visible: submitted, in progress, confirmed.',
+      'sh.eyebrow':'The app','sh.title':'Designed for the phone','sh.lead':'A dark, clear interface with yellow accents, readable amounts, and the status of every operation always visible: submitted, in progress, confirmed.',
       'tab.home':'Home','tab.markets':'Markets','tab.spot':'Spot','tab.swap':'Swap','sh.note':'Real screenshots of the app (sample data).',
       'hw.eyebrow':'Get started','hw.title':'Three steps',
       's1.t':'Create your account','s1.p':'Name, e-mail, phone number and password. Confirm your e-mail address with the link you receive.',
@@ -58,7 +58,7 @@
       'f4.t':'الإرسال إلى مستخدم','f4.p':'أرسل العملات الرقمية إلى مستخدم آخر في OM Wallet بمعرّفه أو بريده الإلكتروني، دون نسخ عنوان بلوكشين.',
       'f5.t':'سحب إلى البنك أو بالعملات الرقمية','f5.p':'اسحب إلى حساب مصرفي بالريال العُماني أو إلى عنوان عملة رقمية. تُتابَع كل عملية خطوة بخطوة.',
       'f6.t':'العربية والإنجليزية والفرنسية','f6.p':'التطبيق والرسائل الإلكترونية بلغتك، مع اتجاه من اليمين إلى اليسار للعربية.',
-      'sh.eyebrow':'التطبيق','sh.title':'مصمَّم للهاتف','sh.lead':'واجهة واضحة من الزجاج والأزرق، ومبالغ سهلة القراءة، وحالة كل عملية ظاهرة دائماً: مُرسلة، قيد التنفيذ، مؤكدة.',
+      'sh.eyebrow':'التطبيق','sh.title':'مصمَّم للهاتف','sh.lead':'واجهة داكنة وواضحة بلمسات صفراء، ومبالغ سهلة القراءة، وحالة كل عملية ظاهرة دائماً: مُرسلة، قيد التنفيذ، مؤكدة.',
       'tab.home':'الرئيسية','tab.markets':'الأسواق','tab.spot':'سبوت','tab.swap':'تبديل','sh.note':'لقطات حقيقية من التطبيق (بيانات توضيحية).',
       'hw.eyebrow':'ابدأ','hw.title':'ثلاث خطوات',
       's1.t':'أنشئ حسابك','s1.p':'الاسم والبريد الإلكتروني ورقم الهاتف وكلمة المرور. أكّد بريدك عبر الرابط الذي يصلك.',
@@ -87,7 +87,7 @@
   FR['mk.live'] = 'En direct · mis à jour à {t}'; FR['mk.off'] = 'Cours indisponibles pour le moment'; FR['mk.stale'] = 'Dernier cours relevé à {t}';
   T.fr = FR;
   const store = { get(){ try { return localStorage.getItem('omw.site.lang'); } catch(e){ return null; } }, set(v){ try { localStorage.setItem('omw.site.lang', v); } catch(e){} } };
-  const pick = () => { const s = store.get(); if (s && T[s]) return s; const n = (navigator.language || 'fr').slice(0, 2); return T[n] ? n : 'fr'; };
+  const pick = () => { const q = (new URLSearchParams(location.search).get('lang') || '').slice(0, 2); if (T[q]) { store.set(q); return q; } const s = store.get(); if (s && T[s]) return s; const n = (navigator.language || 'fr').slice(0, 2); return T[n] ? n : 'fr'; };
   let lang = pick(), shot = 'home';
   const t = k => (T[lang] && T[lang][k]) || FR[k] || '';
 
@@ -137,11 +137,21 @@
       if (M.state === 'off') box.innerHTML = '';
       return;
     }
-    box.innerHTML = M.rows.map(r => {
-      const up = r.pct >= 0, ch = M.prev[r.sym] != null && M.prev[r.sym] !== r.price;
-      return '<div class="tk" role="listitem"><div class="tk-h"><img src="/assets/crypto/tokens/' + r.sym + '.svg" alt="" width="32" height="32" loading="lazy"><div><b>' + r.sym + '</b><small>' + r.name + '</small></div></div>' +
-        '<div class="tk-p' + (ch ? ' flash' : '') + '">$' + fmt(r.price) + '</div><div class="tk-c ' + (up ? 'up' : 'down') + '">' + (up ? '+' : '') + r.pct.toFixed(2) + '%</div></div>';
-    }).join('');
+    const built = box.querySelectorAll('.tk[data-sym]').length === M.rows.length;
+    if (!built){
+      box.innerHTML = M.rows.map(r => '<div class="tk" role="listitem" data-sym="' + r.sym + '"><div class="tk-h"><img src="/assets/crypto/tokens/' + r.sym + '.svg" alt="" width="32" height="32" loading="lazy"><div><b>' + r.sym + '</b><small>' + r.name + '</small></div></div>' +
+        '<div class="tk-p"></div><div class="tk-c"></div></div>').join('');
+    }
+    M.rows.forEach(r => {                           /* update in place: the card stays, the figure moves */
+      const card = box.querySelector('.tk[data-sym="' + r.sym + '"]'); if (!card) return;
+      const p = card.querySelector('.tk-p'), c = card.querySelector('.tk-c'), up = r.pct >= 0;
+      const text = '$' + fmt(r.price), was = M.prev[r.sym];
+      if (p.textContent !== text){
+        p.textContent = text;
+        if (built && was != null && was !== r.price){ const cls = r.price > was ? 'flash-up' : 'flash-down'; p.classList.remove('flash-up', 'flash-down'); void p.offsetWidth; p.classList.add(cls); }
+      }
+      c.className = 'tk-c ' + (up ? 'up' : 'down'); c.textContent = (up ? '+' : '') + r.pct.toFixed(2) + '%';
+    });
   }
   async function load(){
     if (document.visibilityState === 'hidden') return;

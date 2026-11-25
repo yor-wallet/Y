@@ -5,15 +5,23 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>OM Wallet — Portefeuille crypto simple et sûr</title>
 <meta name="description" content="OM Wallet : votre portefeuille crypto en arabe, anglais et français. Adresse de dépôt personnelle avec QR code, échange à prix fixé, marchés en direct, retraits vers la banque ou en crypto.">
-<meta name="theme-color" content="#1A6FE6">
+<meta name="theme-color" content="#0B0A07">
+<link rel="canonical" href="https://yor-wallet.vercel.app/welcome">
 <link rel="icon" href="/public/branding/om-wallet-favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/public/branding/apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="OM Wallet">
+<meta property="og:url" content="https://yor-wallet.vercel.app/welcome">
 <meta property="og:title" content="OM Wallet — Portefeuille crypto simple et sûr">
 <meta property="og:description" content="Déposez, échangez et suivez vos cryptos en arabe, anglais et français.">
-<meta property="og:image" content="/public/branding/om-wallet-icon-1024.png">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://yor-wallet.vercel.app/assets/share/og-fr.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://yor-wallet.vercel.app/assets/share/og-fr.png">
+<link rel="alternate" hreflang="fr" href="https://yor-wallet.vercel.app/welcome?lang=fr">
+<link rel="alternate" hreflang="en" href="https://yor-wallet.vercel.app/welcome?lang=en">
+<link rel="alternate" hreflang="ar" href="https://yor-wallet.vercel.app/welcome?lang=ar">
 <link rel="preload" href="/assets/fonts/sora-latin-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/welcome/site.css">
 </head>
@@ -59,9 +67,11 @@
         </ul>
       </div>
       <div class="hero-art" aria-hidden="true">
+        <div class="aura"><img class="arches" src="/welcome/img/aura.webp" alt="" width="720" height="720" decoding="async" fetchpriority="low"><img class="sparks" src="/assets/brand/om-hero-sparks.svg" alt="" width="600" height="600" decoding="async"></div>
         <div class="glow"></div>
-        <figure class="phone p-back"><img data-shot="spot" src="/welcome/img/spot-fr.webp" alt="" width="300" height="649" decoding="async"></figure>
-        <figure class="phone p-front"><img data-shot="home" src="/welcome/img/home-fr.webp" alt="" width="300" height="649" decoding="async" fetchpriority="high"></figure>
+        <img class="coin-float" src="/welcome/img/coin.webp" alt="" width="212" height="212" decoding="async">
+        <figure class="phone p-back"><img data-shot="spot" src="/welcome/img/spot-fr.webp" alt="" width="300" height="650" decoding="async"></figure>
+        <figure class="phone p-front"><img data-shot="home" src="/welcome/img/home-fr.webp" alt="" width="300" height="650" decoding="async" fetchpriority="high"></figure>
         <div class="chip chip-live"><span class="dot"></span><span data-i="chip.live">Cours en direct · Binance</span></div>
         <div class="chip chip-ok"><span class="tick">✓</span><span data-i="chip.ok">Échange confirmé</span></div>
       </div>
@@ -110,7 +120,7 @@
       <div class="show-copy">
         <p class="eyebrow" data-i="sh.eyebrow">L’application</p>
         <h2 id="sh-t" data-i="sh.title">Pensée pour le téléphone</h2>
-        <p class="lead" data-i="sh.lead">Une interface claire en verre et bleu, des montants lisibles, et l’état de chaque opération toujours visible : soumise, en cours, confirmée.</p>
+        <p class="lead" data-i="sh.lead">Une interface sombre et claire, rehaussée de jaune, des montants lisibles, et l’état de chaque opération toujours visible : soumise, en cours, confirmée.</p>
         <div class="tabs" role="tablist" aria-label="Écrans">
           <button role="tab" aria-selected="true" data-tab="home" data-i="tab.home">Accueil</button>
           <button role="tab" aria-selected="false" data-tab="markets" data-i="tab.markets">Marchés</button>
@@ -119,7 +129,7 @@
         </div>
         <p class="note" data-i="sh.note">Captures réelles de l’application (données d’exemple).</p>
       </div>
-      <figure class="phone p-show"><img id="show-img" src="/welcome/img/home-fr.webp" alt="" width="300" height="649" loading="lazy" decoding="async"></figure>
+      <figure class="phone p-show"><img id="show-img" src="/welcome/img/home-fr.webp" alt="" width="300" height="650" loading="lazy" decoding="async"></figure>
     </div>
   </section>
 
