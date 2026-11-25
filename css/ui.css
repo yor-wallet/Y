@@ -242,9 +242,14 @@ html body .toast.success{background:var(--pos);color:#fff}
 html body .toast.error{background:var(--neg);color:#fff}
 @keyframes uiToast{from{opacity:0;transform:translateY(-24px) scale(.9)}to{opacity:1;transform:none}}
 html body .notif-ios,html body .notif-call{border-radius:18px;background:var(--mat);-webkit-backdrop-filter:saturate(1.8) blur(28px);backdrop-filter:saturate(1.8) blur(28px);border:.5px solid var(--sep);box-shadow:var(--shadow)}
-#ios-ptr{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 6px);z-index:300;width:28px;height:28px;margin:0;opacity:0;pointer-events:none;color:var(--ink-2);transform:translate3d(-50%,0,0);transition:opacity .2s ease,transform .3s var(--ios-smooth)}
-#ios-ptr line{stroke:currentColor;stroke-width:3;stroke-linecap:round}
-#ios-ptr.spin svg{animation:uiSpin .9s steps(12) infinite}
+#ios-ptr{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 6px);z-index:300;width:36px;height:36px;margin:0;opacity:0;pointer-events:none;transform:translate3d(-50%,0,0);transition:opacity .2s ease,transform .3s var(--ios-smooth);filter:drop-shadow(0 6px 14px rgba(0,0,0,.35))}
+#ios-ptr .pt-track{fill:none;stroke:var(--lt-edge,#2F2D26);stroke-width:3.4;stroke-linecap:round}
+#ios-ptr .pt-arch{fill:none;stroke:var(--lt-yellow,#FFC800);stroke-width:3.4;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1}
+#ios-ptr .pt-coin{fill:var(--lt-yellow,#FFC800);opacity:0;transform-box:fill-box;transform-origin:center}
+#ios-ptr.spin .pt-coin{animation:ptFlip .8s ease-in-out infinite}
+#ios-ptr.spin .pt-arch{animation:ptGlow 1.2s ease-in-out infinite}
+@keyframes ptFlip{0%,100%{transform:scaleX(1)}50%{transform:scaleX(.12)}}
+@keyframes ptGlow{0%,100%{opacity:1}50%{opacity:.55}}
 @keyframes uiSpin{to{transform:rotate(360deg)}}
 
 /* ---------- 9. send flow ---------- */

@@ -322,22 +322,21 @@ const IOS = (() => {
     scan();
   }
 
-  /* ---------- pull to refresh (iOS activity indicator) ---------- */
+  /* ---------- pull to refresh: the OM Wallet arch fills as you pull, the coin flips while it loads (14.10.0; markets and wallet added) ---------- */
   function pullToRefresh(){
-    const OK = { home:1, history:1, notifications:1 };
-    const TICKS = 12, R0 = 7, R1 = 12;
+    const OK = { home:1, history:1, notifications:1, wallet:1, markets:1, asset:1 };
+    const LIVE = { wallet:1, markets:1, asset:1, home:1 };          /* these also reload the live prices */
     const ind = D.createElement('div'); ind.id = 'ios-ptr'; ind.setAttribute('aria-hidden', 'true');
-    let ticks = ''; for (let i = 0; i < TICKS; i++){ const a = i * 360 / TICKS; ticks += '<line x1="20" y1="' + (20 - R1) + '" x2="20" y2="' + (20 - R0) + '" transform="rotate(' + a + ' 20 20)"/>'; }
-    ind.innerHTML = '<svg viewBox="0 0 40 40" width="28" height="28">' + ticks + '</svg>';
+    ind.innerHTML = '<svg viewBox="0 0 40 40" width="36" height="36"><path class="pt-track" d="M9 37V19a11 11 0 0 1 22 0V37"/><path class="pt-arch" pathLength="1" d="M9 37V19a11 11 0 0 1 22 0V37"/><circle class="pt-coin" cx="20" cy="28" r="5.4"/></svg>';
     D.body.appendChild(ind);
-    const lines = ind.querySelectorAll('line');
+    const arch = ind.querySelector('.pt-arch'), coin = ind.querySelector('.pt-coin');
     let g = null, busy = false;
     const paint = (dy, spin) => {
       const p = clamp(dy / 74, 0, 1);
       ind.style.opacity = String(spin ? 1 : clamp(p * 1.4, 0, 1));
       ind.style.transform = 'translate3d(-50%,' + (spin ? 62 : dy * .85) + 'px,0)';
       ind.classList.toggle('spin', !!spin);
-      if (!spin) lines.forEach((l, i) => { l.style.opacity = String(i / TICKS < p ? 1 : .22); });
+      arch.style.strokeDashoffset = String(spin ? 0 : 1 - p); coin.style.opacity = String(spin ? 1 : clamp((p - .3) / .7, 0, 1)); if (!spin) coin.style.transform = 'scale(' + (.55 + .45 * p).toFixed(3) + ')';
     };
     D.addEventListener('touchstart', e => {
       if (busy || e.touches.length !== 1) return;
@@ -367,9 +366,9 @@ const IOS = (() => {
       if (s.dy < 74){ paint(0, false); ind.style.opacity = '0'; return; }
       busy = true; paint(74, true); Haptics.light();
       const t0 = Date.now(); let ok = true;
-      try { await AuthEngine.hydrateRuntime(); } catch(e){ ok = false; }
+      try { const jobs = [AuthEngine.hydrateRuntime()]; if (LIVE[s.scr.id] && typeof OMXMarket !== 'undefined') jobs.push(OMXMarket.refresh()); await Promise.all(jobs); } catch(e){ ok = false; }
       const rest = 650 - (Date.now() - t0); if (rest > 0) await new Promise(r => setTimeout(r, rest));
-      try { const cur = R.current(); if (ok && OK[cur]) R.go(cur, { force: true }); else if (!ok && typeof toast === 'function') toast(t('res.toast'), 'error'); } catch(e){ fail(e); }
+      try { const cur = R.current(); if (ok && OK[cur] && cur !== 'markets' && cur !== 'asset') R.go(cur, { force: true });       /* markets / asset are patched in place by the live feed */ else if (!ok && typeof toast === 'function') toast(t('res.toast'), 'error'); } catch(e){ fail(e); }
       if (ok) Haptics.success();
       paint(0, false); ind.style.opacity = '0'; ind.classList.remove('spin'); busy = false;
     };

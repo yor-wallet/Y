@@ -87,6 +87,10 @@ def svg_page(name, svg, w, h, bg='transparent', transparent=True, scale=1):
 
 p_hero_d = svg_page('hero-dark', A.hero_svg('dark', 'hd'), 1024, 1024)
 p_hero_l = svg_page('hero-light', A.hero_svg('light', 'hl'), 1024, 1024)
+p_hbg_d = svg_page('hero-bg-dark', A.hero_svg('dark', 'bd', 'bg'), 1024, 1024)
+p_hbg_l = svg_page('hero-bg-light', A.hero_svg('light', 'bl', 'bg'), 1024, 1024)
+p_hcoin_d = svg_page('hero-coin-dark', A.hero_svg('dark', 'cd', 'coin'), 1024, 1024)
+p_hcoin_l = svg_page('hero-coin-light', A.hero_svg('light', 'cl', 'coin'), 1024, 1024)
 p_mark_d = svg_page('mark-dark', A.mark_svg('dark', 'md'), 512, 512)
 p_mark_l = svg_page('mark-light', A.mark_svg('light', 'ml'), 512, 512)
 p_lk_dark, p_lk_light = lockup('dark'), lockup('light')
@@ -149,6 +153,10 @@ for im, rel in ((lk_light, 'assets/brand/om-logo-horizontal.png'), (lk_dark, 'as
 trim(Image.open(p_wm_white).convert('RGBA'), 4).save(dest('assets/brand/om-wordmark-white.png'), optimize=True)
 for src, rel in ((p_hero_d, 'assets/brand/om-hero.webp'), (p_hero_l, 'assets/brand/om-hero-light.webp')):
     Image.open(src).convert('RGBA').save(dest(rel), 'WEBP', quality=90, alpha_quality=92, method=6)
+# web — hero in layers (the coin floats over the arches, the sparkles twinkle: css/motion.css)
+for src, rel in ((p_hbg_d, 'assets/brand/om-hero-bg.webp'), (p_hbg_l, 'assets/brand/om-hero-bg-light.webp'), (p_hcoin_d, 'assets/brand/om-hero-coin.webp'), (p_hcoin_l, 'assets/brand/om-hero-coin-light.webp')):
+    Image.open(src).convert('RGBA').save(dest(rel), 'WEBP', quality=90, alpha_quality=92, method=6)
+open(dest('assets/brand/om-hero-sparks.svg'), 'w').write(A.hero_svg('dark', 's', 'sparks')); open(dest('assets/brand/om-hero-sparks-light.svg'), 'w').write(A.hero_svg('light', 's', 'sparks'))
 # web — startup and share images
 for src, f in splash: Image.open(src).convert('RGB').save(dest(os.path.relpath(f, ROOT)), quality=90, optimize=True)
 for src, rel in og: Image.open(src).convert('RGB').save(dest(rel), optimize=True)
@@ -160,6 +168,8 @@ lk_dark.resize((560, round(lk_dark.height * 560 / lk_dark.width)), Image.LANCZOS
 hero900 = Image.open(p_hero_d).convert('RGBA').resize((900, 900), Image.LANCZOS)
 hero900.save(dest(R + 'om_hero.webp'), 'WEBP', quality=90, alpha_quality=92, method=6)
 Image.open(p_empty).convert('RGBA').save(dest(CD + 'om_empty.png'), optimize=True)                 # empty states (Android: dark pages only)
+for src, rel in ((p_hbg_d, R + 'om_hero_bg.webp'), (p_hcoin_d, R + 'om_hero_coin.webp')):
+    Image.open(src).convert('RGBA').resize((900, 900), Image.LANCZOS).save(dest(rel), 'WEBP', quality=90, alpha_quality=92, method=6)
 # Android 12 splash icon: the mark must stay inside the central circle (2/3 of the canvas)
 canvas = Image.new('RGBA', (432, 432), (0, 0, 0, 0)); mk = Image.open(p_mark_d).convert('RGBA').resize((int(432 * .62),) * 2, Image.LANCZOS)
 canvas.alpha_composite(mk, ((432 - mk.width) // 2, (432 - mk.height) // 2)); canvas.save(dest(R + 'ic_splash.png'), optimize=True)

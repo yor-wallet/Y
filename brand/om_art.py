@@ -62,59 +62,61 @@ def coin_svg(v='dark', p='k'):
 
 
 # ---------------------------------------------------------------- the hero (1200 × 1200) --------------------------------------------------
-def hero_svg(v='dark', p='h'):
-    """Receding arches around a glowing coin, on a transparent background (the page colour shows through)."""
+def hero_svg(v='dark', p='h', layers='all'):
+    """Receding arches around a glowing coin, on a transparent background (the page colour shows through).
+       layers: 'all' (one picture), or 'bg' (arches, halo, floor, shadow), 'coin' (the coin and its glow), 'sparks' (the sparkles, each one twinkles by itself)
+       — the three layers are drawn on the same 1200 x 1200 canvas, so they stack exactly and the coin can float over the rest."""
     dark = v == 'dark'
     base_y, cxm = 1010, 600
     glow_a, glow_b = (YEL, '#FFD84A') if dark else ('#FFC800', '#FFD84A')
     stroke_hi, stroke_lo = (YEL_HI, YEL_LO) if dark else ('#B67C00', '#8A6500')
     main_a, main_b = ((YEL_HI, YEL_LO) if dark else ('#2E2819', '#14110A'))
     spark = '#FFF3B8' if dark else '#B67C00'
-    d = []
-    d.append('<defs>')
-    d.append(f'<radialGradient id="{p}g1" cx="600" cy="660" r="560" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="{glow_a}" stop-opacity="{.34 if dark else .45}"/>'
-             f'<stop offset=".55" stop-color="{glow_a}" stop-opacity="{.10 if dark else .16}"/><stop offset="1" stop-color="{glow_a}" stop-opacity="0"/></radialGradient>')
-    d.append(f'<radialGradient id="{p}g2" cx="600" cy="800" r="270" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="{glow_b}" stop-opacity="{.5 if dark else .6}"/>'
-             f'<stop offset="1" stop-color="{glow_b}" stop-opacity="0"/></radialGradient>')
-    # arches fade out toward the floor so they dissolve instead of standing on a line
-    d.append(f'<linearGradient id="{p}fa" gradientUnits="userSpaceOnUse" x1="0" y1="80" x2="0" y2="{base_y}"><stop offset="0" stop-color="{stroke_hi}"/><stop offset=".62" stop-color="{stroke_lo}" stop-opacity=".85"/><stop offset="1" stop-color="{stroke_lo}" stop-opacity="0"/></linearGradient>')
-    d.append(f'<linearGradient id="{p}ma" gradientUnits="userSpaceOnUse" x1="0" y1="600" x2="0" y2="{base_y}"><stop offset="0" stop-color="{main_a}"/><stop offset=".6" stop-color="{main_b}"/><stop offset=".9" stop-color="{main_b}"/><stop offset="1" stop-color="{main_b}" stop-opacity=".0"/></linearGradient>')
-    d.append(f'<radialGradient id="{p}c" cx=".34" cy=".28" r=".85"><stop offset="0" stop-color="#FFF3B8"/><stop offset=".38" stop-color="#FFD23A"/><stop offset="1" stop-color="{YEL_LO}"/></radialGradient>')
-    d.append(f'<linearGradient id="{p}fl" gradientUnits="userSpaceOnUse" x1="200" y1="0" x2="1000" y2="0"><stop offset="0" stop-color="{YEL}" stop-opacity="0"/><stop offset=".5" stop-color="{YEL}" stop-opacity="{.55 if dark else .5}"/><stop offset="1" stop-color="{YEL}" stop-opacity="0"/></linearGradient>')
-    d.append(f'<filter id="{p}b1" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="14"/></filter>')
-    d.append(f'<filter id="{p}b2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="38"/></filter>')
-    d.append('</defs>')
-    # ambient light
-    d.append(f'<circle cx="600" cy="660" r="560" fill="url(#{p}g1)"/>')
-    # echo arches: half-width, leg height, stroke, opacity
-    for a, leg, sw, op in ((255, 330, 6, .70), (340, 420, 4.5, .45), (425, 510, 3.5, .26)):
+    L = []                                                     # (layer, svg fragment) in drawing order
+    defs = ['<defs>']
+    defs.append(f'<radialGradient id="{p}g1" cx="600" cy="660" r="560" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="{glow_a}" stop-opacity="{.34 if dark else .45}"/>'
+                f'<stop offset=".55" stop-color="{glow_a}" stop-opacity="{.10 if dark else .16}"/><stop offset="1" stop-color="{glow_a}" stop-opacity="0"/></radialGradient>')
+    defs.append(f'<radialGradient id="{p}g2" cx="600" cy="800" r="270" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="{glow_b}" stop-opacity="{.5 if dark else .6}"/>'
+                f'<stop offset="1" stop-color="{glow_b}" stop-opacity="0"/></radialGradient>')
+    defs.append(f'<linearGradient id="{p}fa" gradientUnits="userSpaceOnUse" x1="0" y1="80" x2="0" y2="{base_y}"><stop offset="0" stop-color="{stroke_hi}"/><stop offset=".62" stop-color="{stroke_lo}" stop-opacity=".85"/><stop offset="1" stop-color="{stroke_lo}" stop-opacity="0"/></linearGradient>')
+    defs.append(f'<linearGradient id="{p}ma" gradientUnits="userSpaceOnUse" x1="0" y1="600" x2="0" y2="{base_y}"><stop offset="0" stop-color="{main_a}"/><stop offset=".6" stop-color="{main_b}"/><stop offset=".9" stop-color="{main_b}"/><stop offset="1" stop-color="{main_b}" stop-opacity=".0"/></linearGradient>')
+    defs.append(f'<radialGradient id="{p}c" cx=".34" cy=".28" r=".85"><stop offset="0" stop-color="#FFF3B8"/><stop offset=".38" stop-color="#FFD23A"/><stop offset="1" stop-color="{YEL_LO}"/></radialGradient>')
+    defs.append(f'<linearGradient id="{p}fl" gradientUnits="userSpaceOnUse" x1="200" y1="0" x2="1000" y2="0"><stop offset="0" stop-color="{YEL}" stop-opacity="0"/><stop offset=".5" stop-color="{YEL}" stop-opacity="{.55 if dark else .5}"/><stop offset="1" stop-color="{YEL}" stop-opacity="0"/></linearGradient>')
+    defs.append(f'<filter id="{p}b1" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="14"/></filter>')
+    defs.append(f'<filter id="{p}b2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="38"/></filter>')
+    defs.append('</defs>')
+    L.append(('bg', f'<circle cx="600" cy="660" r="560" fill="url(#{p}g1)"/>'))                   # ambient light
+    for a, leg, sw, op in ((255, 330, 6, .70), (340, 420, 4.5, .45), (425, 510, 3.5, .26)):         # echo arches
         cy = base_y - leg
-        d.append(f'<path d="M{cxm - a} {base_y}V{cy}A{a} {a} 0 0 1 {cxm + a} {cy}V{base_y}" fill="none" stroke="url(#{p}fa)" stroke-opacity="{op}" stroke-width="{sw}" stroke-linejoin="round"/>')
-    # main arch: soft halo + glossy stroke
+        L.append(('bg', f'<path d="M{cxm - a} {base_y}V{cy}A{a} {a} 0 0 1 {cxm + a} {cy}V{base_y}" fill="none" stroke="url(#{p}fa)" stroke-opacity="{op}" stroke-width="{sw}" stroke-linejoin="round"/>'))
     main_a_hw, main_leg = 172, 250
     mcy = base_y - main_leg
     arch = f'M{cxm - main_a_hw} {base_y}V{mcy}A{main_a_hw} {main_a_hw} 0 0 1 {cxm + main_a_hw} {mcy}V{base_y}'
     if dark:                                                  # a halo behind a yellow arch; behind a black arch on cream it only looks muddy
-        d.append(f'<path d="{arch}" fill="none" stroke="{YEL}" stroke-opacity=".55" stroke-width="64" filter="url(#{p}b2)"/>')
-    d.append(f'<path d="{arch}" fill="none" stroke="url(#{p}ma)" stroke-width="58" stroke-linejoin="round"/>')
-    # inner hairline of the arch
+        L.append(('bg', f'<path d="{arch}" fill="none" stroke="{YEL}" stroke-opacity=".55" stroke-width="64" filter="url(#{p}b2)"/>'))
+    L.append(('bg', f'<path d="{arch}" fill="none" stroke="url(#{p}ma)" stroke-width="58" stroke-linejoin="round"/>'))
     ih = main_a_hw - 46
-    d.append(f'<path d="M{cxm - ih} {base_y - 70}V{mcy}A{ih} {ih} 0 0 1 {cxm + ih} {mcy}V{base_y - 70}" fill="none" stroke="{"#FFF3B8" if dark else "#B67C00"}" stroke-opacity=".35" stroke-width="3"/>')
-    # coin: glow, shadow, face
+    L.append(('bg', f'<path d="M{cxm - ih} {base_y - 70}V{mcy}A{ih} {ih} 0 0 1 {cxm + ih} {mcy}V{base_y - 70}" fill="none" stroke="{"#FFF3B8" if dark else "#B67C00"}" stroke-opacity=".35" stroke-width="3"/>'))
     cxc, cyc, rc = 600, 770, 118
-    d.append(f'<circle cx="{cxc}" cy="{cyc}" r="270" fill="url(#{p}g2)"/>')                 # same radius as the gradient: no visible edge
-    d.append(f'<ellipse cx="{cxc}" cy="{base_y - 12}" rx="130" ry="15" fill="{"#000" if dark else INK}" fill-opacity="{.55 if dark else .22}" filter="url(#{p}b1)"/>')
-    d.append(_coin(p, cxc, cyc, rc, 'dark'))
-    # floor light
-    d.append(f'<rect x="200" y="{base_y - 2}" width="800" height="3" rx="1.5" fill="url(#{p}fl)"/>')
-    # sparkles
-    def star(x, y, s, o):
+    L.append(('coin', f'<circle cx="{cxc}" cy="{cyc}" r="270" fill="url(#{p}g2)"/>'))               # same radius as the gradient: no visible edge
+    L.append(('bg', f'<ellipse cx="{cxc}" cy="{base_y - 12}" rx="130" ry="15" fill="{"#000" if dark else INK}" fill-opacity="{.55 if dark else .22}" filter="url(#{p}b1)"/>'))
+    L.append(('coin', _coin(p, cxc, cyc, rc, 'dark')))
+    L.append(('bg', f'<rect x="200" y="{base_y - 2}" width="800" height="3" rx="1.5" fill="url(#{p}fl)"/>'))
+    stars = ((860, 330, 15, .85), (330, 470, 11, .6), (930, 640, 9, .55), (260, 760, 13, .7), (690, 170, 8, .5), (470, 300, 7, .45), (1000, 450, 7, .4))
+    def star(i, x, y, s, o):
         k = s * .22
-        return (f'<path d="M{x} {y - s}C{x + k} {y - k} {x + k} {y - k} {x + s} {y}C{x + k} {y + k} {x + k} {y + k} {x} {y + s}C{x - k} {y + k} {x - k} {y + k} {x - s} {y}C{x - k} {y - k} {x - k} {y - k} {x} {y - s}Z" '
+        return (f'<path class="tw" style="animation-delay:{(i * 0.83) % 3.1:.2f}s;transform-origin:{x}px {y}px" d="M{x} {y - s}C{x + k} {y - k} {x + k} {y - k} {x + s} {y}C{x + k} {y + k} {x + k} {y + k} {x} {y + s}C{x - k} {y + k} {x - k} {y + k} {x - s} {y}C{x - k} {y - k} {x - k} {y - k} {x} {y - s}Z" '
                 f'fill="{spark}" fill-opacity="{o}"/>')
-    for x, y, s, o in ((860, 330, 15, .85), (330, 470, 11, .6), (930, 640, 9, .55), (260, 760, 13, .7), (690, 170, 8, .5), (470, 300, 7, .45), (1000, 450, 7, .4)):
-        d.append(star(x, y, s, o))
-    return _svg(1200, 1200, ''.join(d))
+    twinkle = ('<style>.tw{animation:tw 3.1s ease-in-out infinite}@keyframes tw{0%,100%{opacity:.25;transform:scale(.75)}50%{opacity:1;transform:scale(1.15)}}'
+               '@media (prefers-reduced-motion:reduce){.tw{animation:none}}</style>')
+    for i, s in enumerate(stars): L.append(('sparks', star(i, *s)))
+    keep = {'all': ('bg', 'coin', 'sparks'), 'bg': ('bg',), 'coin': ('coin',), 'sparks': ('sparks',)}[layers]
+    needs_defs = layers != 'sparks'
+    body = (''.join(defs) if needs_defs else '') + (twinkle if layers == 'sparks' else '') + ''.join(f for (lay, f) in L if lay in keep)
+    if layers == 'all':                                       # one still picture: the stars do not move
+        body = body.replace(' class="tw" style="animation-delay', ' data-x="1" style="animation-delay')
+    return _svg(1200, 1200, body)
+
 
 # ---------------------------------------------------------------- empty state (136 × 112) -------------------------------------------------
 def empty_svg(v='dark', p='e'):

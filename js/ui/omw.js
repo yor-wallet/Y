@@ -26,7 +26,7 @@ const OMW = (() => {
   }
 
   /* ---------- touch: light + spring ---------- */
-  const PRESS = '.btn,.omx-act,.hub-row,.omx-row,.omx-pick,.chip,.nav-item,.hub-circ,.topbar-back,.w-sq,.w-pill,.w-row,.w-promo-card,.ds-eye,.hub-out,.w-out,.yd-nav button,.settings-row,.omx-net.pick,.wp-skip';
+  const PRESS = '.btn,.omx-act,.hub-row,.omx-row,.omx-pick,.chip,.nav-item,.hub-circ,.topbar-back,.w-sq,.w-pill,.w-row,.w-promo-card,.ds-eye,.hub-out,.w-out,.yd-nav button,.settings-row,.omx-net.pick,.wp-skip,.lt-key,.lt-mv,.omx-star,.yb-svc,.px-chip,.wd-max,.wd-paste,.nav-cta';
   function press(){
     D.addEventListener('pointerdown', e => {
       const el = e.target.closest && e.target.closest(PRESS); if (!el || el.disabled) return;

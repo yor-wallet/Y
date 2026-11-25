@@ -337,8 +337,8 @@ const OMX = (() => {
   /* ---------- live refresh of what is on screen ---------- */
   function live(){
     const id = R.current();
-    if (id === 'markets'){ const h = document.getElementById('omx-mk'); if (h){ h.innerHTML = marketRows(); fillSparks(h); } }
-    document.querySelectorAll('.omx-status').forEach(el => { el.outerHTML = statusLine(); });
+    if (id === 'markets'){ const h = document.getElementById('omx-mk'); if (h){ if (!MOTION.patchList(h, marketRows())) fillSparks(h); } }           /* 14.10.0: numbers are patched in place (flash, no flicker) */
+    document.querySelectorAll('.omx-status').forEach(el => { if (!MOTION.patchStatus(el, statusLine())) el.outerHTML = statusLine(); });
     document.querySelectorAll('[data-omx-p]').forEach(el => { const k = OMXMarket.get(el.getAttribute('data-omx-p')); if (k){ el.textContent = omxPct(k.pct) + (el.classList.contains('omx-apc') ? ' · 24 h' : ''); el.classList.toggle('up', k.pct >= 0); el.classList.toggle('down', k.pct < 0); } });
     if (id === 'asset'){ const el = document.querySelector('.omx-ap'), k = OMXMarket.get(S.cur); if (el && k) el.textContent = omxUsd(k.price); }
     if (id === 'home' || id === 'wallet'){
