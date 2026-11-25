@@ -92,14 +92,15 @@ function flag(iso){ return FLAGS[iso] || FLAGS.US; }
 const isArabicUi = () => typeof LANG === 'string' && LANG === 'ar';
 function logoMark(size){
   size = size || 48;
-  return '<img class="logo-mark" src="assets/brand/logo-mark.svg" alt="' + (isArabicUi() ? 'OM Wallet' : 'OM Wallet') + '" width="' + size + '" height="' + size + '" style="width:calc(' + size + 'px*var(--ui));height:calc(' + size + 'px*var(--ui));border-radius:22%" decoding="async">';
+  /* « Arche » mark: a themed background (css/noirjaune.css), not an <img>, so it follows the dark / light page */
+  return '<span class="logo-mark" role="img" aria-label="OM Wallet" style="width:calc(' + size + 'px*var(--ui));height:calc(' + size + 'px*var(--ui))"></span>';
 }
 function logoLockup(size){
   size = size || 48;
   /* arabe : mot-symbole « OM Wallet » (jamais de lettres espacées : elles casseraient les liaisons de l'écriture arabe) */
   const word = isArabicUi()
-    ? '<span class="logo-name logo-name-ar">OM</span><span class="logo-sub logo-sub-ar">PAY</span>'
-    : '<span class="logo-name">OM</span><span class="logo-sub">PAY</span>';
+    ? '<span class="logo-name logo-name-ar">OM</span><span class="logo-sub logo-sub-ar">WALLET</span>'
+    : '<span class="logo-name">OM</span><span class="logo-sub">WALLET</span>';
   return '<div class="logo-lockup">' + logoMark(size) + '<div class="logo-word">' + word + '</div></div>';
 }
 const ASSET_INITIALS = { BTC:'₿', ETH:'Ξ', USDT:'₮', USDC:'$', BNB:'BNB', SOL:'SOL', XRP:'XRP', LTC:'Ł' };

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -90,8 +91,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
                     if (p.photo != null) Image(painterResource(p.photo), null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop,
                         alignment = androidx.compose.ui.BiasAlignment(p.focusX * 2 - 1, -0.6f))
                     else Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Box(Modifier.size(300.dp).clip(CircleShape).border(1.5.dp, Color(0x8CFFC800), CircleShape).background(Brush.radialGradient(listOf(Color(0x40FFC800), Color.Transparent))))
-                        Image(painterResource(com.omwallet.app.R.drawable.app_icon_glass), null, Modifier.size(210.dp).shadow(30.dp, RoundedCornerShape(percent = 26), ambientColor = Color(0x66FFC800), spotColor = Color(0x66FFC800)).clip(RoundedCornerShape(percent = 26)))
+                        BrandHero(Modifier.fillMaxWidth(0.98f).aspectRatio(1f), trimTop = 0f, trimBottom = 0f)
                     }
                     Box(Modifier.fillMaxSize().background(Brush.verticalGradient(0.5f to Color(0x000B0A07), 0.82f to Color(0xD10B0A07), 1f to OmColors.Surface)))
                 }

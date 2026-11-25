@@ -113,8 +113,7 @@ fun SignUpScreen(onBack: () -> Unit) {
         Modifier.fillMaxSize().statusBarsPadding().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = 22.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Image(painterResource(com.omwallet.app.R.drawable.app_icon_glass), contentDescription = stringResource(R.string.app_name),
-            modifier = Modifier.padding(top = 6.dp).size(96.dp).riseIn(0).clip(RoundedCornerShape(percent = 26)))
+        BrandHero(Modifier.size(200.dp).riseIn(0))
         Spacer(Modifier.height(10.dp))
         Text(stringResource(R.string.signup_title), style = MaterialTheme.typography.headlineMedium, color = OmColors.Ink, textAlign = TextAlign.Center, modifier = Modifier.riseIn(1))
         Spacer(Modifier.height(4.dp))

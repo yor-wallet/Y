@@ -118,8 +118,9 @@ html:root:root:root body .lt-home .lt-top{display:flex!important;align-items:cen
 html:root:root:root body .lt-home .lt-hb{width:44px!important;height:44px!important;position:relative}
 html:root:root:root body .lt-home .w-hdr-end{display:flex;gap:8px}
 html:root:root:root body .lt-badge{position:absolute;top:-4px;inset-inline-end:-4px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:var(--lt-yellow);color:var(--lt-on-yellow);font-size:11px;font-weight:800;line-height:20px;text-align:center}
-html:root:root:root body .lt-mark{display:inline-block;width:36px;height:36px;border-radius:11px;background:url(../assets/icons/apple-touch-icon.png) center/cover no-repeat,var(--lt-card)}
-html:root:root:root body .lt-mark.sm{width:34px;height:34px;border-radius:10px}
+html:root:root:root body .lt-mark{display:inline-block;width:38px;height:38px;background:url(../assets/brand/logo-mark-light.svg) center/contain no-repeat}
+html:root:root:root[data-theme="dark"] body .lt-mark{background-image:url(../assets/brand/logo-mark.svg)}
+html:root:root:root body .lt-mark.sm{width:34px;height:34px}
 html:root:root:root body .lt-home .lt-bal{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:20px;color:var(--lt-ink2);font-weight:700;font-size:12px;letter-spacing:.09em;text-transform:uppercase}
 html:root:root:root body .lt-home .lt-bal .ds-eye{width:30px;height:30px;color:var(--lt-ink2)!important}
 html:root:root:root body .lt-home .omx-tv{color:var(--lt-ink)!important;font-size:clamp(34px,10.5vw,46px)!important;font-weight:800!important;margin:2px 0 8px;text-align:center;letter-spacing:-.01em}
@@ -213,7 +214,8 @@ html:root:root:root body :is(.omx-pick.on,.omx-net.pick.on,.omx-pick[aria-presse
 html:root:root:root body .wp{background:#0B0A07}
 html:root:root:root body .wp-photo::after{background:linear-gradient(180deg,rgba(11,10,7,0) 50%,rgba(11,10,7,.82) 82%,#0B0A07 100%)!important}
 html:root:root:root body .wp-wave{display:none!important}
-html:root:root:root body .wp-ring{border-color:rgba(255,200,0,.55)!important;box-shadow:inset 0 0 60px rgba(255,200,0,.18)!important}
+html:root:root:root body .wp-ring{display:none!important}   /* the arches of the artwork replace the ring */
+html:root:root:root body .wp-logo{filter:none!important}
 html:root:root:root body .wp-glass{background:rgba(18,17,13,.82)!important;border:1px solid #2F2D26!important;box-shadow:0 30px 60px -30px rgba(0,0,0,.9)!important;-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
 html:root:root:root body .wp-glass h1{color:#F5F3EE!important}
 html:root:root:root body .wp-glass p{color:#A7A397!important}
@@ -224,7 +226,11 @@ html:root:root:root body .wp-dots button{background:#3A372D!important}
 html:root:root:root body .wp-dots button[aria-current="true"]{background:var(--lt-yellow)!important}
 
 /* sign-in / sign-up: the wordmark and the glow follow the palette (white to yellow on black, black to gold on cream) */
-html:root:root:root body .w-auth-icon{filter:drop-shadow(0 22px 34px rgba(255,200,0,.28))!important}
+html:root:root:root body .w-auth-icon{filter:none!important;background-image:url(../assets/brand/om-hero-light.webp)}
+html:root:root:root[data-theme="dark"] body .w-auth-icon{background-image:url(../assets/brand/om-hero.webp)}
+/* in-app mark (logoMark() in js/ui/icons.js): original « Arche » mark, no tile, black arch on cream / yellow arch on black */
+html:root:root:root body .logo-mark{display:inline-block;flex:none;border-radius:0!important;box-shadow:none!important;filter:none!important;background:url(../assets/brand/logo-mark-light.svg) center/contain no-repeat}
+html:root:root:root[data-theme="dark"] body .logo-mark{background-image:url(../assets/brand/logo-mark.svg)}
 html:root:root:root body .w-auth-word,html:root:root:root[data-theme="dark"] body .w-auth-word{background:linear-gradient(180deg,#FFFFFF 10%,#FFC800 100%)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important}
 html:root:root:root[data-theme="light"] body .w-auth-word,html:root:root:root:not([data-theme="dark"]) body .w-auth-word{background:linear-gradient(180deg,#14110A 20%,#8A6500 100%)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important}
 

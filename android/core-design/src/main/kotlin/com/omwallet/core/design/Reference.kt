@@ -48,11 +48,11 @@ import androidx.compose.ui.unit.dp
 /* Building blocks taken from the owner's reference screens (home, settings, « my assets »). Appearance only: every block calls the
    action it is given; nothing here knows what an action does. Ambient motion (the floating emblem) never runs under « remove animations ». */
 
-/* The OM Wallet word mark heading a page (logo used as a logo). */
+/* The OM Wallet in-app mark heading a page: the original « Arche » artwork (an arch with a coin). It is a free-standing glyph: no tile, no clipping.
+   (The owner's logo is used for the launcher icon only.) */
 @Composable
 fun LogoMark(modifier: Modifier = Modifier, size: Dp = 34.dp) {
-    /* the app icon alone (logo kept on every screen, at the owner's request) */
-    Image(painterResource(R.drawable.om_glass_icon), "OM Wallet", modifier.size(size).clip(RoundedCornerShape(percent = 26)), contentScale = androidx.compose.ui.layout.ContentScale.Crop)
+    Image(painterResource(R.drawable.om_mark), "OM Wallet", modifier.size(size), contentScale = androidx.compose.ui.layout.ContentScale.Fit)
 }
 
 @Composable
@@ -95,31 +95,6 @@ fun ActionTile(@DrawableRes icon: Int, label: String, modifier: Modifier = Modif
         Text(label, style = MaterialTheme.typography.labelMedium.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold), color = OmColors.Ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }
-
-/* The glass app icon used as the balance card emblem; it floats gently unless motion is reduced. */
-@Composable
-fun GlassEmblem(modifier: Modifier = Modifier, size: Dp = 84.dp) {
-    val reduced = LocalOmMotion.current.reduced
-    val lift = if (reduced) 0f else {
-        val t = rememberInfiniteTransition(label = "float")
-        val v by t.animateFloat(0f, 1f, infiniteRepeatable(tween(3000), RepeatMode.Reverse), label = "lift"); v
-    }
-    /* the icon file has light square corners: crop slightly and round them so only the glass tile shows */
-    Image(painterResource(R.drawable.om_glass_icon), null, modifier.size(size).graphicsLayer { translationY = -6.dp.toPx() * lift; rotationZ = -6f + 3f * lift }
-        .clip(RoundedCornerShape(percent = 26)), contentScale = androidx.compose.ui.layout.ContentScale.Crop, alignment = Alignment.Center, colorFilter = null)
-}
-
-/* Glass wallet illustration of the « my assets » reference, edges faded into the card. */
-@Composable
-fun WalletArt(modifier: Modifier = Modifier) {
-    Box(modifier.fillMaxWidth(0.62f).aspectRatio(338f / 295f)) {
-        /* the photo's light edges fade to transparent, so only the glass wallet shows on the blue (no white box).
-           14.5.3: the fade is baked into the image (transparent WebP) instead of an off-screen layer with a blend mode on every
-           frame — cheaper, and identical on every device (the run-time mask could show a black square on some renderers). */
-        Image(painterResource(R.drawable.om_wallet_glass), null, Modifier.matchParentSizeCompat())
-    }
-}
-private fun Modifier.matchParentSizeCompat() = this.fillMaxWidth().aspectRatio(338f / 295f)
 
 /* Settings-style row: glass tile, bold label, optional value, chevron (settings reference). */
 @Composable

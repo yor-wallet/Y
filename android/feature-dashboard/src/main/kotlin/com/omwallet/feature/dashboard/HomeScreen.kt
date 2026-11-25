@@ -14,7 +14,6 @@ import androidx.compose.animation.core.animateFloat
 import kotlinx.coroutines.delay
 import com.omwallet.core.design.riseIn
 import com.omwallet.core.design.GlassSquare
-import com.omwallet.core.design.GlassEmblem
 import com.omwallet.core.design.BrandLockup
 import com.omwallet.core.design.ActionTile
 import androidx.compose.ui.text.style.TextAlign

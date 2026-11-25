@@ -6,6 +6,8 @@ plugins {
 
 /* Release signing: provided by the environment (never committed). Without it, the release bundle is built UNSIGNED. */
 val keystorePath: String? = System.getenv("OM_KEYSTORE")
+/* Release code shrinking (R8) is on by default (≈ 4.4 MB). `-PomShrink=false` builds the same release without shrinking (≈ 14 MB, the size of the debug build): same features. */
+val shrink: Boolean = (findProperty("omShrink") as String?) != "false"
 
 android {
     namespace = "com.omwallet.app"
@@ -14,8 +16,8 @@ android {
         applicationId = "com.omwallet.android"
         minSdk = 26
         targetSdk = 35
-        versionCode = 140800
-        versionName = "14.8.0"
+        versionCode = 140900
+        versionName = "14.9.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
@@ -28,8 +30,8 @@ android {
     }
     buildTypes {
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            isMinifyEnabled = shrink
+            isShrinkResources = shrink
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             if (keystorePath != null) signingConfig = signingConfigs.getByName("release")
         }

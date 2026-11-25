@@ -86,7 +86,7 @@ const V12 = (() => {
     return '<div class="rv-card th-' + themeOf(c) + (st.enter ? ' rv-enter' : '') + '" data-card="' + escapeHtml(c.id) + '" data-state="' + cardState(c) + '" role="group" aria-label="' + escapeHtml((c.label || vt('defName')) + ' •••• ' + l4(c)) + '"><div class="rv-in">' +
       '<div class="rv-face rv-front">' +
         '<i class="rv-grain" aria-hidden="true"></i><i class="rv-foil" aria-hidden="true"></i>' +
-        '<div class="rv-top2"><img class="rv-wm" src="assets/brand/friendly-letters-white.svg" alt="OM Wallet">' + stateChip(c) + '</div>' +
+        '<div class="rv-top2"><img class="rv-wm" src="assets/brand/om-wordmark-white.png" alt="OM Wallet">' + stateChip(c) + '</div>' +
         '<div class="rv-mid"><span class="rv-name">' + escapeHtml(c.label || vt('defName')) + '</span>' +
           '<span class="rv-num ltr" dir="ltr"><span>\u2022\u2022\u2022\u2022</span><span>\u2022\u2022\u2022\u2022</span><span>\u2022\u2022\u2022\u2022</span><span>' + l4(c) + '</span></span></div>' +
         '<div class="rv-bot"><span class="rv-holder">' + escapeHtml(c.holderName || '') + '</span>' + netSlot(c) + '</div>' +

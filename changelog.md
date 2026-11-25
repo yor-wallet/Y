@@ -1,3 +1,19 @@
+# OM Wallet 14.9.0 — identité originale « Arche » : le logo du propriétaire ne sert que d'icône — web + Android
+
+Demande du propriétaire (25/11) : « le logo est uniquement pour l'icône, le reste, crée un inédit » ; retirer le logo bleu ; logo professionnel, images distinctives, forme adaptée à chaque page ; utiliser Figma (Canva et Moda : pas encore connectés). Données, règles, transactions : inchangées.
+
+- **Icône (logo du propriétaire, uniquement là)** : lanceur Android (couche adaptative à 0,58 : le liseré jaune n'est plus rogné par un masque rond ; icône thématique Android 13 = silhouette pleine du monogramme, transparence durcie), favicon, icônes PWA (maskable à 0,66 pour rester dans le cercle sûr), apple-touch, icône de boutique. `brand/make_assets.py` est réduit à ces fichiers (`--out DOSSIER` = essai à blanc).
+- **Identité originale « Arche »** (créée pour ce projet, code dans `brand/om_art.py`) : une arche — la porte vers l'argent — et une pièce posée dedans ; un seul jaune. Marque (variantes sombre, crème, silhouette), logotype « OM Wallet » (Sora ExtraBold + SemiBold), illustration héros (arches qui s'éloignent autour d'une pièce lumineuse, variantes sombre / crème), images de démarrage iOS (28), images de partage fr / en / ar (en miroir pour l'arabe). Générateur `brand/make_brand.py` + `brand/render.cjs` (Chromium installé avec Playwright).
+- **Web** : connexion et inscription = héros + mot-symbole ; 3e écran de présentation = héros (l'anneau tournant est retiré) ; en-têtes = marque Arche (`.lt-mark`, `logoMark()` en fond thématique, sans tuile) ; `logoLockup()` affichait « OM PAY » → « OM WALLET » ; faces des cartes virtuelles : « OM PAY » en texte → logotype « OM Wallet » ; manifeste noir ; liste du cache hors ligne mise à jour (`fp-shell-v14.9.0`).
+- **Android** : `LogoMark` sans arrondi ni découpe ; `BrandHero` (connexion, inscription, 3e écran) ; fenêtre et écran de démarrage noirs (le blanc / bleu de `themes.xml` est retiré), icône de démarrage Arche dans le cercle central ; code mort supprimé (`GlassEmblem`, `WalletArt`).
+- **Supprimé** (logo bleu et dérivés sans usage) : `app-icon-glass-hd.png`, `om-pay-logo*.png`, `friendly-letters-white.svg` (« OM PAY »), `logo-wordmark-*`, `assets/brand/png/*`, `public/branding/om-wallet-{logo,monochrome,notification}.*`, anciens `brand/om-*.png`, `wallet-glass.jpg`, l'ancien générateur `tools/brand/build-brand.mjs`, drawables Android `app_icon_glass`, `om_glass_icon`, `om_wallet_glass`, `om_logo_horizontal`. Les originaux bleus sont dans `brand/archive-bleu/`.
+- **Skills** : `om-brand` (deux couches, emplacements, régénération, Figma), `om-growth` (croissance éthique : consentement, plafonds, pas de profilage de personnes), `om-autopilot` (agent encadré : brouillons seulement, rien sur l'argent ni les secrets).
+- **Figma** : planche `6mcJFm9JBWqzQsJDWVePPD` (icône, marque Arche, logotypes, héros, couleurs, typographie, composants, accueil).
+- **Tests** : web — 9 suites vertes (120 vérifications) ; Android — 53 tests, 0 échec ; captures regardées (présentation, connexion, inscription, accueil, compte ; web sombre / clair, fr / en / ar).
+- **Non vérifié / restant** : aucun essai sur un vrai téléphone ; les e-mails de transaction (`send-email`) ont encore l'ancien habillage : à reprendre avec la marque Arche après accord du propriétaire (déploiement de la fonction) ; `assets/ui/om-glyph.png` et `om-pay-word.png` (ancienne tuile « OM PAY ») ne sont affichés nulle part mais restent référencés par du code inactif de `premium.js` ; Canva et Moda non connectés.
+
+---
+
 # OM Wallet 14.8.0 — design « Noir & Jaune » (Liv X, Binance) — web + Android
 
 Demande du propriétaire (24/11) : couleurs dominantes **jaune et noir**, comme Liv X (Emirates NBD) et Binance ; « pas bizarre », précis, de qualité ; regarder en ligne avant de continuer. Le design clair violet de la 14.7.0 est remplacé. Données, règles de confirmation, e-mails et serveur inchangés.

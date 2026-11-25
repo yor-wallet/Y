@@ -1,6 +1,5 @@
 package com.omwallet.feature.assets
 
-import com.omwallet.core.design.WalletArt
 import androidx.compose.foundation.lazy.LazyRow
 import com.omwallet.core.ui.MiniSpark
 import com.omwallet.core.design.LogoMark

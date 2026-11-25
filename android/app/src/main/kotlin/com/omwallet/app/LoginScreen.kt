@@ -93,8 +93,7 @@ fun LoginScreen(onSignUp: () -> Unit = {}) {
         Modifier.fillMaxSize().statusBarsPadding().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = 22.dp, vertical = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Image(painterResource(com.omwallet.app.R.drawable.app_icon_glass), contentDescription = stringResource(R.string.app_name),
-            modifier = Modifier.padding(top = 18.dp).size(168.dp).riseIn(0).clip(RoundedCornerShape(percent = 26)))
+        BrandHero(Modifier.size(300.dp).riseIn(0))
         Text("OM Wallet", style = MaterialTheme.typography.displaySmall.copy(brush = Brush.verticalGradient(listOf(OmColors.Ink, OmColors.Blue600))), modifier = Modifier.riseIn(1))
         Spacer(Modifier.height(18.dp))
         Text(stringResource(R.string.login_title), style = MaterialTheme.typography.headlineMedium, color = OmColors.Ink, textAlign = TextAlign.Center, modifier = Modifier.riseIn(2))

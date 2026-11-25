@@ -1,9 +1,9 @@
-# OM Wallet — passation (état au 24/11/2026, version 14.8.0 web + Android)
+# OM Wallet — passation (état au 25/11/2026, version 14.9.0 web + Android)
 
 Document pour la session suivante. À lire en entier avec la skill du projet `.claude/skills/om-wallet/SKILL.md` (règles du
 propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce soit.
 
-> **Le travail le plus récent est sur la branche `claude/intelligent-keller-lrjxah`** (14.8.0, design « Noir & Jaune » : jaune et noir comme Liv X et Binance), partie de `claude/blissful-goldberg-426zi7` (14.5.3). `main` contient une 14.6.0 « verre liquide » **abandonnée** (jamais
+> **Le travail le plus récent est sur la branche `claude/intelligent-keller-lrjxah`** (14.9.0 : identité originale « Arche », le logo du propriétaire ne sert que d'icône ; 14.8.0 : design « Noir & Jaune » comme Liv X et Binance), partie de `claude/blissful-goldberg-426zi7` (14.5.3). `main` contient une 14.6.0 « verre liquide » **abandonnée** (jamais
 > reprise ici : la branche l'a fusionnée sans ses changements). Partir de cette branche :
 > `git fetch origin claude/intelligent-keller-lrjxah && git checkout -B <branche de la session> FETCH_HEAD`.
 
@@ -14,8 +14,8 @@ propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce so
 | Élément | État |
 |---|---|
 | Dernier commit | voir `git log -1` sur la branche |
-| Site en production | https://yor-wallet.vercel.app — version 14.8.0 (contrôle : `curl -s https://yor-wallet.vercel.app/sw.js \| grep fp-shell` → `fp-shell-v14.8.0`) |
-| Version | 14.8.0 partout (`js/data/reference-data.js`, `sw.js`, `android/app/build.gradle.kts` 140700, `android/README.md`, `changelog.md`) |
+| Site en production | https://yor-wallet.vercel.app — version 14.9.0 (contrôle : `curl -s https://yor-wallet.vercel.app/sw.js \| grep fp-shell` → `fp-shell-v14.9.0`) |
+| Version | 14.9.0 partout (`js/data/reference-data.js`, `sw.js`, `android/app/build.gradle.kts` 140900, `android/README.md`, `changelog.md`) |
 | Base Supabase `gebjmguoauvutiqvoswl` | `20261124_crypto_swap.sql` **appliquée** (par le propriétaire, éditeur SQL) ; `20261125_close_legacy_instant_trades.sql` **appliquée** le 23/11 et `20261126_close_legacy_crypto_to_bank.sql` **appliquée** le 24/11 (anciennes fonctions à prix figés fermées aux utilisateurs, rien supprimé, retours arrière fournis — voir `changelog.md` 14.5.1) |
 | Fonctions Edge | `crypto-swap` v1 (verify_jwt **true**) · `send-email` v59 (verify_jwt **false**, appelée par la base avec `x-webhook-secret`) · `wallet-addresses`, `admin-action` inchangées |
 | Tests web | 9 suites vertes le 24/11 : omw, omx, trade, smoke (138 écrans), shell, bugfix, ios-motion, admin-console, admin-payouts ; mesure `tests/ux/perf-spot.mjs` |
@@ -34,6 +34,14 @@ propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce so
   Refus = montant rendu. Essai complet sur le serveur fait le 23/11 dans une transaction annulée : tout conforme (détail dans `changelog.md`).
 
 ---
+
+## 1 ter. Identité 14.9.0 (25/11) — à lire avant toute retouche de logo ou d'image
+Consigne du propriétaire : « le logo est uniquement pour l'icône, le reste, crée un inédit ». **Deux couches** (détail et emplacements : skill `om-brand`) :
+- **Icône** = son logo (`brand/originals/logo-om-noir-jaune.png`) : lanceur Android, favicon, PWA, apple-touch, boutique. `python3 -I brand/make_assets.py`.
+- **Tout le reste** = « Arche » (arche + pièce, un seul jaune), créée pour ce projet : marque, logotype, héros de connexion / présentation, démarrage, partage. Source : `brand/om_art.py` ; `python3 -I brand/make_brand.py` (Chromium via `brand/render.cjs`).
+- Ne jamais afficher le logo du propriétaire ailleurs que comme icône ; ne jamais le redessiner. Plus aucun bleu de marque.
+- **Reste à faire** : e-mails de transaction (`supabase/functions/send-email`) encore à l'ancien habillage — à reprendre avec la marque Arche **après accord du propriétaire** (le déploiement de la fonction touche de vrais clients) ; essai sur un vrai téléphone ; Canva et Moda (le propriétaire doit les connecter dans claude.ai) ; l'ancienne tuile « OM PAY » (`assets/ui/om-glyph.png`, `om-pay-word.png`, code inactif de `premium.js`) peut être retirée.
+- Autres demandes du 25/11 : **système autonome / rétention** — traité par les skills `om-growth` et `om-autopilot` (pas de profilage de personnes ni de mécaniques d'addiction ; brouillons validés par le propriétaire ; revue hebdomadaire planifiée seulement sur sa demande). Taille de l'APK : la version de publication compactée (~4,4 Mo) vient du même code que le fichier de développement de ~15 Mo ; le propriétaire peut préférer une version non compactée (~14 Mo, `-PomShrink=false`).
 
 ## 1 bis. Design 14.8.0 (24/11) — à lire avant toute retouche d'écran
 Consigne du propriétaire : **jaune et noir comme Liv X (Emirates NBD) et Binance**, « pas bizarre », précis ; **regarder en ligne avant d'écrire** (fait : voir `changelog.md` 14.8.0 et la skill, section Design). Fait : palette + composants web et Android, menu à bouton Swap jaune, accueil, portefeuille, conversion, connexion, présentation d'ouverture (photos converties en duotone noir / jaune). **Reste** : recomposer comme Liv X / Binance les écrans intérieurs (dépôt, retrait, envoi, activité, détail d'actif Android) ; mode clair crème sur Android ; vérifier en arabe et sur un vrai téléphone.
