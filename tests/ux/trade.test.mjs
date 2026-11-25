@@ -17,9 +17,10 @@ const pin = async page => { await wait(700); for (const k of '482913') await pag
 {
   console.log('\n[menu principal, Spot en direct, ordre au marché]');
   const { ctx, page, logs } = await openApp(browser, url, { lang: 'fr', settle: 900, ws: 'live' });
-  await ok('menu principal : Accueil · Marchés · Spot · Swap · Actifs', async () => {
-    assert.deepEqual(await page.$$eval('#bottom-nav .nav-item', a => a.map(x => x.getAttribute('data-nav'))), ['home', 'markets', 'spot', 'exchange', 'wallet']);
-    assert.deepEqual(await page.$$eval('#bottom-nav .nav-item', a => a.map(x => x.textContent.trim())), ['Accueil', 'Marchés', 'Spot', 'Swap', 'Actifs']);
+  await ok('menu principal (14.7.0, image du propriétaire) : Accueil · Marchés · Swap (bouton rond au milieu) · Portefeuille · Spot', async () => {
+    assert.deepEqual(await page.$$eval('#bottom-nav .nav-item', a => a.map(x => x.getAttribute('data-nav'))), ['home', 'markets', 'exchange', 'wallet', 'spot']);
+    assert.deepEqual(await page.$$eval('#bottom-nav .nav-item', a => a.map(x => x.textContent.trim())), ['Accueil', 'Marchés', 'Swap', 'Portefeuille', 'Spot']);
+    assert.equal(await page.locator('#bottom-nav .nav-cta[data-nav="exchange"] .nav-cta-tile').count(), 1);
   });
   await ok('Activité et Compte restent à un geste depuis l’accueil', async () => {
     await page.click('#home .w-hdr [data-nav="history"]'); await wait(700); assert.equal(await cur(page), 'history');
@@ -138,17 +139,42 @@ const pin = async page => { await wait(700); for (const k of '482913') await pag
 }
 {
   console.log('\n[verre, réduction des animations, arabe]');
-  const { ctx, page, logs } = await openApp(browser, url, { lang: 'ar', settle: 900, ws: 'live', reduced: true });
-  await ok('apparence verre : texte clair sur fond bleu, cartes transparentes (pas de blanc)', async () => {
+  const { ctx, page, logs } = await openApp(browser, url, { lang: 'ar', settle: 900, ws: 'live', reduced: true, theme: 'dark' });
+  await ok('apparence Noir & Jaune (14.8.0) : fond noir, texte clair, jaune pour l’action principale (texte foncé dessus), bouton central rond jaune', async () => {
+    await page.evaluate(() => R.go('home', { force: true })); await wait(700);
     const r = await page.evaluate(() => {
-      const bg = getComputedStyle(document.body).backgroundImage, c = document.querySelector('#home .omx-card, #home .w-glass, #home .omx-total');
-      const cb = c ? getComputedStyle(c).backgroundImage : '', col = getComputedStyle(document.body).color;
-      return { theme: document.documentElement.getAttribute('data-theme'), tone: document.documentElement.getAttribute('data-tone'), bg, cb, col };
+      const tile = document.querySelector('#bottom-nav .nav-cta .nav-cta-tile'), act = document.querySelector('#home .lt-acts .omx-act i');
+      const px = el => el ? getComputedStyle(el) : null;
+      return { theme: document.documentElement.getAttribute('data-theme'), bg: px(document.body).backgroundColor, col: px(document.body).color,
+        tileBg: px(tile).backgroundImage, tileRadius: px(tile).borderTopLeftRadius, tileInk: px(tile).color, actBg: px(act).backgroundColor, meta: document.querySelector('meta[name="theme-color"]').getAttribute('content') };
     });
-    assert.equal(r.theme, 'dark'); assert.equal(r.tone, 'day');
-    assert.match(r.bg, /gradient/);
-    assert.ok(!/rgba\(255, 255, 255, 0\.(9|8|7)/.test(r.cb), 'card is not a white panel: ' + r.cb.slice(0, 120));
-    assert.equal(r.col, 'rgb(255, 255, 255)');
+    assert.equal(r.theme, 'dark');
+    assert.equal(r.bg, 'rgb(11, 10, 7)');
+    assert.equal(r.col, 'rgb(245, 243, 238)');
+    assert.match(r.tileBg, /rgb\(255, 2\d\d, \d+\)|rgb\(245, 184, 0\)/);   /* the yellow gradient */
+    assert.equal(r.tileRadius, '50%');
+    assert.equal(r.tileInk, 'rgb(20, 17, 10)');                                  /* dark glyph ON the yellow */
+    assert.equal(r.actBg, 'rgb(37, 35, 30)');                                    /* round dark action buttons */
+    assert.equal(r.meta, '#0B0A07');
+  });
+  await ok('mode clair (réglage de la personne) : page crème, texte noir, même jaune', async () => {
+    await page.evaluate(() => { Runtime.settings = Object.assign({}, Runtime.settings, { theme: 'light' }); applyTheme('light'); }); await wait(400);
+    const r = await page.evaluate(() => ({ theme: document.documentElement.getAttribute('data-theme'), bg: getComputedStyle(document.body).backgroundColor, col: getComputedStyle(document.body).color,
+      tile: getComputedStyle(document.querySelector('#bottom-nav .nav-cta .nav-cta-tile')).backgroundImage }));
+    assert.equal(r.theme, 'light'); assert.equal(r.bg, 'rgb(255, 251, 240)'); assert.equal(r.col, 'rgb(20, 17, 10)');
+    assert.match(r.tile, /rgb\(255, 2\d\d, \d+\)|rgb\(245, 184, 0\)/);
+    await page.evaluate(() => { Runtime.settings = Object.assign({}, Runtime.settings, { theme: 'dark' }); applyTheme('dark'); }); await wait(300);
+  });
+  await ok('sans réglage enregistré, l’application s’ouvre en noir et jaune (sombre par défaut)', async () => {
+    const o = await openApp(browser, url, { lang: 'fr', settle: 700, theme: 'none' });
+    const th = await o.page.evaluate(() => ({ t: document.documentElement.getAttribute('data-theme'), bg: getComputedStyle(document.body).backgroundColor }));
+    assert.equal(th.t, 'dark'); assert.equal(th.bg, 'rgb(11, 10, 7)');
+    await o.ctx.close();
+  });
+  await ok('le solde garde son texte exact, décimales plus légères', async () => {
+    await page.evaluate(() => R.go('home', { force: true })); await wait(700);
+    const r = await page.evaluate(() => { const b = document.querySelector('#home [data-omx-total]'); const d = b.querySelector('.lt-dec'); return { txt: b.innerText, dec: d ? d.innerText : null, w: d ? getComputedStyle(d).fontWeight : null }; });
+    assert.match(r.txt, /^\$[\d,]+\.\d{2}$|^[•\s]+$/);
   });
   await ok('arabe : Spot s’affiche de droite à gauche, chiffres de gauche à droite', async () => {
     await page.click('#bottom-nav [data-nav="spot"]'); await wait(2000);

@@ -1,6 +1,8 @@
 package com.omwallet.feature.assets
 
-import com.omwallet.core.design.WalletArt
+import androidx.compose.foundation.lazy.LazyRow
+import com.omwallet.core.ui.MiniSpark
+import com.omwallet.core.design.LogoMark
 
 import com.omwallet.core.design.ReferenceTitle
 
@@ -105,49 +107,97 @@ class AssetsViewModel(g: OmGraph) : ViewModel() {
 fun AssetsScreen(onAsset: (String) -> Unit, onDeposit: () -> Unit, onSend: () -> Unit, contentPadding: PaddingValues) {
     val vm = omViewModel { AssetsViewModel(it) }
     val s by vm.state.collectAsStateWithLifecycle()
-    /* « my assets » reference: logo, large centred title, hero glass card with the glass wallet, then one glass card per asset
-       with « View details » (opens the real asset page) */
+    /* 14.7.0 — « Your wallet » and « My Assets » of the owner's reference image, with the real content: the balance of the crypto held at
+       live prices, its 24 h change (from each asset's own 24 h change), the share of each asset, Send / Receive, then one row per asset
+       with its real 24 h curve. Receive = the person's own deposit addresses (server). Nothing is invented: unpriced assets are not counted. */
+    val priced = s.lines.filter { it.position.balance > 0 && it.usd != null }
+    val total = priced.sumOf { it.usd!! }
+    val withChange = priced.filter { it.quote?.changePct != null }
+    val before = withChange.sumOf { it.usd!! / (1 + it.quote!!.changePct!! / 100) }
+    val now = withChange.sumOf { it.usd!! }
+    val pct = if (before > 0) (now - before) / before * 100 else null
     LazyColumn(Modifier.fillMaxSize(), contentPadding = contentPadding, verticalArrangement = Arrangement.spacedBy(14.dp)) {
         item {
-            Column(Modifier.statusBarsPadding().padding(horizontal = 16.dp, vertical = 6.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                BrandLockup(height = 38.dp)
-                ReferenceTitle(stringResource(R.string.assets_title))
+            Column(Modifier.statusBarsPadding().padding(horizontal = 16.dp, vertical = 8.dp)) {
+                ReferenceTitle(stringResource(R.string.wallet_title), end = { LogoMark() })
             }
         }
         item {
-            GlassCard(Modifier.padding(horizontal = 16.dp), strong = true, padding = 20.dp, rise = 0) {
-                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    WalletArt()
-                    Text(stringResource(R.string.assets_digital), style = MaterialTheme.typography.headlineMedium, color = OmColors.Ink)
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        OmPrimaryButton(stringResource(R.string.action_deposit), Modifier.weight(1f), onClick = onDeposit)
-                        OmSecondaryButton(stringResource(R.string.action_send), Modifier.weight(1f), onClick = onSend)
+            Column(Modifier.padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                /* the crypto held only (the OMR account is on the home total): labelled as such, never « total balance » */
+                Text(stringResource(R.string.home_holdings), style = MaterialTheme.typography.titleSmall, color = OmColors.InkSecondary)
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(if (s.loading) "…" else money(if (priced.isEmpty()) null else total, s.currency, s.hidden), style = MaterialTheme.typography.displaySmall, color = OmColors.Ink, maxLines = 1)
+                    pct?.let { c ->
+                        Text(Fmt.pct(c), style = MaterialTheme.typography.labelMedium, color = if (c >= 0) OmColors.Success else OmColors.Error,
+                            modifier = Modifier.clip(RoundedCornerShape(50)).background(if (c >= 0) OmColors.ChipUp else OmColors.ChipDown).padding(horizontal = 10.dp, vertical = 3.dp))
                     }
                 }
+                if (pct != null) {
+                    val diff = now - before
+                    Text((if (diff >= 0) "↗ " else "↘ ") + stringResource(R.string.wallet_change_24h, com.omwallet.core.ui.ltr(money(kotlin.math.abs(diff), s.currency, s.hidden).let { if (diff >= 0) "+$it" else "−$it" })),
+                        style = MaterialTheme.typography.bodyMedium, color = if (diff >= 0) OmColors.Success else OmColors.Error)
+                }
+            }
+        }
+        /* share of each asset in the crypto balance (live prices) */
+        if (priced.isNotEmpty() && total > 0) item {
+            val share = stringResource(R.string.wallet_alloc)
+            LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(priced, key = { it.position.asset }) { l ->
+                    val v = String.format(java.util.Locale.US, "%.1f%%", l.usd!! / total * 100)
+                    Row(
+                        Modifier.clip(RoundedCornerShape(50)).border(1.dp, OmColors.Edge, RoundedCornerShape(50)).padding(start = 4.dp, end = 12.dp, top = 4.dp, bottom = 4.dp)
+                            .semantics { contentDescription = l.position.asset + " " + v + " " + share },
+                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    ) {
+                        AssetLogo(l.position.asset, size = 22.dp)
+                        Text(l.position.asset + ": " + v, style = MaterialTheme.typography.labelMedium, color = OmColors.Ink)
+                    }
+                }
+            }
+        }
+        item {
+            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                OmPrimaryButton(stringResource(R.string.action_send), Modifier.weight(1f), onClick = onSend)
+                OmPrimaryButton(stringResource(R.string.action_receive), Modifier.weight(1f), onClick = onDeposit)
+            }
+        }
+        item {
+            Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.wallet_my_assets), style = MaterialTheme.typography.titleLarge, color = OmColors.Ink, modifier = Modifier.weight(1f))
+                val add = stringResource(R.string.action_deposit)
+                Box(
+                    Modifier.size(32.dp).clip(RoundedCornerShape(50)).border(1.5.dp, OmColors.Blue600, RoundedCornerShape(50)).pressable(onClick = onDeposit)
+                        .semantics { contentDescription = add },
+                    contentAlignment = Alignment.Center,
+                ) { Text("+", style = MaterialTheme.typography.titleMedium, color = OmColors.Blue600) }
             }
         }
         if (s.loading) item { SkeletonRows(4, Modifier.padding(horizontal = 20.dp)) }
         else if (s.lines.isEmpty()) item { EmptyState(stringResource(R.string.home_no_holdings_t), stringResource(R.string.home_no_holdings_b), Modifier.padding(16.dp), stringResource(R.string.action_deposit), onDeposit) }
         itemsIndexed(s.lines, key = { _, l -> l.position.asset }) { i, l ->
-            GlassCard(Modifier.padding(horizontal = 16.dp).pressable { onAsset(l.position.asset) }, padding = 16.dp, rise = i + 1) {
-                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                    AssetLogo(l.position.asset, size = 52.dp)
-                    Column(Modifier.weight(1f)) {
-                        Text(l.position.asset, style = MaterialTheme.typography.titleLarge, color = OmColors.Ink)
-                        Text(Catalog.asset(l.position.asset)?.name ?: l.position.asset, style = MaterialTheme.typography.bodyMedium, color = OmColors.InkSecondary)
-                        Text(Fmt.masked(Fmt.qty(l.position.balance, l.position.asset), s.hidden) + "  ·  " + money(l.usd, s.currency, s.hidden), style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary)
-                        if (l.position.locked > 0) Text(stringResource(R.string.assets_locked) + " " + Fmt.masked(Fmt.qty(l.position.locked, l.position.asset), s.hidden), style = MaterialTheme.typography.labelSmall, color = OmColors.Warning)
-                    }
-                    Text(stringResource(R.string.assets_details), style = MaterialTheme.typography.labelLarge, color = OmColors.Blue600,
-                        modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(Brush.linearGradient(listOf(Color(0x3DFFFFFF), Color(0x14FFFFFF))))
-                            .border(1.dp, Color.White, RoundedCornerShape(16.dp)).pressable { onAsset(l.position.asset) }.padding(horizontal = 14.dp, vertical = 10.dp))
+            val up = (l.quote?.changePct ?: 0.0) >= 0
+            Row(
+                Modifier.fillMaxWidth().padding(horizontal = 16.dp).clip(RoundedCornerShape(14.dp)).pressable { onAsset(l.position.asset) }.padding(vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                AssetLogo(l.position.asset, size = 44.dp)
+                Column(Modifier.weight(1f)) {
+                    Text(Catalog.asset(l.position.asset)?.name ?: l.position.asset, style = MaterialTheme.typography.titleSmall, color = OmColors.Ink, maxLines = 1)
+                    Text(Fmt.pct(l.quote?.changePct) + " (24 h)", style = MaterialTheme.typography.bodySmall, color = if (up) OmColors.Success else OmColors.Error)
+                    if (l.position.locked > 0) Text(stringResource(R.string.assets_locked) + " " + Fmt.masked(Fmt.qty(l.position.locked, l.position.asset), s.hidden), style = MaterialTheme.typography.labelSmall, color = OmColors.Warning)
+                }
+                MiniSpark(l.position.asset, up)
+                Column(horizontalAlignment = Alignment.End, modifier = Modifier.width(104.dp)) {
+                    Text(money(l.usd, s.currency, s.hidden), style = MaterialTheme.typography.titleSmall, color = OmColors.Ink, maxLines = 1)
+                    Text(Fmt.masked(Fmt.qty(l.position.balance, l.position.asset), s.hidden), style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary, maxLines = 1)
                 }
             }
         }
     }
 }
 
-/* ======================= ASSET DETAIL ======================= */
 data class DetailUiState(
     val sym: String, val quote: Quote? = null, val position: AssetPosition? = null, val chart: List<Double> = emptyList(), val chartLoading: Boolean = true,
     val chartError: Boolean = false, val period: Period = Period.D1, val history: List<Tx> = emptyList(), val hidden: Boolean = false,

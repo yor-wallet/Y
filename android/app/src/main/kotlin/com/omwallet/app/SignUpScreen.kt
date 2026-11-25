@@ -92,7 +92,7 @@ fun SignUpScreen(onBack: () -> Unit) {
     val emailErr = if (tried && !Validation.emailOk(email)) stringResource(R.string.login_e_email) else null
     val phoneErr = if (tried && fullPhone == null) stringResource(R.string.signup_e_phone) else null
     val passErr = if (tried && password.length < Validation.PASSWORD_MIN) stringResource(R.string.signup_e_password) else null
-    val colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = OmColors.Blue600, unfocusedBorderColor = OmColors.Edge, focusedContainerColor = Color(0x2EFFFFFF), unfocusedContainerColor = Color(0x1AFFFFFF), cursorColor = OmColors.Blue600, focusedLeadingIconColor = OmColors.Blue600)
+    val colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = OmColors.Blue600, unfocusedBorderColor = OmColors.Edge, focusedContainerColor = OmColors.Track, unfocusedContainerColor = OmColors.Card, cursorColor = OmColors.Blue600, focusedLeadingIconColor = OmColors.Blue600)
     BackHandler { if (!busy) onBack() }
 
     fun submit() {
@@ -113,8 +113,7 @@ fun SignUpScreen(onBack: () -> Unit) {
         Modifier.fillMaxSize().statusBarsPadding().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = 22.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Image(painterResource(com.omwallet.app.R.drawable.app_icon_glass), contentDescription = stringResource(R.string.app_name),
-            modifier = Modifier.padding(top = 6.dp).size(96.dp).riseIn(0).clip(RoundedCornerShape(percent = 26)))
+        BrandHero(Modifier.size(200.dp).riseIn(0))
         Spacer(Modifier.height(10.dp))
         Text(stringResource(R.string.signup_title), style = MaterialTheme.typography.headlineMedium, color = OmColors.Ink, textAlign = TextAlign.Center, modifier = Modifier.riseIn(1))
         Spacer(Modifier.height(4.dp))
@@ -154,7 +153,7 @@ fun SignUpScreen(onBack: () -> Unit) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     val pickLabel = stringResource(R.string.signup_country)
                     Text("${country.iso} ${country.dial}", style = MaterialTheme.typography.titleMedium, color = OmColors.Ink,
-                        modifier = Modifier.clip(RoundedCornerShape(18.dp)).background(Color(0x1AFFFFFF)).border(1.dp, OmColors.Edge, RoundedCornerShape(18.dp))
+                        modifier = Modifier.clip(RoundedCornerShape(18.dp)).background(OmColors.Card).border(1.dp, OmColors.Edge, RoundedCornerShape(18.dp))
                             .pressable { pickCountry = true }.heightIn(min = 56.dp).padding(horizontal = 14.dp, vertical = 16.dp)
                             .semantics { contentDescription = "$pickLabel: ${country.name(lang)} ${country.dial}" }.testTag("signup_country"))
                     OutlinedTextField(

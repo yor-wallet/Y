@@ -23,34 +23,45 @@ import androidx.compose.ui.unit.sp
 
 /* ============================================================
    OM GLASS — design tokens (cahier OM Wallet Android).
-   Material 3 surfaces as the technical base; 14.5.0: transparent glass over a luminous blue (no white surfaces).
+   Material 3 surfaces as the technical base; 14.8.0: black page, dark grey cards, yellow accent (Liv X / Binance).
    ============================================================ */
 object OmColors {
-    /* 14.5.0 « Verre » — the owner: « une interface glass transparente, pas blanc qui fait mal aux yeux ». Every surface is transparent
-       glass over a luminous blue; text is light. Token NAMES are unchanged, so every screen follows without being rewritten. */
-    val Surface = Color(0xFF1A6FE6)            // page blue (top of the gradient)
-    val SurfaceBright = Color(0x2EFFFFFF)      // glass fill 18 %
-    val GlassWhite = Color(0x21FFFFFF)         // glass 13 %
-    val GlassStrong = Color(0x30FFFFFF)        // glass 19 %
-    val Sky100 = Color(0x26FFFFFF)             // light glass (chips, tracks)
-    val Sky300 = Color(0x4DFFFFFF)             // glass edge
-    val Sky500 = Color(0xFF86D6FF)
-    val Blue600 = Color(0xFFA6E1FF)            // accent for text and icons on the blue (readable)
-    val Blue700 = Color(0xFF1A70EC)
-    val SkyGlow = Color(0xFF8DE0FF)
-    val Ink = Color(0xFFFFFFFF)
-    val InkSecondary = Color(0xD1EAF3FF)
-    val Success = Color(0xFF45E39A)
-    val Warning = Color(0xFFFFC766)
-    val Error = Color(0xFFFF7D89)
-    val Hairline = Color(0x26FFFFFF)
-    val Sheet = Color(0xF51A5FD0)              // sheets / dialogs: nearly opaque blue glass, the content behind never competes with the text
-    val PageMid = Color(0xFF1153C8)
-    val PageBottom = Color(0xFF0A3591)
-    val GradTop = Color(0xFF8DE0FF)            // primary button: luminous sky → blue
-    val GradMid = Color(0xFF3EA8FF)
-    val GradBottom = Color(0xFF1A70EC)
-    val Edge = Color(0x4DFFFFFF)               // 1 dp light edge of every glass surface
+    /* 14.8.0 « Noir & Jaune » — the owner (24/11): yellow and black like Liv X (Emirates NBD) and Binance. A warm near-black page, dark grey
+       cards, ONE vivid yellow for the most important thing on a screen (primary button, active tab, active segment, centre button) with dark
+       text ON the yellow, green / red for gains / losses. Token NAMES are unchanged, so every screen follows without being rewritten. */
+    val Surface = Color(0xFF0B0A07)            // page
+    val SurfaceBright = Color(0xFF1B1A16)      // card fill
+    val GlassWhite = Color(0xFF1B1A16)         // soft card
+    val GlassStrong = Color(0xFF25231E)        // stronger card
+    val Sky100 = Color(0xFF25231E)             // chips, tracks
+    val Sky300 = Color(0xFF3A372D)             // edges, disabled fill
+    val Sky500 = Color(0xFFFFD84A)             // light accent
+    val Blue600 = Color(0xFFFFC800)            // THE accent (links, icons, selected states, fills)
+    val Blue700 = Color(0xFFF5B800)            // pressed accent
+    val SkyGlow = Color(0xFFFFD84A)
+    val Ink = Color(0xFFF5F3EE)                // text
+    val InkSecondary = Color(0xFFB0AC9F)       // secondary text (≥ 4.5:1 on every dark surface)
+    val Success = Color(0xFF0ECB81)
+    val Warning = Color(0xFFFFB020)
+    val Error = Color(0xFFFF5A6E)               // loss / error (≥ 4.5:1 on the loss chip)
+    val Hairline = Color(0xFF2F2D26)
+    val Sheet = Color(0xFF1B1A16)
+    val PageMid = Color(0xFF0B0A07)
+    val PageBottom = Color(0xFF0B0A07)
+    val GradTop = Color(0xFFFFD84A)            // primary button: yellow
+    val GradMid = Color(0xFFFFC800)
+    val GradBottom = Color(0xFFF5B800)
+    val Edge = Color(0xFF2F2D26)               // 1 dp edge of cards
+    val Card = Color(0xFF1B1A16)               // dark grey card on the black page
+    val Track = Color(0xFF25231E)              // field / segmented track / round buttons
+    val AccentSoft = Color(0xFF2B2410)         // yellow-tinted dark fill (secondary buttons, selected chips)
+    val Header = Color(0xFF0B0A07)
+    val OnHeader = Color(0xFFF5F3EE)
+    val OnAccent = Color(0xFF14110A)           // text and icons ON the yellow
+    val Nav = Color(0xFF12110D)                // bottom bar
+    val ChipUp = Color(0xFF0E2E23)             // gain chip fill
+    val ChipDown = Color(0xFF35151B)           // loss chip fill
+    val Glow = Color(0xFFFFC800)               // the soft yellow light behind the balance
 }
 
 object OmRadius { val S = 14.dp; val M = 20.dp; val L = 28.dp; val XL = 34.dp }
@@ -69,16 +80,16 @@ val OmArabicFont = FontFamily(
 val OmFont = OmLatinFont
 
 private val OmColorScheme: ColorScheme = darkColorScheme(
-    primary = OmColors.GradMid, onPrimary = Color.White,
-    primaryContainer = OmColors.Sky100, onPrimaryContainer = OmColors.Ink,
-    secondary = OmColors.Sky500, onSecondary = Color(0xFF04204F),
+    primary = OmColors.Blue600, onPrimary = OmColors.OnAccent,
+    primaryContainer = OmColors.AccentSoft, onPrimaryContainer = OmColors.Blue600,
+    secondary = OmColors.Sky500, onSecondary = OmColors.OnAccent,
     background = OmColors.Surface, onBackground = OmColors.Ink,
     surface = OmColors.Surface, onSurface = OmColors.Ink,
-    surfaceVariant = OmColors.Sky100, onSurfaceVariant = OmColors.InkSecondary,
-    surfaceContainerLowest = Color(0xFF1660D6), surfaceContainerLow = Color(0xFF1A66DA),
-    surfaceContainer = Color(0xFF1E6CDE), surfaceContainerHigh = Color(0xFF2473E2), surfaceContainerHighest = Color(0xFF2A7AE6),
-    outline = OmColors.Edge, outlineVariant = OmColors.Hairline,
-    error = OmColors.Error, onError = Color(0xFF3A0610),
+    surfaceVariant = OmColors.Card, onSurfaceVariant = OmColors.InkSecondary,
+    surfaceContainerLowest = OmColors.Surface, surfaceContainerLow = Color(0xFF14130F),
+    surfaceContainer = OmColors.Card, surfaceContainerHigh = OmColors.Track, surfaceContainerHighest = Color(0xFF2F2D26),
+    outline = OmColors.Sky300, outlineVariant = OmColors.Hairline,
+    error = OmColors.Error, onError = Color.White,
 )
 
 /* textDirection ContentOrLtr: Arabic sentences run right-to-left, while amounts, prices and signs ("+1.37%", "0.5 BTC") stay left-to-right

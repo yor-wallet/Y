@@ -54,26 +54,26 @@ function applyI18n(){
     if (val) el.textContent = val;
   });
 }
-/* Thème enregistré de la personne ; « clair » tant qu'elle n'a rien choisi (c'est ce que l'application affiche au démarrage). */
+/* Thème enregistré de la personne ; « sombre » (noir & jaune) tant qu'elle n'a rien choisi (14.8.0). */
 function savedThemeMode(){
   const s = (typeof Runtime !== 'undefined' && Runtime) ? Runtime.settings : null;
   const m = s && s.theme;
-  return (m === 'dark' || m === 'light' || m === 'system') ? m : 'light';
+  return (m === 'dark' || m === 'light' || m === 'system') ? m : 'dark';
 }
-let _themeMode = 'light', _themeMq = null;
+let _themeMode = 'dark', _themeMq = null;
 function applyTheme(mode){
-  mode = (mode === 'dark' || mode === 'light' || mode === 'system') ? mode : 'light';
+  mode = (mode === 'dark' || mode === 'light' || mode === 'system') ? mode : 'dark';
   _themeMode = mode;
   try { localStorage.setItem('fp_theme', mode); } catch(e){ /* rien */ }
   let dark = false;
   try { dark = mode === 'system' ? !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) : mode === 'dark'; } catch(e){ dark = mode === 'dark'; }
   const eff = dark ? 'dark' : 'light';
-  /* 14.5.0 « Verre » : the interface is always transparent glass with light text (no white surfaces, at the owner's request);
-     the person's setting chooses the tone of the blue — « jour » (light) luminous, « nuit » (dark) deep. */
-  document.documentElement.setAttribute('data-theme', 'dark');
+  /* 14.8.0 « Noir & Jaune » (owner, 24/11: yellow and black like Liv X and Binance): dark by default, a cream-yellow light mode;
+     the person's setting chooses light, dark or system. */
+  document.documentElement.setAttribute('data-theme', eff);
   document.documentElement.setAttribute('data-tone', eff === 'dark' ? 'night' : 'day');
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute('content', eff === 'dark' ? '#0A2A6E' : '#1A6FE6');
+  if (meta) meta.setAttribute('content', eff === 'dark' ? '#0B0A07' : '#FFFBF0');
   /* « Système » suit le téléphone en direct (nuit / jour), sans recharger */
   if (!_themeMq && window.matchMedia){
     try {

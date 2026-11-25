@@ -95,7 +95,7 @@ fun AccountScreen(isAdmin: Boolean, onAdmin: () -> Unit, contentPadding: Padding
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                     val initials = (profile?.displayName ?: "").split(' ').filter { it.isNotBlank() }.take(2).joinToString("") { it.take(1).uppercase() }
                     Box(Modifier.size(64.dp).clip(CircleShape).background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(OmColors.SkyGlow, OmColors.Blue700))), contentAlignment = Alignment.Center) {
-                        Text(initials.ifBlank { "OM" }, style = MaterialTheme.typography.titleLarge, color = androidx.compose.ui.graphics.Color.White)
+                        Text(initials.ifBlank { "OM" }, style = MaterialTheme.typography.titleLarge, color = OmColors.OnAccent)
                     }
                     Column(Modifier.weight(1f)) {
                         Text(profile?.displayName ?: "—", style = MaterialTheme.typography.titleLarge, color = OmColors.Ink)

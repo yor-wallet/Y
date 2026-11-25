@@ -1,10 +1,11 @@
-# OM Wallet — passation (état au 24/11/2026, web 14.6.0 · Android 14.5.3)
+# OM Wallet — passation (état au 25/11/2026, version 14.9.1 web + Android)
 
 Document pour la session suivante. À lire en entier avec la skill du projet `.claude/skills/om-wallet/SKILL.md` (règles du
 propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce soit.
 
-> **Le travail est sur la branche `claude/blissful-goldberg-426zi7`** (aucune pull request, rien n'est fusionné dans la branche
-> par défaut). Partir de cette branche : `git fetch origin claude/blissful-goldberg-426zi7 && git checkout -B <branche de la session> FETCH_HEAD`.
+> **Le travail le plus récent est sur la branche `claude/intelligent-keller-lrjxah`** (14.9.0 : identité originale « Arche », le logo du propriétaire ne sert que d'icône ; 14.8.0 : design « Noir & Jaune » comme Liv X et Binance), partie de `claude/blissful-goldberg-426zi7` (14.5.3). `main` contient une 14.6.0 « verre liquide » **abandonnée** (jamais
+> reprise ici : la branche l'a fusionnée sans ses changements). Partir de cette branche :
+> `git fetch origin claude/intelligent-keller-lrjxah && git checkout -B <branche de la session> FETCH_HEAD`.
 
 ---
 
@@ -13,13 +14,12 @@ propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce so
 | Élément | État |
 |---|---|
 | Dernier commit | voir `git log -1` sur la branche |
-| Site en production | https://yor-wallet.vercel.app — version 14.5.1 (voir `changelog.md` ; contrôle : `curl -s https://yor-wallet.vercel.app/sw.js \| grep fp-shell` → `fp-shell-v14.5.1`) |
-| Version | web 14.6.0 (`js/data/reference-data.js`, `sw.js`) · Android 14.5.3 (`android/app/build.gradle.kts` 140503, `android/README.md`) · voir `changelog.md` |
-| Site vitrine | https://yor-wallet.vercel.app/welcome — dossier `welcome/` (HTML + CSS + JS sans bibliothèque, captures réelles `welcome/img/*-{fr,en,ar}.webp`), test `tests/ux/site.test.mjs`. Distinct de l'application (racine `/`), relié par `/#/signup`, `/#/login` et le lien « Découvrir OM Wallet » de la page de connexion |
+| Site en production | https://yor-wallet.vercel.app — version 14.9.1 (contrôle : `curl -s https://yor-wallet.vercel.app/sw.js \| grep fp-shell` → `fp-shell-v14.9.1`) |
+| Version | 14.9.1 partout (`js/data/reference-data.js`, `sw.js`, `android/app/build.gradle.kts` 140901, `android/README.md`, `changelog.md`) |
 | Base Supabase `gebjmguoauvutiqvoswl` | `20261124_crypto_swap.sql` **appliquée** (par le propriétaire, éditeur SQL) ; `20261125_close_legacy_instant_trades.sql` **appliquée** le 23/11 et `20261126_close_legacy_crypto_to_bank.sql` **appliquée** le 24/11 (anciennes fonctions à prix figés fermées aux utilisateurs, rien supprimé, retours arrière fournis — voir `changelog.md` 14.5.1) |
 | Fonctions Edge | `crypto-swap` v1 (verify_jwt **true**) · `send-email` v59 (verify_jwt **false**, appelée par la base avec `x-webhook-secret`) · `wallet-addresses`, `admin-action` inchangées |
 | Tests web | 9 suites vertes le 24/11 : omw, omx, trade, smoke (138 écrans), shell, bugfix, ios-motion, admin-console, admin-payouts ; mesure `tests/ux/perf-spot.mjs` |
-| Tests Android | 53 tests Robolectric, 0 échec (24/11) ; APK debug 14.5.3, APK release (R8) et AAB release construits — release **non signés** (clé du propriétaire nécessaire) |
+| Tests Android | 53 tests Robolectric, 0 échec (24/11, 14.7.0) ; APK de publication 14.7.0 signé avec une **clé temporaire de session** (hors dépôt, perdue avec la session : la prochaine version devra être signée avec la clé du propriétaire, ce qui obligera à désinstaller puis réinstaller) |
 | Figma | fichier `sboQhYUgrVX2ocLBjlmNDu`, groupe `3:438` (cadres Marchés `3:2`, Spot `3:155`, Swap `3:357`), verre bleu + nouveau menu |
 
 ### Ce que fait la 14.5.0 (tout est en service)
@@ -34,6 +34,23 @@ propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce so
   Refus = montant rendu. Essai complet sur le serveur fait le 23/11 dans une transaction annulée : tout conforme (détail dans `changelog.md`).
 
 ---
+
+## 1 ter. Identité 14.9.0 (25/11) — à lire avant toute retouche de logo ou d'image
+Consigne du propriétaire : « le logo est uniquement pour l'icône, le reste, crée un inédit ». **Deux couches** (détail et emplacements : skill `om-brand`) :
+- **Icône** = son logo (`brand/originals/logo-om-noir-jaune.png`) : lanceur Android, favicon, PWA, apple-touch, boutique. `python3 -I brand/make_assets.py`.
+- **Tout le reste** = « Arche » (arche + pièce, un seul jaune), créée pour ce projet : marque, logotype, héros de connexion / présentation, démarrage, partage. Source : `brand/om_art.py` ; `python3 -I brand/make_brand.py` (Chromium via `brand/render.cjs`).
+- Ne jamais afficher le logo du propriétaire ailleurs que comme icône ; ne jamais le redessiner. Plus aucun bleu de marque.
+- **14.9.1 (finition)** : méthode « mesurer avant de corriger » — `node tests/ux/palette.test.mjs` (contrastes des jetons) et `NODE_PATH=$(npm root -g) node tests/ux/audit.mjs` (contraste réel, zones tactiles, texte coupé, 23 écrans × clair / sombre × en / ar). Les blocs « 14.9.1 » en fin de `css/noirjaune.css` recouvrent les restes des anciennes couches (marine, bleu ciel, violet) ; en cas de nouveau reliquat, le corriger là plutôt que dans les anciennes couches.
+- **Reste à faire** : e-mails de transaction (`supabase/functions/send-email`) encore à l'ancien habillage — à reprendre avec la marque Arche **après accord du propriétaire** (le déploiement de la fonction touche de vrais clients) ; essai sur un vrai téléphone ; Canva et Moda (le propriétaire doit les connecter dans claude.ai) ; l'ancienne tuile « OM PAY » (`assets/ui/om-glyph.png`, `om-pay-word.png`, code inactif de `premium.js`) peut être retirée.
+- Autres demandes du 25/11 : **système autonome / rétention** — traité par les skills `om-growth` et `om-autopilot` (pas de profilage de personnes ni de mécaniques d'addiction ; brouillons validés par le propriétaire ; revue hebdomadaire planifiée seulement sur sa demande). Taille de l'APK : la version de publication compactée (~4,4 Mo) vient du même code que le fichier de développement de ~15 Mo ; le propriétaire peut préférer une version non compactée (~14 Mo, `-PomShrink=false`).
+
+## 1 bis. Design 14.8.0 (24/11) — à lire avant toute retouche d'écran
+Consigne du propriétaire : **jaune et noir comme Liv X (Emirates NBD) et Binance**, « pas bizarre », précis ; **regarder en ligne avant d'écrire** (fait : voir `changelog.md` 14.8.0 et la skill, section Design). Fait : palette + composants web et Android, menu à bouton Swap jaune, accueil, portefeuille, conversion, connexion, présentation d'ouverture (photos converties en duotone noir / jaune). **Reste** : recomposer comme Liv X / Binance les écrans intérieurs (dépôt, retrait, envoi, activité, détail d'actif Android) ; mode clair crème sur Android ; vérifier en arabe et sur un vrai téléphone.
+
+### Demandes du propriétaire pas encore faites (décidées, à faire par étapes — ne pas les présenter comme faites)
+1. **« L'app garde les clés »** (réponse du 24/11) : un portefeuille personnel sur le téléphone (phrase de 12 mots chiffrée dans le Keystore, adresses par réseau, envoi signé sur le téléphone), **à côté** du compte actuel (le compte OM Wallet reste à confirmation par l'administrateur, comme Binance garde son compte et son portefeuille Web3). Étapes proposées : (a) création / sauvegarde / adresses, vérifiées sur des vecteurs de test publics ; (b) lecture des soldes par des nœuds publics ; (c) envoi sur UN réseau, d'abord sur réseau de test ; (d) les autres réseaux. **Ne jamais livrer l'envoi réel sans essai sur réseau de test** : une erreur ici fait perdre de l'argent sans retour possible. Les soldes déjà sur le serveur ne bougent pas.
+2. **Plus d'images, de vidéos, d'animations, de modes, de fonctionnalités** « plus précis et plus qualitatifs » : proposés — vidéos de présentation enregistrées depuis l'application elle-même (ar / fr / en), animations de chiffres et de courbes, mode clair crème sur Android.
+3. **« Au moins 111 Mo »** : le propriétaire a choisi du **vrai contenu** (images, vidéos, fonctionnalités), pas du remplissage. L'APK pèse ~5 Mo parce qu'il est optimisé ; ne pas gonfler avec un fichier inutile sans qu'il le redemande après explication.
 
 ## 2. Ce qui reste à faire
 
@@ -71,12 +88,6 @@ Encore vu, non corrigé :
 3. Web Historique : noms coupés (« Salim Al … ») dans les lignes ; prévoir 2 lignes pour le nom.
 4. Aucun essai sur un vrai téléphone (rendus Robolectric et Chromium seulement) : à faire avec le propriétaire (Android 12-15, petit écran).
 5. Vérifier en arabe (droite à gauche) les nouveaux écrans : inscription Android, Spot / Swap web.
-
-### P2c — Site vitrine : suites possibles (seulement si le propriétaire le demande)
-- Nom de domaine propre (ex. omwallet.com) : à acheter et relier par le propriétaire ; le site peut alors devenir la page d'accueil du domaine.
-- Pages légales (conditions, confidentialité) : textes à fournir ou valider par le propriétaire — ne jamais en inventer.
-- Bouton Google Play : seulement le jour où l'application y est publiée (aucun bouton factice avant).
-- Captures à refaire quand l'interface change : script de captures (voir changelog 14.6.0), 390×844 à ×2, fr / en / ar.
 
 ### P3 — Points connus, non bloquants (à signaler, pas à « corriger » sans demande)
 - Brevo : l'adresse `EMAIL_FROM` n'est pas un expéditeur vérifié du compte ; `send-email` bascule seul sur l'expéditeur vérifié
@@ -138,7 +149,7 @@ faux Supabase `tests/ux/mock-supabase.js`), Android `ScreensTest.kt` + `FakeBack
 **Commandes.**
 ```bash
 node tools/build.mjs
-for t in shell smoke bugfix omx omw trade admin-console ios-motion admin-payouts site; do node tests/ux/$t.test.mjs; done
+for t in shell smoke bugfix omx omw trade admin-console ios-motion admin-payouts; do node tests/ux/$t.test.mjs; done
 cd android && gradle testDebugUnitTest :app:assembleDebug     # 53 tests attendus
 ```
 Le bouton `.btn` ignore un second appui pendant 450 ms (anti double appui) : en test, attendre ~1,3 s entre deux appuis sur le même bouton.

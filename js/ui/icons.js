@@ -5,6 +5,7 @@
    ============================================================ */
 const IC = {
   home:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
+  menu:'<path d="M4 7h16M4 12h16M4 17h10"/>',
   history:'<path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/><path d="M12 8v4l3 2"/>',
   send:'<path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7Z"/>',
   receive:'<path d="M12 5v14M5 12l7 7 7-7"/>',
@@ -91,14 +92,15 @@ function flag(iso){ return FLAGS[iso] || FLAGS.US; }
 const isArabicUi = () => typeof LANG === 'string' && LANG === 'ar';
 function logoMark(size){
   size = size || 48;
-  return '<img class="logo-mark" src="assets/brand/logo-mark.svg" alt="' + (isArabicUi() ? 'OM Wallet' : 'OM Wallet') + '" width="' + size + '" height="' + size + '" style="width:calc(' + size + 'px*var(--ui));height:calc(' + size + 'px*var(--ui));border-radius:22%" decoding="async">';
+  /* « Arche » mark: a themed background (css/noirjaune.css), not an <img>, so it follows the dark / light page */
+  return '<span class="logo-mark" role="img" aria-label="OM Wallet" style="width:calc(' + size + 'px*var(--ui));height:calc(' + size + 'px*var(--ui))"></span>';
 }
 function logoLockup(size){
   size = size || 48;
   /* arabe : mot-symbole « OM Wallet » (jamais de lettres espacées : elles casseraient les liaisons de l'écriture arabe) */
   const word = isArabicUi()
-    ? '<span class="logo-name logo-name-ar">OM</span><span class="logo-sub logo-sub-ar">PAY</span>'
-    : '<span class="logo-name">OM</span><span class="logo-sub">PAY</span>';
+    ? '<span class="logo-name logo-name-ar">OM</span><span class="logo-sub logo-sub-ar">WALLET</span>'
+    : '<span class="logo-name">OM</span><span class="logo-sub">WALLET</span>';
   return '<div class="logo-lockup">' + logoMark(size) + '<div class="logo-word">' + word + '</div></div>';
 }
 const ASSET_INITIALS = { BTC:'₿', ETH:'Ξ', USDT:'₮', USDC:'$', BNB:'BNB', SOL:'SOL', XRP:'XRP', LTC:'Ł' };

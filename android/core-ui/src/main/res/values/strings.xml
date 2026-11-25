@@ -22,6 +22,7 @@
     <string name="feed_idle">Connecting to the market…</string>
     <string name="nav_home">Home</string>
     <string name="nav_assets">Assets</string>
+    <string name="nav_wallet">Wallet</string>
     <string name="nav_markets">Markets</string>
     <string name="nav_activity">Activity</string>
     <string name="nav_account">Account</string>
@@ -343,4 +344,18 @@
     <string name="e_email_invalid">This e-mail address was refused. Please check it.</string>
     <string name="e_rate_limit">Too many attempts. Try again in a few minutes.</string>
     <string name="e_signup_failed">The account could not be created. Check the phone number and try again.</string>
+    <string name="home_movers">Movers and Shakers</string>
+    <string name="home_watchlist">Watchlist</string>
+    <string name="home_change_24h">Change over 24 h</string>
+    <string name="wallet_title">Your wallet</string>
+    <string name="wallet_alloc">Share of your wallet</string>
+    <string name="wallet_change_24h">%1$s over 24 h</string>
+    <string name="wallet_my_assets">My Assets</string>
+    <string name="action_receive">Receive</string>
+    <string name="convert_title">Convert %1$s</string>
+    <string name="convert_balance">Balance: %1$s</string>
+    <string name="convert_pay">You pay</string>
+    <string name="convert_get">You get</string>
+    <string name="convert_preview">Preview conversion</string>
+    <string name="keypad_delete">Delete</string>
 </resources>

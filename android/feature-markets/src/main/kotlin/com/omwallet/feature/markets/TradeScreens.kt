@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -280,7 +281,7 @@ fun SpotScreen(contentPadding: PaddingValues) {
         item {
             RefHeader(stringResource(R.string.tr_spot), below = {
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                    Row(Modifier.clip(RoundedCornerShape(18.dp)).background(Brush.linearGradient(listOf(Color(0x3DFFFFFF), Color(0x14FFFFFF)))).border(1.dp, OmColors.Edge, RoundedCornerShape(18.dp))
+                    Row(Modifier.clip(RoundedCornerShape(18.dp)).background(androidx.compose.ui.graphics.SolidColor(OmColors.Card)).border(1.dp, OmColors.Edge, RoundedCornerShape(18.dp))
                         .pressable(role = Role.Button) { pickPair = true }.padding(horizontal = 12.dp, vertical = 8.dp).testTag("spot_pair"),
                         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         AssetLogo(s.base, 28.dp); Text(s.base + "/USDT", style = MaterialTheme.typography.titleLarge, color = OmColors.Ink)
@@ -293,7 +294,7 @@ fun SpotScreen(contentPadding: PaddingValues) {
             Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp), verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.SpaceBetween) {
                 FlashPrice(s.last ?: q?.price, s.dir)
                 Text(Fmt.pct(q?.changePct), style = MaterialTheme.typography.titleMedium, color = pctColor(q?.changePct),
-                    modifier = Modifier.clip(RoundedCornerShape(12.dp)).background(Color(0x1FFFFFFF)).padding(horizontal = 10.dp, vertical = 5.dp))
+                    modifier = Modifier.clip(RoundedCornerShape(12.dp)).background(OmColors.Track).padding(horizontal = 10.dp, vertical = 5.dp))
             }
         }
         item {
@@ -305,7 +306,7 @@ fun SpotScreen(contentPadding: PaddingValues) {
             }
         }
         item {
-            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp).clip(RoundedCornerShape(18.dp)).background(Color(0x14FFFFFF)).border(1.dp, OmColors.Edge, RoundedCornerShape(18.dp)).padding(4.dp)) {
+            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp).clip(RoundedCornerShape(18.dp)).background(OmColors.Track).border(1.dp, OmColors.Edge, RoundedCornerShape(18.dp)).padding(4.dp)) {
                 Trade.TFS.keys.forEach { k -> Seg(k, s.tf == k, Modifier.weight(1f).testTag("tf_$k")) { vm.tf(k) } }
             }
         }
@@ -313,7 +314,7 @@ fun SpotScreen(contentPadding: PaddingValues) {
         item {
             Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 GlassCard(Modifier.weight(1.08f), padding = 12.dp) {
-                    Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(Color(0x14FFFFFF)).padding(4.dp)) {
+                    Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(OmColors.Track).padding(4.dp)) {
                         SideSeg(stringResource(R.string.tr_buy), buy, true, Modifier.weight(1f).testTag("side_buy")) { side = "BUY"; amount = "" }
                         SideSeg(stringResource(R.string.tr_sell), !buy, false, Modifier.weight(1f).testTag("side_sell")) { side = "SELL"; amount = "" }
                     }
@@ -323,7 +324,7 @@ fun SpotScreen(contentPadding: PaddingValues) {
                     Row(Modifier.fillMaxWidth().padding(top = 6.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                         listOf(25, 50, 75, 100).forEach { p ->
                             Text("$p%", style = MaterialTheme.typography.labelSmall, color = OmColors.Ink, textAlign = TextAlign.Center,
-                                modifier = Modifier.weight(1f).clip(RoundedCornerShape(8.dp)).background(Color(0x1FFFFFFF)).pressable { amount = Trade.cut8(legFrom.available * p / 100).toPlainString() }.padding(vertical = 6.dp).testTag("pct_$p"))
+                                modifier = Modifier.weight(1f).clip(RoundedCornerShape(8.dp)).background(OmColors.Track).pressable { amount = Trade.cut8(legFrom.available * p / 100).toPlainString() }.padding(vertical = 6.dp).testTag("pct_$p"))
                         }
                     }
                     Text(stringResource(R.string.tr_avail, Trade.qty(legFrom.available) + " " + legFrom.asset), style = MaterialTheme.typography.labelSmall, color = OmColors.InkSecondary, modifier = Modifier.padding(top = 6.dp))
@@ -378,56 +379,66 @@ fun SwapScreen(contentPadding: PaddingValues) {
 
     if (step !is TradeStep.Form) { TradeFlow(tvm, step, contentPadding, onDone = { tvm.reset(); amount = "" }); return }
 
-    LazyColumn(Modifier.fillMaxSize().testTag("swap"), contentPadding = contentPadding, verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        item { RefHeader(stringResource(R.string.tr_swap)) }
+    /* 14.7.0 — « Convert » of the owner's reference image: you pay / you get, a dark round button that swaps the two, the live estimate,
+       « Preview conversion », and a numeric keypad. The flow behind it is unchanged: the server fixes the price (30 s), then review,
+       PIN, « In progress » until the administrator confirms. */
+    val fromName = com.omwallet.core.data.Catalog.asset(fromSym)?.name ?: fromSym
+    LazyColumn(Modifier.fillMaxSize().testTag("swap"), contentPadding = contentPadding, verticalArrangement = Arrangement.spacedBy(10.dp)) {
         item {
-            GlassCard(Modifier.padding(horizontal = 16.dp), padding = 16.dp) {
-                Text(stringResource(R.string.tr_from), style = MaterialTheme.typography.labelMedium, color = OmColors.InkSecondary)
+            Column(Modifier.statusBarsPadding().padding(horizontal = 16.dp, vertical = 8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                com.omwallet.core.design.ReferenceTitle(stringResource(R.string.convert_title, fromName), end = { com.omwallet.core.design.LogoMark() })
+                Text(stringResource(R.string.convert_balance, Trade.qty(f.available) + " " + f.asset), style = MaterialTheme.typography.bodyMedium, color = OmColors.InkSecondary)
+            }
+        }
+        item {
+            Column(Modifier.padding(horizontal = 20.dp)) {
+                Text("↑  " + stringResource(R.string.convert_pay), style = MaterialTheme.typography.labelMedium, color = OmColors.InkSecondary)
                 Row(Modifier.fillMaxWidth().padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     AssetPick(f, Modifier.testTag("swap_from")) { pick = "from" }
-                    AmountField(amount, null, Modifier.weight(1f).testTag("swap_amount")) { amount = it }
+                    Text(amount.ifEmpty { "0" }, style = MaterialTheme.typography.headlineMedium, color = if (amount.isEmpty()) OmColors.InkSecondary else OmColors.Ink,
+                        textAlign = TextAlign.End, maxLines = 1, modifier = Modifier.weight(1f).testTag("swap_amount"))
                 }
-                Row(Modifier.fillMaxWidth().padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                Row(Modifier.fillMaxWidth().padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(stringResource(R.string.tr_avail, Trade.qty(f.available) + " " + f.asset), style = MaterialTheme.typography.labelMedium, color = OmColors.InkSecondary)
-                    Text(stringResource(R.string.tr_max), style = MaterialTheme.typography.labelLarge, color = OmColors.Ink,
-                        modifier = Modifier.clip(RoundedCornerShape(10.dp)).background(Color(0x24FFFFFF)).pressable { amount = Trade.cut8(f.available).toPlainString() }.padding(horizontal = 12.dp, vertical = 5.dp).testTag("swap_max"))
+                    Text(stringResource(R.string.tr_max), style = MaterialTheme.typography.labelLarge, color = OmColors.Blue600,
+                        modifier = Modifier.clip(RoundedCornerShape(50)).background(OmColors.AccentSoft).pressable { amount = Trade.cut8(f.available).toPlainString() }.padding(horizontal = 12.dp, vertical = 5.dp).testTag("swap_max"))
                 }
             }
         }
         item {
-            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                Box(Modifier.size(54.dp).graphicsLayer { rotationZ = turn }.clip(CircleShape).background(Brush.verticalGradient(listOf(OmColors.GradTop, OmColors.GradMid, OmColors.GradBottom)))
-                    .border(1.dp, Color(0x8CFFFFFF), CircleShape).pressable(role = Role.Button) { val x = fromSym; fromSym = toSym; toSym = x; amount = ""; spin = !spin }
+            Box(Modifier.fillMaxWidth().height(56.dp), contentAlignment = Alignment.Center) {
+                Box(Modifier.fillMaxWidth().padding(horizontal = 20.dp).height(1.dp).background(OmColors.Hairline))
+                Box(Modifier.size(48.dp).graphicsLayer { rotationZ = turn }.clip(CircleShape).background(Brush.verticalGradient(listOf(OmColors.GradTop, OmColors.GradMid, OmColors.GradBottom)))
+                    .pressable(role = Role.Button) { val x = fromSym; fromSym = toSym; toSym = x; amount = ""; spin = !spin }
                     .semantics { contentDescription = "flip" }.testTag("swap_flip"), contentAlignment = Alignment.Center) {
-                    Text("⇅", color = Color.White, style = MaterialTheme.typography.headlineSmall)
+                    Text("⇅", color = OmColors.OnAccent, style = MaterialTheme.typography.titleLarge)
                 }
             }
         }
         item {
-            GlassCard(Modifier.padding(horizontal = 16.dp), padding = 16.dp) {
-                Text(stringResource(R.string.tr_to), style = MaterialTheme.typography.labelMedium, color = OmColors.InkSecondary)
+            Column(Modifier.padding(horizontal = 20.dp)) {
+                Text("↓  " + stringResource(R.string.convert_get), style = MaterialTheme.typography.labelMedium, color = OmColors.InkSecondary)
                 Row(Modifier.fillMaxWidth().padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     AssetPick(t, Modifier.testTag("swap_to")) { pick = "to" }
                     val a = amount.replace(',', '.').toDoubleOrNull()
                     Text(if (a != null && a > 0 && rate != null) Trade.qty(Trade.cut8(a * rate).toDouble()) else "—", style = MaterialTheme.typography.headlineMedium, color = OmColors.Ink,
-                        textAlign = TextAlign.End, modifier = Modifier.weight(1f).testTag("swap_out"))
+                        textAlign = TextAlign.End, maxLines = 1, modifier = Modifier.weight(1f).testTag("swap_out"))
                 }
                 Text((rate?.let { stringResource(R.string.tr_rate_l) + " " + Trade.rate(fromSym, toSym, it, true) } ?: "—"), style = MaterialTheme.typography.labelMedium, color = OmColors.InkSecondary, modifier = Modifier.padding(top = 8.dp))
-            }
-        }
-        item {
-            GlassCard(Modifier.padding(horizontal = 16.dp), padding = 14.dp) {
-                Detail(stringResource(R.string.tr_fee), "0 $fromSym"); Detail(stringResource(R.string.tr_price_l), stringResource(R.string.tr_price_v))
-                Detail(stringResource(R.string.tr_follow), stringResource(R.string.tr_follow_v)); Detail(stringResource(R.string.tr_src), "Binance")
+                Column(Modifier.padding(top = 8.dp)) {
+                    Detail(stringResource(R.string.tr_fee), "0 $fromSym"); Detail(stringResource(R.string.tr_price_l), stringResource(R.string.tr_price_v))
+                    Detail(stringResource(R.string.tr_follow), stringResource(R.string.tr_follow_v)); Detail(stringResource(R.string.tr_src), "Binance")
+                }
             }
         }
         item {
             Column(Modifier.padding(horizontal = 16.dp)) {
-                OmPrimaryButton(stringResource(R.string.tr_go), Modifier.testTag("swap_go"), enabled = !busy) { tvm.quote(f, t, amount.replace(',', '.').toDoubleOrNull() ?: 0.0, null) }
+                OmPrimaryButton(stringResource(R.string.convert_preview), Modifier.testTag("swap_go"), enabled = !busy) { tvm.quote(f, t, amount.replace(',', '.').toDoubleOrNull() ?: 0.0, null) }
                 err?.let { Text(errorTextTr(it), style = MaterialTheme.typography.bodyMedium, color = OmColors.Error, modifier = Modifier.padding(top = 8.dp).testTag("swap_error")) }
                 Text(stringResource(R.string.tr_rule), style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary, modifier = Modifier.padding(top = 10.dp))
             }
         }
+        item { Keypad(Modifier.padding(horizontal = 12.dp)) { k -> amount = keypadInput(amount, k) } }
     }
     pick?.let { which ->
         OmSheet(stringResource(R.string.tr_pick_a), onDismiss = { pick = null }) {
@@ -437,6 +448,35 @@ fun SwapScreen(contentPadding: PaddingValues) {
                     verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     AssetLogo(sym, 34.dp); Text(sym, style = MaterialTheme.typography.titleMedium, color = OmColors.Ink, modifier = Modifier.weight(1f))
                     if (which == "from") Text(Trade.qty(leg.available), style = MaterialTheme.typography.labelMedium, color = OmColors.InkSecondary)
+                }
+            }
+        }
+    }
+}
+
+/* Numeric keypad of the « Convert » screen (reference image): 1-9, the decimal point, 0 and delete. At most 8 decimals; one point. */
+fun keypadInput(cur: String, key: String): String = when (key) {
+    "del" -> cur.dropLast(1)
+    "." -> if (cur.contains('.')) cur else if (cur.isEmpty()) "0." else "$cur."
+    else -> {
+        val next = if (cur == "0") key else cur + key
+        val dec = next.substringAfter('.', "")
+        if (next.length > 18 || (next.contains('.') && dec.length > 8)) cur else next
+    }
+}
+
+@Composable
+private fun Keypad(modifier: Modifier, onKey: (String) -> Unit) {
+    val del = stringResource(R.string.keypad_delete)
+    Column(modifier.fillMaxWidth()) {
+        listOf(listOf("1", "2", "3"), listOf("4", "5", "6"), listOf("7", "8", "9"), listOf(".", "0", "del")).forEach { row ->
+            Row(Modifier.fillMaxWidth()) {
+                row.forEach { k ->
+                    Box(
+                        Modifier.weight(1f).height(62.dp).clip(RoundedCornerShape(16.dp)).pressable(role = Role.Button) { onKey(k) }
+                            .testTag(if (k == ".") "key_dot" else "key_$k").semantics { contentDescription = if (k == "del") del else k },
+                        contentAlignment = Alignment.Center,
+                    ) { Text(if (k == "del") "⌫" else k, style = MaterialTheme.typography.headlineSmall, color = OmColors.Ink) }
                 }
             }
         }
@@ -533,14 +573,14 @@ fun errorTextTr(code: String): String = when (code) {
 }
 @Composable private fun Seg(text: String, on: Boolean, modifier: Modifier, onClick: () -> Unit) = Box(
     modifier.clip(RoundedCornerShape(14.dp)).background(if (on) Brush.verticalGradient(listOf(OmColors.GradTop, OmColors.GradMid, OmColors.GradBottom)) else androidx.compose.ui.graphics.SolidColor(Color.Transparent))
-        .pressable(role = Role.Tab, onClick = onClick).padding(vertical = 9.dp), contentAlignment = Alignment.Center) { Text(text, style = MaterialTheme.typography.labelLarge, color = if (on) Color.White else OmColors.InkSecondary) }
+        .pressable(role = Role.Tab, onClick = onClick).padding(vertical = 9.dp), contentAlignment = Alignment.Center) { Text(text, style = MaterialTheme.typography.labelLarge, color = if (on) OmColors.OnAccent else OmColors.InkSecondary) }
 @Composable private fun SideSeg(text: String, on: Boolean, buy: Boolean, modifier: Modifier, onClick: () -> Unit) = Box(
     modifier.clip(RoundedCornerShape(11.dp)).background(if (!on) androidx.compose.ui.graphics.SolidColor(Color.Transparent) else Brush.verticalGradient(if (buy) listOf(Color(0xFF5BEAA6), Color(0xFF1FB673)) else listOf(Color(0xFFFF98A2), Color(0xFFE8505E))))
         .pressable(role = Role.Tab, onClick = onClick).padding(vertical = 8.dp), contentAlignment = Alignment.Center) { Text(text, style = MaterialTheme.typography.labelLarge, color = if (on) Color(if (buy) 0xFF04301C else 0xFF3A0610) else OmColors.InkSecondary) }
 @Composable private fun TradeButton(text: String, buy: Boolean, busy: Boolean, modifier: Modifier, onClick: () -> Unit) = Box(
     modifier.fillMaxWidth().heightIn(min = 50.dp).clip(RoundedCornerShape(16.dp))
         .background(Brush.verticalGradient(if (buy) listOf(Color(0xFF5BEAA6), Color(0xFF22C07B), Color(0xFF14995E)) else listOf(Color(0xFFFF98A2), Color(0xFFEF5E6B), Color(0xFFC93A49))))
-        .border(1.dp, Color(0x73FFFFFF), RoundedCornerShape(16.dp)).pressable(enabled = !busy, role = Role.Button, onClick = onClick), contentAlignment = Alignment.Center) {
+        .border(1.dp, Color.Transparent, RoundedCornerShape(16.dp)).pressable(enabled = !busy, role = Role.Button, onClick = onClick), contentAlignment = Alignment.Center) {
     if (busy) com.omwallet.core.design.LoadingDots(Color.White) else Text(text, style = MaterialTheme.typography.labelLarge, color = Color.White)
 }
 @Composable private fun AmountField(v: String, unit: String?, modifier: Modifier, onChange: (String) -> Unit) = OutlinedTextField(
@@ -548,13 +588,16 @@ fun errorTextTr(code: String): String = when (code) {
     placeholder = { Text("0", color = OmColors.InkSecondary) }, suffix = unit?.let { u -> { Text(u, color = OmColors.InkSecondary) } },
     textStyle = MaterialTheme.typography.titleLarge.copy(color = OmColors.Ink, textAlign = if (unit == null) TextAlign.End else TextAlign.Start),
     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal), shape = RoundedCornerShape(14.dp),
-    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = OmColors.Blue600, unfocusedBorderColor = OmColors.Edge, focusedContainerColor = Color(0x24FFFFFF), unfocusedContainerColor = Color(0x14FFFFFF), cursorColor = Color.White),
+    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = OmColors.Blue600, unfocusedBorderColor = OmColors.Edge, focusedContainerColor = OmColors.Track, unfocusedContainerColor = OmColors.Track, cursorColor = OmColors.Blue600),
 )
 @Composable private fun AssetPick(leg: Leg, modifier: Modifier, onClick: () -> Unit) = Row(
-    modifier.clip(RoundedCornerShape(18.dp)).background(Color(0x1FFFFFFF)).border(1.dp, OmColors.Edge, RoundedCornerShape(18.dp)).pressable(role = Role.Button, onClick = onClick).padding(horizontal = 10.dp, vertical = 8.dp),
-    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-    AssetLogo(leg.asset, 30.dp)
-    Column { Text(leg.asset, style = MaterialTheme.typography.titleMedium, color = OmColors.Ink); Text(com.omwallet.core.data.Catalog.network(leg.network)?.name ?: leg.network, style = MaterialTheme.typography.labelSmall, color = OmColors.InkSecondary) }
+    modifier.clip(RoundedCornerShape(18.dp)).pressable(role = Role.Button, onClick = onClick).padding(horizontal = 4.dp, vertical = 6.dp),
+    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+    AssetLogo(leg.asset, 40.dp)
+    Column {
+        Text((com.omwallet.core.data.Catalog.asset(leg.asset)?.name ?: leg.asset) + "  ⌄", style = MaterialTheme.typography.titleMedium, color = OmColors.Ink, maxLines = 1)
+        Text(leg.asset + " · " + (com.omwallet.core.data.Catalog.network(leg.network)?.name ?: leg.network), style = MaterialTheme.typography.labelSmall, color = OmColors.InkSecondary, maxLines = 1)
+    }
 }
 @Composable
 private fun LiveBadge(mode: FeedMode, at: Long) = FeedBadge(mode, at)
@@ -616,7 +659,7 @@ private fun CandleChart(cs: List<Ohlc>, last: Double?, modifier: Modifier) {
         if (last != null && last > 0) { lo = minOf(lo, last); hi = maxOf(hi, last) }
         val span = (hi - lo).takeIf { it > 0 } ?: (hi * 0.002).coerceAtLeast(1e-9); lo -= span * 0.08; hi += span * 0.08
         fun y(v: Double) = (8f + (1 - (v - lo) / (hi - lo)) * (size.height - 16f)).toFloat()
-        for (i in 0 until 4) { val yy = 8f + (size.height - 16f) * (i + 0.5f) / 4f; drawLine(Color(0x17FFFFFF), Offset(0f, yy), Offset(size.width, yy), 1f) }
+        for (i in 0 until 4) { val yy = 8f + (size.height - 16f) * (i + 0.5f) / 4f; drawLine(OmColors.Hairline, Offset(0f, yy), Offset(size.width, yy), 1f) }
         cs.forEachIndexed { i, c ->
             val up = c.close >= c.open; val col = if (up) pos else neg; val x = i * cw + cw / 2
             drawLine(col, Offset(x, y(c.high)), Offset(x, y(c.low)), 1.4f)

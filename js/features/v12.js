@@ -86,7 +86,7 @@ const V12 = (() => {
     return '<div class="rv-card th-' + themeOf(c) + (st.enter ? ' rv-enter' : '') + '" data-card="' + escapeHtml(c.id) + '" data-state="' + cardState(c) + '" role="group" aria-label="' + escapeHtml((c.label || vt('defName')) + ' •••• ' + l4(c)) + '"><div class="rv-in">' +
       '<div class="rv-face rv-front">' +
         '<i class="rv-grain" aria-hidden="true"></i><i class="rv-foil" aria-hidden="true"></i>' +
-        '<div class="rv-top2"><img class="rv-wm" src="assets/brand/friendly-letters-white.svg" alt="OM Wallet">' + stateChip(c) + '</div>' +
+        '<div class="rv-top2"><img class="rv-wm" src="assets/brand/om-wordmark-white.png" alt="OM Wallet">' + stateChip(c) + '</div>' +
         '<div class="rv-mid"><span class="rv-name">' + escapeHtml(c.label || vt('defName')) + '</span>' +
           '<span class="rv-num ltr" dir="ltr"><span>\u2022\u2022\u2022\u2022</span><span>\u2022\u2022\u2022\u2022</span><span>\u2022\u2022\u2022\u2022</span><span>' + l4(c) + '</span></span></div>' +
         '<div class="rv-bot"><span class="rv-holder">' + escapeHtml(c.holderName || '') + '</span>' + netSlot(c) + '</div>' +
@@ -227,7 +227,8 @@ const V12 = (() => {
     const it = (nav2, ic, lbl, cta) => cta
       ? '<a class="nav-item nav-cta" data-nav="' + nav2 + '"><span class="nav-cta-tile">' + icon(ic, 26) + '</span><span class="nav-lb">' + lbl + '</span></a>'
       : '<a class="nav-item" data-nav="' + nav2 + '"><span class="nav-ic">' + icon(ic, 24) + '</span><span class="nav-lb">' + lbl + '</span></a>';
-    nav.innerHTML = '<div class="nav-dock">' + it('home', 'home', t('omx.home')) + it('markets', 'chart', t('omx.markets')) + it('spot', 'trending', t('tr.spot')) + it('exchange', 'swap', t('tr.swap')) + it('wallet', 'crypto', t('tr.navAssets')) + '<i class="nav-ind" aria-hidden="true"></i></div>';
+    /* 14.7.0 (owner's reference image): Home · Markets · Swap (raised round button in the middle) · Wallet · Spot */
+    nav.innerHTML = '<div class="nav-dock">' + it('home', 'home', t('omx.home')) + it('markets', 'chart', t('omx.markets')) + it('exchange', 'swap', t('tr.swap'), true) + it('wallet', 'wallet', t('lt.walletTab')) + it('spot', 'trending', t('tr.spot')) + '<i class="nav-ind" aria-hidden="true"></i></div>';
     requestAnimationFrame(placeInd);
   }
   /* The highlight pill glides under the active tab (12.9.0). Measured, so it also works in RTL and at any width. */

@@ -28,7 +28,7 @@ const Onboarding = (() => {
       { title:'محمية برمزك السري', text:'رمزك المكوّن من 6 أرقام وFace ID يقفلان حسابك في كل مرة تعود فيها.', cta:'إنشاء حسابي' } ] }
   };
   /* art of each screen: the two owner photos, then the glass app icon */
-  const ART = [{ photo:'assets/promo/promo-1.jpg', pos:'50% 12%' }, { photo:'assets/promo/promo-2.jpg', pos:'28% 30%' }, { icon:true }];
+  const ART = [{ photo:'assets/promo/promo-1-nj.jpg', pos:'50% 12%' }, { photo:'assets/promo/promo-2-nj.jpg', pos:'28% 30%' }, { icon:true }];
   const LANGS = [['en', 'EN'], ['fr', 'FR'], ['ar', 'عربي']];
   const NAMES = { en:'English', fr:'Français', ar:'العربية' };
 
@@ -61,7 +61,7 @@ const Onboarding = (() => {
                 : '<div class="wp-third" aria-hidden="true"><span class="wp-ring"></span><span class="wp-icon"></span></div>') +
               '<span class="wp-wave" aria-hidden="true"></span>' +
               '<div class="wp-glass">' +
-                '<img class="wp-logo" src="assets/brand/om-logo-horizontal.png" alt="OM Wallet" width="150" height="54" style="height:38px;margin-bottom:12px">' +
+                '<img class="wp-logo" src="assets/brand/om-logo-horizontal-white.png" alt="OM Wallet" width="150" height="54" style="height:38px;margin-bottom:12px">' +
                 '<h1 class="ob-h">' + escapeHtml(s.title) + '</h1><p class="ob-p">' + escapeHtml(s.text) + '</p>' +
                 '<div><button type="button" class="btn btn-primary ob-next" data-ob-cta="' + k + '">' + escapeHtml(s.cta) + '</button>' +
                   '<div class="wp-dots" role="group" aria-label="' + escapeHtml(T.page(k + 1, n)) + '">' + T.slides.map((_, j) => '<button type="button" data-dot="' + j + '" aria-label="' + escapeHtml(T.page(j + 1, n)) + '"' + (j === k ? ' aria-current="true"' : '') + '></button>').join('') + '</div>' +

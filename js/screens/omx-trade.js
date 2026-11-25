@@ -17,6 +17,7 @@ Object.assign(TR.en, {
   'tr.h24':'24h high','tr.l24':'24h low','tr.v24':'24h vol (USDT)','tr.book':'Order book','tr.trades':'Market trades','tr.price':'Price','tr.qty':'Amount','tr.time':'Time',
   'tr.buy':'Buy','tr.sell':'Sell','tr.market':'Market order','tr.marketInfo':'Executed at the market price fixed when you ask. Limit orders are not offered.',
   'tr.spend':'Amount to spend','tr.sellQ':'Amount to sell','tr.avail':'Available: {v}','tr.est':'≈ {v}','tr.buyX':'Buy {a}','tr.sellX':'Sell {a}',
+  'lt.convertT':'Convert {a}','lt.bal':'Balance: {v}','lt.pay':'You pay','lt.get':'You get','lt.preview':'Preview conversion','lt.del':'Delete','lt.keypad':'Keypad',
   'tr.from':'From','tr.to':'To (estimated)','tr.flip':'Swap the two cryptos','tr.rate':'Live rate: 1 {a} ≈ {v}','tr.rateL':'Live rate:','tr.max':'Max',
   'tr.fee':'Fees','tr.priceL':'Price','tr.priceV':'fixed when you ask (valid 30 s)','tr.follow':'Tracking','tr.followV':'In progress, then Confirmed','tr.src':'Price source','tr.go':'Swap',
   'tr.review':'Check your swap','tr.pay':'You pay','tr.get':'You receive','tr.valid':'Price valid for {s} s','tr.expired':'This price has expired','tr.refresh':'Get a new price','tr.confirm':'Confirm',
@@ -37,6 +38,7 @@ Object.assign(TR.fr, {
   'tr.h24':'Haut 24 h','tr.l24':'Bas 24 h','tr.v24':'Vol. 24 h (USDT)','tr.book':'Carnet d’ordres','tr.trades':'Transactions du marché','tr.price':'Prix','tr.qty':'Quantité','tr.time':'Heure',
   'tr.buy':'Acheter','tr.sell':'Vendre','tr.market':'Ordre au marché','tr.marketInfo':'Exécuté au prix du marché fixé au moment de la demande. Les ordres à cours limité ne sont pas proposés.',
   'tr.spend':'Montant à dépenser','tr.sellQ':'Quantité à vendre','tr.avail':'Disponible : {v}','tr.est':'≈ {v}','tr.buyX':'Acheter {a}','tr.sellX':'Vendre {a}',
+  'lt.convertT':'Convertir {a}','lt.bal':'Solde : {v}','lt.pay':'Vous payez','lt.get':'Vous recevez','lt.preview':'Aperçu de la conversion','lt.del':'Effacer','lt.keypad':'Pavé numérique',
   'tr.from':'De','tr.to':'Vers (estimé)','tr.flip':'Inverser les deux cryptos','tr.rate':'Cours en direct : 1 {a} ≈ {v}','tr.rateL':'Cours en direct :','tr.max':'Max',
   'tr.fee':'Frais','tr.priceL':'Prix','tr.priceV':'fixé au moment de la demande (valable 30 s)','tr.follow':'Suivi','tr.followV':'En cours, puis Confirmé','tr.src':'Source du prix','tr.go':'Échanger',
   'tr.review':'Vérifiez votre échange','tr.pay':'Vous payez','tr.get':'Vous recevez','tr.valid':'Prix valable {s} s','tr.expired':'Ce prix a expiré','tr.refresh':'Obtenir un nouveau prix','tr.confirm':'Confirmer',
@@ -57,6 +59,7 @@ Object.assign(TR.ar, {
   'tr.h24':'أعلى 24 س','tr.l24':'أدنى 24 س','tr.v24':'حجم 24 س (USDT)','tr.book':'دفتر الأوامر','tr.trades':'صفقات السوق','tr.price':'السعر','tr.qty':'الكمية','tr.time':'الوقت',
   'tr.buy':'شراء','tr.sell':'بيع','tr.market':'أمر بسعر السوق','tr.marketInfo':'يُنفَّذ بسعر السوق المثبّت عند الطلب. الأوامر المحددة السعر غير متاحة.',
   'tr.spend':'المبلغ المراد إنفاقه','tr.sellQ':'الكمية المراد بيعها','tr.avail':'المتاح: {v}','tr.est':'≈ {v}','tr.buyX':'شراء {a}','tr.sellX':'بيع {a}',
+  'lt.convertT':'تحويل {a}','lt.bal':'الرصيد: {v}','lt.pay':'تدفع','lt.get':'تستلم','lt.preview':'معاينة التحويل','lt.del':'حذف','lt.keypad':'لوحة الأرقام',
   'tr.from':'من','tr.to':'إلى (تقديري)','tr.flip':'تبديل العملتين','tr.rate':'السعر المباشر: 1 {a} ≈ {v}','tr.rateL':'السعر المباشر:','tr.max':'الكل',
   'tr.fee':'الرسوم','tr.priceL':'السعر','tr.priceV':'مثبّت عند الطلب (صالح 30 ث)','tr.follow':'المتابعة','tr.followV':'قيد التنفيذ، ثم مؤكَّد','tr.src':'مصدر السعر','tr.go':'تبديل',
   'tr.review':'راجع عملية التبديل','tr.pay':'تدفع','tr.get':'تستلم','tr.valid':'السعر صالح لمدة {s} ث','tr.expired':'انتهت صلاحية هذا السعر','tr.refresh':'الحصول على سعر جديد','tr.confirm':'تأكيد',
@@ -356,16 +359,22 @@ const OMXTrade = (() => {
     const out = a > 0 && r ? cut8(a * r) : null;
     const assetBtn = (which, sym, net) => '<button class="tr-asset w-press" data-tr="pick-' + which + '" aria-haspopup="dialog">' + omxLogo(sym, 32) + '<span><b>' + escapeHtml(sym) + '</b><small>' + escapeHtml((OMX_NETWORKS[net] || { name: net }).name) + '</small></span>' + icon('chevron-down', 16) + '</button>';
     const det = (k2, v) => '<div><dt>' + escapeHtml(t(k2)) + '</dt><dd>' + escapeHtml(v) + '</dd></div>';
-    return top(t('tr.swap'), false) + '<div class="screen-body omx-page tr-page" id="tr-swap">' +
-      '<section class="omx-card tr-sw"><label class="tr-lbl" for="sw-amt">' + escapeHtml(t('tr.from')) + '</label><div class="tr-swr">' + assetBtn('from', s.from, fn) +
-        '<input id="sw-amt" class="tr-amt ltr" inputmode="decimal" autocomplete="off" placeholder="0" value="' + escapeHtml(s.amt) + '"></div>' +
+    /* 14.7.0 — « Convert » of the owner's reference image: you pay / you get, a dark round swap button, « Preview conversion » and a keypad.
+       The flow behind it is unchanged (server price for 30 s, review, PIN, « In progress » until the administrator confirms). On a phone the
+       keypad replaces the system keyboard (inputmode none); a computer keyboard still types into the field. */
+    const fa = omxAsset(s.from), keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', 'del'];
+    return top(tf('lt.convertT', { a: fa ? fa.name : s.from }), false) + '<div class="screen-body omx-page tr-page lt-conv" id="tr-swap">' +
+      '<p class="lt-convbal ltr">' + escapeHtml(tf('lt.bal', { v: omxQty(av, s.from) })) + '</p>' +
+      '<section class="omx-card tr-sw"><label class="tr-lbl" for="sw-amt">↑ ' + escapeHtml(t('lt.pay')) + '</label><div class="tr-swr">' + assetBtn('from', s.from, fn) +
+        '<input id="sw-amt" class="tr-amt ltr" inputmode="none" autocomplete="off" placeholder="0" value="' + escapeHtml(s.amt) + '"></div>' +
         '<div class="tr-swm"><span class="ltr">' + escapeHtml(tf('tr.avail', { v: omxQty(av, s.from) })) + '</span><button class="tr-max" data-tr="max">' + escapeHtml(t('tr.max')) + '</button></div></section>' +
       '<div class="tr-flipw"><button class="tr-flip w-press" data-tr="flip" aria-label="' + escapeHtml(t('tr.flip')) + '">' + icon('swap', 24) + '</button></div>' +
-      '<section class="omx-card tr-sw"><span class="tr-lbl">' + escapeHtml(t('tr.to')) + '</span><div class="tr-swr">' + assetBtn('to', s.to, tn) +
+      '<section class="omx-card tr-sw"><span class="tr-lbl">↓ ' + escapeHtml(t('lt.get')) + '</span><div class="tr-swr">' + assetBtn('to', s.to, tn) +
         '<b id="sw-out" class="tr-out ltr">' + (out != null ? escapeHtml(fmtQ(out)) : '—') + '</b></div>' +
         '<div class="tr-swm"><span id="sw-rate" class="ltr">' + (r ? escapeHtml(t('tr.rateL') + ' ' + rateTxt(s.from, s.to, r, true)) : '—') + '</span><span class="tr-status sm" id="sw-live">' + liveDot() + '</span></div></section>' +
       '<dl class="omx-card tr-det">' + det('tr.fee', '0 ' + s.from) + det('tr.priceL', t('tr.priceV')) + det('tr.follow', t('tr.followV')) + det('tr.src', 'Binance') + '</dl>' +
-      '<button class="btn btn-primary btn-block" id="sw-go">' + icon('swap', 18) + '<span>' + escapeHtml(t('tr.go')) + '</span></button>' +
+      '<button class="btn btn-primary btn-block" id="sw-go"><span>' + escapeHtml(t('lt.preview')) + '</span></button>' +
+      '<div class="lt-keys" role="group" aria-label="' + escapeHtml(t('lt.keypad')) + '">' + keys.map(k => '<button type="button" class="lt-key" data-tr="key" data-k="' + k + '"' + (k === 'del' ? ' aria-label="' + escapeHtml(t('lt.del')) + '"' : '') + '>' + (k === 'del' ? '⌫' : k) + '</button>').join('') + '</div>' +
       '<p class="omx-info">' + icon('shield', 18) + '<span>' + escapeHtml(t('tr.rule')) + '</span></p></div>';
   }
   function liveDot(){ const st = OMXMarket.status(); return st.state === 'live' ? '<span class="tr-dot live"></span>' + escapeHtml(t('tr.live')) : st.lastSync ? '<span class="tr-dot"></span>' + escapeHtml(tf('tr.delayed', { t: hhmm(st.lastSync) })) : '<span class="tr-dot wait"></span>' + escapeHtml(t('tr.connecting')); }
@@ -569,6 +578,13 @@ const OMXTrade = (() => {
       if (a === 'pair') pickPair();
       else if (a === 'pick-from') pickSwap('from');
       else if (a === 'pick-to') pickSwap('to');
+      else if (a === 'key'){
+        const k = b.getAttribute('data-k'), i = el.querySelector('#sw-amt'); let v = S.sw.amt || '';
+        if (k === 'del') v = v.slice(0, -1);
+        else if (k === '.') v = v.indexOf('.') !== -1 ? v : (v ? v + '.' : '0.');
+        else { const n = v === '0' ? k : v + k; const dec = n.indexOf('.') === -1 ? '' : n.split('.')[1]; if (n.length <= 18 && dec.length <= 8) v = n; }
+        S.sw.amt = v; if (i) i.value = v; paintSwapLive();
+      }
       else if (a === 'max'){ const s = S.sw, v = avail(s.from, fromNet(s.from)); s.amt = v > 0 ? String(cut8(v)) : ''; const i = el.querySelector('#sw-amt'); if (i) i.value = s.amt; paintSwapLive(); }
       else if (a === 'flip'){ const s = S.sw, x = s.from; s.from = s.to; s.to = x; s.amt = ''; if (!reduced()) b.classList.add('spin'); setTimeout(() => R.go('exchange', { force: true }), reduced() ? 0 : 260); }
       else if (a === 'done'){ S.done = null; R.go(S.back === 'spot' ? 'spot' : 'exchange', { reset: true }); }

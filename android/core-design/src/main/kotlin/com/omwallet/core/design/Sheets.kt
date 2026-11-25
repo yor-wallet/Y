@@ -49,7 +49,7 @@ fun OmSheet(title: String, onDismiss: () -> Unit, dismissible: Boolean = true, c
         onDismissRequest = { if (dismissible) onDismiss() },
         sheetState = state,
         containerColor = OmColors.Sheet,
-        scrimColor = Color(0x5210233A),
+        scrimColor = Color(0xA6050402),
         shape = RoundedCornerShape(topStart = OmRadius.XL, topEnd = OmRadius.XL),
         dragHandle = { BottomSheetDefaults.DragHandle(color = OmColors.Sky300) },
     ) {

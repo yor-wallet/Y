@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -68,8 +69,8 @@ private data class Page(val photo: Int?, val title: Int, val text: Int, val cta:
 @Composable
 fun OnboardingScreen(onDone: () -> Unit) {
     val pages = listOf(
-        Page(com.omwallet.app.R.drawable.promo_1, R.string.onb_t1, R.string.onb_p1, R.string.onb_c1, 0.5f),
-        Page(com.omwallet.app.R.drawable.promo_2, R.string.onb_t2, R.string.onb_p2, R.string.onb_c2, 0.28f),
+        Page(com.omwallet.app.R.drawable.promo_1_nj, R.string.onb_t1, R.string.onb_p1, R.string.onb_c1, 0.5f),
+        Page(com.omwallet.app.R.drawable.promo_2_nj, R.string.onb_t2, R.string.onb_p2, R.string.onb_c2, 0.28f),
         Page(null, R.string.onb_t3, R.string.onb_p3, R.string.onb_c3, 0.5f),
     )
     val pager = rememberPagerState { pages.size }
@@ -90,26 +91,25 @@ fun OnboardingScreen(onDone: () -> Unit) {
                     if (p.photo != null) Image(painterResource(p.photo), null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop,
                         alignment = androidx.compose.ui.BiasAlignment(p.focusX * 2 - 1, -0.6f))
                     else Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Box(Modifier.size(300.dp).clip(CircleShape).border(1.5.dp, Color(0xF2FFFFFF), CircleShape).background(Brush.radialGradient(listOf(Color(0x5578BEFF), Color.Transparent))))
-                        Image(painterResource(com.omwallet.app.R.drawable.app_icon_glass), null, Modifier.size(210.dp).shadow(30.dp, RoundedCornerShape(percent = 26), ambientColor = Color(0x661E78E6), spotColor = Color(0x661E78E6)).clip(RoundedCornerShape(percent = 26)))
+                        BrandHero(Modifier.fillMaxWidth(0.98f).aspectRatio(1f), trimTop = 0f, trimBottom = 0f)
                     }
-                    Box(Modifier.fillMaxSize().background(Brush.verticalGradient(0.55f to Color(0x001A6FE6), 0.86f to Color(0xD91A6FE6), 1f to OmColors.Surface)))
+                    Box(Modifier.fillMaxSize().background(Brush.verticalGradient(0.5f to Color(0x000B0A07), 0.82f to Color(0xD10B0A07), 1f to OmColors.Surface)))
                 }
                 /* the glass card: message, button, dots */
                 Column(
                     Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(16.dp).fillMaxWidth()
-                        .shadow(28.dp, RoundedCornerShape(34.dp), ambientColor = Color(0x66145AB4), spotColor = Color(0x88145AB4))
+                        .shadow(28.dp, RoundedCornerShape(34.dp), ambientColor = Color(0x99000000), spotColor = Color(0xCC000000))
                         .clip(RoundedCornerShape(34.dp))
-                        .background(Brush.linearGradient(listOf(Color(0x8C1A64E1), Color(0x9E082880))))
-                        .border(1.dp, Color(0x57FFFFFF), RoundedCornerShape(34.dp)).padding(22.dp),
+                        .background(Color(0xE0120F0D))
+                        .border(1.dp, OmColors.Edge, RoundedCornerShape(34.dp)).padding(22.dp),
                 ) {
                     val rise by animateDpAsState(if (on || reduced) 0.dp else 18.dp, tween(700), label = "rise")
                     val fade by animateFloatAsState(if (on || reduced) 1f else 0f, tween(600), label = "fade")
-                    Image(painterResource(com.omwallet.app.R.drawable.om_logo_horizontal), stringResource(R.string.app_name), Modifier.height(36.dp).graphicsLayer { alpha = fade })
+                    Image(painterResource(com.omwallet.app.R.drawable.om_logo_horizontal_white), stringResource(R.string.app_name), Modifier.height(36.dp).graphicsLayer { alpha = fade })
                     Spacer(Modifier.height(12.dp))
-                    Text(stringResource(p.title), style = MaterialTheme.typography.displaySmall, color = Color.White, modifier = Modifier.graphicsLayer { alpha = fade; translationY = rise.toPx() })
+                    Text(stringResource(p.title), style = MaterialTheme.typography.displaySmall, color = OmColors.Ink, modifier = Modifier.graphicsLayer { alpha = fade; translationY = rise.toPx() })
                     Spacer(Modifier.height(10.dp))
-                    Text(stringResource(p.text), style = MaterialTheme.typography.bodyLarge, color = Color(0xDBEAF3FF), modifier = Modifier.graphicsLayer { alpha = fade; translationY = rise.toPx() * 1.4f })
+                    Text(stringResource(p.text), style = MaterialTheme.typography.bodyLarge, color = OmColors.InkSecondary, modifier = Modifier.graphicsLayer { alpha = fade; translationY = rise.toPx() * 1.4f })
                     Spacer(Modifier.height(20.dp))
                     OmPrimaryButton(stringResource(p.cta), Modifier.testTag("onb_cta_$k")) {
                         if (k < pages.lastIndex) scope.launch { if (reduced) pager.scrollToPage(k + 1) else pager.animateScrollToPage(k + 1) } else onDone()
@@ -118,7 +118,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
                     Row(Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         pages.indices.forEach { j ->
                             val w by animateDpAsState(if (j == pager.currentPage) 26.dp else 10.dp, tween(380), label = "dot")
-                            Box(Modifier.height(10.dp).width(w).clip(RoundedCornerShape(6.dp)).background(if (j == pager.currentPage) Color.White else Color(0x61FFFFFF))
+                            Box(Modifier.height(10.dp).width(w).clip(RoundedCornerShape(6.dp)).background(if (j == pager.currentPage) OmColors.Blue600 else Color(0xFF3A372D))
                                 .semantics { contentDescription = "${j + 1} / ${pages.size}" })
                         }
                     }
@@ -128,9 +128,9 @@ fun OnboardingScreen(onDone: () -> Unit) {
         /* Skip (not on the last page): goes straight to sign-in */
         if (pager.currentPage < pages.lastIndex) {
             Text(
-                stringResource(R.string.onb_skip), style = MaterialTheme.typography.titleMedium, color = Color.White,
+                stringResource(R.string.onb_skip), style = MaterialTheme.typography.titleMedium, color = OmColors.Blue600,
                 modifier = Modifier.align(Alignment.TopEnd).statusBarsPadding().padding(16.dp)
-                    .clip(RoundedCornerShape(16.dp)).background(Color(0xA8082A7A)).border(1.dp, Color(0x66FFFFFF), RoundedCornerShape(16.dp))
+                    .clip(RoundedCornerShape(16.dp)).background(Color(0xC7120F0D)).border(1.dp, OmColors.Edge, RoundedCornerShape(16.dp))
                     .pressable(role = Role.Button) { onDone() }.padding(horizontal = 18.dp, vertical = 10.dp).testTag("onb_skip"),
             )
         }

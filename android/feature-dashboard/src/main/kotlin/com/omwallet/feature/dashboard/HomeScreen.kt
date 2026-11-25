@@ -1,13 +1,19 @@
 package com.omwallet.feature.dashboard
 
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.draw.drawBehind
+import com.omwallet.core.ui.MiniSpark
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.offset
+import com.omwallet.core.design.LogoMark
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloat
 import kotlinx.coroutines.delay
 import com.omwallet.core.design.riseIn
 import com.omwallet.core.design.GlassSquare
-import com.omwallet.core.design.GlassEmblem
 import com.omwallet.core.design.BrandLockup
 import com.omwallet.core.design.ActionTile
 import androidx.compose.ui.text.style.TextAlign
@@ -102,7 +108,18 @@ data class HomeUiState(
     val totalUsd: Double? = null, val unpriced: Int = 0, val omrAvailable: Double? = null, val omrReserved: Double = 0.0,
     val lines: List<Line> = emptyList(), val recent: List<Tx> = emptyList(), val feed: FeedMode = FeedMode.Idle, val lastSync: Long = 0,
     val syncedAt: Long = 0, val offline: Boolean = false,
+    /* 14.7.0 (owner's reference image): biggest 24 h moves of the market, the person's favourites, and the 24 h change of the holdings */
+    val movers: List<Quote> = emptyList(), val watch: List<Quote> = emptyList(), val change24h: Double? = null,
 )
+
+/* 24 h change of the crypto holdings, from the live prices and each asset's own 24 h change (Binance). Null when nothing is priced. */
+fun change24h(lines: List<Line>): Double? {
+    val priced = lines.filter { it.position.balance > 0 && it.usd != null && it.quote?.changePct != null }
+    if (priced.isEmpty()) return null
+    val now = priced.sumOf { it.usd!! }
+    val before = priced.sumOf { it.usd!! / (1 + it.quote!!.changePct!! / 100) }
+    return if (before > 0) (now - before) / before * 100 else null
+}
 
 /* Total = crypto at the live market price + the OMR account at the official peg. An asset without a price is NOT counted and the screen says so. */
 fun computeTotal(lines: List<Line>, omr: Double?): Pair<Double?, Int> {
@@ -122,6 +139,9 @@ class HomeViewModel(private val g: OmGraph) : ViewModel() {
             name = (a as? AuthState.SignedIn)?.profile?.firstName.orEmpty(), loading = w.loading && w.syncedAt == 0L, prefs = p,
             totalUsd = total, unpriced = unpriced, omrAvailable = omr?.available, omrReserved = omr?.reserved ?: 0.0,
             lines = lines, recent = w.transactions.take(5), feed = m.mode, lastSync = m.lastSync, syncedAt = w.syncedAt, offline = w.offline,
+            movers = m.quotes.values.filter { it.changePct != null && !it.derived && it.sym != "USDT" && it.sym != "USDC" }
+                .sortedByDescending { kotlin.math.abs(it.changePct!!) }.take(6),
+            watch = p.favorites.mapNotNull { m.quotes[it] }, change24h = change24h(lines),
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeUiState())
 
@@ -141,91 +161,153 @@ fun HomeScreen(actions: HomeActions, contentPadding: PaddingValues) {
     var detail by remember { mutableStateOf<Tx?>(null) }
     val haptics = rememberOmHaptics()
 
-    /* composition of the owner's home reference, with the real crypto content: logo header, greeting, Omani coast, balance card with the
-       glass emblem, four action tiles (the first one filled), shortcut banners, then holdings and recent activity in glass cards */
-    LazyColumn(Modifier.fillMaxSize(), contentPadding = contentPadding, verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    /* 14.7.0 — composition of the owner's reference image, with the real content: a blue-violet header with the balance, three round
+       actions overlapping its edge, the biggest market moves, the favourites, then the recent activity. Every figure comes from the
+       server (balances) or the live market (prices, 24 h changes); nothing is invented. */
+    LazyColumn(Modifier.fillMaxSize(), contentPadding = contentPadding, verticalArrangement = Arrangement.spacedBy(14.dp)) {
         item {
-            Column(Modifier.statusBarsPadding().padding(horizontal = 16.dp, vertical = 6.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    /* 14.5: Activity left the main menu (now Home · Markets · Spot · Swap · Assets): it sits here, one tap away */
-                    GlassSquare(OmIcons.Activity, stringResource(R.string.nav_activity), round = true, onClick = actions.activity, modifier = Modifier.testTag("home_activity"))
-                    Box(Modifier.weight(1f), contentAlignment = Alignment.Center) { BrandLockup(height = 40.dp) }
-                    GlassSquare(OmIcons.User, stringResource(R.string.nav_account), round = true, onClick = actions.account, modifier = Modifier.testTag("home_account"))
-                }
-                Text(if (s.name.isBlank()) stringResource(R.string.app_name) else stringResource(R.string.home_hello, s.name), style = MaterialTheme.typography.headlineMedium, color = OmColors.Ink,
-                    textAlign = TextAlign.Center, modifier = Modifier.padding(top = 10.dp).riseIn(0))
-                FeedBadge(s.feed, s.lastSync)
-            }
-        }
-        item {
-            Box {
-                GlassWaves(Modifier.fillMaxWidth().height(110.dp))
-                GlassCard(Modifier.padding(start = 16.dp, end = 16.dp, top = 70.dp), strong = true, padding = 20.dp, rise = 1) {
-                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                        Column(Modifier.weight(1f)) {
-                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Text(stringResource(R.string.home_total), style = MaterialTheme.typography.titleMedium, color = OmColors.InkSecondary)
-                                EyePill(s.prefs.hideBalance, stringResource(if (s.prefs.hideBalance) R.string.home_show else R.string.home_hide)) { vm.toggleHidden() }
-                            }
-                            if (s.loading) SkeletonRows(1)
-                            else AnimatedContent(money(s.totalUsd, s.prefs.currency, s.prefs.hideBalance), transitionSpec = { fadeIn() togetherWith fadeOut() }, label = "total") { v ->
-                                Text(v, style = MaterialTheme.typography.displaySmall, color = OmColors.Ink, maxLines = 1, modifier = Modifier.semantics { contentDescription = v })
-                            }
-                            CurrencyPill(s.prefs.currency) { haptics.tap(); vm.toggleCurrency() }
-                        }
-                        GlassEmblem(size = 86.dp)
+            /* 14.8.0 — Liv X / Binance: header buttons, a small-caps label, the big balance with light decimals, the 24 h change, then
+               round dark actions with yellow icons; a soft yellow light sits behind the balance */
+            Column(
+                Modifier.fillMaxWidth()
+                    .drawBehind {
+                        drawRect(Brush.radialGradient(listOf(OmColors.Glow.copy(alpha = 0.26f), OmColors.Glow.copy(alpha = 0.07f), Color.Transparent),
+                            center = androidx.compose.ui.geometry.Offset(size.width / 2f, -size.height * 0.08f), radius = size.width * 0.95f))
                     }
-                    if (s.unpriced > 0) Text(stringResource(R.string.home_incomplete), style = MaterialTheme.typography.bodySmall, color = OmColors.Warning)
-                    if (s.prefs.currency == DisplayCurrency.OMR) Text(stringResource(R.string.peg_note), style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary)
-                    if (s.offline && s.syncedAt > 0) Text(stringResource(R.string.offline_since, relative(s.syncedAt)), style = MaterialTheme.typography.bodySmall, color = OmColors.Warning)
+                    .statusBarsPadding().padding(start = 16.dp, end = 16.dp, top = 6.dp, bottom = 6.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    HeaderButton(OmIcons.Menu, stringResource(R.string.nav_account), Modifier.testTag("home_account"), actions.account)
+                    Box(Modifier.weight(1f), contentAlignment = Alignment.Center) { LogoMark(size = 34.dp) }
+                    HeaderButton(OmIcons.Activity, stringResource(R.string.nav_activity), Modifier.testTag("home_activity"), actions.activity)
+                }
+                Row(Modifier.padding(top = 18.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(stringResource(R.string.home_total).uppercase(), style = MaterialTheme.typography.labelMedium.copy(letterSpacing = 1.4.sp), color = OmColors.InkSecondary)
+                    val eyeDesc = stringResource(if (s.prefs.hideBalance) R.string.home_show else R.string.home_hide)
+                    Box(
+                        Modifier.size(32.dp).clip(RoundedCornerShape(50)).pressable(role = Role.Switch) { vm.toggleHidden() }
+                            .semantics { contentDescription = eyeDesc },
+                        contentAlignment = Alignment.Center,
+                    ) { OmIcon(if (s.prefs.hideBalance) OmIcons.EyeOff else OmIcons.Eye, null, tint = OmColors.InkSecondary, size = 18.dp) }
+                }
+                if (s.loading) Box(Modifier.padding(vertical = 8.dp).width(180.dp).height(34.dp).clip(RoundedCornerShape(10.dp)).background(OmColors.Track))
+                else AnimatedContent(money(s.totalUsd, s.prefs.currency, s.prefs.hideBalance), transitionSpec = { fadeIn() togetherWith fadeOut() }, label = "total") { v ->
+                    Text(lightDecimals(v), style = MaterialTheme.typography.displayLarge, color = OmColors.Ink, maxLines = 1, modifier = Modifier.padding(top = 2.dp).semantics { contentDescription = v })
+                }
+                Row(Modifier.padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    s.change24h?.let { c ->
+                        val d = stringResource(R.string.home_change_24h)
+                        Text(Fmt.pct(c), style = MaterialTheme.typography.labelMedium, color = if (c >= 0) OmColors.Success else OmColors.Error,
+                            modifier = Modifier.clip(RoundedCornerShape(50)).background(if (c >= 0) OmColors.ChipUp else OmColors.ChipDown)
+                                .padding(horizontal = 10.dp, vertical = 3.dp).semantics { contentDescription = d + " " + Fmt.pct(c) })
+                    }
+                    CurrencyPill(s.prefs.currency) { haptics.tap(); vm.toggleCurrency() }
+                }
+                if (s.unpriced > 0) Text(stringResource(R.string.home_incomplete), style = MaterialTheme.typography.bodySmall, color = OmColors.Warning, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 6.dp))
+                if (s.prefs.currency == DisplayCurrency.OMR) Text(stringResource(R.string.peg_note), style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 4.dp))
+                if (s.offline && s.syncedAt > 0) Text(stringResource(R.string.offline_since, relative(s.syncedAt)), style = MaterialTheme.typography.bodySmall, color = OmColors.Warning, modifier = Modifier.padding(top = 4.dp))
+                /* three round actions (Liv X: Top up / Send / Request) */
+                Row(Modifier.fillMaxWidth().padding(top = 18.dp, start = 24.dp, end = 24.dp).riseIn(1), horizontalArrangement = Arrangement.SpaceEvenly) {
+                    ActionTile(OmIcons.Deposit, stringResource(R.string.action_deposit), Modifier.weight(1f), onClick = actions.deposit)
+                    ActionTile(OmIcons.Withdraw, stringResource(R.string.action_withdraw), Modifier.weight(1f), onClick = actions.withdraw)
+                    ActionTile(OmIcons.Send, stringResource(R.string.action_send), Modifier.weight(1f), onClick = actions.send)
                 }
             }
         }
+        /* biggest moves of the last 24 h (live market) */
         item {
-            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp).riseIn(2), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                ActionTile(OmIcons.Deposit, stringResource(R.string.action_deposit), Modifier.weight(1f), primary = true, onClick = actions.deposit)
-                ActionTile(OmIcons.Withdraw, stringResource(R.string.action_withdraw), Modifier.weight(1f), onClick = actions.withdraw)
-                ActionTile(OmIcons.Coin, stringResource(R.string.action_crypto), Modifier.weight(1f), onClick = actions.crypto)
-                ActionTile(OmIcons.Chart, stringResource(R.string.action_markets), Modifier.weight(1f), onClick = actions.markets)
+            Column(Modifier.riseIn(2)) {
+                SectionTitle(stringResource(R.string.home_movers), Modifier.padding(horizontal = 12.dp), stringResource(R.string.see_all), actions.markets)
+                Box(Modifier.padding(horizontal = 16.dp)) { FeedBadge(s.feed, s.lastSync) }
+                if (s.movers.isEmpty()) SkeletonRows(1, Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+                else LazyRow(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    items(s.movers, key = { it.sym }) { q -> MoverCard(q, s.prefs.hideBalance) { actions.asset(q.sym) } }
+                }
             }
         }
-        if (s.omrAvailable != null) item {
-            GlassCard(Modifier.padding(horizontal = 16.dp), rise = 3) {
-                Text(stringResource(R.string.home_omr), style = MaterialTheme.typography.titleSmall, color = OmColors.Ink)
-                Text(com.omwallet.core.data.Fmt.masked(String.format(java.util.Locale.US, "%,.3f OMR", s.omrAvailable), s.prefs.hideBalance), style = MaterialTheme.typography.headlineSmall, color = OmColors.Ink)
-                if (s.omrReserved > 0) Text(stringResource(R.string.home_reserved, com.omwallet.core.ui.ltr(Fmt.masked(String.format(java.util.Locale.US, "%,.3f OMR", s.omrReserved), s.prefs.hideBalance))), style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary)
+        /* the person's favourites (the stars of the Markets page) */
+        item {
+            Column(Modifier.padding(horizontal = 16.dp).riseIn(3)) {
+                SectionTitle(stringResource(R.string.home_watchlist), Modifier, stringResource(R.string.see_all), actions.markets)
+                if (s.watch.isEmpty()) Text(stringResource(R.string.markets_fav_empty_b), style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary, modifier = Modifier.padding(4.dp))
+                s.watch.forEach { q -> QuoteRow(q) { actions.asset(q.sym) } }
             }
         }
-        item { Promotions(actions) }
         item {
-            GlassCard(Modifier.padding(horizontal = 16.dp), rise = 4) {
+            Column(Modifier.padding(horizontal = 16.dp).riseIn(4)) {
                 SectionTitle(stringResource(R.string.home_recent), Modifier, stringResource(R.string.see_all), actions.activity)
                 if (!s.loading && s.recent.isEmpty()) EmptyState(stringResource(R.string.home_no_activity_t), stringResource(R.string.home_no_activity_b), Modifier)
                 s.recent.forEach { t -> TxItem(t, s.prefs.hideBalance, onClick = { detail = t }) }
             }
         }
-        item {
+        if (s.omrAvailable != null) item {
             GlassCard(Modifier.padding(horizontal = 16.dp), rise = 5) {
-                SectionTitle(stringResource(R.string.home_holdings), Modifier, stringResource(R.string.see_all), actions.crypto)
-                if (!s.loading && s.lines.none { it.position.balance > 0 }) EmptyState(stringResource(R.string.home_no_holdings_t), stringResource(R.string.home_no_holdings_b), Modifier, stringResource(R.string.action_deposit), actions.deposit)
-                s.lines.filter { it.position.balance > 0 }.take(5).forEach { l ->
-                    Row(Modifier.fillMaxWidth().pressable { actions.asset(l.position.asset) }.padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        AssetLogo(l.position.asset)
-                        Column(Modifier.weight(1f)) {
-                            Text(Catalog.asset(l.position.asset)?.name ?: l.position.asset, style = MaterialTheme.typography.titleSmall, color = OmColors.Ink)
-                            Text(Fmt.masked(Fmt.qty(l.position.balance, l.position.asset), s.prefs.hideBalance), style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary)
-                        }
-                        Column(horizontalAlignment = Alignment.End) {
-                            Text(money(l.usd, s.prefs.currency, s.prefs.hideBalance), style = MaterialTheme.typography.titleSmall, color = OmColors.Ink)
-                            Text(Fmt.pct(l.quote?.changePct), style = MaterialTheme.typography.bodySmall, color = if ((l.quote?.changePct ?: 0.0) >= 0) OmColors.Success else OmColors.Error)
-                        }
-                    }
-                }
+                Text(stringResource(R.string.home_omr), style = MaterialTheme.typography.titleSmall, color = OmColors.Ink)
+                Text(com.omwallet.core.data.Fmt.masked(String.format(java.util.Locale.US, "%,.3f OMR", s.omrAvailable), s.prefs.hideBalance), style = MaterialTheme.typography.headlineSmall, color = OmColors.Ink)
+                if (s.omrReserved > 0) Text(stringResource(R.string.home_reserved, com.omwallet.core.ui.ltr(Fmt.masked(String.format(java.util.Locale.US, "%,.3f OMR", s.omrReserved), s.prefs.hideBalance))), style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary)
             }
         }
     }
     detail?.let { TxDetailSheet(it, s.prefs.hideBalance) { detail = null } }
 }
+
+/* The balance with its decimals in a lighter weight (Liv X / Binance); the characters are exactly those of the figure. */
+private fun lightDecimals(v: String): androidx.compose.ui.text.AnnotatedString {
+    val i = v.lastIndexOf('.')
+    if (i < 0 || i == v.length - 1 || v.substring(i + 1).any { !it.isDigit() }) return androidx.compose.ui.text.AnnotatedString(v)
+    return androidx.compose.ui.text.buildAnnotatedString {
+        append(v.substring(0, i))
+        pushStyle(androidx.compose.ui.text.SpanStyle(fontWeight = androidx.compose.ui.text.font.FontWeight.Normal, color = OmColors.InkSecondary))
+        append(v.substring(i)); pop()
+    }
+}
+
+/* Round header button: dark grey circle, light line icon. */
+@Composable
+private fun HeaderButton(icon: Int, description: String, modifier: Modifier, onClick: () -> Unit) {
+    Box(
+        modifier.size(44.dp).clip(RoundedCornerShape(50)).background(OmColors.Track).pressable(onClick = onClick).semantics { contentDescription = description },
+        contentAlignment = Alignment.Center,
+    ) { OmIcon(icon, null, tint = OmColors.Ink, size = 22.dp) }
+}
+
+/* Market mover card (reference image): logo and name, symbol and live price, the 24 h change in large type, the real 24 h curve. */
+@Composable
+private fun MoverCard(q: Quote, hidden: Boolean, onClick: () -> Unit) {
+    val up = (q.changePct ?: 0.0) >= 0
+    Column(
+        Modifier.width(168.dp).clip(RoundedCornerShape(18.dp)).background(OmColors.Card).border(1.dp, OmColors.Edge, RoundedCornerShape(18.dp))
+            .pressable(onClick = onClick).padding(14.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            AssetLogo(q.sym, 30.dp)
+            Text(Catalog.asset(q.sym)?.name ?: q.sym, style = MaterialTheme.typography.titleSmall, color = OmColors.Ink, maxLines = 1)
+        }
+        Text(q.sym + "  " + Fmt.money(q.price), style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary, maxLines = 1)
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Text(Fmt.pct(q.changePct), style = MaterialTheme.typography.titleLarge, color = if (up) OmColors.Success else OmColors.Error, modifier = Modifier.weight(1f), maxLines = 1)
+            MiniSpark(q.sym, up)
+        }
+    }
+}
+
+/* Favourite row (reference image « My Assets » / « Watchlist »): logo, name, 24 h change, the real 24 h curve, live price. */
+@Composable
+fun QuoteRow(q: Quote, onClick: () -> Unit) {
+    val up = (q.changePct ?: 0.0) >= 0
+    Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).pressable(onClick = onClick).padding(vertical = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        AssetLogo(q.sym, 42.dp)
+        Column(Modifier.weight(1f)) {
+            Text(Catalog.asset(q.sym)?.name ?: q.sym, style = MaterialTheme.typography.titleSmall, color = OmColors.Ink, maxLines = 1)
+            Text(Fmt.pct(q.changePct) + " (24 h)", style = MaterialTheme.typography.bodySmall, color = if (up) OmColors.Success else OmColors.Error)
+        }
+        MiniSpark(q.sym, up)
+        Text(Fmt.money(q.price), style = MaterialTheme.typography.titleSmall, color = OmColors.Ink, textAlign = TextAlign.End, modifier = Modifier.width(96.dp))
+    }
+}
+
 
 /* USD / OMR selector: a two-segment switch; the active segment slides (spring), the other stays readable. */
 @Composable
@@ -237,91 +319,11 @@ private fun CurrencyPill(cur: DisplayCurrency, onClick: () -> Unit) {
     ) {
         listOf(DisplayCurrency.USD, DisplayCurrency.OMR).forEach { c ->
             val on = c == cur
-            Box(Modifier.clip(RoundedCornerShape(50)).background(if (on) OmColors.SurfaceBright else androidx.compose.ui.graphics.Color.Transparent).padding(horizontal = 10.dp, vertical = 4.dp)) {
-                Text(c.name, style = MaterialTheme.typography.labelMedium, color = if (on) OmColors.Blue600 else OmColors.InkSecondary)
+            Box(Modifier.clip(RoundedCornerShape(50)).background(if (on) OmColors.Blue600 else androidx.compose.ui.graphics.Color.Transparent).padding(horizontal = 10.dp, vertical = 4.dp)) {
+                Text(c.name, style = MaterialTheme.typography.labelMedium, color = if (on) OmColors.OnAccent else OmColors.InkSecondary)
             }
         }
     }
 }
 
-@Composable
-private fun EyePill(hidden: Boolean, description: String, onClick: () -> Unit) {
-    Box(
-        Modifier.size(32.dp).clip(RoundedCornerShape(50)).background(OmColors.Sky100).pressable(role = Role.Switch, onClick = onClick).semantics { contentDescription = description },
-        contentAlignment = Alignment.Center,
-    ) { OmIcon(if (hidden) OmIcons.EyeOff else OmIcons.Eye, null, tint = OmColors.Blue600, size = 18.dp) }
-}
 
-@Composable
-private fun QuickAction(icon: Int, label: String, onClick: () -> Unit) {
-    Column(Modifier.pressable(onClick = onClick).padding(4.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Box(Modifier.size(52.dp).clip(RoundedCornerShape(OmRadius.M)).background(OmColors.Sky100), contentAlignment = Alignment.Center) {
-            OmIcon(icon, null, tint = OmColors.Blue600)
-        }
-        Text(label, style = MaterialTheme.typography.labelMedium, color = OmColors.Ink)
-    }
-}
-
-/* Shortcut banners (home reference): one glass banner at a time, swipe or wait; each opens a real screen. Dots below.
-   Auto-advance only when motion is not reduced. */
-@Composable
-private fun Promotions(actions: HomeActions) {
-    data class Promo(val t: Int, val b: Int, val go: () -> Unit)
-    val promos = listOf(
-        Promo(R.string.promo_send_t, R.string.promo_send_b, actions.send),
-        Promo(R.string.promo_markets_t, R.string.promo_markets_b, actions.markets),
-        Promo(R.string.promo_withdraw_t, R.string.promo_withdraw_b, actions.withdraw),
-    )
-    val pager = rememberPagerState { promos.size }
-    val reduced = com.omwallet.core.design.LocalOmMotion.current.reduced
-    if (!reduced) LaunchedEffect(pager) { while (true) { delay(5200); pager.animateScrollToPage((pager.currentPage + 1) % promos.size) } }
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        HorizontalPager(pager, contentPadding = PaddingValues(horizontal = 16.dp), pageSpacing = 12.dp) { k ->
-            val p = promos[k]
-            GlassCard(Modifier.pressable(onClick = p.go), padding = 16.dp) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                    GlassEmblem(size = 64.dp)
-                    Column(Modifier.weight(1f)) {
-                        Text(stringResource(p.t), style = MaterialTheme.typography.titleMedium, color = OmColors.Ink)
-                        Text(stringResource(p.b), style = MaterialTheme.typography.bodySmall, color = OmColors.Blue600, maxLines = 2)
-                    }
-                    OmIcon(OmIcons.Chevron, null, tint = OmColors.Blue600, size = 18.dp)          /* mirrors itself in Arabic */
-                }
-            }
-        }
-        Row(Modifier.padding(top = 10.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            promos.indices.forEach { j ->
-                val on = j == pager.currentPage
-                Box(Modifier.height(8.dp).width(if (on) 22.dp else 8.dp).clip(RoundedCornerShape(5.dp)).background(if (on) OmColors.Blue600 else Color(0x52FFFFFF)))
-            }
-        }
-    }
-}
-
-/* Original glass decoration behind the balance card (drawn, no photo): two translucent waves, a bright rim and a soft glint that drift
-   slowly; still under « remove animations ». */
-@Composable
-private fun GlassWaves(modifier: Modifier) {
-    val reduced = com.omwallet.core.design.LocalOmMotion.current.reduced
-    val drift = if (reduced) 0f else {
-        val t = androidx.compose.animation.core.rememberInfiniteTransition(label = "waves")
-        val v by t.animateFloat(-1f, 1f, androidx.compose.animation.core.infiniteRepeatable(androidx.compose.animation.core.tween(9000), androidx.compose.animation.core.RepeatMode.Reverse), label = "drift"); v
-    }
-    androidx.compose.foundation.Canvas(modifier) {
-        val w = size.width; val h = size.height; val dx = drift * 10.dp.toPx()
-        fun wave(y0: Float, amp: Float, shift: Float) = androidx.compose.ui.graphics.Path().apply {
-            moveTo(-40f + shift, h * y0)
-            cubicTo(w * 0.18f + shift, h * (y0 - amp), w * 0.4f + shift, h * (y0 + amp), w * 0.62f + shift, h * y0)
-            cubicTo(w * 0.8f + shift, h * (y0 - amp), w * 0.95f + shift, h * (y0 - amp * 0.4f), w + 40f + shift, h * (y0 - amp * 0.2f))
-        }
-        val a = wave(0.65f, 0.38f, dx)
-        val fillA = androidx.compose.ui.graphics.Path().apply { addPath(a); lineTo(w + 40f, h); lineTo(-40f, h); close() }
-        drawPath(fillA, Brush.horizontalGradient(listOf(Color(0x1ABFE3FF), Color(0xB38FD0FF), Color(0x664FA8FF))))
-        val b = wave(0.78f, 0.3f, -dx)
-        val fillB = androidx.compose.ui.graphics.Path().apply { addPath(b); lineTo(w + 40f, h); lineTo(-40f, h); close() }
-        drawPath(fillB, Brush.verticalGradient(listOf(Color(0xB3FFFFFF), Color(0x00FFFFFF))))
-        drawPath(a, Color(0xF2FFFFFF), style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.6.dp.toPx()))
-        drawCircle(Brush.radialGradient(listOf(Color(0x99FFFFFF), Color.Transparent), center = androidx.compose.ui.geometry.Offset(w * 0.8f - dx, h * 0.33f), radius = h * 0.3f),
-            radius = h * 0.3f, center = androidx.compose.ui.geometry.Offset(w * 0.8f - dx, h * 0.33f))
-    }
-}

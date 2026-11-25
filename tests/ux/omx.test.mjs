@@ -25,9 +25,11 @@ async function pin(page){ await page.waitForSelector('.ps #ps-dots', { timeout: 
     const expect = 0.01 * 97000 + 250 * (1 / 1.0002) + 1284.5 * 2.6008;
     const shown = Number((await page.locator('#home [data-omx-total]').innerText()).replace(/[$,]/g, ''));
     assert.ok(Math.abs(shown - expect) < 0.02, shown + ' vs ' + expect);
-    assert.equal(await page.locator('#home .omx-acts .omx-act').count(), 4);
-    assert.deepEqual(await page.evaluate(() => [...document.querySelectorAll('#home .omx-acts [data-nav]')].map(b => b.getAttribute('data-nav'))), ['deposit', 'withdraw', 'exchange', 'markets']);
-    assert.match(await page.locator('#home').innerText(), /Bitcoin[\s\S]*0\.01 BTC/);
+    assert.deepEqual(await page.$$eval('#home .omx-acts .omx-act', b => b.map(x => x.getAttribute('data-nav'))), ['deposit', 'withdraw', 'send-internal']);   /* 14.7.0: three round actions (reference image) */
+    /* 14.7.0: the holdings are on the Wallet tab (reference image « My Assets »), with the same real quantities */
+    await page.evaluate(() => R.go('wallet', { force: true })); await wait(800);
+    assert.match(await page.locator('#wallet').innerText(), /Bitcoin[\s\S]*0\.01 BTC/);
+    await page.evaluate(() => R.go('home', { force: true })); await wait(600);
   });
   await ok('marchés : 13 actifs, état et heure de synchro, recherche, favori enregistré', async () => {
     await page.evaluate(() => R.go('markets')); await wait(700);

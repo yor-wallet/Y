@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="om_surface">#FFF7FBFF</color>
-    <color name="om_blue">#FF2E9CD3</color>
-    <style name="Theme.OM" parent="Theme.AppCompat.Light.NoActionBar">
+    <!-- « Noir & Jaune » (Android = sombre) : la fenêtre et l'écran de démarrage sont noirs, jamais blancs ni bleus -->
+    <color name="om_surface">#FF0B0A07</color>
+    <color name="om_accent">#FFFFC800</color>
+    <style name="Theme.OM" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@color/om_surface</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="colorPrimary">@color/om_blue</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="colorPrimary">@color/om_accent</item>
     </style>
-    <!-- Android 12+ SplashScreen API (and its backport): the OM mark on the Surface colour, then the app theme -->
+    <!-- Android 12+ SplashScreen API (and its backport): the OM icon on the black Surface colour, then the app theme -->
     <style name="Theme.OM.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/om_surface</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash</item>

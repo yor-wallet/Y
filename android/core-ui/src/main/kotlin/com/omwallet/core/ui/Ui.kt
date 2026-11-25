@@ -26,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -254,4 +255,13 @@ fun Tabs(labels: List<String>, selected: Int, onSelect: (Int) -> Unit) {
             }
         }
     }
+}
+
+/* The real last-24 h curve of an asset (Binance, 15 min candles), loaded once per asset; nothing is drawn until it arrives. */
+@androidx.compose.runtime.Composable
+fun MiniSpark(sym: String, up: Boolean, modifier: androidx.compose.ui.Modifier = androidx.compose.ui.Modifier.size(width = 64.dp, height = 28.dp)) {
+    val g = omGraph()
+    var values by androidx.compose.runtime.remember(sym) { androidx.compose.runtime.mutableStateOf<List<Double>>(emptyList()) }
+    androidx.compose.runtime.LaunchedEffect(sym) { values = runCatching { g.market.history(sym, com.omwallet.core.data.Period.D1).map { it.close } }.getOrDefault(emptyList()) }
+    com.omwallet.core.design.Sparkline(values, up, modifier)
 }

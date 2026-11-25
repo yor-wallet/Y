@@ -72,15 +72,15 @@ import androidx.compose.ui.unit.dp
    Used on the dashboard, sheets and wallet cards; financial input screens use the stronger, calmer variant (strong = true). */
 @Composable
 fun GlassCard(modifier: Modifier = Modifier, strong: Boolean = false, padding: Dp = OmSpace.L, fill: Boolean = true, rise: Int = 0, content: @Composable ColumnScope.() -> Unit) {
-    /* owner references: white-to-sky glass, a bright white rim, a soft blue shadow; the card rises into place when it first appears */
-    val shape = RoundedCornerShape(OmRadius.L)
+    /* 14.8.0: a dark grey card on the black page with a hairline edge; the stronger variant (financial input screens) is one step lighter.
+       The card still rises into place when it first appears. */
+    val shape = RoundedCornerShape(OmRadius.M)
     Column(
         modifier
             .then(if (fill) Modifier.fillMaxWidth() else Modifier)
             .riseIn(rise)
-            .shadow(20.dp, shape, ambientColor = Color(0x33145AB4), spotColor = Color(0x55145AB4))
             .clip(shape)
-            .background(Brush.linearGradient(if (strong) listOf(Color(0x33FFFFFF), Color(0x14FFFFFF)) else listOf(Color(0x24FFFFFF), Color(0x0FFFFFFF))))
+            .background(if (strong) OmColors.Track else OmColors.Card)
             .border(BorderStroke(1.dp, OmColors.Edge), shape)
             .padding(padding),
         content = content,
@@ -90,18 +90,8 @@ fun GlassCard(modifier: Modifier = Modifier, strong: Boolean = false, padding: D
 /* Sky background with two very diffuse halos (login / dashboard). */
 @Composable
 fun SkyBackground(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
-    /* white to sky, with the two soft glass waves of the owner's references (top-left, bottom-right) */
-    Box(modifier.background(Brush.verticalGradient(listOf(OmColors.Surface, OmColors.PageMid, OmColors.PageBottom)))) {
-        Canvas(Modifier.matchParentSize()) {
-            drawCircle(Brush.radialGradient(listOf(Color(0x8C8CDCFF), Color.Transparent), center = Offset(size.width * 1.0f, 0f), radius = size.width * 0.9f))
-            drawCircle(Brush.radialGradient(listOf(Color(0x578270FF), Color.Transparent), center = Offset(0f, size.height), radius = size.width * 0.9f))
-            drawOval(Brush.radialGradient(listOf(Color(0x4DAAE1FF), Color(0x00AAE1FF)), center = Offset(size.width * 0.05f, size.height * 0.02f), radius = size.width * 0.85f),
-                topLeft = Offset(-size.width * 0.8f, -size.height * 0.28f), size = androidx.compose.ui.geometry.Size(size.width * 1.7f, size.height * 0.62f))
-            drawOval(Color(0x38FFFFFF), topLeft = Offset(-size.width * 0.8f, -size.height * 0.28f), size = androidx.compose.ui.geometry.Size(size.width * 1.7f, size.height * 0.62f), style = Stroke(width = 1.5.dp.toPx()))
-            drawOval(Color(0x29FFFFFF), topLeft = Offset(size.width * 0.35f, size.height * 0.82f), size = androidx.compose.ui.geometry.Size(size.width * 1.4f, size.height * 0.4f), style = Stroke(width = 1.5.dp.toPx()))
-        }
-        content()
-    }
+    /* 14.8.0: a plain black page (the 14.5 blue gradient and glass waves are gone) */
+    Box(modifier.background(OmColors.Surface)) { content() }
 }
 
 /* Press feedback (14.4.0): the control springs to 0.96 and a soft light blooms from the exact point the finger touched, then fades.
@@ -122,7 +112,7 @@ fun Modifier.pressable(enabled: Boolean = true, role: Role = Role.Button, onClic
             drawContent()
             if (glow > 0.01f && at != Offset.Unspecified) clipRect {
                 val r = size.maxDimension * (0.25f + 0.55f * glow)
-                drawCircle(Brush.radialGradient(listOf(Color.White.copy(alpha = 0.5f * glow), Color.Transparent), center = at, radius = r), radius = r, center = at)
+                drawCircle(Brush.radialGradient(listOf(OmColors.Blue600.copy(alpha = 0.16f * glow), Color.Transparent), center = at, radius = r), radius = r, center = at)
             }
         }
         .clickable(interactionSource = source, indication = null, enabled = enabled, role = role) { haptics.tap(); onClick() }
@@ -151,43 +141,42 @@ fun LoadingDots(color: Color = Color.White) {
 
 @Composable
 fun OmPrimaryButton(text: String, modifier: Modifier = Modifier, enabled: Boolean = true, loading: Boolean = false, onClick: () -> Unit) {
-    /* gradient blue with a light sheen on the top half and a blue glow (owner references) */
-    val shape = RoundedCornerShape(OmRadius.M)
+    /* 14.8.0: a yellow pill, a soft yellow glow, dark text ON the yellow (Binance / Liv X) */
+    val shape = RoundedCornerShape(50)
     Box(
         modifier
-            .heightIn(min = 58.dp)
+            .heightIn(min = 56.dp)
             .fillMaxWidth()
-            .shadow(if (enabled) 16.dp else 0.dp, shape, ambientColor = Color(0x661677F2), spotColor = Color(0x991677F2))
+            .shadow(if (enabled) 12.dp else 0.dp, shape, ambientColor = Color(0x66FFC800), spotColor = Color(0x99FFC800))
             .clip(shape)
-            .background(if (enabled) Brush.verticalGradient(listOf(OmColors.GradTop, OmColors.GradMid, OmColors.GradBottom)) else Brush.verticalGradient(listOf(OmColors.Sky300, OmColors.Sky300)))
-            .drawWithContent { drawContent(); drawRect(Brush.verticalGradient(listOf(Color(0x52FFFFFF), Color.Transparent), endY = size.height * 0.55f)) }
-            .border(1.dp, Color(0x8CFFFFFF), shape)
+            .background(if (enabled) Brush.horizontalGradient(listOf(OmColors.GradTop, OmColors.GradMid, OmColors.GradBottom)) else Brush.horizontalGradient(listOf(OmColors.Sky300, OmColors.Sky300)))
             .pressable(enabled = enabled && !loading, onClick = onClick)
             .semantics { if (loading) contentDescription = text },
         contentAlignment = Alignment.Center,
     ) {
-        if (loading) LoadingDots()
-        else Text(text, style = MaterialTheme.typography.labelLarge, color = Color.White, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 16.dp))
+        if (loading) LoadingDots(OmColors.OnAccent)
+        else Text(text, style = MaterialTheme.typography.labelLarge, color = if (enabled) OmColors.OnAccent else OmColors.InkSecondary, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 16.dp))
     }
 }
 
 @Composable
 fun OmSecondaryButton(text: String, modifier: Modifier = Modifier, enabled: Boolean = true, onClick: () -> Unit) {
-    val shape = RoundedCornerShape(OmRadius.M)
+    /* 14.8.0: a yellow-tinted pill with yellow text (secondary action next to the yellow primary pill) */
+    val shape = RoundedCornerShape(50)
     Box(
-        modifier.heightIn(min = 54.dp).fillMaxWidth().shadow(10.dp, shape, ambientColor = Color(0x33145AB4), spotColor = Color(0x44145AB4)).clip(shape)
-            .background(Brush.linearGradient(listOf(Color(0x33FFFFFF), Color(0x14FFFFFF)))).border(1.dp, OmColors.Edge, shape).pressable(enabled = enabled, onClick = onClick),
+        modifier.heightIn(min = 52.dp).fillMaxWidth().clip(shape)
+            .background(OmColors.AccentSoft).pressable(enabled = enabled, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) { Text(text, style = MaterialTheme.typography.labelLarge, color = if (enabled) OmColors.Blue600 else OmColors.InkSecondary) }
 }
 
-/* Glass icon tile (settings / assets references): light glass square with a blue line icon. */
+/* Icon tile (14.7.0): light violet circle with a violet line icon. */
 @Composable
 fun GlassTile(@DrawableRes icon: Int, modifier: Modifier = Modifier, size: Dp = 52.dp, tint: Color = OmColors.Blue600) {
-    val shape = RoundedCornerShape(16.dp)
+    /* 14.8.0: a yellow-tinted circle with a yellow line icon */
+    val shape = CircleShape
     Box(
-        modifier.size(size).shadow(8.dp, shape, ambientColor = Color(0x33145AB4), spotColor = Color(0x55145AB4)).clip(shape)
-            .background(Brush.linearGradient(listOf(Color(0x3DFFFFFF), Color(0x14FFFFFF)))).border(1.dp, OmColors.Edge, shape),
+        modifier.size(size).clip(shape).background(OmColors.AccentSoft),
         contentAlignment = Alignment.Center,
     ) { OmIcon(icon, null, tint = tint, size = size * 0.46f) }
 }
@@ -196,7 +185,7 @@ fun GlassTile(@DrawableRes icon: Int, modifier: Modifier = Modifier, size: Dp = 
 @Composable
 fun AssetLogo(symbol: String, size: Dp = 40.dp, modifier: Modifier = Modifier) {
     val res = tokenLogo(symbol)
-    Box(modifier.size(size).clip(CircleShape).background(Color.White), contentAlignment = Alignment.Center) {
+    Box(modifier.size(size).clip(CircleShape).background(OmColors.Track), contentAlignment = Alignment.Center) {
         /* 14.5.0: the official round coin badge fills the circle, as on the projects' own sites and on exchanges */
         if (res != null) Image(painterResource(res), contentDescription = null, modifier = Modifier.size(size))
         else Text(symbol.take(3), style = MaterialTheme.typography.labelSmall, color = OmColors.InkSecondary)
@@ -206,7 +195,7 @@ fun AssetLogo(symbol: String, size: Dp = 40.dp, modifier: Modifier = Modifier) {
 @Composable
 fun NetworkLogo(network: String, size: Dp = 28.dp, modifier: Modifier = Modifier) {
     val res = networkLogo(network)
-    Box(modifier.size(size).clip(CircleShape).background(Color.White), contentAlignment = Alignment.Center) {
+    Box(modifier.size(size).clip(CircleShape).background(OmColors.Track), contentAlignment = Alignment.Center) {
         if (res != null) Image(painterResource(res), contentDescription = null, modifier = Modifier.size(size))
     }
 }
@@ -228,10 +217,10 @@ enum class ChipTone { Success, Pending, Failed, Neutral }
 @Composable
 fun StatusChip(text: String, tone: ChipTone, modifier: Modifier = Modifier, animated: Boolean = false) {
     val (bg, fg) = when (tone) {
-        ChipTone.Success -> Color(0x2945E39A) to Color(0xFF8AF2C2)
-        ChipTone.Pending -> Color(0x33FFC766) to Color(0xFFFFDC8F)
-        ChipTone.Failed -> Color(0x29FF7D89) to Color(0xFFFFB6BD)
-        ChipTone.Neutral -> Color(0x24FFFFFF) to OmColors.InkSecondary
+        ChipTone.Success -> OmColors.ChipUp to OmColors.Success
+        ChipTone.Pending -> Color(0xFF3A2D0A) to OmColors.Warning
+        ChipTone.Failed -> OmColors.ChipDown to OmColors.Error
+        ChipTone.Neutral -> OmColors.Track to OmColors.InkSecondary
     }
     androidx.compose.foundation.layout.Row(
         modifier.clip(RoundedCornerShape(50)).background(bg).padding(horizontal = 10.dp, vertical = 3.dp),
@@ -269,8 +258,10 @@ fun SectionTitle(text: String, modifier: Modifier = Modifier, action: String? = 
 }
 
 @Composable
-fun EmptyState(title: String, body: String, modifier: Modifier = Modifier, action: String? = null, onAction: (() -> Unit)? = null) {
+fun EmptyState(title: String, body: String, modifier: Modifier = Modifier, action: String? = null, onAction: (() -> Unit)? = null, art: Boolean = true) {
     Column(modifier.fillMaxWidth().padding(vertical = 24.dp, horizontal = 12.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        /* « nothing here yet »: the original Arche illustration (an arch, the coin still to come); not for errors */
+        if (art) androidx.compose.foundation.Image(androidx.compose.ui.res.painterResource(R.drawable.om_empty), contentDescription = null, modifier = Modifier.size(width = 112.dp, height = 92.dp))
         Text(title, style = MaterialTheme.typography.titleMedium, color = OmColors.Ink, textAlign = TextAlign.Center)
         Text(body, style = MaterialTheme.typography.bodyMedium, color = OmColors.InkSecondary, textAlign = TextAlign.Center)
         if (action != null && onAction != null) { Spacer(Modifier.height(4.dp)); OmSecondaryButton(action, Modifier.width(220.dp), onClick = onAction) }
@@ -279,7 +270,7 @@ fun EmptyState(title: String, body: String, modifier: Modifier = Modifier, actio
 
 @Composable
 fun ErrorState(message: String, retry: String, modifier: Modifier = Modifier, onRetry: () -> Unit) =
-    EmptyState(title = message, body = "", modifier = modifier, action = retry, onAction = onRetry)
+    EmptyState(title = message, body = "", modifier = modifier, action = retry, onAction = onRetry, art = false)
 
 /* Loading placeholder: shape only, never fake data. */
 @Composable
@@ -345,6 +336,7 @@ object OmIcons {
     val Swap = R.drawable.ic_om_swap; val Trend = R.drawable.ic_om_trend
     val Send = R.drawable.ic_om_send; val Copy = R.drawable.ic_om_copy; val Back = R.drawable.ic_om_back; val Chevron = R.drawable.ic_om_chevron
     val Shield = R.drawable.ic_om_shield; val Share = R.drawable.ic_om_share; val Refresh = R.drawable.ic_om_refresh; val Close = R.drawable.ic_om_close
+    val Menu = R.drawable.ic_om_menu
     val Logout = R.drawable.ic_om_logout; val Mail = R.drawable.ic_om_mail; val Lock = R.drawable.ic_om_lock; val Globe = R.drawable.ic_om_globe
 }
 
