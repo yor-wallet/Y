@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { fmtOmanPhone, operatorName, topupMessage } from "./topup.ts";
 
 // ============================================================
 // OM Wallet — send-email (14.3) — clés des fournisseurs : Supabase Vault (prioritaire) ou secrets de la fonction
@@ -20,6 +21,8 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 //     seul le haché est stocké en base ; la file d'e-mails ne contient jamais de jeton utilisable ; un renvoi remplace le jeu précédent).
 //   - TRANSFER_CONFIRMED (14.3) : e-mail détaillé à l'expéditeur quand l'administrateur confirme (le destinataire reçoit FUNDS_RECEIVED).
 //   - SWAP_CONFIRMED (14.5) : l'unique e-mail d'un échange, après la confirmation de l'administrateur ET le crédit de l'actif acheté au grand livre.
+//   - CREDIT_TOPUP_CONFIRMED (14.10) : l'unique e-mail d'un transfert de crédit (Omantel / Ooredoo / Vodafone), après la confirmation de l'administrateur ET le débit au grand livre ;
+//     le message est celui du propriétaire (topup.ts) avec le vrai montant, le vrai numéro et le TID. ADMIN_TX_ACTION porte l'opérateur et le numéro.
 // ============================================================
 const FROM_EMAIL = (Deno.env.get("EMAIL_FROM") || "yordigitalefinance@gmail.com").trim();
 const FROM_NAME = "OM Wallet";
@@ -71,6 +74,9 @@ const T: Record<Lang, Row> = {
       confirm: "Confirmer", reject: "Refuser", pause: "Mettre en pause", expires: "Ces boutons sont personnels et valables 72 heures. Chacun ouvre une page de confirmation." },
     tc: { subject: (r: string) => `OM Wallet — Transfert confirmé (${r})`, title: "Transfert confirmé", line: (a: string, to: string) => `Votre transfert de ${a} vers ${to} a été confirmé.`, ok: "Confirmé avec succès." },
     sw: { subject: (r: string) => `OM Wallet — Échange confirmé (${r})`, title: "Échange confirmé", line: (a: string, b: string) => `Votre échange de ${a} contre ${b} a été confirmé. Le montant est disponible sur votre compte.`, ok: "Confirmé et crédité.", row: "Échange", rate: "Prix fixé à la demande" },
+    tu: { subject: (r: string) => `OM Wallet — Transfert de crédit confirmé (${r})`, title: "Transfert de crédit confirmé", ok: "Confirmé avec succès.", op: "Opérateur", num: "Numéro", tid: "TID",
+      act: { subject: (r: string) => `OM Wallet — Transfert de crédit à traiter (${r})`, title: "Un transfert de crédit attend votre décision",
+        intro: (a: string, op: string, n: string) => `Un transfert de crédit de ${a} vers ${op} ${n} vient d'être enregistré. Envoyez le crédit, puis confirmez ; en cas de problème, refusez : le montant est rendu.` } },
     cw: { subject: (r: string) => `OM Wallet — Retrait confirmé sur la blockchain (${r})`, title: "Retrait confirmé sur la blockchain",
       line: (a: string) => `Votre retrait de ${a} a été confirmé par le réseau.`, ok: "Confirmé sur la blockchain." },
     tz: "heure d'Oman",
@@ -107,6 +113,9 @@ const T: Record<Lang, Row> = {
       confirm: "Confirm", reject: "Refuse", pause: "Pause", expires: "These buttons are personal and valid for 72 hours. Each one opens a confirmation page." },
     tc: { subject: (r: string) => `OM Wallet — Transfer confirmed (${r})`, title: "Transfer confirmed", line: (a: string, to: string) => `Your transfer of ${a} to ${to} has been confirmed.`, ok: "Confirmed successfully." },
     sw: { subject: (r: string) => `OM Wallet — Swap confirmed (${r})`, title: "Swap confirmed", line: (a: string, b: string) => `Your swap of ${a} for ${b} has been confirmed. The amount is available in your account.`, ok: "Confirmed and credited.", row: "Swap", rate: "Price fixed at request" },
+    tu: { subject: (r: string) => `OM Wallet — Credit transfer confirmed (${r})`, title: "Credit transfer confirmed", ok: "Confirmed successfully.", op: "Operator", num: "Number", tid: "TID",
+      act: { subject: (r: string) => `OM Wallet — Credit transfer to review (${r})`, title: "A credit transfer is waiting for your decision",
+        intro: (a: string, op: string, n: string) => `A credit transfer of ${a} to ${op} ${n} has just been recorded. Send the credit, then confirm; if there is a problem, refuse: the amount is returned.` } },
     cw: { subject: (r: string) => `OM Wallet — Withdrawal confirmed on the blockchain (${r})`, title: "Withdrawal confirmed on the blockchain",
       line: (a: string) => `Your withdrawal of ${a} has been confirmed by the network.`, ok: "Confirmed on the blockchain." },
     tz: "Oman time",
@@ -143,6 +152,9 @@ const T: Record<Lang, Row> = {
       confirm: "تأكيد", reject: "رفض", pause: "إيقاف مؤقت", expires: "هذه الأزرار شخصية وصالحة لمدة 72 ساعة، وكل زر يفتح صفحة تأكيد." },
     tc: { subject: (r: string) => `OM Wallet — تم تأكيد التحويل (${r})`, title: "تم تأكيد التحويل", line: (a: string, to: string) => `تم تأكيد تحويلك بقيمة \u2066${a}\u2069 إلى \u2068${to}\u2069.`, ok: "تم التأكيد بنجاح." },
     sw: { subject: (r: string) => `OM Wallet — تم تأكيد التبديل (${r})`, title: "تم تأكيد التبديل", line: (a: string, b: string) => `تم تأكيد تبديل \u2066${a}\u2069 مقابل \u2066${b}\u2069. المبلغ متاح في حسابك.`, ok: "تم التأكيد والإضافة.", row: "تبديل", rate: "السعر المثبّت عند الطلب" },
+    tu: { subject: (r: string) => `OM Wallet — تم تحويل الرصيد (${r})`, title: "تم تحويل الرصيد", ok: "تم بنجاح.", op: "المشغّل", num: "الرقم", tid: "TID",
+      act: { subject: (r: string) => `OM Wallet — تحويل رصيد بانتظار قرارك (${r})`, title: "تحويل رصيد ينتظر قرارك",
+        intro: (a: string, op: string, n: string) => `تم تسجيل تحويل رصيد بقيمة \u2066${a}\u2069 إلى ${op} \u2066${n}\u2069 للتو. أرسل الرصيد ثم أكّد؛ وإن وُجدت مشكلة فارفض: يُعاد المبلغ.` } },
     cw: { subject: (r: string) => `OM Wallet — تم تأكيد السحب على البلوكشين (${r})`, title: "تم تأكيد السحب على البلوكشين",
       line: (a: string) => `أكّدت الشبكة سحبك بقيمة ${a}.`, ok: "مؤكد على البلوكشين." },
     tz: "بتوقيت عُمان",
@@ -260,17 +272,21 @@ async function build(log: Row, lang: Lang): Promise<Built> {
     if (linkErr) return { skip: "links_failed", retry: true };
     if (!tk || !tk.confirm || !tk.reject || !tk.pause) return { skip: "already_decided_or_not_admin" };
     const amt = money(p.amount, String(p.asset), lang);
-    const rows: [string, string][] = [[t.f.ref, dispId(p.reference)], [t.f.amount, amt], [t.f.from, String(p.sender ?? "")], [t.f.to, String(p.receiver ?? "")]];
-    if (p.network) rows.push([t.f.network, NETWORK_NAMES[String(p.network)] ?? String(p.network)]);
-    if (p.swap && p.swap.to_asset) rows.push([t.sw.row, `${amt} → ${money(p.swap.to_amount, String(p.swap.to_asset), lang)}`], [t.sw.rate, rate(String(p.asset), String(p.swap.to_asset), Number(p.swap.price), lang)]);
-    else if (p.note) rows.push([t.f.note, String(p.note)]);
+    const tp: Row | null = p.kind === "CREDIT_TOPUP" && p.topup && p.topup.phone ? p.topup : null;      // credit transfer: the administrator needs the operator and the number
+    const rows: [string, string][] = tp
+      ? [[t.f.ref, dispId(p.reference)], [t.tu.op, operatorName(tp.operator)], [t.tu.num, fmtOmanPhone(tp.phone)], [t.f.amount, amt], [t.f.from, String(p.sender ?? "")]]
+      : [[t.f.ref, dispId(p.reference)], [t.f.amount, amt], [t.f.from, String(p.sender ?? "")], [t.f.to, String(p.receiver ?? "")]];
+    if (!tp && p.network) rows.push([t.f.network, NETWORK_NAMES[String(p.network)] ?? String(p.network)]);
+    if (!tp && p.swap && p.swap.to_asset) rows.push([t.sw.row, `${amt} → ${money(p.swap.to_amount, String(p.swap.to_asset), lang)}`], [t.sw.rate, rate(String(p.asset), String(p.swap.to_asset), Number(p.swap.price), lang)]);
+    else if (!tp && p.note) rows.push([t.f.note, String(p.note)]);
     rows.push([t.f.date, when(String(p.created_at ?? log.created_at), lang)]);
     const url = (tok: string) => `${APP_URL}/admin-action#t=${tok}`;
     const btn = (label: string, color: string, tok: string) => `<a href="${esc(url(String(tok)))}" style="display:inline-block;margin:6px;background:${color};color:#fff;text-decoration:none;font-weight:800;padding:13px 22px;border-radius:14px;font-size:15px">${esc(label)}</a>`;
     const extra = `<div style="margin:24px 0 0;text-align:center">${btn(t.act.confirm, "#1FAF72", tk.confirm)}${btn(t.act.reject, "#D94F5B", tk.reject)}${btn(t.act.pause, "#E5A332", tk.pause)}</div>` +
       `<p style="margin:16px 0 0;font-size:12px;line-height:1.6;color:#74879A">${esc(t.act.expires)}</p>`;
-    return { subject: t.act.subject(dispId(p.reference)), html: layout(lang, t.act.title, t.act.intro(amt), rows, extra),
-      text: textOf(t.act.title, [t.act.intro(amt), "", ...rows.map(([k, v]) => `${k} : ${v}`), "", `${t.act.confirm} : ${url(String(tk.confirm))}`, `${t.act.reject} : ${url(String(tk.reject))}`, `${t.act.pause} : ${url(String(tk.pause))}`, "", t.act.expires]) };
+    const a = tp ? t.tu.act : t.act, intro = tp ? t.tu.act.intro(amt, operatorName(tp.operator), fmtOmanPhone(tp.phone)) : t.act.intro(amt);
+    return { subject: a.subject(dispId(p.reference)), html: layout(lang, a.title, intro, rows, extra),
+      text: textOf(a.title, [intro, "", ...rows.map(([k, v]) => `${k} : ${v}`), "", `${t.act.confirm} : ${url(String(tk.confirm))}`, `${t.act.reject} : ${url(String(tk.reject))}`, `${t.act.pause} : ${url(String(tk.pause))}`, "", t.act.expires]) };
   }
 
   if (type === "TRANSFER_CONFIRMED") {
@@ -306,6 +322,24 @@ async function build(log: Row, lang: Lang): Promise<Built> {
     rows.push([t.f.date, at], [t.f.status, t.sw.ok]);
     return { subject: t.sw.subject(dispId(tx.reference)), html: layout(lang, t.sw.title, t.sw.line(from, to), rows, button(t.open)),
       text: textOf(t.sw.title, [t.sw.line(from, to), "", ...rows.map(([k, v]) => `${k} : ${v}`)]) };
+  }
+
+  if (type === "CREDIT_TOPUP_CONFIRMED") {
+    // the single e-mail of a credit transfer: only once the administrator has confirmed it AND the ledger shows the debit (same guards as the other confirmation e-mails)
+    const { data: tx } = await sb.from("transactions").select("id, reference, kind, amount, asset, status, confirmed_at, sender_id, meta").eq("id", log.transaction_id).maybeSingle();
+    if (!tx) return { skip: "transaction_not_found" };
+    if (tx.kind !== "CREDIT_TOPUP") return { skip: "not_a_credit_transfer" };
+    if (tx.status !== "CONFIRMED" || !tx.confirmed_at) return { skip: `not_confirmed_${tx.status}`, retry: tx.status === "PENDING" };
+    if (tx.sender_id !== log.user_id) return { skip: "not_the_owner" };
+    const tp: Row = (tx.meta ?? {}).topup ?? {};
+    if (!tp.phone || !tp.tid) return { skip: "details_missing" };
+    const { data: led } = await sb.from("ledger_entries").select("delta").eq("transaction_id", tx.id).eq("user_id", log.user_id);
+    if (!((led ?? []).reduce((s: number, r: Row) => s + Number(r.delta), 0) < 0)) return { skip: "ledger_missing", retry: true };
+    const amt = money(tx.amount, "OMR", lang), at = when(tx.confirmed_at, lang);
+    const msg = topupMessage(lang, tx.amount, tp.phone, tp.tid, lang === "ar");
+    const rows: [string, string][] = [[t.f.ref, dispId(tx.reference)], [t.tu.op, operatorName(tp.operator)], [t.tu.num, fmtOmanPhone(tp.phone)], [t.f.amount, amt], [t.tu.tid, String(tp.tid)], [t.f.date, at], [t.f.status, t.tu.ok]];
+    return { subject: t.tu.subject(dispId(tx.reference)), html: layout(lang, t.tu.title, msg, rows, button(t.open)),
+      text: textOf(t.tu.title, [topupMessage(lang, tx.amount, tp.phone, tp.tid), "", ...rows.map(([k, v]) => `${k} : ${v}`)]) };
   }
 
   if (type === "CRYPTO_WITHDRAWAL_CONFIRMED") {
