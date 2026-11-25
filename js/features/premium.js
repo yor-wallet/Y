@@ -252,7 +252,7 @@ const TxResult = (() => {
 const PxSearch = (() => {
   const SCREENS = () => [
     ['wallet', 'crypto', t('omx.crypto')], ['send-internal', 'send', t('si.title')], ['markets', 'chart', t('omx.markets')], ['deposit', 'receive', t('omx.deposit')], ['withdraw', 'download', t('omx.withdraw')], ['exchange', 'swap', t('omx.exchange')],
-    ['history', 'history', t('px.history')], ['cards', 'cards', V12.vt('cards')],
+    ['history', 'history', t('px.history')],
     ['profile', 'user', t('px.profile')], ['profile-edit', 'user', t('px.edit')], ['settings', 'settings', t('settings.title')], ['notifications', 'bell', t('px.notifs')],
     ['settings', 'globe', t('px.language')], ['settings', 'sparkle', t('px.theme')], ['settings', 'banknote', t('px.dispCur')], ['settings', 'bell', t('settings.notifs')],
     ['px:pin', 'lock', t('px.pinChange')], ['devices', 'device', t('devices.title')], ['sessions', 'session', t('sessions.title')],
@@ -421,9 +421,6 @@ const Premium = (() => {
     balFrom = BalanceFx.check(main);
     let ai = 0;
     const act = (nav, ic, lbl, pr) => '<button class="rv-act px-act' + (pr ? ' p' : '') + '" style="--i:' + (ai++) + '" data-nav="' + nav + '"><i>' + icon(ic, 24) + '</i><span>' + escapeHtml(lbl) + '</span></button>';
-    const cardsHtml = (Runtime.cards || []).length ? '<section class="rv-sec px-sec"><div class="rv-h"><h2>' + escapeHtml(V12.vt('cards')) + '</h2><button data-nav="cards">' + escapeHtml(t('px.seeAll')) + '</button></div><div class="rv-strip">' +
-      Runtime.cards.map(c => '<button class="rv-mini th-' + escapeHtml(c.theme || 'midnight') + (c.frozen ? ' fz' : '') + '" data-nav="cards" aria-label="' + escapeHtml((c.label || V12.vt('defName')) + ' •••• ' + String(c.number || '').slice(-4)) + '"><span class="ltr">•••• ' + escapeHtml(String(c.number || '0000').slice(-4)) + '</span></button>').join('') +
-      '<button class="rv-mini rv-mini-add" data-nav="cards-add">' + icon('plus', 20) + '<span>' + escapeHtml(V12.vt('addCard')) + '</span></button></div></section>' : '';
     /* other money accounts (e.g. XOF): shown in the display currency, original amount always visible (same rules as 12.6.0) */
     const others = (Runtime.accounts || []).filter(a => a.type !== 'CRYPTO' && a.type !== 'MAIN').slice(0, 4);
     const othersHtml = others.length ? '<section class="rv-sec px-sec"><div class="rv-h"><h2>' + escapeHtml(V12.vt('accounts')) + '</h2></div><div class="rv-grid2">' +
@@ -454,7 +451,6 @@ const Premium = (() => {
       '<section class="rv-sec px-sec"><div class="rv-h"><h2>' + escapeHtml(t('px.recent')) + '</h2><button data-nav="history">' + escapeHtml(t('px.seeAll')) + '</button></div>' +
         (txs.length ? txGroupedHtml(txs, hide) : '<div class="rv-list">' + emptyState('history', V12.vt('noTx'), t('ds.nohist_body')) + '</div>') + '</section>' +
       othersHtml +
-      cardsHtml +
       '<div style="height:calc(20px + var(--safe-b))"></div></div>';
   }
 

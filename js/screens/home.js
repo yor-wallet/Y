@@ -85,7 +85,7 @@ function renderHome(){
   const pf = PortfolioEngine.snapshot();
   const pfTxt = hide ? '••••••' : CurrencyEngine.format(pf.totalUSD, 'USD');
   const up = pf.totalChangePct >= 0;
-  const svc = [['country-select','send','send'],['crypto-receive','receive','receive'],['crypto-swap','swap','swap'],['crypto-sell','minus','sell'],['banks','bank','banks'],['cards','cards','cards'],['history','history','history'],['crypto-networks','network','networks']];
+  const svc = [['country-select','send','send'],['crypto-receive','receive','receive'],['crypto-swap','swap','swap'],['crypto-sell','minus','sell'],['banks','bank','banks'],['history','history','history'],['crypto-networks','network','networks']];
   const mk = (CryptoMarketEngine.list() || []).slice(0, 6);
   return '<div class="yb">' +
     '<div class="yb-top">' +

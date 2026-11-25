@@ -119,7 +119,6 @@ function wire(id){
       const n = el.getAttribute('data-nav');
       if (n === 'home') R.go('home');
       else if (n === 'history') R.go('history');
-      else if (n === 'cards') R.go('cards');
       else if (n === 'profile') R.go('profile');
       else if (n === 'settings') R.go('settings');
       else if (n === 'devices') R.go('devices');

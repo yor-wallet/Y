@@ -305,7 +305,7 @@ html:root body .swipe-label{font:600 17px/22px var(--font);letter-spacing:-.41px
 html:root body .receipt-benef{padding:4px 0}
 
 /* ---------- 10. home: typographic, no balance card ---------- */
-html:root body .rv-home,html:root body .rv-page{padding-inline:20px}
+html:root body .rv-home{padding-inline:20px}
 html:root body .px-home{gap:0}
 html:root body .px-top{display:flex;flex-wrap:wrap;align-items:center;gap:0 2px;padding-top:calc(env(safe-area-inset-top,0px) + 6px)}
 html:root body .px-me{order:1;margin-inline-end:auto;padding:0}
@@ -343,13 +343,13 @@ html:root body .rv-sec{margin-top:6px}
 /* promotions become quiet text tips (no illustration) */
 html:root body .rv-promos{margin-top:22px}
 html:root body .rv-promo{background:var(--fill-3)!important;border:1px solid var(--sep);border-radius:var(--r-btn);padding:16px!important;min-height:0;box-shadow:none}
-html:root body .rv-promo-art,html:root body .rv-promo-tag{display:none!important}
+html:root body .rv-promo-tag{display:none!important}
 html:root body .rv-promo h3{font:700 17px/22px var(--font);letter-spacing:-.3px;color:var(--ink)}
 html:root body .rv-promo p{font:400 14px/19px var(--font);color:var(--ink-2)}
 html:root body .rv-promo-cta{background:transparent!important;color:var(--tint)!important;border:0!important;padding:6px 0 0!important;font:600 15px/20px var(--font);min-height:0;box-shadow:none!important}
 html:root body .rv-promo-txt{max-width:none!important}
-html:root body .rv-dots i{background:var(--ink-4)}
-html:root body .rv-mini{border-radius:10px}
+
+
 
 /* ---------- 11. other screens ---------- */
 /* services: a list, not a grid of icons */
@@ -375,13 +375,12 @@ html:root body .yb-svc-t{font:400 17px/22px var(--font);letter-spacing:-.41px;co
 /* history */
 html:root body .hist-search{margin:0}
 html:root body .ds-hist{gap:12px}
-/* cards: flat colour faces, no foil */
-html:root body .rv-card{border-radius:20px;box-shadow:0 18px 36px -18px rgba(10,10,60,.45)}
-html:root body .rv-grain,html:root body .rv-foil{display:none}
-html:root body .rv-card.th-midnight .rv-face{background:linear-gradient(150deg,#1B1B22,#0A0A0F)}
-html:root body .rv-card.th-violet .rv-face{background:linear-gradient(150deg,#5663FF,#2F3DDB)}
-html:root body .rv-name{font:700 20px/25px var(--font);letter-spacing:-.3px}
-html:root body .rv-state{font:700 11px/14px var(--font)}
+
+
+
+
+
+
 html:root body .rv-act:not(.px-act) i{border-radius:12px!important;background:var(--fill-3)!important;color:var(--tint)}
 /* profile, receive, help */
 html:root body .px-hero{background:transparent!important;border:0;border-radius:0;box-shadow:none;padding:12px 0 8px}
@@ -431,7 +430,7 @@ html:root body .chip,html:root body .px-bal .ds-eye,html:root body .px-copy,html
 html:root body .chip::after,html:root body .px-bal .ds-eye::after,html:root body .px-copy::after,html:root body .px-chip.id::after{content:"";position:absolute;inset:-6px -3px;border-radius:inherit}
 html:root body .px-bal .ds-eye::before{display:none}
 
-html:root body .rv-car{background:transparent!important}
+
 html:root body .rv-list .item,html:root body .ds-list .item,html:root body .glass .item{padding:10px 20px!important}
 
 /* ---------- 13. opening: splash, introduction, lock screen, offline ---------- */

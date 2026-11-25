@@ -87,7 +87,7 @@ html:root:root body .btn-ghost{background:transparent!important;color:var(--w-bl
 html:root:root body :is(.btn,.omx-act,.hub-row,.omx-row,.omx-pick,.chip,.nav-item,.hub-circ,.topbar-back,.w-sq,.w-pill,.ds-eye,.hub-out,.yd-nav button).w-press{transform:scale(.96)}
 
 /* round / square controls: glass squares with soft shadow (back, search, bell, avatar) */
-html:root:root body :is(.topbar-back,.hub-circ,.rv-circ,.ds-eye,.rv-cp,.hub-me-go,.yb-ic,.w-sq){border-radius:18px!important;background:linear-gradient(160deg,var(--w-glass3),var(--w-glass))!important;
+html:root:root body :is(.topbar-back, .hub-circ, .rv-circ, .ds-eye, .hub-me-go, .yb-ic, .w-sq){border-radius:18px!important;background:linear-gradient(160deg,var(--w-glass3),var(--w-glass))!important;
   border:1px solid var(--w-stroke)!important;box-shadow:var(--w-shadow),inset 0 1px 0 #fff!important;color:var(--w-ink)!important;min-width:48px;height:48px;
   -webkit-backdrop-filter:var(--w-blur)!important;backdrop-filter:var(--w-blur)!important;transition:transform .32s var(--w-spring)}
 html:root:root body .topbar-back{width:auto;padding-inline:12px;white-space:nowrap}

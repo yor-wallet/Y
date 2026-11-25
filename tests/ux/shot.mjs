@@ -6,7 +6,7 @@ const out = process.argv[2] || '/tmp/shots', tag = process.argv[3] || 'a';
 fs.mkdirSync(out, { recursive: true });
 const { srv, url } = await serve(); const browser = await launch();
 const variants = (process.env.VARIANTS || 'light-en,dark-en,light-ar').split(',').map(n => ({ n, theme: n.includes('dark') ? 'dark' : 'light', lang: n.slice(-2), scheme: n.includes('dark') ? 'dark' : 'light' }));
-const screens = (process.env.SCREENS || "home,history,profile,settings,receive,cards,notifications,services,country-select").split(",");
+const screens = (process.env.SCREENS || "home,history,profile,settings,receive,notifications,services,country-select").split(",");
 for (const v of variants){
   const { ctx, page, logs } = await openApp(browser, url, Object.assign({ scale: 2 }, v));
   for (const s of screens){

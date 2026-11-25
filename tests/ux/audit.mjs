@@ -4,7 +4,7 @@
    (symbole du rial dessiné par un masque, texte masqué exprès) ; les `input` plus petits que leur boîte cliquable. Vérifier à l'œil avant de corriger. */
 import fs from 'node:fs';
 import { serve, launch, openApp } from './harness.mjs';
-const SCREENS = 'home wallet send-internal markets asset deposit exchange withdraw withdraw-bank withdraw-crypto history account cards services profile profile-edit settings notifications help privacy about devices sessions'.split(' ');
+const SCREENS = 'home wallet send-internal markets asset deposit exchange withdraw withdraw-bank withdraw-crypto history account services profile profile-edit settings notifications help privacy about devices sessions'.split(' ');
 const out = process.argv[2] || '/tmp/audit.json';
 const { srv, url } = await serve(); const browser = await launch();
 const wait = ms => new Promise(r => setTimeout(r, ms));

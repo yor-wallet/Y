@@ -33,7 +33,7 @@ html,body{background:var(--bg);color:var(--text);font-family:var(--font);height:
 html[dir="rtl"] body{font-family:var(--font-ar);letter-spacing:0}
 /* Arabe : l'écriture est cursive — des lettres espacées (ou serrées) se détachent et deviennent illisibles. Aucun libellé arabe ne garde d'espacement ;
    seuls les montants, numéros et masques de chiffres (solde, numéro de carte, code) gardent le leur. */
-html[dir="rtl"] :not(.ds-bal-amt, .ds-bal-amt *, .item-amount, .item-amount *, .rv-num, .rv-num *, .card-number, .card-number *, .recog-mask, .recog-mask *, .cvv-strip, .cvv-strip *, .contact-number, .logo-sub:not(.logo-sub-ar)){letter-spacing:0!important}
+html[dir="rtl"] :not(.ds-bal-amt, .ds-bal-amt *, .item-amount, .item-amount *, .card-number, .card-number *, .recog-mask, .recog-mask *, .cvv-strip, .cvv-strip *, .contact-number, .logo-sub:not(.logo-sub-ar)){letter-spacing:0!important}
 button,input,select,textarea{font-family:inherit;color:inherit;background:none;border:none;outline:none;text-align:inherit}
 button{cursor:pointer;padding:0}
 a{color:inherit;text-decoration:none}

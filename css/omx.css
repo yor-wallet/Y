@@ -349,10 +349,10 @@ html:root[data-theme="dark"] body .rv-auth{--au-bg:#0B1220;--au-ink:#EAF0F7;--au
 html:root body .rv-auth .screen-body{max-width:420px!important;padding:calc(28px*var(--ui)) 28px calc(28px + var(--safe-b))!important}
 html:root body #login.rv-auth .topbar{display:none}
 html:root body .rv-auth .rv-auth-hero{align-items:flex-start;text-align:start;gap:0;padding:calc(8px*var(--ui)) 0 calc(28px*var(--ui))}
-html:root body .rv-auth .rv-auth-logo{display:block;width:150px;height:auto;margin:0 0 calc(44px*var(--ui));filter:none;box-shadow:none;border-radius:0}
-html:root body .rv-auth .rv-auth-logo.rv-d{display:none}
-html:root[data-theme="dark"] body .rv-auth .rv-auth-logo.rv-l{display:none}
-html:root[data-theme="dark"] body .rv-auth .rv-auth-logo.rv-d{display:block}
+
+
+
+
 html:root body .rv-auth .rv-auth-hero h1{margin:0;font-size:calc(26px*var(--ui));line-height:1.2;font-weight:700;letter-spacing:-.01em;color:var(--au-ink)}
 html:root body .rv-auth .rv-auth-hero p{margin:calc(8px*var(--ui)) 0 0;max-width:none;font-size:calc(16px*var(--ui));line-height:1.45;color:var(--au-muted)}
 html:root body .rv-auth .field-label{color:var(--au-muted);font-size:calc(13px*var(--ui));font-weight:600;letter-spacing:0}

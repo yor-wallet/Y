@@ -326,7 +326,7 @@ html[dir="rtl"] .toast{font-family:var(--font-ar)}
 .screen.active{animation:pxScreenIn .36s var(--px-ease) both!important}   /* replaces the full-screen blur() transition of friendly.css (costly on iPhone) */
 .screen.active.from-back{animation:pxScreenBack .32s var(--px-ease) both!important}
 .ds-home.px-home>*{animation:none}
-.px-home .px-sec,.px-home .rv-promos,.px-home > .rv-promo-wrap{animation:pxRise .55s .26s var(--px-ease) both}
+.px-home .px-sec,.px-home .rv-promos{animation:pxRise .55s .26s var(--px-ease) both}
 @keyframes pxScreenIn{from{opacity:0;transform:translate3d(0,12px,0)}to{opacity:1;transform:none}}
 @keyframes pxScreenBack{from{opacity:0;transform:translate3d(0,-8px,0)}to{opacity:1;transform:none}}
 @keyframes pxCardIn{from{opacity:0;transform:translate3d(0,14px,0) scale(.985)}to{opacity:1;transform:none}}

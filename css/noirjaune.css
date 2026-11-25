@@ -58,7 +58,7 @@ html:root:root:root body :is(.hub-i,.hub-wi,.wd-mi,.ds-empty-ic,.tile,.w-tile){b
 html:root:root:root body :is(.hub-i,.hub-wi,.wd-mi,.tile,.w-tile) svg{color:var(--lt-link)!important}
 
 /* ---------- round controls (back, menu, search) ---------- */
-html:root:root:root body :is(.topbar-back,.hub-circ,.rv-circ,.rv-cp,.hub-me-go,.yb-ic,.w-sq){background:var(--lt-card2)!important;border:0!important;box-shadow:none!important;color:var(--lt-ink)!important;border-radius:50%!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html:root:root:root body :is(.topbar-back, .hub-circ, .rv-circ, .hub-me-go, .yb-ic, .w-sq){background:var(--lt-card2)!important;border:0!important;box-shadow:none!important;color:var(--lt-ink)!important;border-radius:50%!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 html:root:root:root body .ds-eye{background:transparent!important;border:0!important;box-shadow:none!important;color:inherit!important}
 
 /* ---------- buttons: yellow pill, dark text ON the yellow ---------- */
@@ -267,7 +267,7 @@ html:root:root:root body .hub-out{background:var(--lt-chip-dn)!important;border-
 html:root:root:root body .omx-tag.ok{background:var(--lt-chip-up)!important;color:var(--lt-pos)!important}
 html:root:root:root body .omx-tag.no{background:var(--lt-card2)!important;color:var(--lt-ink2)!important}
 html:root:root:root body .st.st-pending{color:var(--st-wait)!important}
-html:root:root:root body .rv-st.s-frozen,html:root:root:root[data-theme="light"] body .rv-st.s-frozen{background:rgba(255,200,0,.18)!important;color:#FFD84A!important}
+
 html:root:root:root body .ov .ov-backdrop,html:root:root:root body .ov:has(.dy-modal) .ov-backdrop{background:rgba(11,10,7,.55)!important}
 html:root:root:root[data-theme="light"] body .ov .ov-backdrop,html:root:root:root[data-theme="light"] body .ov:has(.dy-modal) .ov-backdrop{background:rgba(20,17,10,.32)!important}
 
@@ -275,18 +275,17 @@ html:root:root:root[data-theme="light"] body .ov .ov-backdrop,html:root:root:roo
 html:root:root:root body .yb-svc-i,html:root:root:root body .yb-svc-i:has([data-i]){background:var(--lt-soft)!important;color:var(--lt-link)!important}
 html:root:root:root body .yb-svc-i svg{stroke:currentColor}
 
-/* 5. virtual cards: the seven faces in the palette (black and gold, anthracite, bronze, gold, amber, champagne, cream) — the ids are unchanged, saved choices keep working */
-html:root:root:root body .rv-card{box-shadow:0 26px 44px -22px rgba(0,0,0,.75),0 2px 10px -4px rgba(0,0,0,.45)}
-html:root:root:root[data-theme="light"] body .rv-card{box-shadow:0 24px 40px -22px rgba(90,65,0,.45),0 2px 10px -4px rgba(90,65,0,.2)}
-html:root:root:root body .rv-card.th-obsidian .rv-face{background:radial-gradient(90% 70% at 90% 0%,rgba(255,200,0,.34),transparent 60%),linear-gradient(150deg,#0B0A07,#16140E 60%,#241E0C)}
-html:root:root:root body .rv-card.th-midnight .rv-face{background:radial-gradient(100% 80% at 0% 0%,rgba(255,255,255,.1),transparent 55%),linear-gradient(150deg,#2E2D27,#181711 70%,#0E0D0A)}
-html:root:root:root body .rv-card.th-graphite .rv-face{background:radial-gradient(90% 70% at 0% 100%,rgba(255,200,0,.22),transparent 60%),linear-gradient(150deg,#4A3A12,#2F2509 70%,#1E1806)}
-html:root:root:root body .rv-card.th-violet .rv-face{background:radial-gradient(100% 80% at 0% 0%,rgba(255,255,255,.45),transparent 55%),linear-gradient(150deg,#FFE27A 0%,#FFC800 50%,#E6A800 100%)}
-html:root:root:root body .rv-card.th-aurora .rv-face{background:radial-gradient(90% 90% at 0% 100%,rgba(255,216,74,.42),transparent 58%),linear-gradient(150deg,#3A2A06,#6B4E0A 60%,#8F6A0C)}
-html:root:root:root body .rv-card.th-metal .rv-face{background:linear-gradient(150deg,#FFF8E1,#EFDDA6 60%,#D9C07A)}
-html:root:root:root body .rv-card.th-minimal .rv-face{background:linear-gradient(150deg,#FFFFFF,#F6EFD8);box-shadow:inset 0 0 0 1px rgba(138,101,0,.35)}
-html:root:root:root body .th-violet{--cfg:#14110A;--cline:rgba(20,17,10,.22);--cchip:rgba(20,17,10,.1)}
-html:root:root:root body .th-violet .rv-wm{filter:invert(1)}
+
+
+
+
+
+
+
+
+
+
+
 
 /* 6. hit areas and wrapping */
 html:root:root:root body .chip{min-height:44px!important}
@@ -297,7 +296,7 @@ html:root:root:root body .hist-sub::-webkit-scrollbar{display:none}
 html:root:root:root body .hist-sub .chip{flex:0 0 auto;white-space:nowrap}
 
 /* 7. last cool-tinted surfaces and statuses */
-html:root:root:root body :is(.rv-set,.yb-grid,.set-me){background:var(--lt-card)!important;border-color:var(--lt-edge)!important}
+html:root:root:root body :is(.yb-grid, .set-me){background:var(--lt-card)!important;border-color:var(--lt-edge)!important}
 html:root:root:root body .wd-amt-in{border-color:var(--lt-edge)!important}
 html:root:root:root body .st.st-failed,html:root:root:root body .px-chip.no{color:var(--lt-neg)!important}
 html:root:root:root body .px-chip.ok{color:var(--lt-pos)!important}
@@ -315,3 +314,8 @@ html:root:root:root body .w-title h1{font-size:22px!important;font-weight:800!im
 html:root:root:root body :is(.omx-empty,.ds-empty)::before{content:"";display:block;width:112px;height:92px;margin:0 auto 6px;background:url(../assets/brand/om-empty-light.svg) center/contain no-repeat}
 html:root:root:root[data-theme="dark"] body :is(.omx-empty,.ds-empty)::before{background-image:url(../assets/brand/om-empty.svg)}
 html:root:root:root body .omx-empty > svg,html:root:root:root body .ds-empty .ds-empty-ic{display:none}
+
+/* 10. last navy / blue-grey shadows and borders (alpha is low, but no cool tint may remain anywhere) */
+html:root:root:root body .screen.ios-entering{box-shadow:0 0 40px rgba(0,0,0,.35)}
+html:root:root:root body .switch{box-shadow:0 1px 3px rgba(0,0,0,.25)}
+html:root:root:root[data-theme="light"] body .settings-row,html:root:root:root[data-theme="light"] body .set-body > div{border-top-color:var(--lt-edge)}

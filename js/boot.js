@@ -20,7 +20,7 @@ function bootFails(delta){
 /* Raccourcis de l'icône (« Envoyer », « Cartes », « Historique ») : le lien d'ouverture est lu AVANT que le routeur ne réécrive l'adresse ;
    l'écran demandé s'ouvre une fois le compte ouvert (et le code saisi), par-dessus l'accueil. Liste blanche : jamais d'écran sensible ou d'étape au milieu d'un parcours. */
 const LAUNCH_HASH = (() => { try { return location.hash || ''; } catch(e){ return ''; } })();
-const DEEP_OK = ['cards', 'wallet', 'markets', 'spot', 'deposit', 'withdraw', 'exchange', 'history', 'notifications', 'profile', 'settings', 'services', 'account'].concat(FEATURES.crypto ? ['crypto'] : []);
+const DEEP_OK = ['wallet', 'markets', 'spot', 'deposit', 'withdraw', 'exchange', 'history', 'notifications', 'profile', 'settings', 'services', 'account'].concat(FEATURES.crypto ? ['crypto'] : []);
 let _deepUsed = false;
 function openHome(){
   R.go('home', { reset:true, force:true });
@@ -74,7 +74,6 @@ function boot(){
         const n = el.getAttribute('data-nav');
         if (n === 'home') R.go('home');
         else if (n === 'history') R.go('history');
-        else if (n === 'cards') R.go('cards');
         else if (n === 'profile') R.go('profile');
         else if (n === 'crypto') R.go('crypto');
       });

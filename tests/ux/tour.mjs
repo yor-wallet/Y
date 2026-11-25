@@ -18,7 +18,6 @@ const steps = [
   ['receipt', async p => { await p.evaluate(() => { Runtime.receipts.push({ id:'r1', transactionId:null, reference:'YOR-TX100001', status:'PROCESSING', createdAt: Date.now(), amount: 25.5, currency:'OMR', fee:0, vat:0, total:25.5, direction:'OUT', kind:'FIAT_EXTERNAL', destinationAmount: 38046, destinationCurrency:'XOF', exchangeRate:1492, beneficiary:{ name:'Aminata Traoré', phone:'+22376123456', country:'ML', networkName:'Orange Money' } }); R.go('receipt', { force:true }); }); }],
   ['processing', p => p.evaluate(() => { TX_STATE.breakdown = { amount: 25.5, fee: 0, vat: 0, total: 25.5 }; TX_STATE.beneficiary = { phone: '+22376123456', country: 'ML' }; R.go('processing', { force: true }); window.__ph = ['secure','send','success']; let i = 0; setInterval(() => SendAnim.setPhase(window.__ph[i++ % 3]), 1200); })],
   ['search', async p => { await p.evaluate(() => R.go('home', { force: true })); await wait(600); await p.click('[data-px="search"]'); }],
-  ['cards', p => p.evaluate(() => R.go('cards', { force: true }))],
   ['profile-edit', p => p.evaluate(() => R.go('profile-edit', { force: true }))],
   ['privacy', p => p.evaluate(() => R.go('privacy', { force: true }))],
   ['devices', p => p.evaluate(() => R.go('devices', { force: true }))],

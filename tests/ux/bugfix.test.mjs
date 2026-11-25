@@ -12,10 +12,13 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
 for (const lang of ['en', 'ar']){
   const { ctx, page, logs } = await openApp(browser, url, { lang, settle: 500 });
   console.log('\n[' + lang + ']');
-  await ok('cartes : la face arrière est superposée à la face avant (pas empilée dessous)', async () => {
-    await page.evaluate(() => R.go('cards', { force: true })); await page.waitForSelector('.rv-card .rv-front'); await wait(900);
-    const g = await page.evaluate(() => { const f = document.querySelector('.rv-card .rv-front').getBoundingClientRect(), b = document.querySelector('.rv-card .rv-back').getBoundingClientRect(); return { ft: Math.round(f.top), bt: Math.round(b.top), fh: Math.round(f.height), bh: Math.round(b.height) }; });
-    assert.ok(Math.abs(g.ft - g.bt) <= 2, 'faces are stacked: ' + JSON.stringify(g));
+  await ok('cartes virtuelles retirées : aucune entrée (accueil, services, compte, tiroir, recherche), le lien #/cards ne mène nulle part, plus de raccourci', async () => {
+    for (const id of ['home', 'services', 'account', 'wallet', 'profile']){ await page.evaluate(i => R.go(i, { force: true }), id); await wait(450); assert.equal(await page.locator('#' + id + ' [data-nav="cards"], #' + id + ' [data-nav="cards-add"]').count(), 0, 'a card entry is still on ' + id); }
+    await page.evaluate(() => R.go('cards', { force: true })); await wait(500);
+    assert.equal(await page.locator('.rv-card').count(), 0, 'card faces must be gone');
+    assert.notEqual(await page.evaluate(() => R.current()), 'cards');
+    const manifest = await (await fetch(url + 'manifest.webmanifest')).json();
+    assert.ok(!(manifest.shortcuts || []).some(s => /cards/i.test(s.url + s.name)), 'the Cards shortcut must be gone');
   });
   await ok('solde masqué au démarrage ; le symbole du rial remplace le code (le texte OMR reste) : compte, historique', async () => {
     await page.evaluate(() => R.go('home', { force: true })); await wait(700);
@@ -77,7 +80,7 @@ for (const lang of ['en', 'ar']){
   await ok('le portefeuille CFA (XOF) n’apparaît nulle part, mais il est conservé', async () => {
     const r = await page.evaluate(() => ({ shown: Runtime.accounts.map(a => a.currency), kept: (Runtime.accountsArchived || []).map(a => a.currency) }));
     assert.deepEqual(r.shown, ['OMR']); assert.deepEqual(r.kept, ['XOF']);
-    for (const id of ['home', 'account', 'wallet', 'cards']){ await page.evaluate(i => R.go(i, { force: true }), id); await wait(400); assert.doesNotMatch(await page.locator('#' + id).innerText(), /XOF|CFA|850[ ,.]?000/, id); }
+    for (const id of ['home', 'account', 'wallet']){ await page.evaluate(i => R.go(i, { force: true }), id); await wait(400); assert.doesNotMatch(await page.locator('#' + id).innerText(), /XOF|CFA|850[ ,.]?000/, id); }
   });
   await ok('no page errors', async () => assert.deepEqual(logs, []));
   await ctx.close();

@@ -23,7 +23,6 @@
   "shortcuts": [
     { "name": "Send money", "short_name": "Send", "url": "./#/country/select", "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }] },
     { "name": "Receive money", "short_name": "Receive", "url": "./#/receive", "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }] },
-    { "name": "Cards", "short_name": "Cards", "url": "./#/cards", "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }] },
     { "name": "History", "short_name": "History", "url": "./#/history", "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }] }
   ]
 }

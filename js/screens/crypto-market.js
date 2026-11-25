@@ -75,7 +75,7 @@ function renderCryptoMarket(){
 }
 function renderServices(){
   const G = [
-    ['gMoney', [['withdraw','download','withdraw']].concat(FEATURES.crypto ? [['banks','bank','banks']] : [], [['cards','cards','cards'],['history','history','history']])],
+    ['gMoney', [['withdraw','download','withdraw']].concat(FEATURES.crypto ? [['banks','bank','banks']] : [], [['history','history','history']])],
     ['gCrypto', [['crypto-buy','plus','buyC'],['crypto-sell','minus','sellC'],['crypto-swap','swap','swapC'],['crypto-receive','receive','recvC'],['crypto-market','chart','mkt'],['crypto-networks','network','nets']]],
     ['gAccount', [['profile','user','profile'],['notifications','bell','notifications'],['settings','settings','settings'],['help','globe','help'],['privacy','shield','privacy']]]
   ];

@@ -218,17 +218,15 @@ html:root body .dst-opt.on{background:linear-gradient(180deg,var(--om-sky),var(-
 html:root body .dst-opt.on *{color:#fff}
 html:root body .progress-step.current .progress-step-dot,html:root body .progress-line.done{background:var(--om-sky-accent)}
 
-/* ---------- 11. cartes virtuelles : dégradés bleu ciel, reflet de verre ---------- */
-html:root body .rv-card{border-radius:26px;box-shadow:0 26px 44px -22px rgba(25,59,85,.55),0 2px 10px -4px rgba(25,59,85,.2)}
-html:root body .rv-card .rv-face{overflow:hidden}   /* NOT position:relative — the faces are absolutely stacked and flipped in 3D */
-html:root body .rv-card .rv-face::after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(255,255,255,.34) 0%,rgba(255,255,255,0) 38%);pointer-events:none}
-html:root body .rv-card.th-midnight .rv-face{background:radial-gradient(120% 90% at 100% 0%,rgba(191,232,255,.5),transparent 58%),linear-gradient(150deg,#193B55 0%,#2A6FA0 58%,#369EDB 100%)}
-html:root body .rv-card.th-violet .rv-face{background:radial-gradient(100% 80% at 0% 0%,rgba(255,255,255,.4),transparent 55%),linear-gradient(150deg,#78C9F4 0%,#3C9FDA 55%,#2780BC 100%)}
-html:root body .rv-card.th-obsidian .rv-face{background:radial-gradient(90% 70% at 90% 0%,rgba(120,201,244,.4),transparent 60%),linear-gradient(150deg,#0F2E45,#193B55 70%,#1F4E73)}
-html:root body .rv-card.th-graphite .rv-face{background:linear-gradient(150deg,#46677F,#2C4A60 70%,#243F54)}
-html:root body .rv-card.th-aurora .rv-face{background:radial-gradient(90% 90% at 0% 100%,rgba(120,230,214,.55),transparent 58%),linear-gradient(150deg,#2E8FCC,#2AAFC9 60%,#26B9A8)}
-html:root body .rv-card.th-metal .rv-face{background:linear-gradient(150deg,#F2FAFF,#CFE6F5 60%,#B3D2E8)}
-html:root body .rv-card.th-minimal .rv-face{background:linear-gradient(150deg,#FFFFFF,#E6F3FC);box-shadow:inset 0 0 0 1px rgba(120,201,244,.6)}
+
+   
+
+
+
+
+
+
+
 html:root body .rv-act:not(.px-act) i{background:var(--om-glass)!important;border:1px solid var(--om-border-glass);border-radius:18px!important;box-shadow:var(--om-shadow)}
 
 /* ---------- 12. écran de lancement : logo OM animé, halo de lumière, verre (≈ 1 s) ---------- */

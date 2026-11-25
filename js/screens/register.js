@@ -5,7 +5,7 @@
    ============================================================ */
 R.register({
   login: renderLogin, signup: renderSignup, reset: renderReset,
-  home: V12.renderHomeV12, history: renderHistory, cards: V12.renderCardsV12, 'cards-add': V12.renderCardsAddV12, 'card-settings': V12.renderCardSettings,
+  history: renderHistory,
   profile: renderProfile, settings: renderSettings, notifications: renderNotifications, 'contact-add': renderContactAdd,
   devices: renderDevices, sessions: renderSessions, privacy: renderPrivacy, help: renderHelp, about: renderAbout,
   'country-select': renderCountrySelect,

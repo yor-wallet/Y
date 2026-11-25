@@ -95,7 +95,7 @@ button:active svg.ic .d2,a:active svg.ic .d2,.fk-key:active svg.ic .d2{transform
 .rv-act.p i{background:var(--btn-grad)!important;color:var(--on-accent)!important;border-color:transparent!important;box-shadow:0 16px 26px -12px var(--btn-glow),inset 0 2px 0 rgba(255,255,255,.32)!important}
 .rv-act:active i{transform:scale(.9) rotate(-4deg)!important}
 .rv-act.p svg,.rv-act.p i svg{color:var(--on-accent)}
-.rv-ca .rv-act.on i{background:var(--btn-grad)!important;color:var(--on-accent)!important;border-color:transparent!important}
+
 @keyframes frdAct{from{opacity:0;transform:translateY(18px) scale(.88)}to{opacity:1;transform:none}}
 
 /* ---------- 5. virtual keypad: glass keys that follow the finger, digits that fly into the code dots ---------- */
@@ -159,7 +159,7 @@ button:active svg.ic .d2,a:active svg.ic .d2,.fk-key:active svg.ic .d2{transform
 .ds-home>:nth-child(2){animation-delay:.05s}.ds-home>:nth-child(3){animation-delay:.1s}.ds-home>:nth-child(4){animation-delay:.2s}
 .ds-home>:nth-child(5){animation-delay:.27s}.ds-home>:nth-child(6){animation-delay:.34s}.ds-home>:nth-child(7){animation-delay:.41s}
 @keyframes frdRise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
-.settings-group,.rv-set{animation:frdRise .55s cubic-bezier(.2,.9,.2,1) backwards}
+.settings-group{animation:frdRise .55s cubic-bezier(.2,.9,.2,1) backwards}
 .switch{transition:background .25s,border-color .25s,transform .2s cubic-bezier(.34,1.56,.64,1)}
 .settings-row:active .switch{transform:scaleX(1.1)}
 .btn{transition:transform .22s cubic-bezier(.34,1.56,.64,1),box-shadow .2s,background-color .2s,opacity .2s}
@@ -169,8 +169,7 @@ button:active svg.ic .d2,a:active svg.ic .d2,.fk-key:active svg.ic .d2{transform
 
 /* ---------- reduced motion ---------- */
 @media (prefers-reduced-motion:reduce){
-  #bottom-nav .nav-dock,#bottom-nav .nav-cta .nav-cta-tile::after,.ds-bal-amt,.ds-eye svg,.rv-act,.fk-key,.fk-pad.reflow .fk-key,.fk-dots i,.fk-dots.done i,.yl::before,.yl::after,
-  .screen.active,.ds-home>*,.settings-group,.rv-set{animation:none!important}
+  #bottom-nav .nav-dock,#bottom-nav .nav-cta .nav-cta-tile::after,.ds-bal-amt,.ds-eye svg,.rv-act,.fk-key,.fk-pad.reflow .fk-key,.fk-dots i,.fk-dots.done i,.yl::before,.yl::after,.screen.active,.ds-home>*,.settings-group{animation:none!important}
   #bottom-nav .nav-ind.ready,#bottom-nav .nav-ic,svg.ic .d2,.fk-key,.fk-d,.ds-eye::before{transition:none!important}
   .fk-orb{display:none}
 }
