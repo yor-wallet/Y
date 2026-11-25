@@ -8,7 +8,7 @@ import { buildSmsText, formatAmount, infobipResult, infobipUrl, mapDbError, norm
 //     à l'expéditeur, avec le vrai montant, le vrai numéro et le TID de l'opération :
 //     « تمت عملية تحويل مبلغ 1.000 ريال بنجاح إلى الرقم 96892888435. (TID: ...). »  Jamais de SMS pour une opération non confirmée.
 //  B. MODE FOURNISSEUR (facultatif, inactif sans secrets TOPUP_PROVIDER_URL / TOPUP_PROVIDER_KEY) : transfert automatique par une API de recharge.
-// Infobip : INFOBIP_API_KEY, INFOBIP_BASE_URL ; nom d'expéditeur : TOPUP_SMS_SENDER (défaut Omanbaking, le nom déjà en service ; jamais OM Wallet ni un opérateur / Bank Muscat).
+// Infobip : INFOBIP_API_KEY, INFOBIP_BASE_URL ; nom d'expéditeur : TOPUP_SMS_SENDER (défaut TBAUTH, le nom affiché sur le téléphone du propriétaire ; jamais OM Wallet ni un opérateur / Bank Muscat).
 // ============================================================
 const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-webhook-secret", "Access-Control-Allow-Methods": "POST, OPTIONS" };
 const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { ...CORS, "content-type": "application/json", "cache-control": "no-store" } });
