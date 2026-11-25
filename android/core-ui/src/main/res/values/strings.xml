@@ -168,7 +168,10 @@
     <string name="e_required">Required.</string>
     <string name="pin_title">Enter your code</string>
     <string name="pin_sub">Your 6-digit OM Wallet code confirms this operation.</string>
-    <string name="pin_wrong">Wrong code. %1$d attempts left.</string>
+    <plurals name="pin_wrong">
+        <item quantity="one">Wrong code. %1$d attempt left.</item>
+        <item quantity="other">Wrong code. %1$d attempts left.</item>
+    </plurals>
     <string name="pin_wrong_plain">Wrong code.</string>
     <string name="pin_locked">Too many attempts. Try again later.</string>
     <string name="pin_none">Create your code first on the OM Wallet website (Account › Security).</string>

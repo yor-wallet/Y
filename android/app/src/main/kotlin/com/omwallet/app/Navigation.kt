@@ -221,9 +221,12 @@ fun androidx.compose.foundation.layout.BoxScope.BottomBar(current: Tab?, onTab: 
     }
 }
 
+/** Horizontal centre of the indicator for a (possibly fractional) tab [slot] among [count] tabs in a bar [width] px wide; in a right-to-left layout the tabs are mirrored, so is the indicator. */
+internal fun indicatorX(slot: Float, count: Int, width: Float, rtl: Boolean): Float = (slot + 0.5f) / count * width.let { w -> if (rtl) -w else w } + (if (rtl) width else 0f)
+
 private fun Modifier.androidx_drawIndicator(slot: Float, alpha: Float, count: Int) = this.then(Modifier.androidx_drawBehind {
     if (alpha <= 0.01f) return@androidx_drawBehind
-    val cx = (slot + 0.5f) / count * size.width
+    val cx = indicatorX(slot, count, size.width, layoutDirection == androidx.compose.ui.unit.LayoutDirection.Rtl)
     drawRoundRect(OmColors.Blue600.copy(alpha = alpha), androidx.compose.ui.geometry.Offset(cx - 14.dp.toPx(), -1.dp.toPx()), androidx.compose.ui.geometry.Size(28.dp.toPx(), 3.5.dp.toPx()), androidx.compose.ui.geometry.CornerRadius(2.dp.toPx()))
 })
 private fun Modifier.androidx_drawBehind(block: androidx.compose.ui.graphics.drawscope.DrawScope.() -> Unit) = this.then(Modifier.drawBehind(block))

@@ -468,15 +468,18 @@ fun keypadInput(cur: String, key: String): String = when (key) {
 @Composable
 private fun Keypad(modifier: Modifier, onKey: (String) -> Unit) {
     val del = stringResource(R.string.keypad_delete)
-    Column(modifier.fillMaxWidth()) {
-        listOf(listOf("1", "2", "3"), listOf("4", "5", "6"), listOf("7", "8", "9"), listOf(".", "0", "del")).forEach { row ->
-            Row(Modifier.fillMaxWidth()) {
-                row.forEach { k ->
-                    Box(
-                        Modifier.weight(1f).height(62.dp).clip(RoundedCornerShape(16.dp)).pressable(role = Role.Button) { onKey(k) }
-                            .testTag(if (k == ".") "key_dot" else "key_$k").semantics { contentDescription = if (k == "del") del else k },
-                        contentAlignment = Alignment.Center,
-                    ) { Text(if (k == "del") "⌫" else k, style = MaterialTheme.typography.headlineSmall, color = OmColors.Ink) }
+    /* 15.2.0 — a number pad is never mirrored: 1 2 3 stay left to right in Arabic (as on the PIN pad, on phones and on the web) */
+    androidx.compose.runtime.CompositionLocalProvider(androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Ltr) {
+        Column(modifier.fillMaxWidth()) {
+            listOf(listOf("1", "2", "3"), listOf("4", "5", "6"), listOf("7", "8", "9"), listOf(".", "0", "del")).forEach { row ->
+                Row(Modifier.fillMaxWidth()) {
+                    row.forEach { k ->
+                        Box(
+                            Modifier.weight(1f).height(62.dp).clip(RoundedCornerShape(16.dp)).pressable(role = Role.Button) { onKey(k) }
+                                .testTag(if (k == ".") "key_dot" else "key_$k").semantics { contentDescription = if (k == "del") del else k },
+                            contentAlignment = Alignment.Center,
+                        ) { Text(if (k == "del") "⌫" else k, style = MaterialTheme.typography.headlineSmall, color = OmColors.Ink) }
+                    }
                 }
             }
         }

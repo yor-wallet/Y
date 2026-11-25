@@ -92,25 +92,32 @@ fun PinPad(title: String, subtitle: String, error: String?, busy: Boolean, onCom
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Text(title, style = MaterialTheme.typography.headlineSmall, color = OmColors.Ink)
         Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = OmColors.InkSecondary, textAlign = TextAlign.Center)
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.semantics { contentDescription = "${code.length} / 6" }) {
-            repeat(6) { i -> Box(Modifier.size(14.dp).clip(CircleShape).background(if (i < code.length) OmColors.Blue600 else OmColors.Sky100)) }
+        /* 15.2.0 — the code dots fill from the left and the digits keep their order (1 2 3 left to right) in Arabic too: a PIN pad is never mirrored */
+        androidx.compose.runtime.CompositionLocalProvider(androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Ltr) {
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.semantics { contentDescription = "${code.length} / 6" }) {
+                repeat(6) { i -> Box(Modifier.size(14.dp).clip(CircleShape).background(if (i < code.length) OmColors.Blue600 else OmColors.Sky100)) }
+            }
         }
         FieldError(error)
-        val keys = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "⌫")
-        keys.chunked(3).forEach { row ->
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                row.forEach { k ->
-                    if (k.isEmpty()) Spacer(Modifier.width(72.dp))
-                    else Box(
-                        Modifier.width(72.dp).aspectRatio(1.25f).clip(RoundedCornerShape(OmRadius.M)).background(OmColors.GlassStrong)
-                            .border(1.dp, OmColors.Sky100, RoundedCornerShape(OmRadius.M))
-                            .pressable(enabled = !busy) {
-                                if (k == "⌫") code = code.dropLast(1)
-                                else if (code.length < 6) { code += k; if (code.length == 6) onComplete(code) }
-                            }
-                            .semantics { contentDescription = if (k == "⌫") "delete" else k },
-                        contentAlignment = Alignment.Center,
-                    ) { Text(k, style = MaterialTheme.typography.headlineSmall, color = OmColors.Ink) }
+        androidx.compose.runtime.CompositionLocalProvider(androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Ltr) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                val keys = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "⌫")
+                keys.chunked(3).forEach { row ->
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        row.forEach { k ->
+                            if (k.isEmpty()) Spacer(Modifier.width(72.dp))
+                            else Box(
+                                Modifier.width(72.dp).aspectRatio(1.25f).clip(RoundedCornerShape(OmRadius.M)).background(OmColors.GlassStrong)
+                                    .border(1.dp, OmColors.Sky100, RoundedCornerShape(OmRadius.M))
+                                    .pressable(enabled = !busy) {
+                                        if (k == "⌫") code = code.dropLast(1)
+                                        else if (code.length < 6) { code += k; if (code.length == 6) onComplete(code) }
+                                    }
+                                    .semantics { contentDescription = if (k == "⌫") "delete" else k },
+                                contentAlignment = Alignment.Center,
+                            ) { Text(k, style = MaterialTheme.typography.headlineSmall, color = OmColors.Ink) }
+                        }
+                    }
                 }
             }
         }

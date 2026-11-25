@@ -167,7 +167,14 @@
     <string name="e_required">مطلوب.</string>
     <string name="pin_title">أدخل رمزك</string>
     <string name="pin_sub">رمز OM Wallet المكوّن من 6 أرقام يؤكد هذه العملية.</string>
-    <string name="pin_wrong">رمز غير صحيح. تبقّى %1$d محاولات.</string>
+    <plurals name="pin_wrong">
+        <item quantity="zero">رمز غير صحيح. لم تتبقَّ أي محاولة.</item>
+        <item quantity="one">رمز غير صحيح. تبقّت محاولة واحدة.</item>
+        <item quantity="two">رمز غير صحيح. تبقّت محاولتان.</item>
+        <item quantity="few">رمز غير صحيح. تبقّت %1$d محاولات.</item>
+        <item quantity="many">رمز غير صحيح. تبقّت %1$d محاولة.</item>
+        <item quantity="other">رمز غير صحيح. تبقّت %1$d محاولة.</item>
+    </plurals>
     <string name="pin_wrong_plain">رمز غير صحيح.</string>
     <string name="pin_locked">محاولات كثيرة. حاول لاحقًا.</string>
     <string name="pin_none">أنشئ رمزك أولًا على موقع OM Wallet (الحساب › الأمان).</string>

@@ -16,8 +16,8 @@ android {
         applicationId = "com.omwallet.android"
         minSdk = 26
         targetSdk = 35
-        versionCode = 150100
-        versionName = "15.1.0"
+        versionCode = 150200
+        versionName = "15.2.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {

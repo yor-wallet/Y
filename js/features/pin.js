@@ -108,7 +108,7 @@ const PinEngine = (() => {
     if (r.error) return { ok:false, msg:t('errors.UNKNOWN_ERROR') };
     const d = unwrap(r) || {};
     if (d.ok && d.grant) return { ok:true, value:d.grant };
-    if (d.error === 'wrong_pin') return { ok:false, msg:tf('pin.wrong', { n: d.remaining != null ? d.remaining : 0 }) };
+    if (d.error === 'wrong_pin') return { ok:false, msg:tp('pin.wrong', d.remaining != null ? d.remaining : 0) };
     if (d.error === 'pin_locked'){
       const mins = Math.max(1, Math.ceil((new Date(d.locked_until).getTime() - Date.now()) / 60000));
       return { ok:false, msg:tf('pin.locked', { m: mins }) };

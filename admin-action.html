@@ -5,35 +5,36 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
-<meta name="theme-color" content="#F7FBFF">
+<meta name="theme-color" content="#0B0A07">
 <title>OM Wallet · Admin</title>
 <link rel="icon" type="image/svg+xml" href="/assets/icons/icon.svg">
 <style>
-:root{--ink:#102333;--ink2:#637483;--sky:#2E9CD3;--ok:#1FAF72;--bad:#D94F5B;--warn:#E5A332;--bg:#F7FBFF;--card:#fff;--line:#DDF4FF}
+/* 15.2.0 — black and yellow, like the app (the page keeps its logic untouched: only colours changed) */
+:root{--ink:#F5F3EE;--ink2:#BDB9AC;--sky:#FFC800;--ok:#0ECB81;--bad:#FF5A6E;--warn:#FFB020;--bg:#0B0A07;--card:#17160F;--line:#2F2D26;--on:#14110A;color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%}
-body{font:16px/1.55 -apple-system,"Segoe UI",Roboto,"IBM Plex Sans Arabic","Noto Sans Arabic",system-ui,sans-serif;color:var(--ink);background:radial-gradient(900px 500px at 15% -10%,#DDF4FF,transparent 60%),var(--bg);padding:24px 16px;display:flex;justify-content:center}
+body{font:16px/1.55 -apple-system,"Segoe UI",Roboto,"IBM Plex Sans Arabic","Noto Sans Arabic",system-ui,sans-serif;color:var(--ink);background:radial-gradient(900px 500px at 50% -12%,rgba(255,200,0,.20),transparent 65%),var(--bg);padding:24px 16px;display:flex;justify-content:center}
 main{width:100%;max-width:460px}
 .brand{display:flex;align-items:center;gap:10px;margin:8px 0 18px;font-weight:800;font-size:20px}
 .brand img{width:36px;height:36px;border-radius:10px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:0 18px 40px rgba(25,64,90,.10)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:0 22px 44px -24px rgba(0,0,0,.9)}
 h1{margin:0 0 6px;font-size:22px;line-height:1.25}
 p{margin:0 0 14px;color:var(--ink2)}
 dl{margin:16px 0;display:grid;grid-template-columns:auto 1fr;gap:8px 14px}
 dt{color:var(--ink2);font-size:14px}
 dd{margin:0;font-weight:700;font-size:14px;text-align:end;overflow-wrap:anywhere}
-textarea{width:100%;min-height:76px;margin:0 0 12px;padding:12px;border:1px solid #A8DFFF;border-radius:14px;font:inherit;color:var(--ink);background:#fff;resize:vertical}
-button.go{display:block;width:100%;min-height:52px;border:0;border-radius:16px;color:#fff;font:inherit;font-weight:800;font-size:17px;cursor:pointer;background:var(--sky);transition:transform .12s,opacity .12s}
+textarea{width:100%;min-height:76px;margin:0 0 12px;padding:12px;border:1px solid var(--line);border-radius:14px;font:inherit;color:var(--ink);background:#0F0E0B;resize:vertical}
+textarea:focus-visible,button.go:focus-visible,a.app:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
+button.go{display:block;width:100%;min-height:54px;border:0;border-radius:999px;color:var(--on);font:inherit;font-weight:800;font-size:17px;cursor:pointer;background:var(--sky);transition:transform .12s,opacity .12s}
 button.go:active{transform:scale(.975);opacity:.9}
 button.go[disabled]{opacity:.55;cursor:default;transform:none}
 button.go.CONFIRM{background:var(--ok)}button.go.REJECT{background:var(--bad)}button.go.PAUSE{background:var(--warn)}
 .msg{margin:14px 0 0;padding:12px 14px;border-radius:14px;font-weight:700}
-.msg.ok{background:#E6F8F0;color:#0F7A4E}.msg.err{background:#FDECEE;color:#A32B37}.msg.info{background:#EAF6FF;color:#1E6A93}
-a.app{display:block;margin-top:16px;text-align:center;color:var(--sky);font-weight:700;text-decoration:none}
-.spin{display:inline-block;width:18px;height:18px;border:3px solid #A8DFFF;border-top-color:var(--sky);border-radius:50%;animation:r .8s linear infinite;vertical-align:middle}
+.msg.ok{background:#0E2E23;color:#0ECB81}.msg.err{background:#35151B;color:#FF8A98}.msg.info{background:#2B2410;color:#FFD84A}
+a.app{display:block;margin-top:16px;text-align:center;color:var(--sky);font-weight:700;text-decoration:none;min-height:44px;line-height:44px}
+.spin{display:inline-block;width:18px;height:18px;border:3px solid #3A3727;border-top-color:var(--sky);border-radius:50%;animation:r .8s linear infinite;vertical-align:middle}
 @keyframes r{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.spin{animation:none}button.go{transition:none}}
-@media (prefers-color-scheme:dark){:root{--ink:#EAF4FB;--ink2:#9FB3C2;--bg:#0B1620;--card:#12212D;--line:#1E3342}textarea{background:#0B1620;border-color:#2B4659}.msg.ok{background:#12372A;color:#7FE0B4}.msg.err{background:#3A1A1F;color:#F2A2AB}.msg.info{background:#10293A;color:#8CCBEA}}
 </style>
 </head>
 <body>

@@ -167,7 +167,11 @@
     <string name="e_required">Obligatoire.</string>
     <string name="pin_title">Saisissez votre code</string>
     <string name="pin_sub">Votre code OM Wallet à 6 chiffres confirme cette opération.</string>
-    <string name="pin_wrong">Code incorrect. %1$d essais restants.</string>
+    <plurals name="pin_wrong">
+        <item quantity="one">Code incorrect. %1$d essai restant.</item>
+        <item quantity="many">Code incorrect. %1$d essais restants.</item>
+        <item quantity="other">Code incorrect. %1$d essais restants.</item>
+    </plurals>
     <string name="pin_wrong_plain">Code incorrect.</string>
     <string name="pin_locked">Trop de tentatives. Réessayez plus tard.</string>
     <string name="pin_none">Créez d’abord votre code sur le site OM Wallet (Compte › Sécurité).</string>

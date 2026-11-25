@@ -27,7 +27,7 @@ fun PinSheet(onGranted: (String) -> Unit, onDismiss: () -> Unit) {
     val locked = stringResource(R.string.pin_locked)
     val none = stringResource(R.string.pin_none)
     val unknown = stringResource(R.string.e_uncertain)
-    val remainingFmt = stringResource(R.string.pin_wrong)
+    val res = androidx.compose.ui.platform.LocalContext.current.resources                 /* « n attempts left » agrees with the number (plurals: one / few / many… per language) */
     OmSheet(title = stringResource(R.string.pin_title), onDismiss = { if (!busy) onDismiss() }, dismissible = !busy) {
         PinPad(
             title = "", subtitle = stringResource(R.string.pin_sub), error = error, busy = busy, cancelLabel = stringResource(R.string.cancel), onCancel = onDismiss,
@@ -38,7 +38,7 @@ fun PinSheet(onGranted: (String) -> Unit, onDismiss: () -> Unit) {
                     busy = false
                     when (r) {
                         is PinResult.Granted -> { haptics.confirm(); onGranted(r.grant) }
-                        is PinResult.Wrong -> error = r.remaining?.let { String.format(remainingFmt, it) } ?: wrong
+                        is PinResult.Wrong -> error = r.remaining?.let { res.getQuantityString(R.plurals.pin_wrong, it, it) } ?: wrong
                         is PinResult.Locked -> error = locked
                         PinResult.NoPin -> error = none
                         null -> error = unknown
