@@ -206,7 +206,7 @@
     <string name="acc_admin">لوحة المشرف</string>
     <string name="acc_logout">تسجيل الخروج</string>
     <string name="acc_licenses">التراخيص</string>
-    <string name="acc_licenses_b">Sora وTajawal (رخصة SIL OFL 1.1) · شعارات web3icons (MIT) · بيانات السوق من واجهة Binance العامة · رموز QR عبر ZXing (Apache 2.0).</string>
+    <string name="acc_licenses_b">Inter وIBM Plex Sans Arabic (رخصة SIL OFL 1.1) · شعارات web3icons (MIT) · بيانات السوق من واجهة Binance العامة · رموز QR عبر ZXing (Apache 2.0).</string>
     <string name="acc_version">الإصدار %1$s</string>
     <string name="admin_title">لوحة المشرف</string>
     <string name="adm_tab_internal">داخلية</string>

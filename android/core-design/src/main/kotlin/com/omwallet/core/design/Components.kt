@@ -105,20 +105,15 @@ fun Modifier.pressable(enabled: Boolean = true, role: Role = Role.Button, onClic
     val source = remember { MutableInteractionSource() }
     val pressed by source.collectIsPressedAsState()
     val reduced = LocalOmMotion.current.reduced
-    val scale by animateFloatAsState(if (pressed && !reduced) 0.96f else 1f, OmSprings.press(), label = "press")
-    val glow by animateFloatAsState(if (pressed && !reduced) 1f else 0f, tween(if (pressed) 140 else 460), label = "glow")
+    val scale by animateFloatAsState(if (pressed && !reduced) 0.97f else 1f, OmSprings.press(), label = "press")
+    val glow by animateFloatAsState(if (pressed) 1f else 0f, tween(if (pressed) 60 else 320), label = "dim")
     var at by remember { mutableStateOf(Offset.Unspecified) }
     LaunchedEffect(source) { source.interactions.collect { if (it is PressInteraction.Press) at = it.pressPosition } }
     val haptics = rememberOmHaptics()
+    /* 15.3.0 — iOS press: the control dims at once (a UIButton « highlighted » state) and settles a hair smaller, then springs back.
+       The coloured light that used to bloom under the finger is gone (an Android ripple idea, not an iPhone one). */
     return this
-        .graphicsLayer { scaleX = scale; scaleY = scale }
-        .drawWithContent {
-            drawContent()
-            if (glow > 0.01f && at != Offset.Unspecified) clipRect {
-                val r = size.maxDimension * (0.25f + 0.55f * glow)
-                drawCircle(Brush.radialGradient(listOf(OmColors.Blue600.copy(alpha = 0.16f * glow), Color.Transparent), center = at, radius = r), radius = r, center = at)
-            }
-        }
+        .graphicsLayer { scaleX = scale; scaleY = scale; alpha = 1f - 0.28f * glow }
         .clickable(interactionSource = source, indication = null, enabled = enabled, role = role) { haptics.tap(); onClick() }
 }
 
@@ -151,11 +146,10 @@ fun OmPrimaryButton(text: String, modifier: Modifier = Modifier, enabled: Boolea
     val ok by animateFloatAsState(if (successText != null) 1f else 0f, tween(260), label = "btn-ok")
     Box(
         modifier
-            .heightIn(min = 56.dp)
+            .heightIn(min = 50.dp)
             .fillMaxWidth()
-            .shadow(if (enabled) 12.dp else 0.dp, shape, ambientColor = Color(0x66FFC800), spotColor = Color(0x99FFC800))
             .clip(shape)
-            .background(if (enabled) Brush.horizontalGradient(listOf(OmColors.GradTop, OmColors.GradMid, OmColors.GradBottom)) else Brush.horizontalGradient(listOf(OmColors.Sky300, OmColors.Sky300)))
+            .background(if (enabled) OmColors.Blue600 else OmColors.Track)   /* 15.3.0: a flat filled capsule, like an iOS prominent button */
             .drawBehind { if (ok > 0f) drawRect(OmColors.Success.copy(alpha = ok)) }
             .pressable(enabled = enabled && !loading, onClick = onClick)
             .semantics { if (loading) contentDescription = text },
@@ -175,7 +169,7 @@ fun OmSecondaryButton(text: String, modifier: Modifier = Modifier, enabled: Bool
     /* 14.8.0: a yellow-tinted pill with yellow text (secondary action next to the yellow primary pill) */
     val shape = RoundedCornerShape(50)
     Box(
-        modifier.heightIn(min = 52.dp).fillMaxWidth().clip(shape)
+        modifier.heightIn(min = 50.dp).fillMaxWidth().clip(shape)
             .background(OmColors.AccentSoft).pressable(enabled = enabled, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) { Text(text, style = MaterialTheme.typography.labelLarge, color = if (enabled) OmColors.Blue600 else OmColors.InkSecondary) }

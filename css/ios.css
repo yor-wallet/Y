@@ -1,0 +1,316 @@
+/* ==========================================================================================================================
+   15.3.0 — « comme les Réglages de l'iPhone » (propriétaire, 25/11 : « change le design des réglages et de tous les boutons, plus proche
+   des boutons de l'iPhone ; refais toute l'interface, plus professionnelle, des animations plus précises, et surtout les polices »).
+   DERNIÈRE feuille de l'application : elle l'emporte sur les couches précédentes (html:root ×4 + !important là où elles en mettent).
+     1. typographie : la police de l'iPhone elle-même sur un appareil Apple (SF Pro, SF Arabic), Inter / IBM Plex Sans Arabic ailleurs ;
+        l'échelle de texte d'iOS (tailles, interlignes, approche — celle de SF ou celle d'Inter selon la police réellement utilisée), chiffres tabulaires
+     2. réglages : listes groupées en encart, lignes de 44 / 52 px, tuiles d'icône carrées arrondies, chevrons, séparateurs en retrait
+     3. interrupteurs iOS (51 × 31, bouton de 27 px qui s'étire à l'appui)   4. contrôle segmenté   5. boutons (rempli, teinté, gris, destructif)
+     6. barres, boutons ronds, grands titres   7. pressions : surlignage de ligne comme sur iOS, pas de rebond
+   Tout mouvement passe par les ressorts calculés de js/ui/ios-motion.js (--ios-snappy, --ios-smooth, --ios-bouncy : de vraies courbes de
+   ressort, pas des approximations) et s'arrête sous « réduire les animations ». Couleurs : Noir & Jaune (aucun bleu).
+   ========================================================================================================================== */
+
+/* ---------- 0. tokens ---------- */
+html:root:root:root:root{
+  /* the iPhone's font on Apple devices; Inter + IBM Plex Sans Arabic (bundled) everywhere else */
+  --ios-sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro",Inter,"IBM Plex Sans Arabic",system-ui,"Segoe UI",Roboto,sans-serif;
+  --ios-sans-ar:-apple-system,BlinkMacSystemFont,"SF Arabic","IBM Plex Sans Arabic",Inter,system-ui,"Segoe UI",sans-serif;
+  --w-font:var(--ios-sans); --w-font-ar:var(--ios-sans-ar);
+  --font:var(--ios-sans); --font-ui:var(--ios-sans); --font-num:var(--ios-sans); --font-ar:var(--ios-sans-ar);
+  /* iOS text-style tracking (SF Pro): Large Title 34 · Title1 28 · Title2 22 · Title3 20 · Body 17 · Callout 16 · Subhead 15 · Footnote 13 · Caption 12 / 11 */
+  --tr-34:.37px; --tr-28:.36px; --tr-22:.35px; --tr-20:.38px; --tr-17:-.43px; --tr-16:-.31px; --tr-15:-.23px; --tr-13:-.08px; --tr-12:0px; --tr-11:.06px;
+  /* light (cream) */
+  --ios-page:var(--lt-bg); --ios-group:var(--lt-card); --ios-group2:var(--lt-card2);
+  --ios-label:var(--lt-ink); --ios-label2:var(--lt-ink2); --ios-label3:var(--lt-ink3);
+  --ios-sep:rgba(60,55,40,.20); --ios-fill:rgba(120,120,128,.20); --ios-fill2:rgba(120,120,128,.12); --ios-press:rgba(60,55,40,.10);
+  --ios-tint:var(--lt-yellow); --ios-on-tint:var(--lt-on-yellow); --ios-tint-soft:rgba(245,184,0,.16); --ios-tint-text:#8A6400;
+  --ios-red:#E5352B; --ios-green:#2FB457; --ios-orange:#F08C00; --ios-gray:#8E8E93; --ios-brown:#A2845E;
+  --ios-chev:rgba(60,55,40,.32); --ios-knob-shadow:0 3px 8px rgba(0,0,0,.15),0 3px 1px rgba(0,0,0,.06);
+  --ios-r-group:22px; --ios-r-tile:8px; --ios-margin:16px;
+}
+html:root:root:root:root[data-theme="dark"]{
+  --ios-sep:rgba(84,80,70,.58); --ios-fill:rgba(120,120,128,.32); --ios-fill2:rgba(120,120,128,.20); --ios-press:rgba(255,255,255,.07);
+  --ios-tint-soft:rgba(255,200,0,.15); --ios-tint-text:#FFC800;
+  --ios-red:#FF453A; --ios-green:#30D158; --ios-orange:#FF9F0A; --ios-gray:#8E8E93;
+  --ios-chev:rgba(235,235,245,.30);
+}
+/* Inter's own tracking (its "dynamic metrics") where Inter is the font actually drawn (js/ui/ios.js sets f-sf or f-inter) */
+html:root:root:root:root.f-inter{ --tr-34:-.74px; --tr-28:-.58px; --tr-22:-.40px; --tr-20:-.33px; --tr-17:-.22px; --tr-16:-.18px; --tr-15:-.13px; --tr-13:-.04px; --tr-12:0px; --tr-11:.05px }
+/* Arabic is a joined script: no tracking, ever */
+html:root:root:root:root[lang="ar"]{ --tr-34:0px; --tr-28:0px; --tr-22:0px; --tr-20:0px; --tr-17:0px; --tr-16:0px; --tr-15:0px; --tr-13:0px; --tr-12:0px; --tr-11:0px }
+
+/* ---------- 1. typography ---------- */
+html:root:root:root:root body{
+  font-family:var(--ios-sans); font-variant-numeric:tabular-nums; font-kerning:normal; font-optical-sizing:auto;
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; text-rendering:optimizeLegibility;
+  font-feature-settings:"kern" 1,"calt" 1,"case" 1;
+}
+html:root:root:root:root[dir="rtl"] body{font-family:var(--ios-sans-ar)}
+/* the iPhone's balance figures: tabular (no jump while a figure rolls), slightly tighter at display sizes */
+html:root:root:root:root body :is([data-omx-total],.omx-ap,.hub-amt,.item-amount,.amount,.lt-amt,.tk-p,.proc-num,.summary-v){font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1,"case" 1}
+
+/* large titles (iOS Large Title: 34 / 41, bold) */
+html:root:root:root:root body :is(.w-title h1,.hub-head h1,.rv-title h1,.ios-lt,.px-welcome h1){
+  font:700 34px/41px var(--ios-sans)!important; letter-spacing:var(--tr-34)!important; color:var(--ios-label)!important;
+}
+html:root:root:root:root[dir="rtl"] body :is(.w-title h1,.hub-head h1,.rv-title h1,.ios-lt,.px-welcome h1){font-family:var(--ios-sans-ar)!important}
+/* the line under a large title (iOS: Subheadline, secondary label) */
+html:root:root:root:root body .hub-head p{font:400 15px/20px var(--ios-sans)!important;letter-spacing:var(--tr-15)!important;color:var(--ios-label2)!important}
+
+/* ---------- 2. settings: inset grouped lists ---------- */
+/* the groups */
+html:root:root:root:root body :is(.w-list,.settings-group,.hub-list){
+  background:var(--ios-group)!important; border:0!important; box-shadow:none!important; border-radius:var(--ios-r-group)!important;
+  padding:0!important; overflow:hidden; -webkit-backdrop-filter:none!important; backdrop-filter:none!important;
+}
+html:root:root:root:root body :is(.w-list,.settings-group,.hub-list) + :is(.w-list,.settings-group,.hub-list){margin-top:22px}
+html:root:root:root:root body .w-list{margin-inline:0!important}
+/* the rows */
+html:root:root:root:root body :is(.w-row,.settings-row,.hub-row){
+  position:relative; display:flex!important; align-items:center!important; gap:12px!important; width:100%;
+  min-height:52px!important; padding:9px 16px!important; margin:0!important; border:0!important; border-radius:0!important;
+  background:transparent!important; box-shadow:none!important; text-align:start; color:var(--ios-label)!important;
+  font:400 17px/22px var(--ios-sans)!important; letter-spacing:var(--tr-17)!important;
+  transform:none!important; transition:background-color .32s ease!important; -webkit-tap-highlight-color:transparent;
+}
+html:root:root:root:root[dir="rtl"] body :is(.w-row,.settings-row,.hub-row){font-family:var(--ios-sans-ar)!important}
+/* the hairline between rows, inset to where the text starts (16 + 30 + 12 = 58 px), like UITableView */
+html:root:root:root:root body :is(.w-row,.settings-row,.hub-row)::before{display:none!important}
+html:root:root:root:root body :is(.w-row,.settings-row,.hub-row) + :is(.w-row,.settings-row,.hub-row)::after,
+html:root:root:root:root body :is(.set-chips,.push-actions) + :is(.w-row,.settings-row,.hub-row)::after{
+  content:""; position:absolute; top:0; inset-inline-start:58px; inset-inline-end:0; height:.5px; background:var(--ios-sep); pointer-events:none;
+}
+@media (max-resolution:1.5dppx){
+  html:root:root:root:root body :is(.w-row,.settings-row,.hub-row) + :is(.w-row,.settings-row,.hub-row)::after{height:1px;transform:scaleY(.5);transform-origin:top}
+}
+/* row text */
+html:root:root:root:root body :is(.w-row > b,.settings-row-title,.hub-t > b){
+  font:400 17px/22px var(--ios-sans)!important; letter-spacing:var(--tr-17)!important; color:var(--ios-label)!important; flex:1 1 auto; min-width:0;
+}
+html:root:root:root:root[dir="rtl"] body :is(.w-row > b,.settings-row-title,.hub-t > b){font-family:var(--ios-sans-ar)!important}
+html:root:root:root:root body :is(.settings-row-body,.hub-t){flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:1px}
+html:root:root:root:root body :is(.settings-row-sub,.hub-t > small){
+  font:400 13px/18px var(--ios-sans)!important; letter-spacing:var(--tr-13)!important; color:var(--ios-label2)!important; margin:0!important;
+}
+html:root:root:root:root[dir="rtl"] body :is(.settings-row-sub,.hub-t > small){font-family:var(--ios-sans-ar)!important}
+/* icon tiles: 30 px rounded squares, a colour per kind of setting, a white glyph (dark on yellow) */
+html:root:root:root:root body :is(.w-tile,.settings-row .tile,.hub-i){
+  --tile:var(--ios-tint); --glyph:var(--ios-on-tint);
+  flex:0 0 30px!important; width:30px!important; height:30px!important; min-width:30px; border-radius:var(--ios-r-tile)!important;
+  display:grid!important; place-items:center; background:var(--tile)!important; color:var(--glyph)!important; border:0!important; box-shadow:none!important; margin:0!important;
+}
+html:root:root:root:root body :is(.w-tile,.settings-row .tile,.hub-i) svg{width:18px!important; height:18px!important; color:var(--glyph)!important; stroke-width:2!important}
+/* the colours (iOS Settings: Notifications red, Face ID green, General grey… — no blue here) */
+html:root:root:root:root body :is(.w-row[data-nav="profile"],.w-row[data-w-scroll="set-a-look"]:last-of-type) .w-tile,
+html:root:root:root:root body .hub-i.c-gray{--tile:var(--ios-gray); --glyph:#fff}
+html:root:root:root:root body :is(.w-row[data-w-scroll="set-a-sec"]) .w-tile,
+html:root:root:root:root body .hub-i:is(.c-green,.c-blue){--tile:var(--ios-green); --glyph:#fff}
+html:root:root:root:root body :is(.w-row[data-nav="deposit"],.w-row[data-nav="help"]) .w-tile,
+html:root:root:root:root body .hub-i:is(.c-orange,.c-amber){--tile:var(--ios-orange); --glyph:#fff}
+html:root:root:root:root body :is(.w-row[data-w-scroll="set-a-notif"]) .w-tile,
+html:root:root:root:root body .hub-i:is(.c-violet,.c-red,.c-pink){--tile:var(--ios-red); --glyph:#fff}
+html:root:root:root:root body :is(.w-row[data-nav="withdraw"]) .w-tile{--tile:var(--ios-brown); --glyph:#fff}
+html:root:root:root:root body .settings-row[role="switch"] .tile,html:root:root:root:root body .settings-row.push-row .tile{--tile:var(--ios-red); --glyph:#fff}
+html:root:root:root:root body .settings-row.fid-row .tile{--tile:var(--ios-green); --glyph:#fff}
+/* chevron: small, thin, tertiary (UITableViewCell disclosure indicator) */
+html:root:root:root:root body :is(.w-chev,.settings-row-chev,.hub-row .hub-chev){
+  flex:none; display:inline-flex!important; width:auto!important; height:auto!important; background:none!important; border:0!important; box-shadow:none!important;
+  color:var(--ios-chev)!important; margin-inline-start:4px!important; padding:0!important;
+}
+html:root:root:root:root body :is(.w-chev,.settings-row-chev,.hub-row .hub-chev) svg{width:13px!important; height:13px!important; stroke-width:2.6!important; color:var(--ios-chev)!important}
+/* press: the row is highlighted at once and fades back (iOS), it does not shrink */
+html:root:root:root:root body :is(.w-row,button.settings-row,.hub-row:is(button,[role="button"])):active{background:var(--ios-press)!important; transition:none!important}
+/* section header (iOS inset grouped: footnote, secondary label, 32 px from the screen edge) and footer notes */
+html:root:root:root:root body :is(.settings-section,.w-sec-t){
+  font:400 13px/18px var(--ios-sans)!important; letter-spacing:var(--tr-13)!important; text-transform:uppercase; color:var(--ios-label2)!important;
+  padding:0 16px!important; margin:26px 0 7px!important; background:none!important; border:0!important;
+}
+html:root:root:root:root[lang="ar"] body :is(.settings-section,.w-sec-t){text-transform:none; font-size:14px!important}
+html:root:root:root:root body .set-note{font:400 13px/18px var(--ios-sans)!important; letter-spacing:var(--tr-13)!important; color:var(--ios-label2)!important; padding:0 16px!important; margin:7px 0 0!important; background:none!important; border:0!important}
+html:root:root:root:root body .set-note svg{display:none!important}
+/* a category header becomes a quiet section title */
+html:root:root:root:root body .set-cat{display:flex!important; align-items:center; gap:10px; padding:0 16px!important; margin:30px 0 8px!important; background:none!important; border:0!important; box-shadow:none!important}
+html:root:root:root:root body .set-cat .set-cat-ic{display:none!important}
+html:root:root:root:root body .set-cat h2{font:700 22px/28px var(--ios-sans)!important; letter-spacing:var(--tr-22)!important; text-transform:none!important; color:var(--ios-label)!important; margin:0!important}
+html:root:root:root:root body .set-cat p{font:400 13px/18px var(--ios-sans)!important; letter-spacing:var(--tr-13)!important; color:var(--ios-label2)!important; margin:2px 0 0!important}
+/* the profile cell at the top (like the Apple Account row) */
+html:root:root:root:root body .set-me{display:flex!important; align-items:center; gap:14px!important; min-height:76px; padding:12px 16px!important; border-radius:var(--ios-r-group)!important; background:var(--ios-group)!important; border:0!important; box-shadow:none!important; transition:background-color .32s ease!important}
+html:root:root:root:root body .set-me:active{background:var(--ios-press)!important; transition:none!important}
+html:root:root:root:root body .set-me .px-ava{width:56px!important; height:56px!important; flex:0 0 56px; font:600 20px/1 var(--ios-sans)!important}
+html:root:root:root:root body .set-me-body{flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:2px}
+html:root:root:root:root body .set-me-body b{font:600 20px/25px var(--ios-sans)!important; letter-spacing:var(--tr-20)!important; color:var(--ios-label)!important}
+html:root:root:root:root body .set-me-body small{font:400 13px/18px var(--ios-sans)!important; letter-spacing:var(--tr-13)!important; color:var(--ios-label2)!important}
+/* « Log out »: a red action row in a group of its own (iOS) */
+html:root:root:root:root body :is(.w-out,.hub-out){
+  display:flex!important; align-items:center; justify-content:center; gap:8px; width:100%; min-height:52px!important; padding:0 16px!important;
+  border-radius:var(--ios-r-group)!important; background:var(--ios-group)!important; border:0!important; box-shadow:none!important;
+  color:var(--ios-red)!important; font:400 17px/22px var(--ios-sans)!important; letter-spacing:var(--tr-17)!important; transition:background-color .32s ease!important;
+}
+html:root:root:root:root body :is(.w-out,.hub-out) svg{width:18px; height:18px; color:var(--ios-red)!important}
+html:root:root:root:root body :is(.w-out,.hub-out):active{background:var(--ios-press)!important; transition:none!important}
+
+/* ---------- 3. switches (UISwitch: 51 x 31, a 27 px knob that stretches while pressed) ---------- */
+html:root:root:root:root body .switch,
+html:root:root:root:root body .settings-row[role="switch"] .switch{
+  position:relative!important; flex:0 0 51px!important; width:51px!important; height:31px!important; min-width:51px!important; min-height:0!important; border-radius:16px!important;
+  background:var(--ios-fill)!important; border:0!important; box-shadow:none!important; padding:0!important; overflow:visible;
+  transition:background-color .25s ease!important; transform:none!important;
+}
+html:root:root:root:root body .switch::after,
+html:root:root:root:root body .settings-row[role="switch"] .switch::after{
+  content:""!important; position:absolute!important; top:2px!important; left:2px!important; right:auto!important; width:27px!important; height:27px!important; border-radius:14px!important;
+  background:#fff!important; box-shadow:var(--ios-knob-shadow)!important; transform:translateX(0)!important;
+  transition:transform var(--ios-snappy-d,360ms) var(--ios-snappy,cubic-bezier(.32,.72,0,1)),width .18s ease!important;
+}
+html:root:root:root:root body .switch[aria-checked="true"],
+html:root:root:root:root body .settings-row[role="switch"][aria-checked="true"] .switch{background:var(--ios-tint)!important}
+html:root:root:root:root body .switch[aria-checked="true"]::after,
+html:root:root:root:root body .settings-row[role="switch"][aria-checked="true"] .switch::after{transform:translateX(20px)!important}
+/* the knob stretches by 6 px while the finger is down, towards the middle */
+html:root:root:root:root body :is(.switch:active,.settings-row[role="switch"]:active .switch)::after{width:33px!important}
+html:root:root:root:root body :is(.switch[aria-checked="true"]:active,.settings-row[role="switch"][aria-checked="true"]:active .switch)::after{transform:translateX(14px)!important}
+/* right to left: the knob starts on the right */
+html:root:root:root:root[dir="rtl"] body .switch::after,html:root:root:root:root[dir="rtl"] body .settings-row[role="switch"] .switch::after{left:auto!important; right:2px!important}
+html:root:root:root:root[dir="rtl"] body :is(.switch[aria-checked="true"],.settings-row[role="switch"][aria-checked="true"] .switch)::after{transform:translateX(-20px)!important}
+html:root:root:root:root[dir="rtl"] body :is(.switch[aria-checked="true"]:active,.settings-row[role="switch"][aria-checked="true"]:active .switch)::after{transform:translateX(-14px)!important}
+html:root:root:root:root body .switch:focus-visible{outline:3px solid var(--ios-tint); outline-offset:3px}
+
+/* ---------- 4. segmented control (UISegmentedControl) ---------- */
+html:root:root:root:root body .set-chips{padding:4px 16px 12px!important; background:transparent!important}
+html:root:root:root:root body .set-chips .chips{
+  position:relative; display:flex!important; gap:0!important; padding:2px!important; border-radius:10px!important; background:var(--ios-fill2)!important; border:0!important; box-shadow:none!important;
+}
+html:root:root:root:root body .set-chips .chip{
+  flex:1 1 0; min-height:32px!important; height:32px; padding:0 10px!important; border-radius:8px!important; background:transparent!important; border:0!important; box-shadow:none!important;
+  font:500 13px/18px var(--ios-sans)!important; letter-spacing:var(--tr-13)!important; color:var(--ios-label)!important; position:relative; z-index:1;
+}
+html:root:root:root:root body .set-chips .chip[aria-pressed="true"]{font-weight:600!important; color:var(--ios-on-tint)!important}
+/* many options (currencies): one line that scrolls sideways, like a picker strip, instead of wrapping under the sliding thumb */
+html:root:root:root:root body .set-chips .chips:has(.chip:nth-of-type(5)){overflow-x:auto; flex-wrap:nowrap!important; scrollbar-width:none; -webkit-overflow-scrolling:touch}
+html:root:root:root:root body .set-chips .chips:has(.chip:nth-of-type(5))::-webkit-scrollbar{display:none}
+html:root:root:root:root body .set-chips .chips:has(.chip:nth-of-type(5)) .chip{flex:0 0 auto; padding:0 14px!important}
+html:root:root:root:root body .set-chips .chip-pill{border-radius:8px!important; background:var(--ios-tint)!important; box-shadow:0 3px 8px rgba(0,0,0,.12),0 3px 1px rgba(0,0,0,.04)!important}
+
+/* ---------- 5. buttons (iOS 26: capsule; prominent = filled yellow, secondary = tinted, plain = text) ---------- */
+html:root:root:root:root body .btn.btn{
+  min-height:50px!important; padding:0 22px!important; border-radius:999px!important;
+  font:600 17px/22px var(--ios-sans)!important; letter-spacing:var(--tr-17)!important; text-shadow:none!important;
+  transition:transform var(--ios-snappy-d,360ms) var(--ios-snappy,cubic-bezier(.32,.72,0,1)),filter .2s ease,background-color .2s ease!important;
+}
+html:root:root:root:root[dir="rtl"] body .btn.btn{font-family:var(--ios-sans-ar)!important}
+html:root:root:root:root body .btn.btn-primary{background:var(--ios-tint)!important; background-image:none!important; color:var(--ios-on-tint)!important; border:0!important; box-shadow:none!important}
+html:root:root:root:root body .btn.btn-secondary{background:var(--ios-tint-soft)!important; background-image:none!important; color:var(--ios-tint-text)!important; border:0!important; box-shadow:none!important}
+html:root:root:root:root body :is(.btn.btn-ghost,.btn.btn-plain){background:transparent!important; color:var(--ios-tint-text)!important; border:0!important; box-shadow:none!important}
+html:root:root:root:root body :is(.btn.btn-danger,.btn.danger){background:rgba(255,69,58,.14)!important; color:var(--ios-red)!important; border:0!important; box-shadow:none!important}
+/* press: dims and settles a hair smaller, then springs back (iOS) */
+html:root:root:root:root body .btn.btn:active:not([disabled]){transform:scale(.97)!important; filter:brightness(.88); transition:transform .08s ease,filter .08s ease!important}
+html:root:root:root:root body .btn.btn[disabled],html:root:root:root:root body .btn.btn:disabled{background:var(--ios-fill2)!important; color:var(--ios-label3)!important; filter:none; opacity:1!important}
+
+/* ---------- 6. round bar buttons (back, close, notifications…) and the bar title ---------- */
+html:root:root:root:root body :is(.topbar-back,.w-sq,.hub-circ,.topbar-action){
+  width:44px!important; height:44px!important; min-width:44px; border-radius:50%!important; padding:0!important;
+  background:var(--ios-fill2)!important; border:0!important; box-shadow:none!important; color:var(--ios-label)!important;
+  display:grid!important; place-items:center; transition:transform var(--ios-snappy-d,360ms) var(--ios-snappy,cubic-bezier(.32,.72,0,1)),background-color .2s ease!important;
+}
+html:root:root:root:root body :is(.topbar-back,.w-sq,.hub-circ,.topbar-action) svg{width:20px!important; height:20px!important; stroke-width:2.3!important}
+html:root:root:root:root body :is(.topbar-back,.w-sq,.hub-circ,.topbar-action):active{transform:scale(.9)!important; background:var(--ios-fill)!important; transition:transform .08s ease!important}
+html:root:root:root:root body .topbar-title{font:600 17px/22px var(--ios-sans)!important; letter-spacing:var(--tr-17)!important; color:var(--ios-label)!important}
+html:root:root:root:root[dir="rtl"] body .topbar-title{font-family:var(--ios-sans-ar)!important}
+/* the settings header: the back button on its own line, the large title under it, aligned to the start (iOS) */
+html:root:root:root:root body .w-title{display:grid!important; grid-template-columns:44px 1fr 44px!important; grid-template-areas:"back . end" "title title title"!important; row-gap:10px!important; align-items:center; margin:6px 0 18px!important}
+html:root:root:root:root body .w-title > :first-child{grid-area:back}
+html:root:root:root:root body .w-title > h1{grid-area:title; text-align:start!important; margin:0!important}
+html:root:root:root:root body .w-title > .w-sp:last-child{grid-area:end}
+html:root:root:root:root body .hub-head{text-align:start!important; padding:0 4px!important; margin:4px 0 18px!important}
+html:root:root:root:root body .hub-head h1{margin:0 0 4px!important}
+
+/* ---------- 7. lists everywhere: the same quiet type ---------- */
+html:root:root:root:root body .item-title{font-weight:500!important; letter-spacing:var(--tr-17)}
+html:root:root:root:root body .item-sub{letter-spacing:var(--tr-13)}
+html:root:root:root:root body .chip{font-weight:600!important}
+
+
+/* ---------- 8. the compact bar of a large-title screen (js/ui/ios.js) ---------- */
+html:root:root:root:root body .ios-cbar{position:sticky; top:0; height:0; z-index:40; overflow:visible; pointer-events:none}
+html:root:root:root:root body .ios-cbar-in{
+  position:absolute; inset-inline:0; top:0; height:calc(52px + env(safe-area-inset-top,0px)); padding:env(safe-area-inset-top,0px) 12px 0;
+  display:grid; grid-template-columns:44px 1fr 44px; align-items:center;
+  background:color-mix(in srgb,var(--ios-page) 94%,transparent); -webkit-backdrop-filter:blur(20px) saturate(170%); backdrop-filter:blur(20px) saturate(170%);
+  box-shadow:inset 0 -.5px 0 var(--ios-sep); opacity:0; transform:translateY(-4px);
+  transition:opacity .2s ease,transform var(--ios-smooth-d,500ms) var(--ios-smooth,cubic-bezier(.32,.72,0,1));
+}
+html:root:root:root:root body .ios-cbar-t{text-align:center; font:600 17px/22px var(--ios-sans); letter-spacing:var(--tr-17); color:var(--ios-label); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; opacity:0; transform:translateY(6px); transition:opacity .2s ease .04s,transform var(--ios-smooth-d,500ms) var(--ios-smooth,cubic-bezier(.32,.72,0,1))}
+html:root:root:root:root[dir="rtl"] body .ios-cbar-t{font-family:var(--ios-sans-ar)}
+html:root:root:root:root body .ios-cbar-back{width:44px; height:44px; border-radius:50%; border:0; display:grid; place-items:center; background:var(--ios-fill2); color:var(--ios-label); cursor:pointer}
+html:root:root:root:root body .screen.ios-collapsed > .ios-cbar{pointer-events:auto}
+html:root:root:root:root body .screen.ios-collapsed > .ios-cbar .ios-cbar-in{opacity:1; transform:none}
+html:root:root:root:root body .screen.ios-collapsed > .ios-cbar .ios-cbar-t{opacity:1; transform:none}
+/* the large title itself recedes a little as it goes under the bar (iOS) */
+html:root:root:root:root body :is(.w-title > h1,.hub-head > h1){transition:opacity .2s ease}
+html:root:root:root:root body .screen.ios-collapsed :is(.w-title > h1,.hub-head > h1){opacity:0}
+@media (prefers-reduced-motion:reduce){
+  html:root:root:root:root body :is(.ios-cbar-in,.ios-cbar-t){transition:opacity .12s linear!important; transform:none!important}
+}
+
+
+/* ---------- 9. the other Settings-family screens (notifications, devices, sessions, help, privacy, about): inset groups, iOS rows ---------- */
+html:root:root:root:root body .screen.ios-large .screen-body > :is(.glass,.faq-item){margin-inline:0!important; border-radius:var(--ios-r-group)!important; background:var(--ios-group)!important; border:0!important; box-shadow:none!important}
+html:root:root:root:root body .faq-item{overflow:hidden; padding:0!important}
+html:root:root:root:root body .faq-item + .faq-item{margin-top:10px!important}
+html:root:root:root:root body .faq-item > summary{
+  display:flex!important; align-items:center; justify-content:space-between; gap:12px; list-style:none!important; cursor:pointer;
+  min-height:52px; padding:13px 16px!important; font:500 17px/22px var(--ios-sans)!important; letter-spacing:var(--tr-17)!important; color:var(--ios-label)!important;
+  transition:background-color .32s ease;
+}
+html:root:root:root:root[dir="rtl"] body .faq-item > summary{font-family:var(--ios-sans-ar)!important}
+html:root:root:root:root body .faq-item > summary::-webkit-details-marker{display:none}
+html:root:root:root:root body .faq-item > summary::marker{content:""}
+html:root:root:root:root body .faq-item > summary:active{background:var(--ios-press); transition:none}
+html:root:root:root:root body .faq-item .faq-chev{flex:none; display:inline-flex; color:var(--ios-chev); transition:transform var(--ios-snappy-d,360ms) var(--ios-snappy,cubic-bezier(.32,.72,0,1))}
+html:root:root:root:root body .faq-item .faq-chev svg{width:13px; height:13px; stroke-width:2.6}
+html:root:root:root:root body .faq-item[open] .faq-chev{transform:rotate(90deg)}
+html:root:root:root:root[dir="rtl"] body .faq-item[open] .faq-chev{transform:rotate(-90deg)}
+html:root:root:root:root body .faq-item > :not(summary){font:400 15px/20px var(--ios-sans)!important; letter-spacing:var(--tr-15)!important; color:var(--ios-label2)!important; padding:0 16px 14px!important; margin:0!important}
+
+
+/* ---------- 10. the sliding thumb of every segmented control rides the exact spring too ---------- */
+html:root:root:root:root body .chips > .chip-pill{transition:transform var(--ios-snappy-d,480ms) var(--ios-snappy,cubic-bezier(.32,.72,0,1)),width var(--ios-snappy-d,480ms) var(--ios-snappy,cubic-bezier(.32,.72,0,1))}
+html.w-lite:root:root:root:root body .chips > .chip-pill{transition-duration:.25s}
+
+/* ---------- reduced motion: colour changes only ---------- */
+@media (prefers-reduced-motion:reduce){
+  html:root:root:root:root body .chips > .chip-pill{transition:none}
+  html:root:root:root:root body :is(.switch,.settings-row[role="switch"] .switch)::after{transition:none!important}
+  html:root:root:root:root body :is(.btn,.topbar-back,.w-sq,.hub-circ,.topbar-action){transition:none!important}
+  html:root:root:root:root body :is(.btn,.topbar-back,.w-sq,.hub-circ,.topbar-action):active{transform:none!important}
+}
+
+/* ---------- 11. a word is never cut in the middle (15.3.0) ----------
+   layout.css had *{overflow-wrap:anywhere}: any element could break between two letters (« Pri / x », « Achete / r », « BTC/US / DT »,
+   « 100 / % »), because a break anywhere also lets a flex item shrink below the width of its longest word. break-word still breaks a
+   word that cannot fit on a line at all (an e-mail, an address), never a word that fits. Same specificity as the old rule and later in
+   the cascade: the few rules that ask for « anywhere » on purpose (addresses, references, big amounts) keep it.
+   Guarded by tests/ux/words.test.mjs (every screen, en / fr / ar, 320 and 360 px). */
+*{overflow-wrap:break-word}
+html:root:root:root:root body :is(.btn,.yb-btn) span{overflow-wrap:break-word; hyphens:manual}
+html:root:root:root:root body .tr-det dt{flex:none}
+html:root:root:root:root body .tr-det dd{min-width:0}
+html:root:root:root:root body :is(.omx-rv small,.tr-pairbtn b,.tr-pcts button,.tr-side button){white-space:nowrap}
+html:root:root:root:root body :is(.tr-pairbtn,.tr-pairbtn > svg,.tr-pairbtn > img){flex:none}  /* the picker keeps its chevron; the status beside it wraps instead */
+/* the buy / sell switch is an iOS segmented control: 13 px, semibold */
+html:root:root:root:root body .tr-side button{font-size:13px; font-weight:600; letter-spacing:var(--tr-13)}
+/* figures keep all their digits on one line: a little smaller on a narrow phone instead of « 97,000,0 / 00 » */
+html:root:root:root:root body .omx-stat b{overflow-wrap:normal; white-space:nowrap; font-size:clamp(12px,4vw,15px)}
+/* admin figures: an amount too wide to sit beside its label goes under it, at the end (was « الرص / يد الكل / ي », « Bala / nce ») */
+html:root:root:root:root body .adm-stat{display:flex; flex-wrap:wrap; align-items:center; column-gap:10px; row-gap:2px}
+html:root:root:root:root body .adm-stat > .adm-si{flex:none}
+html:root:root:root:root body .adm-stat > .adm-sl{flex:1 1 0; min-width:min-content}
+html:root:root:root:root body .adm-stat > .adm-sv{flex:none; margin-inline-start:auto}
+/* a carousel starts at the page margin, not against the edge of the screen: .lt-movers bleeds to the edges (margin -16px, padding 16px)
+   and snaps, and without a scroll padding the browser snapped the first card flush against the edge (scrollLeft 16 px) */
+html:root:root:root:root body .lt-movers{scroll-padding-inline:16px}
+@media (max-width:360px){
+  html:root:root:root:root body .btn.btn{padding:0 14px!important}
+  html:root:root:root:root body .tr-pairbtn{gap:8px}
+}

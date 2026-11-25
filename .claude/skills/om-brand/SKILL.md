@@ -44,7 +44,7 @@ Source de vérité : les jetons `--lt-*` en tête de `css/noirjaune.css` (web) e
 
 Les dégradés de la marque Arche (arche `#FFE98A → #FFC800 → #E39B00`, pièce `#FFF3B8 → #FFD23A → #E39B00`) sont dans `om_art.py` (`YEL_HI`, `YEL`, `YEL_LO`). Un seul jaune : bouton principal, segment actif, onglet actif, bouton Swap, icônes d'action. Jamais de texte clair sur jaune. Contraste du texte courant ≥ 4,5 : 1 sur **toutes** les surfaces de la palette — vérifié par `node tests/ux/palette.test.mjs` (à relancer après tout changement de jeton ; ne jamais assombrir ni éclaircir « au jugé »).
 
-Typographie : **Sora** (latin, chiffres) et **Tajawal** (arabe), auto-hébergées (`assets/fonts/`). Mot-symbole : « OM » Sora ExtraBold + « Wallet » Sora SemiBold. Soldes : chiffres en ExtraBold, décimales en Regular et gris secondaire.
+Typographie (depuis 15.3.0) : **interface** = police du système sur Apple (SF Pro / SF Arabic, par `-apple-system`), sinon **Inter** (latin, chiffres) et **IBM Plex Sans Arabic** (arabe), auto-hébergées (`assets/fonts/` au web, `android/core-design/src/main/res/font/` sur Android) ; échelle et approche d'iOS, jamais d'approche en arabe, chiffres tabulaires (règles : `PASSATION.md` § 1 sexies). **Sora** et **Tajawal** restent pour la marque (mot-symbole, images de partage, vitrine `/welcome`). Mot-symbole : « OM » Sora ExtraBold + « Wallet » Sora SemiBold. Soldes : chiffres en gras, décimales en Regular et gris secondaire.
 
 ## 3. Où va quoi
 
@@ -93,5 +93,5 @@ Connu au 25/11 : les e-mails de `send-email` (voir §3).
 
 1. Capture sur le vrai fond (sombre et clair) ; marque nette, non rognée, non étirée.
 2. Aucun reliquat bleu ; aucun texte de la couleur du fond ; QR toujours foncé sur blanc.
-3. Arabe : texte RTL, miroir des icônes directionnelles, Tajawal chargée.
+3. Arabe : texte RTL, miroir des icônes directionnelles, police arabe chargée (IBM Plex Sans Arabic dans l'interface, Tajawal dans les images de marque).
 4. Dire ce qui est vérifié et ce qui ne l'est pas (voir `om-wallet` §6).

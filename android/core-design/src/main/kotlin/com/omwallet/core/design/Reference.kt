@@ -102,7 +102,7 @@ fun ReferenceRow(@DrawableRes icon: Int, label: String, modifier: Modifier = Mod
     Row(modifier.fillMaxWidth().heightIn(min = 72.dp).pressable(role = role, onClick = onClick).padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
         GlassTile(icon)
         Column(Modifier.weight(1f)) {
-            Text(label, style = MaterialTheme.typography.titleLarge, color = OmColors.Ink)
+            Text(label, style = MaterialTheme.typography.bodyLarge, color = OmColors.Ink)
             if (value != null) Text(value, style = MaterialTheme.typography.bodySmall, color = OmColors.InkSecondary)
         }
         OmIcon(OmIcons.Chevron, null, tint = OmColors.InkSecondary, size = 18.dp)

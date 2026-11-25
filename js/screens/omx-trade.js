@@ -261,7 +261,7 @@ const OMXTrade = (() => {
     const g = cv.getContext('2d'); if (!g) return;
     g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
     const { POS, NEG } = colors(), cs = M.candles;
-    g.font = '600 10px Sora, system-ui, sans-serif';
+    g.font = '600 10px -apple-system, BlinkMacSystemFont, Inter, system-ui, sans-serif';   /* 15.3.0: the UI font (SF on Apple devices, Inter elsewhere) */
     if (!cs.length){ g.fillStyle = 'rgba(225,238,255,.6)'; g.textAlign = 'center'; g.fillText('—', W / 2, H / 2); g.textAlign = 'start'; return; }
     const padR = 64, padT = 12, padB = 20, n = cs.length, cw = (W - padR - 8) / n;
     let lo = Math.min.apply(null, cs.map(c => c.l)), hi = Math.max.apply(null, cs.map(c => c.h));

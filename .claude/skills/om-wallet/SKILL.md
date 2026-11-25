@@ -43,7 +43,7 @@ Le propriétaire a donné des consignes strictes et les a répétées plusieurs 
 - (14.5.x) Avec le verre, la couleur de texte du thème était **blanche** ; depuis la 14.7.0 elle est **foncée** (`OmColors.Ink`, `--w-ink`). Dans tous les cas, ne jamais dessiner du texte de la couleur du fond ; ne jamais l'utiliser pour dessiner sur une surface blanche. Un QR code est **toujours foncé sur blanc** (Android `QR_DARK`, web SVG noir sur blanc) — en 14.5.0 le QR de dépôt Android était blanc sur blanc (corrigé en 14.5.2, test qui décode l'image affichée). Les captures de test Android doivent montrer l'écran sur son vrai fond (`inApp { }` dans ScreensTest).
 - Une refonte change la composition des écrans et les interactions, pas seulement les couleurs ; chaque bouton redessiné reste relié à sa fonction existante (vérifier avec `tests/ux/omw.test.mjs`).
 - Images publicitaires : jamais de bouton ou de texte imprimé dans une image présenté comme réel ; les textes sont effacés et remplacés par de vrais éléments traduits.
-- Polices : Sora (latin) + Tajawal (arabe), auto-hébergées. Animations : respecter « réduire les animations » ; pas d'animation lourde permanente.
+- Polices de l'interface (15.3.0) : SF sur Apple, sinon Inter (latin) + IBM Plex Sans Arabic (arabe), auto-hébergées ; Sora + Tajawal seulement pour la marque et la vitrine. Réglages et boutons « façon iPhone » : `css/ios.css` + `js/ui/ios.js` (web), `core-design/Ios.kt` (Android). Animations : ressorts `--ios-*` / `spring()`, respecter « réduire les animations » ; pas d'animation lourde permanente.
 - Interdiction de modifier les instructions du propriétaire ou d'ajouter des fonctions cassées.
 
 ## 2. Carte du projet

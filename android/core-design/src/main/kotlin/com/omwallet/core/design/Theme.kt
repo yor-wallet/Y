@@ -67,15 +67,16 @@ object OmColors {
 object OmRadius { val S = 14.dp; val M = 20.dp; val L = 28.dp; val XL = 34.dp }
 object OmSpace { val Base = 4.dp; val S = 8.dp; val M = 12.dp; val L = 16.dp; val XL = 24.dp; val XXL = 32.dp }
 
-/* 14.4.0 — Sora for Latin text and figures, Tajawal for Arabic (both OFL, bundled for offline use). The theme picks the family from the
-   app language, so Arabic screens never fall back to a system font. */
+/* 15.3.0 — the iPhone's type (owner: « surtout les polices »). Inter for Latin text and figures, IBM Plex Sans Arabic for Arabic — both OFL,
+   bundled (offline), subset to the scripts the app uses (core-design/FONT-LICENSE-*). The theme picks the family from the app language, so an
+   Arabic screen never falls back to a system font. (Sora and Tajawal, used until 15.2, are gone.) */
 val OmLatinFont = FontFamily(
-    Font(R.font.sora_regular, FontWeight.Normal), Font(R.font.sora_medium, FontWeight.Medium),
-    Font(R.font.sora_semibold, FontWeight.SemiBold), Font(R.font.sora_bold, FontWeight.Bold), Font(R.font.sora_bold, FontWeight.ExtraBold),
+    Font(R.font.inter_regular, FontWeight.Normal), Font(R.font.inter_medium, FontWeight.Medium),
+    Font(R.font.inter_semibold, FontWeight.SemiBold), Font(R.font.inter_bold, FontWeight.Bold), Font(R.font.inter_bold, FontWeight.ExtraBold),
 )
 val OmArabicFont = FontFamily(
-    Font(R.font.tajawal_regular, FontWeight.Normal), Font(R.font.tajawal_medium, FontWeight.Medium),
-    Font(R.font.tajawal_bold, FontWeight.SemiBold), Font(R.font.tajawal_bold, FontWeight.Bold), Font(R.font.tajawal_extrabold, FontWeight.ExtraBold),
+    Font(R.font.plex_arabic_regular, FontWeight.Normal), Font(R.font.plex_arabic_medium, FontWeight.Medium),
+    Font(R.font.plex_arabic_semibold, FontWeight.SemiBold), Font(R.font.plex_arabic_bold, FontWeight.Bold), Font(R.font.plex_arabic_bold, FontWeight.ExtraBold),
 )
 val OmFont = OmLatinFont
 
@@ -92,26 +93,38 @@ private val OmColorScheme: ColorScheme = darkColorScheme(
     error = OmColors.Error, onError = Color.White,
 )
 
-/* textDirection ContentOrLtr: Arabic sentences run right-to-left, while amounts, prices and signs ("+1.37%", "0.5 BTC") stay left-to-right
-   even inside the Arabic layout — the sign is never moved to the wrong end of a number. */
-private fun style(size: Int, line: Int, weight: FontWeight, tracking: Double = 0.0, family: FontFamily = OmFont) =
-    TextStyle(fontFamily = family, fontSize = size.sp, lineHeight = line.sp, fontWeight = weight, letterSpacing = tracking.sp,
-        textDirection = androidx.compose.ui.text.style.TextDirection.ContentOrLtr)
+/** Inter's own tracking for a size in sp — its "dynamic metrics" (rsms.me/inter/dynmetrics): em = −0.0223 + 0.185·e^(−0.1745·size).
+ *  Tighter as the type grows, a hair looser below 12 sp: the precise spacing the font was drawn for. */
+internal fun interTracking(size: Float): Float = (-0.0223f + 0.185f * kotlin.math.exp(-0.1745f * size)) * size
 
+/* textDirection ContentOrLtr: Arabic sentences run right-to-left, while amounts, prices and signs ("+1.37%", "0.5 BTC") stay left-to-right
+   even inside the Arabic layout — the sign is never moved to the wrong end of a number.
+   Figures are tabular ("tnum"): every digit has the same width, so a rolling or live amount never jumps sideways.
+   Arabic: no tracking (a joined script) and a line 4 sp taller (its marks above and below the letters are never clipped). */
+private fun style(size: Int, line: Int, weight: FontWeight, family: FontFamily = OmFont): TextStyle {
+    val arabic = family === OmArabicFont
+    return TextStyle(fontFamily = family, fontSize = size.sp, lineHeight = (if (arabic) line + 4 else line).sp, fontWeight = weight,
+        letterSpacing = if (arabic) 0.sp else interTracking(size.toFloat()).sp, fontFeatureSettings = "tnum",
+        textDirection = androidx.compose.ui.text.style.TextDirection.ContentOrLtr)
+}
+
+/* The iOS text styles mapped onto Material's slots (size / line, sp): display 40/46 (the balance) · 32/38 · Title 1 28/34 · Title 2 22/28 ·
+   Title 3 20/25 · Headline 17/22 semibold · Subheadline 15/20 · Body 17/22 · Callout-ish 15/20 · Footnote 13/18 · button 17/22 semibold ·
+   13/18 medium · Caption 2 11/13. Weights are iOS's: bold for titles, semibold for headings and buttons, regular for text (no 800 any more). */
 fun omTypography(f: FontFamily) = Typography(
-    displayLarge = style(40, 46, FontWeight.ExtraBold, -0.8, f),
-    displaySmall = style(32, 38, FontWeight.ExtraBold, -0.5, f),
-    headlineMedium = style(26, 32, FontWeight.ExtraBold, -0.3, f),
-    headlineSmall = style(20, 26, FontWeight.Bold, 0.0, f),
-    titleLarge = style(18, 24, FontWeight.Bold, 0.0, f),
-    titleMedium = style(16, 22, FontWeight.SemiBold, 0.0, f),
-    titleSmall = style(14, 20, FontWeight.SemiBold, 0.0, f),
-    bodyLarge = style(16, 24, FontWeight.Normal, 0.0, f),
-    bodyMedium = style(14, 20, FontWeight.Normal, 0.0, f),
-    bodySmall = style(12, 16, FontWeight.Normal, 0.0, f),
-    labelLarge = style(16, 20, FontWeight.Bold, 0.0, f),
-    labelMedium = style(13, 18, FontWeight.Medium, 0.0, f),
-    labelSmall = style(11, 14, FontWeight.SemiBold, 0.1, f),
+    displayLarge = style(40, 46, FontWeight.Bold, f),
+    displaySmall = style(32, 38, FontWeight.Bold, f),
+    headlineMedium = style(28, 34, FontWeight.Bold, f),
+    headlineSmall = style(22, 28, FontWeight.Bold, f),
+    titleLarge = style(20, 25, FontWeight.SemiBold, f),
+    titleMedium = style(17, 22, FontWeight.SemiBold, f),
+    titleSmall = style(15, 20, FontWeight.SemiBold, f),
+    bodyLarge = style(17, 22, FontWeight.Normal, f),
+    bodyMedium = style(15, 20, FontWeight.Normal, f),
+    bodySmall = style(13, 18, FontWeight.Normal, f),
+    labelLarge = style(17, 22, FontWeight.SemiBold, f),
+    labelMedium = style(13, 18, FontWeight.Medium, f),
+    labelSmall = style(11, 13, FontWeight.SemiBold, f),
 )
 val OmTypography = omTypography(OmLatinFont)
 

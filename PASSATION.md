@@ -1,4 +1,4 @@
-# OM Wallet — passation (état au 25/11/2026, version web 15.2.1 · Android 15.2.0)
+# OM Wallet — passation (état au 25/11/2026, version web 15.3.0 · Android 15.3.0)
 
 Document pour la session suivante. À lire en entier avec la skill du projet `.claude/skills/om-wallet/SKILL.md` (règles du
 propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce soit.
@@ -14,8 +14,8 @@ propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce so
 | Élément | État |
 |---|---|
 | Dernier commit | voir `git log -1` sur la branche |
-| Site en production | https://yor-wallet.vercel.app — version 15.2.1 (contrôle : `curl -s https://yor-wallet.vercel.app/sw.js \| grep fp-shell` → `fp-shell-v15.2.1`) |
-| Version | 15.2.0 partout (`js/data/reference-data.js`, `sw.js`, `android/app/build.gradle.kts` 150100, `android/README.md`, `changelog.md`) |
+| Site en production | https://yor-wallet.vercel.app — version 15.3.0 (contrôle : `curl -s https://yor-wallet.vercel.app/sw.js \| grep fp-shell` → `fp-shell-v15.3.0`) |
+| Version | 15.3.0 partout (`js/data/reference-data.js`, `sw.js`, `android/app/build.gradle.kts` 150300, `android/README.md`, `changelog.md`) |
 | Base Supabase `gebjmguoauvutiqvoswl` | `20261124_crypto_swap.sql` **appliquée** (par le propriétaire, éditeur SQL) ; `20261125_close_legacy_instant_trades.sql` **appliquée** le 23/11 et `20261126_close_legacy_crypto_to_bank.sql` **appliquée** le 24/11 (anciennes fonctions à prix figés fermées aux utilisateurs, rien supprimé, retours arrière fournis — voir `changelog.md` 14.5.1) |
 | Fonctions Edge | `crypto-swap` v1 (verify_jwt **true**) · `send-email` v59 (verify_jwt **false**, appelée par la base avec `x-webhook-secret`) · `wallet-addresses`, `admin-action` inchangées |
 | Tests web | 9 suites vertes le 24/11 : omw, omx, trade, smoke (138 écrans), shell, bugfix, ios-motion, admin-console, admin-payouts ; mesure `tests/ux/perf-spot.mjs` |
@@ -34,6 +34,12 @@ propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce so
   Refus = montant rendu. Essai complet sur le serveur fait le 23/11 dans une transaction annulée : tout conforme (détail dans `changelog.md`).
 
 ---
+
+## 1 sexies. 15.3.0 (25/11) — design « Réglages de l'iPhone » : où il vit, les règles
+- **Web** : `css/ios.css` est la **dernière** feuille (sélecteurs `html:root` ×4) : jetons, typographie, listes groupées, interrupteurs, contrôle segmenté, boutons, barres, grands titres. `js/ui/ios.js` : classe `f-sf` / `f-inter` (approche de la police vraiment dessinée) et barre compacte des écrans à grand titre (`.w-title`, `.hub-head`). Les grands titres des autres écrans de la famille Réglages viennent de `LARGE` dans `js/ui/ios-motion.js`.
+- **Android** : `core-design/Ios.kt` (IosGroup, IosRow, IosSwitch, IosTile, IosSectionHeader, IosFooter, IosLargeTitle, IosGap) ; typographie dans `Theme.kt` (`interTracking()`, échelle iOS, `tnum`) ; polices Inter + IBM Plex Sans Arabic dans `core-design/res/font`.
+- **Règles** : un réglage = une ligne de 52 px avec tuile colorée (jamais bleue) ; le texte des lignes est en 17 px **normal** (pas de gras) ; jamais d'approche (letter-spacing) en arabe ; les montants en chiffres tabulaires ; un bouton principal = capsule jaune pleine de 50 px ; tout mouvement passe par les ressorts `--ios-*` (web) / `spring()` (Android) et s'arrête sous « réduire les animations ».
+- **Mots coupés** : ne jamais remettre `overflow-wrap:anywhere` sur un sélecteur large (`*`, `span`, `button`…) — il coupe « Prix » en « Pri / x » dès qu'une ligne flexible manque de place ; le réserver aux adresses, e-mails et références. Quand un libellé et un montant ne tiennent pas côte à côte, le montant passe à la ligne (voir `.adm-stat` dans `css/ios.css` § 11). Après toute retouche de mise en page : `node tests/ux/words.test.mjs`.
 
 ## 1 quinquies. 15.2.0 (25/11) — vitrine, petits téléphones, statuts, arabe : méthode et règles à garder
 - **La vitrine `/welcome` est en Noir & Jaune** (`welcome/site.css`, mêmes classes qu'avant). Ses captures viennent de l'application réelle : `NODE_PATH=$(npm root -g) node tools/site-shots.mjs` (à relancer quand un écran change). Elle montre des données d'exemple — le dire. Ne jamais la repasser en bleu : `tests/ux/site.test.mjs` détecte les couleurs bleues.

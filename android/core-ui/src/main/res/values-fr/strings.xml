@@ -203,7 +203,7 @@
     <string name="acc_admin">Admin Control</string>
     <string name="acc_logout">Se déconnecter</string>
     <string name="acc_licenses">Licences</string>
-    <string name="acc_licenses_b">Sora et Tajawal (SIL Open Font License 1.1) · logos crypto web3icons (MIT) · données de marché API publique Binance · QR codes ZXing (Apache 2.0).</string>
+    <string name="acc_licenses_b">Inter et IBM Plex Sans Arabic (SIL Open Font License 1.1) · logos crypto web3icons (MIT) · données de marché API publique Binance · QR codes ZXing (Apache 2.0).</string>
     <string name="acc_version">Version %1$s</string>
     <string name="admin_title">Admin Control</string>
     <string name="adm_tab_internal">Internes</string>

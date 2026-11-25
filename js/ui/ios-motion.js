@@ -153,7 +153,8 @@ const IOS = (() => {
   }
 
   /* ---------- large titles, collapsing bar, back label ---------- */
-  const LARGE = { profile:1, cards:1, services:1 };   /* settings has its own large header (14.4.0) */
+  /* 15.3.0: the screens of the Settings family get the iOS large title too (settings and the account hub have their own header + compact bar, js/ui/ios.js) */
+  const LARGE = { profile:1, cards:1, services:1, notifications:1, devices:1, sessions:1, help:1, privacy:1, about:1 };
   const screenTitle = el => {
     if (!el) return '';
     const n = el.querySelector('.ios-lt, .topbar-title, h1');
