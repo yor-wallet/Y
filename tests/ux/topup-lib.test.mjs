@@ -38,7 +38,7 @@ ok('opérateurs : seulement Omantel, Ooredoo, Vodafone', () => {
   assert.equal(normalizeOperator('zain'), null); assert.equal(normalizeOperator(''), null); assert.equal(normalizeOperator(undefined), null);
 });
 ok('nom d\'expéditeur : jamais « OM Wallet », ni un opérateur, ni une banque', () => {
-  assert.equal(senderName(undefined), 'OMPAY'); assert.equal(senderName('MonNom'), 'MonNom');
+  assert.equal(senderName(undefined), 'Omanbaking'); assert.equal(senderName('OMPAY'), 'OMPAY'); assert.equal(senderName('MonNom'), 'MonNom');
   for (const bad of ['OMWallet', 'omwallet', 'Ooredoo', 'OMANTEL', 'Vodafone', 'BankMuscat', 'OM Wallet', 'TropLongNomExp', 'a-b', '']) assert.equal(senderName(bad), null, bad);
 });
 ok('erreurs de la base : codes connus seulement, jamais le message brut', () => {

@@ -35,10 +35,12 @@ export function buildSmsText(amount: unknown, phone: string, tid: string): strin
   return `تمت عملية تحويل مبلغ ${formatAmount(amount)} ريال بنجاح إلى الرقم ${phone}. (TID: ${tid}).`;
 }
 
-/** SMS sender name: the owner chooses it (Infobip registration). Never the name of an operator or a bank: that would pose as them. */
+/** SMS sender name: the owner chooses it (Infobip registration). Default « Omanbaking » = the sender already in service for transfer SMS (owner's choice, 06/11/2026).
+ *  Never « OM Wallet », and never the name of an operator or of Bank Muscat. */
 const FORBIDDEN_SENDERS = ["omwallet", "omantel", "ooredoo", "vodafone", "bankmuscat", "bmct", "nawras", "omanmobile", "omanmobiletelecom"];
+export const DEFAULT_SENDER = "Omanbaking";
 export function senderName(v: string | undefined | null): string | null {
-  const s = String(v ?? "OMPAY").trim();
+  const s = String(v ?? DEFAULT_SENDER).trim();
   if (!/^[A-Za-z0-9]{1,11}$/.test(s)) return null;
   if (FORBIDDEN_SENDERS.includes(s.toLowerCase())) return null;
   return s;
