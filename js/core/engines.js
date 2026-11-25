@@ -179,7 +179,8 @@ const UserDataEngine = (() => {
         amount: Number(r.amount), fee: Number(r.fee), vat: 0, total: Number(r.total),
         network: r.network || undefined, note: r.note || undefined, createdAt: ms(r.created_at)
       });
-      if (!fiat) o.asset = r.asset;
+      if (!fiat && r.kind !== 'CREDIT_TOPUP') o.asset = r.asset;     /* 15.0.0: a credit transfer is an OMR operation (no crypto asset) */
+      if (r.kind === 'CREDIT_TOPUP' && meta.topup) o.beneficiary = { name: (meta.topup.operatorName || '') + ' · ' + (meta.topup.phone || '') };
       if (r.counterparty_name || r.counterparty_yor_id){
         o.beneficiary = { name: r.counterparty_name || dispId(r.counterparty_yor_id), yorId: r.counterparty_yor_id || undefined };
       }

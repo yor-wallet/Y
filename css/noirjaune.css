@@ -317,3 +317,10 @@ html:root:root:root[data-theme="dark"] body :is(.omx-empty,.ds-empty)::before{ba
 html:root:root:root body .omx-empty > svg,html:root:root:root body .ds-empty .ds-empty-ic{display:none}
 /* 14.6.0 (site vitrine) — lien « Découvrir OM Wallet » sous la connexion, vers /welcome */
 html:root body .w-discover{display:block;width:max-content;margin:14px auto 0;padding:8px 12px;color:var(--w-ink2,rgba(255,255,255,.78));font-weight:600;font-size:14px;text-decoration:underline;text-underline-offset:4px}
+
+/* 15.0.0 — transfert de crédit : préfixe +968 devant le numéro, puces de montants */
+html:root body .tp-ph{display:flex;align-items:center;gap:10px}
+html:root body .tp-ph > span{flex:none;padding:0 12px;min-height:48px;display:flex;align-items:center;border-radius:14px;background:var(--lt-card2,rgba(255,255,255,.08));font-weight:700;opacity:.9}
+html:root body .tp-ph .input{flex:1;min-width:0}
+html:root body .tp-chips{display:flex;gap:8px;margin:10px 0 4px;flex-wrap:wrap}
+html:root body .tp-chips .chip{min-width:56px;min-height:40px}
