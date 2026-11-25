@@ -1,3 +1,22 @@
+# OM Wallet 15.1.0 — mouvement et retour en temps réel (web), cartes virtuelles et derniers bleus retirés, fusion avec le transfert de crédit 15.0.x
+
+Demande du propriétaire (25/11) : « enlève les couleurs bleues et les cartes virtuelles, pas besoin ; augmente les animations et leur qualité au maximum, la qualité du contenu visuel et tous les détails, surtout les interactions avec les retours en temps réel ». Données, règles de confirmation et serveur : inchangés.
+
+- **Cartes virtuelles retirées (web)** : écrans, entrées (accueil, services, compte, tiroir, recherche, raccourci du manifeste), modules et ≈ 26 Ko de CSS ; le lien `#/cards` ne mène plus nulle part. **Aucune donnée n'est supprimée** : les cartes déjà enregistrées restent en base.
+- **Derniers bleus** : détecteurs de style et de pixels sur 23 écrans × clair / sombre ; il ne reste que les logos officiels de certains actifs (ETH, USDC, ADA), qui gardent leur couleur de marque.
+- **Contrôles segmentés** : une pastille jaune glisse (ressort) vers l'option choisie, y compris après un réaffichage de l'écran.
+- **Chiffres en direct** : un prix ou un pourcentage qui bouge clignote en vert / rouge ; le solde et le prix principal défilent vers leur nouvelle valeur (sans saut si une valeur plus récente arrive) ; le solde découvert avec l'œil se compte jusqu'à sa valeur.
+- **Marchés** : lignes mises à jour sur place (plus de clignotement, mini-courbes non redessinées) ; la pastille « en direct » garde son animation.
+- **Cloche et pastille** animées à chaque nouvelle alerte ; rebond sur « copier » ; les touches du pavé numérique font battre le montant ; la touche Swap fait un demi-tour ; contrôles avec lueur et ressort au toucher.
+- **Tirer pour rafraîchir** : l'arche se remplit pendant le geste, la pièce tourne pendant le chargement ; ajouté sur Marchés, Portefeuille et page d'actif (recharge aussi les prix en direct).
+- **Héros de connexion et de présentation en trois calques** : la pièce flotte au-dessus des arches, les étincelles scintillent chacune à son rythme (images `assets/brand/om-hero-*`).
+- **« Réduire les animations »** : plus aucun mouvement, seulement un court changement de couleur ; `html.w-lite` garde les effets légers. Tests : `tests/ux/motion.test.mjs` (22 vérifications).
+- **Fusion avec l'autre session (15.0.x)** : le **transfert de crédit** (Omantel · Ooredoo · Vodafone, réservé à l'administrateur, confirmé tout de suite, SMS Infobip par la fonction `credit-topup`) et le site vitrine `/welcome` sont conservés tels quels.
+- **Serveur (appliqué en base)** : `20261127_credit_topup` (type `CREDIT_TOPUP`, réglages `credit_topup_*` — utilisés par le circuit 15.0.x) ; e-mail de confirmation et détails de l'e-mail administrateur dans `send-email` v60 (message du propriétaire en ar / fr / en, aucun e-mail existant modifié : empreintes identiques avant / après). Une confirmation instantanée pour tous les utilisateurs (`20261127_credit_topup_instant`) a été appliquée puis **annulée le jour même** pour ne laisser qu'un seul circuit ; `topup-notice` (SMS) est déployée mais inactive.
+- **Non vérifié / restant** : Android — mouvement et temps réel à faire (la version Android reste 14.9.1) ; aucun essai sur un vrai téléphone ; le nom d'expéditeur SMS (`TOPUP_SMS_SENDER`) doit être enregistré chez Infobip pour l'Oman ; e-mails de transaction toujours à l'ancien habillage (accord du propriétaire requis).
+
+---
+
 # OM Wallet 14.9.1 — passe de finition : contrastes, reliquats bleus, en-têtes, cartes, états vides — web + Android
 
 Demande du propriétaire (25/11) : « continue, avec précision et plus de professionnalisme ». Méthode : un audit **mesuré** de chaque écran (clair et sombre, en et ar) avant de corriger, au lieu de retoucher à l'œil.
@@ -58,6 +77,15 @@ Demande du propriétaire (24/11) : « reproduire exactement ce qui est dans l'im
 - **Non repris de l'image** (n'existe pas dans l'application, rien n'est imité) : déverrouillage par empreinte (« Safe Mode »), « Over 500 cryptocurrencies » (13 actifs), écran d'accueil à cases cochées.
 - **Tests** : web — 9 suites vertes (menu, accueil, portefeuille, conversion mis à jour) ; Android — 53 tests verts, rendus Robolectric contrôlés (accueil, portefeuille, conversion). APK de publication 14.7.0 construit et signé avec une clé temporaire de session (hors dépôt).
 - **Non vérifié** : aucun essai sur un vrai téléphone ; écrans intérieurs restants (dépôt, retrait, envoi, activité, compte) seulement recolorés par les jetons, pas recomposés.
+# OM Wallet 14.6.0 — site vitrine (/welcome), distinct de l'application et relié à elle
+
+Demande du propriétaire : « développer le site web de l'application pour que les visiteurs la prennent au sérieux » ; « l'application et le site sont deux choses différentes mais liées ».
+
+- **Site vitrine** : https://yor-wallet.vercel.app/welcome (`welcome/index.html`, `site.css`, `site.js`, `img/`). L'application reste à la racine (`/`), inchangée : utilisateurs, liens des e-mails et application installée ne sont pas touchés.
+- **Contenu, uniquement vrai** : présentation, marchés en direct (API publique Binance, actualisés toutes les 15 s ; réseau coupé → « cours indisponibles », jamais de prix inventé ; dernier cours daté s'il ne se met plus à jour), 6 fonctionnalités réelles, captures RÉELLES de l'application en fr / en / ar (mention « données d'exemple »), 3 étapes, sécurité (vérification avant crédit, code, prix fixés par le serveur, adresses réelles), questions fréquentes, avertissement sur la volatilité. Aucun faux avis, aucun faux chiffre, aucun faux bouton Google Play (« application Android en préparation »), le mot « administrateur » n'apparaît pas.
+- **Trois langues** (français, anglais, arabe de droite à gauche), langue de l'appareil par défaut, choix retenu ; police Sora / Tajawal comme l'application ; téléphone et ordinateur ; réduction des animations respectée ; aucune bibliothèque externe ; images WebP (≈ 45 Ko chacune).
+- **Liens site ↔ application** : « Créer mon compte » ouvre directement l'inscription (`/#/signup`), « Se connecter » la connexion (`/#/login`), sans repasser par la présentation ; la page de connexion de l'application propose « Découvrir OM Wallet » (vers `/welcome`).
+- Tests : nouveau `tests/ux/site.test.mjs` (chargement sans erreur avec la vraie politique de sécurité, pas de défilement horizontal, cours, réseau coupé, 3 langues, onglets, liens vers l'application) ; 10 suites web vertes.
 
 # OM Wallet 14.5.3 — passe qualité visuelle (web + Android)
 

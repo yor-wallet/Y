@@ -130,6 +130,16 @@
         counterparty_name: null, created_at: new Date().toISOString(), meta: { confirm: 'ADMIN', swap: { to_asset: q.to_asset, to_network: q.to_network, to_amount: q.to_amount, price: q.price } } }));
       return { ok: true, transaction_id: 'tx-sw' + q.id, reference: 'OMT4821' + (7000 + qn), status: 'PENDING', from_asset: q.from_asset, from_amount: q.from_amount, to_asset: q.to_asset, to_amount: q.to_amount, price: q.price };
     },
+    /* 15.0 — credit transfer, administrator only: confirmed right away, no wallet movement, the SMS is sent by the server */
+    admin_topup_send: function(a){
+      if (!FX.admin) throw { message: 'forbidden', code: '42501' };
+      (window.__topupCalls = window.__topupCalls || []).push(a);
+      if (FX.topup === 'dup') throw { message: 'tid_in_use', code: '22023' };
+      var n = window.__topupCalls.length, tid = a.p_tid || ('84032260219923' + (1000 + n)), ref = 'OMT0141' + (7000 + n), amt = Number(a.p_amount);
+      txs.unshift(tx(0, { id: 'tx-tp' + n, reference: ref, kind: 'CREDIT_TOPUP', direction: 'OUT', status: 'CONFIRMED', asset: 'OMR', amount: amt, total: amt, counterparty_name: null, counterparty_yor_id: null, created_at: new Date().toISOString(),
+        meta: { confirm: 'DIRECT', topup: { operator: a.p_operator, operatorName: a.p_operator === 'OOREDOO' ? 'Ooredoo' : a.p_operator === 'OMANTEL' ? 'Omantel' : 'Vodafone', phone: a.p_phone, tid: tid } } }));
+      return { ok: true, transaction_id: 'tx-tp' + n, reference: ref, status: 'CONFIRMED', operator: a.p_operator, phone: a.p_phone, amount: amt, tid: tid };
+    },
     /* 14.2 — internal crypto send: recorded PENDING (amount reserved), credited only when the administrator confirms */
     transfer_crypto: function(a){
       if (!a.p_pin_grant) throw { message: 'pin_required', code: '42501' };

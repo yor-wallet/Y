@@ -102,7 +102,7 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
     await page.evaluate(() => { Runtime.hideBalance = true; R.go('home', { force: true }); }); await wait(1500);
     assert.match(await page.locator('#home [data-omx-total]').textContent(), /^[•\s]+$/);
     await page.click('#home [data-action="toggle-balance"]');
-    const seen = new Set(); for (let i = 0; i < 14; i++){ await wait(40); seen.add(await page.evaluate(() => document.querySelector('#home [data-omx-total]').textContent)); }
+    const seen = new Set(); for (let i = 0; i < 30; i++){ await wait(30); seen.add(await page.evaluate(() => document.querySelector('#home [data-omx-total]').textContent)); }
     assert.ok([...seen].filter(s => /^\$[\d,]+\.\d{2}$/.test(s)).length > 2, 'the balance counted up: ' + [...seen].join(' '));
     await wait(700);
     assert.match(await page.locator('#home [data-omx-total]').textContent(), /^\$[\d,]+\.\d{2}$/);

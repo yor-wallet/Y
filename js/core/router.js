@@ -29,6 +29,7 @@ const R = (() => {
     /* 14.5 — Spot / Swap */
     'spot':'home', 'trade-review':'exchange', 'trade-done':'home',
     'send-internal':'wallet', 'send-internal-review':'send-internal', 'send-internal-done':'wallet',
+    'topup':'home', 'topup-done':'home',
     'withdraw':'home', 'withdraw-bank':'withdraw', 'withdraw-crypto':'withdraw', 'withdraw-confirm':'withdraw', 'withdraw-track':'withdraw'
   };
   /* 14.0.0 — money transfers are retired from the app (their history and receipts stay readable). An old link, a saved screen or a
@@ -47,7 +48,7 @@ const R = (() => {
     'crypto-review':'crypto','crypto-receive':'crypto','crypto-receive-address':'crypto',
     'crypto-to-bank':'crypto','crypto-to-bank-account':'crypto','crypto-to-bank-amount':'crypto','crypto-bank-review':'crypto',
     'wallet':'wallet','asset':'wallet','deposit':'wallet','exchange':'exchange','spot':'spot','trade-review':'exchange','trade-done':'exchange','withdraw':'wallet','withdraw-bank':'wallet','withdraw-crypto':'wallet','withdraw-confirm':'wallet','withdraw-track':'wallet',
-    'markets':'markets','receipt':'history','send-internal':'wallet','send-internal-review':'wallet','send-internal-done':'wallet'
+    'markets':'markets','topup':'home','topup-done':'home','receipt':'history','send-internal':'wallet','send-internal-review':'wallet','send-internal-done':'wallet'
   };
   function register(map){ Object.assign(SCREENS, map); }
   function onLeave(fn){ if (typeof fn === 'function') cleanups.push(fn); }

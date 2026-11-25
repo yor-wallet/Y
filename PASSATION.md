@@ -1,9 +1,9 @@
-# OM Wallet — passation (état au 25/11/2026, version 14.9.1 web + Android)
+# OM Wallet — passation (état au 25/11/2026, version 15.1.0 web · Android 14.9.1)
 
 Document pour la session suivante. À lire en entier avec la skill du projet `.claude/skills/om-wallet/SKILL.md` (règles du
 propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce soit.
 
-> **Le travail le plus récent est sur la branche `claude/intelligent-keller-lrjxah`** (14.9.0 : identité originale « Arche », le logo du propriétaire ne sert que d'icône ; 14.8.0 : design « Noir & Jaune » comme Liv X et Binance), partie de `claude/blissful-goldberg-426zi7` (14.5.3). `main` contient une 14.6.0 « verre liquide » **abandonnée** (jamais
+> **Le travail le plus récent est sur la branche `claude/intelligent-keller-lrjxah`** (15.1.0 : mouvement et retour en temps réel du web + **fusion** de la branche `claude/blissful-goldberg-426zi7` — transfert de crédit 15.0.x et site vitrine ; 14.9.0 : identité originale « Arche », le logo du propriétaire ne sert que d'icône ; 14.8.0 : design « Noir & Jaune » comme Liv X et Binance), partie de `claude/blissful-goldberg-426zi7` (14.5.3). `main` contient une 14.6.0 « verre liquide » **abandonnée** (jamais
 > reprise ici : la branche l'a fusionnée sans ses changements). Partir de cette branche :
 > `git fetch origin claude/intelligent-keller-lrjxah && git checkout -B <branche de la session> FETCH_HEAD`.
 
@@ -14,8 +14,8 @@ propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce so
 | Élément | État |
 |---|---|
 | Dernier commit | voir `git log -1` sur la branche |
-| Site en production | https://yor-wallet.vercel.app — version 14.9.1 (contrôle : `curl -s https://yor-wallet.vercel.app/sw.js \| grep fp-shell` → `fp-shell-v14.9.1`) |
-| Version | 14.9.1 partout (`js/data/reference-data.js`, `sw.js`, `android/app/build.gradle.kts` 140901, `android/README.md`, `changelog.md`) |
+| Site en production | https://yor-wallet.vercel.app — version 15.1.0 (contrôle : `curl -s https://yor-wallet.vercel.app/sw.js \| grep fp-shell` → `fp-shell-v15.1.0`) |
+| Version | web 15.1.0 (`js/data/reference-data.js`, `sw.js`, `changelog.md`) ; **Android encore 14.9.1** (`android/app/build.gradle.kts` 140901, `android/README.md`) : le mouvement Android est à faire |
 | Base Supabase `gebjmguoauvutiqvoswl` | `20261124_crypto_swap.sql` **appliquée** (par le propriétaire, éditeur SQL) ; `20261125_close_legacy_instant_trades.sql` **appliquée** le 23/11 et `20261126_close_legacy_crypto_to_bank.sql` **appliquée** le 24/11 (anciennes fonctions à prix figés fermées aux utilisateurs, rien supprimé, retours arrière fournis — voir `changelog.md` 14.5.1) |
 | Fonctions Edge | `crypto-swap` v1 (verify_jwt **true**) · `send-email` v59 (verify_jwt **false**, appelée par la base avec `x-webhook-secret`) · `wallet-addresses`, `admin-action` inchangées |
 | Tests web | 9 suites vertes le 24/11 : omw, omx, trade, smoke (138 écrans), shell, bugfix, ios-motion, admin-console, admin-payouts ; mesure `tests/ux/perf-spot.mjs` |
@@ -34,6 +34,20 @@ propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce so
   Refus = montant rendu. Essai complet sur le serveur fait le 23/11 dans une transaction annulée : tout conforme (détail dans `changelog.md`).
 
 ---
+
+## 1 quater. 15.1.0 (25/11) — transfert de crédit Oman + mouvement web : à lire avant de toucher la base ou le jeu d'animations
+
+**Deux sessions ont travaillé en parallèle ce jour-là** (branches `claude/blissful-goldberg-426zi7` = transfert de crédit / site vitrine, et `claude/intelligent-keller-lrjxah` = mouvement). Avant toute modification de la base ou des fonctions Edge : `git fetch`, comparer `supabase/migrations/` avec `mcp list_migrations`, `list_edge_functions` avec `supabase/functions/` — une migration que l'on n'a pas écrite peut déjà être en service.
+
+**Transfert de crédit Oman (Omantel · Ooredoo · Vodafone) — circuit en service = celui de l'autre session (15.0.x)** :
+- **Réservé à l'administrateur** (écran `js/screens/omx-topup.js`, RPC `admin_topup_send`) : il choisit l'opérateur, saisit numéro (968XXXXXXXX) et montant (TID de l'opérateur facultatif, sinon `8` + numéro de l'administrateur + 9 chiffres) ; **Envoyer = confirmé tout de suite**, sans second administrateur, et le SMS part par la fonction Edge `credit-topup` (Infobip, nom d'expéditeur par défaut `TBAUTH`). Utilisateurs ordinaires : service invisible et fermé côté serveur (`credit_topup_request` : EXECUTE retiré à `authenticated`, **ne pas le rouvrir**).
+- Message exact du propriétaire (arabe) : « تمت عملية تحويل مبلغ 1.000 ريال بنجاح إلى الرقم 96892888435. (TID: …). » — français / anglais dans `supabase/functions/send-email/topup.ts`.
+- Un SMS « réussi » doit correspondre à une vraie remise : `transactions.meta.topup.sms` garde l'état (SENT / PARTIAL / FAILED + raison) ; ne jamais afficher « envoyé » si Infobip a refusé. Le nom d'expéditeur doit être enregistré chez Infobip pour l'Oman (réponse du fournisseur à surveiller). Les opérations `meta.test = true` sont des essais de l'autre session, pas de vraies opérations.
+- Base : `20261127_credit_topup.sql` (type `CREDIT_TOPUP`, réglages `credit_topup_*`, e-mail de confirmation `send-email` v60) **appliquée** ; `20261126_credit_topup_auto.sql` et `_admin.sql` de l'autre session **appliquées**. `20261127_credit_topup_instant.sql` (confirmation instantanée pour tous les utilisateurs) a été appliquée puis **annulée le jour même** (un seul circuit) : **ne pas la réappliquer**.
+- **Restes à supprimer — demandent l'accord explicite du propriétaire (la migration est bloquée tant qu'il n'a pas confirmé un DROP)** : fonctions `_topup_sms_claim`, `_topup_sms_done`, `_dispatch_topup_notice`, `admin_topup_list`, `admin_topup_mark_delivered`, `admin_topup_refund` (EXECUTE déjà retiré aux utilisateurs), fonction Edge `topup-notice` (inactive), ligne de réglage `credit_topup_mode`. Rien de réel n'y est lié.
+- **Pas d'écran Android** pour le transfert de crédit : à faire seulement si le propriétaire le demande (circuit administrateur sur le web aujourd'hui).
+
+**Mouvement web 15.1.0** : voir `changelog.md` ; code dans `js/ui/motion.js` + `css/motion.css` ; test `tests/ux/motion.test.mjs`. Règle : tout mouvement respecte « Réduire les animations » (`prefers-reduced-motion` et réglage de l'application) et `html.w-lite`. Cartes virtuelles retirées du web (aucune donnée supprimée). **Reste (Android)** : le jeu équivalent est commencé (`git stash` « WIP » de la session : `core-design/LiveMotion.kt`, `Motion.kt`, `Sheets.kt`, `Components.kt` — non terminé, ne compile pas tant que `CheckGlyph` n'est pas défini) ; à terminer, tester (`gradle testDebugUnitTest`, 53 tests) puis construire l'APK signé.
 
 ## 1 ter. Identité 14.9.0 (25/11) — à lire avant toute retouche de logo ou d'image
 Consigne du propriétaire : « le logo est uniquement pour l'icône, le reste, crée un inédit ». **Deux couches** (détail et emplacements : skill `om-brand`) :

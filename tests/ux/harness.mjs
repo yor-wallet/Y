@@ -77,7 +77,7 @@ export async function openApp(browser, base, opts = {}){
       return route.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify(binance(u)) });
     }
     if (/cdn\.jsdelivr\.net.*supabase/.test(u)){
-      const fx = JSON.stringify({ theme: opts.theme, lang: opts.lang, emptyTx: !!opts.emptyTx, signedOut: !!opts.signedOut, admin: !!opts.admin, dy: !!opts.dy, dyName: opts.dyName || '', dyFlipOnPin: !!opts.dyFlipOnPin, swapOff: !!opts.swapOff, quoteTtl: opts.quoteTtl || 30 });
+      const fx = JSON.stringify({ theme: opts.theme, lang: opts.lang, emptyTx: !!opts.emptyTx, signedOut: !!opts.signedOut, admin: !!opts.admin, dy: !!opts.dy, dyName: opts.dyName || '', dyFlipOnPin: !!opts.dyFlipOnPin, swapOff: !!opts.swapOff, quoteTtl: opts.quoteTtl || 30, topup: opts.topup || '' });
       return route.fulfill({ status: 200, contentType: 'text/javascript', body: 'window.__FX=' + fx + ';' + MOCK });
     }
     return route.abort();
