@@ -164,7 +164,7 @@ const OMX = (() => {
         '<div class="omx-ts">' + (hide ? '' : (tt.pct != null && tt.hasCrypto ? '<span class="omx-chip ' + (tt.pct >= 0 ? 'up' : 'down') + '">' + escapeHtml(omxPct(tt.pct)) + '</span>' : '') +
           '<span class="ltr" data-omx-omr>≈ ' + moneyHtml(CurrencyEngine.format(Math.round(tt.omr * 1000) / 1000, 'OMR')) + '</span>') + '</div>' +
       '</section>' +
-      '<nav class="omx-acts lt-acts" aria-label="' + escapeHtml(t('omx.total')) + '">' + act('deposit', 'receive', t('omx.deposit')) + act('withdraw', 'withdraw', t('omx.withdraw')) + act('send-internal', 'send', t('si.short')) + act('topup', 'mobile', t('tp.short')) + '</nav>' +
+      '<nav class="omx-acts lt-acts" aria-label="' + escapeHtml(t('omx.total')) + '">' + act('deposit', 'receive', t('omx.deposit')) + act('withdraw', 'withdraw', t('omx.withdraw')) + act('send-internal', 'send', t('si.short')) + (Runtime.ctx && Runtime.ctx.role === 'admin' ? act('topup', 'mobile', t('tp.short')) : '') + '</nav>' +
       '<section class="lt-sec"><div class="omx-sh"><h2>' + escapeHtml(t('lt.movers')) + '</h2><button data-nav="markets">' + escapeHtml(t('px.seeAll')) + '</button></div>' + statusLine() +
         '<div class="lt-movers" id="omx-home-mk">' + (movers.length ? movers.map(card).join('') : skeletonRows(2)) + '</div></section>' +
       '<section class="lt-sec"><div class="omx-sh"><h2>' + escapeHtml(t('lt.watchlist')) + '</h2><button data-nav="markets">' + escapeHtml(t('px.seeAll')) + '</button></div>' +
