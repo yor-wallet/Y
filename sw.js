@@ -1,17 +1,17 @@
-/* OM Wallet service worker (14.9.0) : coquille de l'application hors ligne + réception des notifications push.
+/* OM Wallet service worker (14.9.1) : coquille de l'application hors ligne + réception des notifications push.
    - Il ne met JAMAIS en cache le trafic Supabase / API / chaîne : soldes et transactions viennent toujours du serveur.
    - Réseau d'abord (toujours la dernière version quand on est en ligne), avec repli sur la copie locale si le réseau est absent ou trop lent.
    - Seules les réponses réussies (200) du même site sont gardées : une page d'erreur n'est jamais servie plus tard comme si c'était l'application.
    - Hors ligne : l'application démarre depuis la copie locale ; si elle n'existe pas encore, « offline.html » explique la situation.
    - Il ne touche JAMAIS aux ressources d'autres sites (client Supabase sur le CDN, WalletConnect, chaîne) : le navigateur les charge lui-même.
      (12.11.0 interceptait le client Supabase : la CSP bloquait ce rechargement par le service worker et l'application ne démarrait plus dès la 2e ouverture.) */
-const CACHE = 'fp-shell-v14.9.0';
+const CACHE = 'fp-shell-v14.9.1';
 const SLOW_MS = 4500;      /* au-delà, on sert la copie locale si on en a une */
 
 const SHELL = [
   './', 'index.html', 'offline.html', 'manifest.webmanifest', 'favicon.ico',
   'css/app.css', 'js/app.js',
-  'assets/brand/logo-mark.svg', 'assets/brand/logo-mark-light.svg', 'assets/brand/om-wordmark-white.png', 'assets/brand/om-logo-horizontal.png', 'assets/brand/om-logo-horizontal-white.png', 'assets/brand/omr-symbol.svg', 'public/branding/om-wallet-favicon.svg', 'public/branding/apple-touch-icon.png',
+  'assets/brand/logo-mark.svg', 'assets/brand/logo-mark-light.svg', 'assets/brand/om-wordmark-white.png', 'assets/brand/om-empty.svg', 'assets/brand/om-empty-light.svg', 'assets/brand/om-logo-horizontal.png', 'assets/brand/om-logo-horizontal-white.png', 'assets/brand/omr-symbol.svg', 'public/branding/om-wallet-favicon.svg', 'public/branding/apple-touch-icon.png',
   'assets/promo/promo-1-nj.jpg', 'assets/promo/promo-2-nj.jpg', 'assets/brand/om-hero.webp', 'assets/brand/om-hero-light.webp',
   'assets/fonts/sora-latin-var.woff2', 'assets/fonts/sora-latin-ext-var.woff2',
   'assets/fonts/tajawal-arabic-400.woff2', 'assets/fonts/tajawal-arabic-500.woff2', 'assets/fonts/tajawal-arabic-700.woff2', 'assets/fonts/tajawal-arabic-800.woff2',

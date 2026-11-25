@@ -115,3 +115,16 @@ def hero_svg(v='dark', p='h'):
     for x, y, s, o in ((860, 330, 15, .85), (330, 470, 11, .6), (930, 640, 9, .55), (260, 760, 13, .7), (690, 170, 8, .5), (470, 300, 7, .45), (1000, 450, 7, .4)):
         d.append(star(x, y, s, o))
     return _svg(1200, 1200, ''.join(d))
+
+# ---------------------------------------------------------------- empty state (136 × 112) -------------------------------------------------
+def empty_svg(v='dark', p='e'):
+    """« Nothing here yet »: the arch fading toward the floor and the coin drawn as a dashed outline, waiting to be filled."""
+    dark = v == 'dark'
+    hi, mid = (YEL_HI, YEL) if dark else ('#B67C00', '#8A6500')
+    body = (f'<defs><linearGradient id="{p}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{hi}"/><stop offset=".55" stop-color="{mid}" stop-opacity=".7"/>'
+            f'<stop offset="1" stop-color="{mid}" stop-opacity="0"/></linearGradient></defs>'
+            f'<path d="M30 108V56A38 38 0 0 1 106 56V108" fill="none" stroke="url(#{p}a)" stroke-width="7" stroke-linejoin="round"/>'
+            f'<path d="M45 108V58A23 23 0 0 1 91 58V108" fill="none" stroke="{mid}" stroke-opacity=".28" stroke-width="2"/>'
+            f'<circle cx="68" cy="82" r="17" fill="none" stroke="{mid}" stroke-opacity=".8" stroke-width="2.5" stroke-dasharray="3 5.4" stroke-linecap="round"/>'
+            f'<path d="M112 20C113.4 26 114 26.6 120 28C114 29.4 113.4 30 112 36C110.6 30 110 29.4 104 28C110 26.6 110.6 26 112 20Z" fill="{hi}" fill-opacity=".85"/>')
+    return _svg(136, 112, body)

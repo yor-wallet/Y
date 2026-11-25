@@ -1,3 +1,21 @@
+# OM Wallet 14.9.1 — passe de finition : contrastes, reliquats bleus, en-têtes, cartes, états vides — web + Android
+
+Demande du propriétaire (25/11) : « continue, avec précision et plus de professionnalisme ». Méthode : un audit **mesuré** de chaque écran (clair et sombre, en et ar) avant de corriger, au lieu de retoucher à l'œil.
+
+- **Audit** : script `tests/ux/audit.mjs` (contraste réel de chaque texte, zones tactiles, texte coupé, polices minuscules, sur les 23 écrans) et test `tests/ux/palette.test.mjs` (contraste de toutes les paires de la palette, 64 vérifications). Avant : une quarantaine de groupes de textes sous le seuil AA ; après : seuls restent des faux positifs documentés (dégradés des cartes, symbole du rial).
+- **Contrastes (WCAG AA)** : texte tertiaire sombre `#77746B` → `#939083` (3,3 → 4,8 : 1) et secondaire `#A7A397` → `#B0AC9F` ; clair : tertiaire `#8C8672` → `#6B6552`, lien `#8A6500` → `#7A5800`, gain `#0A9F63` → `#06704A`, perte `#D9344A` → `#B8243A` ; perte sombre `#F6465D` → `#FF5A6E`. Android : mêmes valeurs (`InkSecondary`, `Error`).
+- **Bouton principal de la page d'actif : texte blanc sur jaune (1,4 : 1) → texte foncé** et lueur jaune. C'était le défaut le plus grave de l'audit.
+- **En-tête unique des pages intérieures** : `[retour] Titre [marque]` à la place d'une grande ligne de logotype au-dessus du titre (économise 54 px d'écran sur 13 pages ; le logo reste sur chaque écran, petit, côté droit). Titre des Réglages aligné (22 px).
+- **Reliquats de l'ancienne identité** (clair et sombre) : encre bleu marine `rgba(16,42,67,.72)` encore lue par les anciennes couches, pastille bleue de modification de l'avatar, ombres bleues des interrupteurs, de l'action principale et des logos d'actifs, boutons « Max » / « Coller », cellules de statistiques et d'étiquettes réseau bleu ciel, pastilles « Vérifié » / « En cours » / « Échec », surfaces gris-bleu des listes, avatars de contacts, tuiles de services orange / rouge / vert / violet (une seule tuile calme maintenant).
+- **Cartes virtuelles** : les sept faces étaient toutes bleues ; elles sont maintenant dans la palette (noir et or par défaut, anthracite, bronze, or, ambre, champagne, crème). Les identifiants de thème sont inchangés : les choix enregistrés restent valables.
+- **Historique** : la ligne de période (5 puces) ne passe plus sur deux lignes — défilement horizontal avec fondu au bord.
+- **États vides** : petite illustration « Arche » (une arche, la pièce en pointillé) à la place des icônes génériques — web (`.omx-empty`, `.ds-empty`) et Android (`EmptyState`, pas pour les erreurs).
+- **Zones tactiles** : puces 44 px de haut, « Max » / « Coller » 44 px, puce « Copier l'identifiant » 36 px.
+- **Tests** : web — 9 suites vertes (120 vérifications) + palette 64 ; Android — 53 tests, 0 échec ; captures regardées (sombre, clair, arabe ; web et Android).
+- **Non vérifié / restant** : aucun essai sur un vrai téléphone ; e-mails de transaction toujours à l'ancien habillage (déploiement de la fonction à valider avec le propriétaire) ; écrans Android d'administration (onglets qui passent à la ligne) non retouchés.
+
+---
+
 # OM Wallet 14.9.0 — identité originale « Arche » : le logo du propriétaire ne sert que d'icône — web + Android
 
 Demande du propriétaire (25/11) : « le logo est uniquement pour l'icône, le reste, crée un inédit » ; retirer le logo bleu ; logo professionnel, images distinctives, forme adaptée à chaque page ; utiliser Figma (Canva et Moda : pas encore connectés). Données, règles, transactions : inchangées.

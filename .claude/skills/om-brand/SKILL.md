@@ -37,12 +37,12 @@ Source de vérité : les jetons `--lt-*` en tête de `css/noirjaune.css` (web) e
 | Fond doux jaune | `#2B2410` | `#FFEFB8` |
 | Texte sur jaune | `#14110A` | `#14110A` |
 | Texte | `#F5F3EE` | `#14110A` |
-| Texte secondaire / tertiaire | `#A7A397` / `#77746B` | `#5C5748` / `#8C8672` |
-| Lien / accent texte | `#FFC800` | `#8A6500` (le jaune pur est illisible sur crème) |
-| Gain / perte | `#0ECB81` / `#F6465D` | `#0A9F63` / `#D9344A` |
+| Texte secondaire / tertiaire | `#B0AC9F` / `#939083` | `#5C5748` / `#6B6552` |
+| Lien / accent texte | `#FFC800` | `#7A5800` (le jaune pur est illisible sur crème) |
+| Gain / perte | `#0ECB81` / `#FF5A6E` | `#06704A` / `#B8243A` |
 | Pastilles gain / perte | `#0E2E23` / `#35151B` | `#DDF5EA` / `#FCE3E7` |
 
-Les dégradés de la marque Arche (arche `#FFE98A → #FFC800 → #E39B00`, pièce `#FFF3B8 → #FFD23A → #E39B00`) sont dans `om_art.py` (`YEL_HI`, `YEL`, `YEL_LO`). Un seul jaune : bouton principal, segment actif, onglet actif, bouton Swap, icônes d'action. Jamais de texte clair sur jaune. Contraste du texte courant ≥ 4,5 : 1 (à vérifier, pas à supposer).
+Les dégradés de la marque Arche (arche `#FFE98A → #FFC800 → #E39B00`, pièce `#FFF3B8 → #FFD23A → #E39B00`) sont dans `om_art.py` (`YEL_HI`, `YEL`, `YEL_LO`). Un seul jaune : bouton principal, segment actif, onglet actif, bouton Swap, icônes d'action. Jamais de texte clair sur jaune. Contraste du texte courant ≥ 4,5 : 1 sur **toutes** les surfaces de la palette — vérifié par `node tests/ux/palette.test.mjs` (à relancer après tout changement de jeton ; ne jamais assombrir ni éclaircir « au jugé »).
 
 Typographie : **Sora** (latin, chiffres) et **Tajawal** (arabe), auto-hébergées (`assets/fonts/`). Mot-symbole : « OM » Sora ExtraBold + « Wallet » Sora SemiBold. Soldes : chiffres en ExtraBold, décimales en Regular et gris secondaire.
 
@@ -88,6 +88,8 @@ Connu au 25/11 : les e-mails de `send-email` (voir §3).
 - **Canva** et **Moda** : pas connectés. Le propriétaire doit les ajouter dans les connecteurs de claude.ai ; ensuite seulement les utiliser (Moda : visuels de réseaux sociaux, publicités, animations ; Canva : affiches, stories). Ne pas prétendre les avoir utilisés avant.
 
 ## 6. Contrôle avant de rendre un travail visuel
+
+0. **Mesurer avant de juger** : `node tests/ux/palette.test.mjs` (contrastes des jetons, calcul pur) et `NODE_PATH=$(npm root -g) node tests/ux/audit.mjs` (contraste réel de chaque texte, zones tactiles, texte coupé sur les 23 écrans ; lire ses faux positifs connus en tête du fichier). Chercher aussi les reliquats bleus / violets : surfaces à teinte froide, ombres bleutées, tuiles de couleur. Les anciennes couches CSS les définissent encore ; `noirjaune.css` (blocs « 14.9.1 ») les recouvre.
 
 1. Capture sur le vrai fond (sombre et clair) ; marque nette, non rognée, non étirée.
 2. Aucun reliquat bleu ; aucun texte de la couleur du fond ; QR toujours foncé sur blanc.

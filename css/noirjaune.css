@@ -15,8 +15,8 @@
 html:root:root:root{
   --lt-yellow:#FFC800; --lt-yellow-hi:#FFD84A; --lt-yellow-lo:#F5B800; --lt-on-yellow:#14110A;
   --lt-bg:#FFFBF0; --lt-card:#FFFFFF; --lt-card2:#F8F0D6; --lt-edge:#EEE3C0;
-  --lt-ink:#14110A; --lt-ink2:#5C5748; --lt-ink3:#8C8672; --lt-link:#8A6500; --lt-soft:#FFEFB8; --lt-active:#14110A;
-  --lt-pos:#0A9F63; --lt-neg:#D9344A; --lt-chip-up:#DDF5EA; --lt-chip-dn:#FCE3E7;
+  --lt-ink:#14110A; --lt-ink2:#5C5748; --lt-ink3:#6B6552; --lt-link:#7A5800; --lt-soft:#FFEFB8; --lt-active:#14110A;
+  --lt-pos:#06704A; --lt-neg:#B8243A; --lt-chip-up:#DDF5EA; --lt-chip-dn:#FCE3E7;
   --lt-hero:linear-gradient(180deg,#FFE48A 0%,#FFF1C2 58%,#FFFBF0 100%);
   --lt-nav:#FFFFFF; --lt-glow:0 12px 28px -12px rgba(245,184,0,.75); --lt-lift:0 10px 26px -14px rgba(90,65,0,.35);
   --w-bg:var(--lt-bg); --w-bg2:var(--lt-bg); --w-ink:var(--lt-ink); --w-ink2:var(--lt-ink2); --w-ink3:var(--lt-ink3);
@@ -28,6 +28,7 @@ html:root:root:root{
   --w-r-card:20px; --w-r-tile:16px; --w-r-btn:999px; --w-r-field:16px;
   --text:var(--w-ink); --text-2:var(--w-ink2); --text-3:var(--w-ink3); --ink:var(--w-ink); --accent:var(--w-blue); --tint:var(--w-blue);
   --om-glass:var(--lt-card); --om-border-glass:var(--lt-edge);
+  --ink:var(--lt-ink); --ink-2:var(--lt-ink2); --ink-3:var(--lt-ink3); --ink-4:var(--lt-edge); --st-wait:#8A5400;
   /* older layers (glass.css, omx.css): blue → yellow, navy text → the new ink */
   --om-bg:var(--lt-bg); --om-surface:var(--lt-card); --om-sky:var(--lt-yellow); --om-sky-light:var(--lt-soft); --om-sky-accent:var(--lt-link); --om-blue-deep:var(--lt-ink);
   --om-text:var(--lt-ink); --om-text-2:var(--lt-ink2); --om-success:var(--lt-pos); --om-warning:var(--w-warn); --om-danger:var(--lt-neg);
@@ -37,11 +38,11 @@ html:root:root:root{
 /* ---------- tokens: DARK (black and yellow — the default) ---------- */
 html:root:root:root[data-theme="dark"]{
   --lt-bg:#0B0A07; --lt-card:#1B1A16; --lt-card2:#25231E; --lt-edge:#2F2D26;
-  --lt-ink:#F5F3EE; --lt-ink2:#A7A397; --lt-ink3:#77746B; --lt-link:#FFC800; --lt-soft:#2B2410; --lt-active:#FFC800;
-  --lt-pos:#0ECB81; --lt-neg:#F6465D; --lt-chip-up:#0E2E23; --lt-chip-dn:#35151B;
+  --lt-ink:#F5F3EE; --lt-ink2:#B0AC9F; --lt-ink3:#939083; --lt-link:#FFC800; --lt-soft:#2B2410; --lt-active:#FFC800;
+  --lt-pos:#0ECB81; --lt-neg:#FF5A6E; --lt-chip-up:#0E2E23; --lt-chip-dn:#35151B;
   --lt-hero:radial-gradient(90% 75% at 50% -10%,rgba(255,200,0,.27) 0%,rgba(255,200,0,.08) 46%,transparent 74%);
   --lt-nav:#12110D; --lt-glow:0 12px 30px -14px rgba(255,200,0,.6); --lt-lift:0 14px 30px -18px rgba(0,0,0,.8);
-  --w-warn:#FFB020; --w-shadow-lg:0 30px 70px -28px rgba(0,0,0,.9);
+  --w-warn:#FFB020; --w-shadow-lg:0 30px 70px -28px rgba(0,0,0,.9); --st-wait:#FFB020;
   color-scheme:dark;
 }
 
@@ -237,3 +238,80 @@ html:root:root:root[data-theme="light"] body .w-auth-word,html:root:root:root:no
 @media (prefers-reduced-motion:reduce){
   html:root:root:root body #bottom-nav .nav-cta .nav-cta-tile{transition:none!important}
 }
+
+
+/* ==========================================================================
+   14.9.1 — POLISH. Born from an audit of every screen (script: text contrast WCAG AA, touch targets, leftovers of the blue identity):
+   one compact header, no white-on-yellow, no navy / sky-blue / violet left, card faces in the palette, calm service icons.
+   ========================================================================== */
+
+/* 1. inner pages: ONE compact header — [back] Title [mark]; the big lockup row above it is gone (the logo stays on every screen, small, on the trailing side) */
+html:root:root:root body .w-head.w-reftop-logo,html:root:root:root body .w-head:has(+ .w-title){display:none}
+html:root:root:root body .topbar.w-reftop .w-sp:last-child,html:root:root:root body .w-title .w-sp:last-child{height:44px;background:url(../assets/brand/logo-mark-light.svg) center/30px no-repeat}
+html:root:root:root[data-theme="dark"] body .topbar.w-reftop .w-sp:last-child,html:root:root:root[data-theme="dark"] body .w-title .w-sp:last-child{background-image:url(../assets/brand/logo-mark.svg)}
+
+/* 2. the main action of the asset page: yellow with DARK text (it was white on yellow, 1.4:1) and a yellow glow */
+html:root:root:root body .omx-act.p{color:var(--lt-on-yellow)!important;box-shadow:var(--lt-glow)!important}
+html:root:root:root body .omx-act.p i,html:root:root:root body .omx-act.p span{color:var(--lt-on-yellow)!important;background:transparent!important;box-shadow:none!important}
+
+/* 3. blue / violet leftovers */
+html:root:root:root body .hub-edit{background:linear-gradient(180deg,var(--lt-yellow-hi),var(--lt-yellow-lo))!important;color:var(--lt-on-yellow)!important;box-shadow:0 6px 14px -6px rgba(0,0,0,.55)!important}
+html:root:root:root body .switch[aria-checked="true"],html:root:root:root body .settings-row[role="switch"][aria-checked="true"] .switch{box-shadow:0 6px 14px -8px rgba(255,200,0,.6)!important}
+html:root:root:root body img.omx-logo{box-shadow:0 6px 14px -8px rgba(0,0,0,.6)!important}
+html:root:root:root body .contact-avatar{background:linear-gradient(180deg,var(--lt-yellow-hi),var(--lt-yellow-lo))!important;color:var(--lt-on-yellow)!important}
+html:root:root:root body .hub-badges{background:var(--lt-card2)!important}
+html:root:root:root body .hub-badge{background:transparent!important;color:var(--lt-link)!important}
+html:root:root:root body .hub-badge.ok{background:var(--lt-chip-up)!important;color:var(--lt-pos)!important}
+html:root:root:root body .hub-badge.no{background:var(--lt-soft)!important;color:var(--w-warn)!important}
+html:root:root:root body .hub-out{background:var(--lt-chip-dn)!important;border-color:transparent!important;color:var(--lt-neg)!important}
+html:root:root:root body .omx-tag.ok{background:var(--lt-chip-up)!important;color:var(--lt-pos)!important}
+html:root:root:root body .omx-tag.no{background:var(--lt-card2)!important;color:var(--lt-ink2)!important}
+html:root:root:root body .st.st-pending{color:var(--st-wait)!important}
+html:root:root:root body .rv-st.s-frozen,html:root:root:root[data-theme="light"] body .rv-st.s-frozen{background:rgba(255,200,0,.18)!important;color:#FFD84A!important}
+html:root:root:root body .ov .ov-backdrop,html:root:root:root body .ov:has(.dy-modal) .ov-backdrop{background:rgba(11,10,7,.55)!important}
+html:root:root:root[data-theme="light"] body .ov .ov-backdrop,html:root:root:root[data-theme="light"] body .ov:has(.dy-modal) .ov-backdrop{background:rgba(20,17,10,.32)!important}
+
+/* 4. services: one calm tile for every row (a dark / soft-yellow tile and a yellow / gold line icon) instead of orange, red, green, violet, grey */
+html:root:root:root body .yb-svc-i,html:root:root:root body .yb-svc-i:has([data-i]){background:var(--lt-soft)!important;color:var(--lt-link)!important}
+html:root:root:root body .yb-svc-i svg{stroke:currentColor}
+
+/* 5. virtual cards: the seven faces in the palette (black and gold, anthracite, bronze, gold, amber, champagne, cream) — the ids are unchanged, saved choices keep working */
+html:root:root:root body .rv-card{box-shadow:0 26px 44px -22px rgba(0,0,0,.75),0 2px 10px -4px rgba(0,0,0,.45)}
+html:root:root:root[data-theme="light"] body .rv-card{box-shadow:0 24px 40px -22px rgba(90,65,0,.45),0 2px 10px -4px rgba(90,65,0,.2)}
+html:root:root:root body .rv-card.th-obsidian .rv-face{background:radial-gradient(90% 70% at 90% 0%,rgba(255,200,0,.34),transparent 60%),linear-gradient(150deg,#0B0A07,#16140E 60%,#241E0C)}
+html:root:root:root body .rv-card.th-midnight .rv-face{background:radial-gradient(100% 80% at 0% 0%,rgba(255,255,255,.1),transparent 55%),linear-gradient(150deg,#2E2D27,#181711 70%,#0E0D0A)}
+html:root:root:root body .rv-card.th-graphite .rv-face{background:radial-gradient(90% 70% at 0% 100%,rgba(255,200,0,.22),transparent 60%),linear-gradient(150deg,#4A3A12,#2F2509 70%,#1E1806)}
+html:root:root:root body .rv-card.th-violet .rv-face{background:radial-gradient(100% 80% at 0% 0%,rgba(255,255,255,.45),transparent 55%),linear-gradient(150deg,#FFE27A 0%,#FFC800 50%,#E6A800 100%)}
+html:root:root:root body .rv-card.th-aurora .rv-face{background:radial-gradient(90% 90% at 0% 100%,rgba(255,216,74,.42),transparent 58%),linear-gradient(150deg,#3A2A06,#6B4E0A 60%,#8F6A0C)}
+html:root:root:root body .rv-card.th-metal .rv-face{background:linear-gradient(150deg,#FFF8E1,#EFDDA6 60%,#D9C07A)}
+html:root:root:root body .rv-card.th-minimal .rv-face{background:linear-gradient(150deg,#FFFFFF,#F6EFD8);box-shadow:inset 0 0 0 1px rgba(138,101,0,.35)}
+html:root:root:root body .th-violet{--cfg:#14110A;--cline:rgba(20,17,10,.22);--cchip:rgba(20,17,10,.1)}
+html:root:root:root body .th-violet .rv-wm{filter:invert(1)}
+
+/* 6. hit areas and wrapping */
+html:root:root:root body .chip{min-height:44px!important}
+html:root:root:root body .wd-max,html:root:root:root body .wd-paste{min-height:44px}
+html:root:root:root body .px-chip.id{min-height:36px;padding-inline:12px}
+html:root:root:root body .hist-sub{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+html:root:root:root body .hist-sub::-webkit-scrollbar{display:none}
+html:root:root:root body .hist-sub .chip{flex:0 0 auto;white-space:nowrap}
+
+/* 7. last cool-tinted surfaces and statuses */
+html:root:root:root body :is(.rv-set,.yb-grid,.set-me){background:var(--lt-card)!important;border-color:var(--lt-edge)!important}
+html:root:root:root body .wd-amt-in{border-color:var(--lt-edge)!important}
+html:root:root:root body .st.st-failed,html:root:root:root body .px-chip.no{color:var(--lt-neg)!important}
+html:root:root:root body .px-chip.ok{color:var(--lt-pos)!important}
+html:root:root:root body .hist-sub{-webkit-mask-image:linear-gradient(to right,#000 90%,transparent);mask-image:linear-gradient(to right,#000 90%,transparent)}
+html:root:root[dir="rtl"] body .hist-sub{-webkit-mask-image:linear-gradient(to left,#000 90%,transparent);mask-image:linear-gradient(to left,#000 90%,transparent)}
+
+/* 8. the old sky-blue accents (rgba(120,201,244,.x)) that were still behind small controls and info cells */
+html:root:root:root body :is(.wd-max,.wd-paste,.px-chip.id){background:var(--lt-soft)!important;color:var(--lt-link)!important}
+html:root:root:root body :is(.omx-stat,.omx-net){background:var(--lt-card2)!important}
+html:root:root:root body .omx-pick.on{background:var(--lt-soft)!important}
+html:root:root:root body .px-ava{border-color:var(--lt-card)!important;box-shadow:0 8px 18px -10px rgba(0,0,0,.55)!important}
+html:root:root:root body .w-title h1{font-size:22px!important;font-weight:800!important;line-height:1.2!important}
+
+/* 9. empty states: the « Arche » illustration (an arch, the coin still to come) instead of a generic icon */
+html:root:root:root body :is(.omx-empty,.ds-empty)::before{content:"";display:block;width:112px;height:92px;margin:0 auto 6px;background:url(../assets/brand/om-empty-light.svg) center/contain no-repeat}
+html:root:root:root[data-theme="dark"] body :is(.omx-empty,.ds-empty)::before{background-image:url(../assets/brand/om-empty.svg)}
+html:root:root:root body .omx-empty > svg,html:root:root:root body .ds-empty .ds-empty-ic{display:none}

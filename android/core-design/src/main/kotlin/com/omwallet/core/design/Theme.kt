@@ -40,10 +40,10 @@ object OmColors {
     val Blue700 = Color(0xFFF5B800)            // pressed accent
     val SkyGlow = Color(0xFFFFD84A)
     val Ink = Color(0xFFF5F3EE)                // text
-    val InkSecondary = Color(0xFFA7A397)       // secondary text
+    val InkSecondary = Color(0xFFB0AC9F)       // secondary text (≥ 4.5:1 on every dark surface)
     val Success = Color(0xFF0ECB81)
     val Warning = Color(0xFFFFB020)
-    val Error = Color(0xFFF6465D)
+    val Error = Color(0xFFFF5A6E)               // loss / error (≥ 4.5:1 on the loss chip)
     val Hairline = Color(0xFF2F2D26)
     val Sheet = Color(0xFF1B1A16)
     val PageMid = Color(0xFF0B0A07)

@@ -91,6 +91,7 @@ p_mark_d = svg_page('mark-dark', A.mark_svg('dark', 'md'), 512, 512)
 p_mark_l = svg_page('mark-light', A.mark_svg('light', 'ml'), 512, 512)
 p_lk_dark, p_lk_light = lockup('dark'), lockup('light')
 p_wm_white = wordmark_only('white', 200)
+p_empty = svg_page('empty-dark', A.empty_svg('dark', 'ed'), 272, 224)
 
 # ---------------------------------------------------------------- iOS startup images -------------------------------------------------------
 splash = []
@@ -140,6 +141,8 @@ run_jobs()
 # web — in-app marks (true SVG), lockups, wordmark, hero
 open(dest('assets/brand/logo-mark.svg'), 'w').write(A.mark_svg('dark', 'lm'))
 open(dest('assets/brand/logo-mark-light.svg'), 'w').write(A.mark_svg('light', 'lm'))
+open(dest('assets/brand/om-empty.svg'), 'w').write(A.empty_svg('dark', 'em'))
+open(dest('assets/brand/om-empty-light.svg'), 'w').write(A.empty_svg('light', 'el'))
 lk_dark = trim(Image.open(p_lk_dark).convert('RGBA'), 6); lk_light = trim(Image.open(p_lk_light).convert('RGBA'), 6)
 for im, rel in ((lk_light, 'assets/brand/om-logo-horizontal.png'), (lk_dark, 'assets/brand/om-logo-horizontal-white.png')):
     w = 720; im.resize((w, round(im.height * w / im.width)), Image.LANCZOS).save(dest(rel), optimize=True)
@@ -156,6 +159,7 @@ lk_dark.resize((520, round(lk_dark.height * 520 / lk_dark.width)), Image.LANCZOS
 lk_dark.resize((560, round(lk_dark.height * 560 / lk_dark.width)), Image.LANCZOS).save(dest(R + 'om_logo_horizontal_white.png'), optimize=True)
 hero900 = Image.open(p_hero_d).convert('RGBA').resize((900, 900), Image.LANCZOS)
 hero900.save(dest(R + 'om_hero.webp'), 'WEBP', quality=90, alpha_quality=92, method=6)
+Image.open(p_empty).convert('RGBA').save(dest(CD + 'om_empty.png'), optimize=True)                 # empty states (Android: dark pages only)
 # Android 12 splash icon: the mark must stay inside the central circle (2/3 of the canvas)
 canvas = Image.new('RGBA', (432, 432), (0, 0, 0, 0)); mk = Image.open(p_mark_d).convert('RGBA').resize((int(432 * .62),) * 2, Image.LANCZOS)
 canvas.alpha_composite(mk, ((432 - mk.width) // 2, (432 - mk.height) // 2)); canvas.save(dest(R + 'ic_splash.png'), optimize=True)

@@ -1,4 +1,4 @@
-# OM Wallet — passation (état au 25/11/2026, version 14.9.0 web + Android)
+# OM Wallet — passation (état au 25/11/2026, version 14.9.1 web + Android)
 
 Document pour la session suivante. À lire en entier avec la skill du projet `.claude/skills/om-wallet/SKILL.md` (règles du
 propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce soit.
@@ -14,8 +14,8 @@ propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce so
 | Élément | État |
 |---|---|
 | Dernier commit | voir `git log -1` sur la branche |
-| Site en production | https://yor-wallet.vercel.app — version 14.9.0 (contrôle : `curl -s https://yor-wallet.vercel.app/sw.js \| grep fp-shell` → `fp-shell-v14.9.0`) |
-| Version | 14.9.0 partout (`js/data/reference-data.js`, `sw.js`, `android/app/build.gradle.kts` 140900, `android/README.md`, `changelog.md`) |
+| Site en production | https://yor-wallet.vercel.app — version 14.9.1 (contrôle : `curl -s https://yor-wallet.vercel.app/sw.js \| grep fp-shell` → `fp-shell-v14.9.1`) |
+| Version | 14.9.1 partout (`js/data/reference-data.js`, `sw.js`, `android/app/build.gradle.kts` 140901, `android/README.md`, `changelog.md`) |
 | Base Supabase `gebjmguoauvutiqvoswl` | `20261124_crypto_swap.sql` **appliquée** (par le propriétaire, éditeur SQL) ; `20261125_close_legacy_instant_trades.sql` **appliquée** le 23/11 et `20261126_close_legacy_crypto_to_bank.sql` **appliquée** le 24/11 (anciennes fonctions à prix figés fermées aux utilisateurs, rien supprimé, retours arrière fournis — voir `changelog.md` 14.5.1) |
 | Fonctions Edge | `crypto-swap` v1 (verify_jwt **true**) · `send-email` v59 (verify_jwt **false**, appelée par la base avec `x-webhook-secret`) · `wallet-addresses`, `admin-action` inchangées |
 | Tests web | 9 suites vertes le 24/11 : omw, omx, trade, smoke (138 écrans), shell, bugfix, ios-motion, admin-console, admin-payouts ; mesure `tests/ux/perf-spot.mjs` |
@@ -40,6 +40,7 @@ Consigne du propriétaire : « le logo est uniquement pour l'icône, le reste, c
 - **Icône** = son logo (`brand/originals/logo-om-noir-jaune.png`) : lanceur Android, favicon, PWA, apple-touch, boutique. `python3 -I brand/make_assets.py`.
 - **Tout le reste** = « Arche » (arche + pièce, un seul jaune), créée pour ce projet : marque, logotype, héros de connexion / présentation, démarrage, partage. Source : `brand/om_art.py` ; `python3 -I brand/make_brand.py` (Chromium via `brand/render.cjs`).
 - Ne jamais afficher le logo du propriétaire ailleurs que comme icône ; ne jamais le redessiner. Plus aucun bleu de marque.
+- **14.9.1 (finition)** : méthode « mesurer avant de corriger » — `node tests/ux/palette.test.mjs` (contrastes des jetons) et `NODE_PATH=$(npm root -g) node tests/ux/audit.mjs` (contraste réel, zones tactiles, texte coupé, 23 écrans × clair / sombre × en / ar). Les blocs « 14.9.1 » en fin de `css/noirjaune.css` recouvrent les restes des anciennes couches (marine, bleu ciel, violet) ; en cas de nouveau reliquat, le corriger là plutôt que dans les anciennes couches.
 - **Reste à faire** : e-mails de transaction (`supabase/functions/send-email`) encore à l'ancien habillage — à reprendre avec la marque Arche **après accord du propriétaire** (le déploiement de la fonction touche de vrais clients) ; essai sur un vrai téléphone ; Canva et Moda (le propriétaire doit les connecter dans claude.ai) ; l'ancienne tuile « OM PAY » (`assets/ui/om-glyph.png`, `om-pay-word.png`, code inactif de `premium.js`) peut être retirée.
 - Autres demandes du 25/11 : **système autonome / rétention** — traité par les skills `om-growth` et `om-autopilot` (pas de profilage de personnes ni de mécaniques d'addiction ; brouillons validés par le propriétaire ; revue hebdomadaire planifiée seulement sur sa demande). Taille de l'APK : la version de publication compactée (~4,4 Mo) vient du même code que le fichier de développement de ~15 Mo ; le propriétaire peut préférer une version non compactée (~14 Mo, `-PomShrink=false`).
 

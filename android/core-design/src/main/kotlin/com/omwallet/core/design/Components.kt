@@ -258,8 +258,10 @@ fun SectionTitle(text: String, modifier: Modifier = Modifier, action: String? = 
 }
 
 @Composable
-fun EmptyState(title: String, body: String, modifier: Modifier = Modifier, action: String? = null, onAction: (() -> Unit)? = null) {
+fun EmptyState(title: String, body: String, modifier: Modifier = Modifier, action: String? = null, onAction: (() -> Unit)? = null, art: Boolean = true) {
     Column(modifier.fillMaxWidth().padding(vertical = 24.dp, horizontal = 12.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        /* « nothing here yet »: the original Arche illustration (an arch, the coin still to come); not for errors */
+        if (art) androidx.compose.foundation.Image(androidx.compose.ui.res.painterResource(R.drawable.om_empty), contentDescription = null, modifier = Modifier.size(width = 112.dp, height = 92.dp))
         Text(title, style = MaterialTheme.typography.titleMedium, color = OmColors.Ink, textAlign = TextAlign.Center)
         Text(body, style = MaterialTheme.typography.bodyMedium, color = OmColors.InkSecondary, textAlign = TextAlign.Center)
         if (action != null && onAction != null) { Spacer(Modifier.height(4.dp)); OmSecondaryButton(action, Modifier.width(220.dp), onClick = onAction) }
@@ -268,7 +270,7 @@ fun EmptyState(title: String, body: String, modifier: Modifier = Modifier, actio
 
 @Composable
 fun ErrorState(message: String, retry: String, modifier: Modifier = Modifier, onRetry: () -> Unit) =
-    EmptyState(title = message, body = "", modifier = modifier, action = retry, onAction = onRetry)
+    EmptyState(title = message, body = "", modifier = modifier, action = retry, onAction = onRetry, art = false)
 
 /* Loading placeholder: shape only, never fake data. */
 @Composable
