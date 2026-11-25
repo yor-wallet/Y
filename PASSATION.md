@@ -35,6 +35,20 @@ propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce so
 
 ---
 
+## 1 septies. Outils externes et sauvegarde (25/11) — où sont les choses hors du dépôt
+- **Deuxième site, en ligne** : https://om-wallet.weinc.app/ (Copy Any Design / WeInc, offre gratuite : badge WeInc, non indexé par
+  les moteurs) — page tirée de la vitrine par `tools/site-autonome.py` (+ `tools/site-autonome-minify.py`), textes et captures réels,
+  formulaire de contact relié à l'e-mail du compte WeInc du propriétaire (non testé). Modifiable sans code dans l'éditeur WeInc du
+  propriétaire. Le site principal reste yor-wallet.vercel.app ; après une refonte de la vitrine, régénérer la page et la redonner à WeInc.
+- **Canva** (compte du propriétaire) : « Publication Instagram OM Wallet » et « Story Instagram Swap OM Wallet », en français,
+  avec les **vraies** captures et le vrai logotype. L'IA de Canva redessine les captures qu'on lui donne (icônes perdues, « ≈ »
+  devenu « ≠ » ou « = ») : toujours comparer à l'application et remplacer par l'image réelle avant de publier.
+- **B12** : rien n'existe tant que le propriétaire n'a pas créé son compte B12 (le lien mène au formulaire d'inscription prérempli).
+- **CodeWords** (`design_intelligence`) : a proposé bleu / orange sur fond clair — contraire à la charte, non appliqué.
+- **Clé de signature Android** (`omwallet-release.jks`, alias `omwallet`, certificat SHA-256 `3bf39…4fbe6`) : remise au
+  propriétaire le 25/11 dans un fichier séparé de la sauvegarde ; **jamais dans le dépôt**. Toute nouvelle version Android doit
+  être signée avec elle (variables `OM_KEYSTORE`…, § 2 P1), sinon elle ne s'installe pas par-dessus l'application déjà installée.
+
 ## 1 sexies. 15.3.0 (25/11) — design « Réglages de l'iPhone » : où il vit, les règles
 - **Web** : `css/ios.css` est la **dernière** feuille (sélecteurs `html:root` ×4) : jetons, typographie, listes groupées, interrupteurs, contrôle segmenté, boutons, barres, grands titres. `js/ui/ios.js` : classe `f-sf` / `f-inter` (approche de la police vraiment dessinée) et barre compacte des écrans à grand titre (`.w-title`, `.hub-head`). Les grands titres des autres écrans de la famille Réglages viennent de `LARGE` dans `js/ui/ios-motion.js`.
 - **Android** : `core-design/Ios.kt` (IosGroup, IosRow, IosSwitch, IosTile, IosSectionHeader, IosFooter, IosLargeTitle, IosGap) ; typographie dans `Theme.kt` (`interTracking()`, échelle iOS, `tnum`) ; polices Inter + IBM Plex Sans Arabic dans `core-design/res/font`.
