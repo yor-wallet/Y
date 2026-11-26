@@ -1,3 +1,17 @@
+# OM Wallet 16.2.0 (web + base) — inscription sans téléphone, confirmation de l'e-mail
+
+Étape 2 (première partie) du cahier des charges du 26/11.
+
+- **Inscription en 4 champs** : prénom, nom, e-mail, mot de passe (8 caractères au moins). Le numéro de téléphone n'est plus demandé.
+- **Base** : `supabase/migrations/20261128_signup_phone_optional.sql` (+ `_rollback.sql`) — seule la fonction déclencheur `handle_new_user` change ; ancienne définition sauvegardée dans `function_backups` (tag `16.2.0-before`). Un téléphone vide est accepté ; un téléphone fourni doit rester au format international, sinon refus. Prénom / nom repris aussi de `given_name` / `family_name` ou `full_name` (pour Google / Apple s'ils sont activés). Aucune table, aucune donnée touchée. Testé dans un bloc annulé : sans téléphone (compte OMR + 8 portefeuilles créés), nom Google séparé, téléphone invalide refusé.
+- **Confirmation de l'e-mail** (déjà active sur le projet) : après l'inscription, écran « Vérifiez votre e-mail » avec un vrai « Renvoyer le lien » (`auth.resend`), bloqué 60 s après un envoi ; à la connexion, un compte non confirmé se voit proposer le même renvoi. Lien de retour vers l'application (`emailRedirectTo`).
+- **Mot de passe oublié** : inchangé (e-mail de réinitialisation, puis nouveau mot de passe).
+- **Site public** : textes d'inscription mis à jour (sans téléphone) en fr / en / ar.
+- **Tests** : nouveau `tests/ux/auth.test.mjs` (fr / en / ar : 4 champs, aucun appel sans prénom, données envoyées à Supabase, écran de confirmation, renvoi) ; smoke, bugfix, a11y, rtl, site, shell, words.
+- **Non vérifié** : aucune vraie inscription faite en production (pour ne pas créer de compte réel) ; si l'adresse de l'application n'est pas dans les « Redirect URLs » de Supabase Auth, le lien de confirmation ramène à l'adresse du site configurée par défaut.
+
+---
+
 # OM Wallet 16.1.0 (web) — site public : catalogue des prestations, assistance, FAQ étendue
 
 Étape 1 du cahier des charges du 26/11 (le propriétaire a demandé de commencer par le site public). Rien n'est touché dans l'application ni dans la base.

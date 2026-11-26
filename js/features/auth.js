@@ -136,7 +136,8 @@ const AuthEngine = (() => {
         email: String(email).trim(), password: String(password),
         options: { data: { first_name: (firstName || '').trim(), last_name: (lastName || '').trim(),
           phone: String(phone || '').trim(), country: String(country || '').trim().toUpperCase().slice(0, 2),
-          language: (['fr','en','ar'].indexOf(LANG) >= 0 ? LANG : DeviceLang.get()) } }
+          language: (['fr','en','ar'].indexOf(LANG) >= 0 ? LANG : DeviceLang.get()) },
+          emailRedirectTo: location.origin + '/' }
       });
       if (error) return { ok:false, error: errorKey(error) };
       /* e-mail confirmation enabled => no session yet */
@@ -160,10 +161,18 @@ const AuthEngine = (() => {
       return error ? { ok:false, error: errorKey(error) } : { ok:true };
     } catch(e){ return { ok:false, error: errorKey(e) }; }
   }
+  /* 16.2.0 — sends the confirmation link again (sign-up not confirmed yet). Supabase limits how often it can be sent. */
+  async function resendConfirm(email){
+    if (!supabaseReady) return { ok:false, error:'auth.err.unavailable' };
+    try {
+      const { error } = await sb.auth.resend({ type:'signup', email: String(email).trim(), options: { emailRedirectTo: location.origin + '/' } });
+      return error ? { ok:false, error: errorKey(error) } : { ok:true };
+    } catch(e){ return { ok:false, error: errorKey(e) }; }
+  }
   async function updatePassword(pw){
     try { const { error } = await sb.auth.updateUser({ password: String(pw) }); return error ? { ok:false, error: errorKey(error) } : { ok:true }; }
     catch(e){ return { ok:false, error: errorKey(e) }; }
   }
-  return { subscribe, signIn, signUp, signOut, sendReset, updatePassword, hasValidContext, hydrateRuntime };
+  return { subscribe, signIn, signUp, signOut, sendReset, resendConfirm, updatePassword, hasValidContext, hydrateRuntime };
 })();
 

@@ -250,7 +250,8 @@
       getSession: function(){ return Promise.resolve({ data: { session: session }, error: null }); },
       getUser: function(){ return Promise.resolve({ data: { user: session && session.user }, error: null }); },
       signInWithPassword: function(){ session = { access_token: 'x', user: { id: uid, email: profile.email } }; listeners.forEach(function(l){ l('SIGNED_IN', session); }); return Promise.resolve({ data: { session: session }, error: null }); },
-      signUp: function(){ return Promise.resolve({ data: { session: null }, error: null }); },
+      signUp: function(a){ (window.__authLog = window.__authLog || []).push({ fn: 'signUp', args: a }); return Promise.resolve({ data: { session: null }, error: null }); },
+      resend: function(a){ (window.__authLog = window.__authLog || []).push({ fn: 'resend', args: a }); return Promise.resolve({ data: {}, error: null }); },
       signOut: function(){ session = null; listeners.forEach(function(l){ l('SIGNED_OUT', null); }); return Promise.resolve({ error: null }); },
       resetPasswordForEmail: function(){ return Promise.resolve({ data: {}, error: null }); },
       updateUser: function(){ return Promise.resolve({ data: {}, error: null }); }

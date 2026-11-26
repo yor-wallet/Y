@@ -1116,6 +1116,11 @@ function wireLogin(){
       busy = false;
       UIKit.loading(btn, false);
       $('login-err').textContent = t(res.error);
+      if (res.error === 'auth.err.emailNotConfirmed'){
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'w-forgot ce-again'; b.textContent = t('auth.ce.resend');
+        b.onclick = async () => { const r = await AuthEngine.resendConfirm(email); $('login-err').textContent = t(r.ok ? 'auth.ce.sent' : r.error); b.remove(); };
+        $('login-err').appendChild(document.createElement('br')); $('login-err').appendChild(b);
+      }
       try { if (navigator.vibrate) navigator.vibrate([40, 40, 40]); } catch(e){}
       return;
     }
@@ -1125,6 +1130,30 @@ function wireLogin(){
   document.querySelectorAll('#login input').forEach(inp => inp.addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); submit(); } }));
   const toSignup = $('au-to-signup'); if (toSignup) toSignup.onclick = () => R.go('signup');
   const toReset = $('au-to-reset'); if (toReset) toReset.onclick = () => R.go('reset');
+}
+
+/* 16.2.0 — after sign-up: « check your e-mail » with a real « send again » (Supabase resend), on the sign-up screen itself */
+function showCheckEmail(email){
+  const body = document.querySelector('#signup .screen-body') || document.querySelector('#login .screen-body'); if (!body) return;
+  body.innerHTML = '<section class="glass w-auth-card ce-card" role="status">' +
+      '<div class="ce-ic" aria-hidden="true">' + icon('mail', 30) + '</div>' +
+      '<h2 class="ce-t">' + escapeHtml(t('auth.ce.title')) + '</h2>' +
+      '<p class="ce-p">' + escapeHtml(t('auth.ce.body')) + ' <b class="ltr" dir="ltr">' + escapeHtml(email) + '</b></p>' +
+      '<p class="ce-p small">' + escapeHtml(t('auth.ce.spam')) + '</p>' +
+      '<div class="field-err" id="ce-msg" role="alert"></div>' +
+      '<button class="btn btn-secondary" id="ce-resend" type="button">' + escapeHtml(t('auth.ce.resend')) + '</button>' +
+      '<button class="btn btn-primary" id="ce-login" type="button">' + escapeHtml(t('auth.signin')) + '</button>' +
+    '</section>';
+  const msg = document.getElementById('ce-msg');
+  document.getElementById('ce-login').onclick = () => R.go('login');
+  const rb = document.getElementById('ce-resend');
+  rb.onclick = async () => {
+    UIKit.loading(rb, true); msg.textContent = '';
+    const r = await AuthEngine.resendConfirm(email);
+    UIKit.loading(rb, false);
+    if (r.ok){ msg.classList.add('ok'); msg.textContent = t('auth.ce.sent'); rb.disabled = true; setTimeout(() => { rb.disabled = false; }, 60000); }
+    else { msg.classList.remove('ok'); msg.textContent = t(r.error); }
+  };
 }
 
 function wireSignup(){
@@ -1146,23 +1175,19 @@ function wireSignup(){
     const last = $('su-last').value.trim();
     const email = $('su-email').value.trim();
     const pass = $('su-pass').value;
-    if (!email || !pass){ err.textContent = t('auth.err.empty'); return; }
-    /* the phone number is mandatory to open an account (12.6.0) */
-    const dialSel = $('su-dial'), phoneInp = $('su-phone');
-    const dialOpt = dialSel && dialSel.options[dialSel.selectedIndex];
-    const phone = signupPhone(dialOpt ? dialOpt.getAttribute('data-dial') : '', phoneInp ? phoneInp.value : '');
-    if (!phone){ err.textContent = t('auth.err.phone'); if (phoneInp) phoneInp.focus(); return; }
+    if (!first || !last || !email || !pass){ err.textContent = t('auth.err.fill4'); return; }
     if (pass.length < 8){ err.textContent = t('auth.err.weak'); return; }
     busy = true;
     const btn = $('su-submit'); UIKit.loading(btn, true);
-    const res = await AuthEngine.signUp(email, pass, first, last, phone, dialSel ? dialSel.value : 'OM');
+    /* 16.2.0 — no phone number at sign-up (owner, 26/11); the database accepts an empty one */
+    const res = await AuthEngine.signUp(email, pass, first, last, '', 'OM');
     if (!res.ok){
       busy = false;
       UIKit.loading(btn, false);
       err.textContent = t(res.error);
       return;
     }
-    if (res.needsConfirm){ busy = false; UIKit.loading(btn, false); toast(t('auth.err.confirmEmail'), 'success'); R.go('login'); }
+    if (res.needsConfirm){ busy = false; UIKit.loading(btn, false); showCheckEmail(email); }
     /* otherwise the auth listener routes home */
   }
   const btn = $('su-submit'); if (btn) btn.onclick = submit;
