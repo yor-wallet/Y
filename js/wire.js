@@ -316,7 +316,9 @@ function wire(id){
       if (navigator.onLine === false){ resetSwipe(); toast(t('px.offlineSend'), 'error'); return; }   /* certain: nothing was sent */
       _pinBusy = true;
       if ((await DY.status(true)).enabled){ _pinBusy = false; resetSwipe(); DY.showUnavailable(); return; }   /* DY: no code asked, nothing sent */
-      const _pin = await PinEngine.authorize();
+      /* 16.4.0 — code only above 500 USD (debited in OMR); the server checks it again */
+      const _bd = TX_STATE.breakdown || {};
+      const _pin = await PinEngine.authorize({ usd: PinEngine.usdOf(_bd.total != null ? _bd.total : TX_STATE.amount, 'OMR') });
       _pinBusy = false;
       if (!_pin.ok){ resetSwipe(); if (_pin.error) toast(t(_pin.error), 'error'); return; }
       if (!ProcessingEngine.acquireLock()) return;

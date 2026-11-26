@@ -423,7 +423,7 @@ const OMXTrade = (() => {
     if (!data || data.ok === false || !data.quote) throw (data && data.error) || 'unknown';
     const q = data.quote;
     return { id: q.id, fa: q.from_asset, fn: q.from_network, ta: q.to_asset, tn: q.to_network, fAmt: Number(q.from_amount), tAmt: Number(q.to_amount), price: Number(q.price),
-      src: q.source, side: q.side || null, exp: Date.parse(q.expires_at) || (Date.now() + TTL * 1000), idem: uuid() };
+      src: q.source, side: q.side || null, usd: q.usd_value != null ? Number(q.usd_value) : null, exp: Date.parse(q.expires_at) || (Date.now() + TTL * 1000), idem: uuid() };
   }
   async function ask(btn, p, back){
     if (btn.__busy) return; btn.__busy = true; UIKit.loading(btn, true);
@@ -457,7 +457,7 @@ const OMXTrade = (() => {
     if (Date.now() >= q.exp){ R.go('trade-review', { force: true }); return; }
     if (navigator.onLine === false){ toast(t('tr.e.offline'), 'error'); return; }
     q.busy = true; UIKit.loading(btn, true);
-    const pin = await PinEngine.authorize();
+    const pin = await PinEngine.authorize({ usd: q.usd });            /* 16.4.0 — code only above 500 USD (value fixed by the server's quote) */
     if (!pin.ok){ q.busy = false; UIKit.loading(btn, false); if (pin.error) toast(t(pin.error), 'error'); return; }
     if (Date.now() >= q.exp){ q.busy = false; UIKit.loading(btn, false); toast(t('tr.e.quote_expired'), 'error'); R.go('trade-review', { force: true }); return; }
     S.done = { submitting: true, q }; R.go('trade-done', { reset: true });

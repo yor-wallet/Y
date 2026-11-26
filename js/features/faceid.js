@@ -19,13 +19,13 @@ const FaceId = (() => {
   const KEY = 'friendly_faceid_v1';
   const L = {
     en: { verifyTitle:'Confirm with {N}', verifySub:'Look at your phone to confirm it is you.', unlock:'Unlock OM Wallet', login:'Confirm your sign-in', transfer:'Confirm this transfer', generic:'Confirm to continue',
-      enrollTitle:'Turn on {N}', enrollSub:'{N} is required to sign in and to confirm transfers on this device.', go:'Use {N}', retry:'Try again', cancel:'Cancel', logout:'Log out',
+      enrollTitle:'Turn on {N}', enrollSub:'{N} is required to open OM Wallet on this device.', go:'Use {N}', retry:'Try again', cancel:'Cancel', logout:'Log out',
       recover:'{N} not working? Use your PIN', skip:'Continue with PIN only', errCancelled:'{N} was cancelled.', errInvalid:'{N} could not be verified. Try again.', errGeneric:'{N} is not available right now. Try again.', ok:'Confirmed', generic_n:'Biometrics' },
     fr: { verifyTitle:'Confirmez avec {N}', verifySub:'Regardez votre téléphone pour confirmer que c\'est bien vous.', unlock:'Déverrouiller OM Wallet', login:'Confirmez votre connexion', transfer:'Confirmez ce transfert', generic:'Confirmez pour continuer',
-      enrollTitle:'Activez {N}', enrollSub:'{N} est obligatoire pour vous connecter et confirmer les transferts sur cet appareil.', go:'Utiliser {N}', retry:'Réessayer', cancel:'Annuler', logout:'Se déconnecter',
+      enrollTitle:'Activez {N}', enrollSub:'{N} est obligatoire pour ouvrir OM Wallet sur cet appareil.', go:'Utiliser {N}', retry:'Réessayer', cancel:'Annuler', logout:'Se déconnecter',
       recover:'{N} ne marche pas ? Utilisez votre code', skip:'Continuer avec le code seulement', errCancelled:'{N} a été annulé.', errInvalid:'{N} n\'a pas pu être vérifié. Réessayez.', errGeneric:'{N} n\'est pas disponible pour le moment. Réessayez.', ok:'Confirmé', generic_n:'Biométrie' },
     ar: { verifyTitle:'أكّد باستخدام {N}', verifySub:'انظر إلى هاتفك لتأكيد أنك أنت.', unlock:'فتح OM Wallet', login:'أكّد تسجيل دخولك', transfer:'أكّد هذا التحويل', generic:'أكّد للمتابعة',
-      enrollTitle:'فعّل {N}', enrollSub:'{N} مطلوب لتسجيل الدخول وتأكيد التحويلات على هذا الجهاز.', go:'استخدم {N}', retry:'أعد المحاولة', cancel:'إلغاء', logout:'تسجيل الخروج',
+      enrollTitle:'فعّل {N}', enrollSub:'{N} مطلوب لفتح OM Wallet على هذا الجهاز.', go:'استخدم {N}', retry:'أعد المحاولة', cancel:'إلغاء', logout:'تسجيل الخروج',
       recover:'{N} لا يعمل؟ استخدم رمزك', skip:'المتابعة بالرمز فقط', errCancelled:'تم إلغاء {N}.', errInvalid:'تعذّر التحقق عبر {N}. حاول مجدداً.', errGeneric:'{N} غير متاح الآن. حاول مجدداً.', ok:'تم التأكيد', generic_n:'البصمة' }
   };
   const apple = () => /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent || '');

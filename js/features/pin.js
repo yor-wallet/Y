@@ -115,48 +115,33 @@ const PinEngine = (() => {
     }
     return { ok:false, msg:t('errors.UNKNOWN_ERROR') };
   }
-  /* Transfer / card-secret confirmation (12.9.0): Face ID first (mandatory when the device has biometrics),
-     then the 6-digit PIN, which is the server-verified factor that yields the one-time grant.
-     Resolves { ok:true, grant } (one-time, valid ~2 min) or { ok:false, cancelled? , error? } */
-  async function authorize(){
+  /* 16.4.0 — transaction code (owner's brief of 26/11, §9): NO biometric validation of transactions any more (Face ID / Touch ID /
+     fingerprint removed from this path); the 6-digit code is asked only when the operation is worth MORE than 500 USD.
+     opts.usd = the app's estimate of the USD value (rates of the app, a 2 % margin under the threshold). The SERVER decides: it
+     recomputes the value from the amount it debits (fx_rates / server quote) and refuses without the code above 500 USD
+     (migration 20261128_pin_threshold_500usd.sql). No estimate (crypto sends and withdrawals: no server price) = code asked.
+     Resolves { ok:true, grant } (one-time, ~2 min) / { ok:true, grant:null, skipped:true } / { ok:false, cancelled?, error? } */
+  const LIMIT_USD = 500, MARGIN = 0.98;
+  function needsCode(opts){
+    const u = opts && typeof opts.usd === 'number' && isFinite(opts.usd) ? opts.usd : null;
+    return u === null || u > LIMIT_USD * MARGIN;
+  }
+  async function authorize(opts){
     if (!supabaseReady) return { ok:false, error:'errors.UNKNOWN_ERROR' };
+    if (!needsCode(opts)) return { ok:true, grant:null, skipped:true };
     if (busy) return { ok:false, cancelled:true };
     busy = true;
+    try { forget(); return await authorizeCore(() => {}); }        /* an old Face ID vault (before 16.4.0) is erased, never used */
+    catch(e){ console.error(e); return { ok:false, error:'errors.UNKNOWN_ERROR' }; }
+    finally { busy = false; }
+  }
+  /* USD value of an amount in a fiat currency, with the app's rates (FX_RATES = units per 1 OMR); null if unknown */
+  function usdOf(amount, cur){
     try {
-      let f = null, salt = null;
-      try { salt = await prfSalt(); } catch(e){}
-      try { f = await FaceId.gate({ purpose:'transfer', cancel:true, prfSalt: salt }); } catch(e){ f = { ok:false, skipped:'error' }; }
-      /* 1) Face ID confirmed and the code is in the vault: the server checks it (verify_pin), nothing to type */
-      if (f && f.ok && f.prf){
-        const pin = await vaultOpen(f.prf, f.cid);
-        if (pin){
-          const v = await verify(pin);
-          if (v.ok) return { ok:true, grant: v.value, via:'faceid' };
-          forget();                                   /* changed elsewhere or locked: never retried silently; the code is asked below */
-        }
-      }
-      /* 2) otherwise the 6-digit code (Face ID cancelled, failed, not available, or first time on this device) */
-      let typed = null;
-      const r = await authorizeCore(pin => { typed = pin; });
-      if (r.ok && typed && f && f.ok){
-        if (f.prf) await vaultSave(typed, f.prf, f.cid);        /* next time Face ID alone is enough */
-        else if (f.skipped !== 'unsupported'){
-          /* key created before 12.15.0 without PRF: one new Face ID key so the next transfers can use Face ID alone */
-          try {
-            const rec = await FaceId.record(), u = ctxUid(), k = 'friendly_prf_upgrade_v1';
-            let tried = {}; try { tried = JSON.parse(localStorage.getItem(k) || '{}') || {}; } catch(e){}
-            if (rec && !rec.prf && u && !tried[u]){ tried[u] = Date.now(); try { localStorage.setItem(k, JSON.stringify(tried)); } catch(e){} await FaceId.reenroll({ purpose:'transfer', cancel:true }); }
-          } catch(e){}
-        }
-      }
-      typed = null;
-      /* Face ID could not be used (recover): the PIN just verified lets the device create a fresh Face ID key */
-      if (r.ok && f && f.recover){ try { await FaceId.reenroll({ purpose:'transfer', cancel:false }); } catch(e){} }
-      return r;
-    } catch(e){
-      console.error(e);
-      return { ok:false, error:'errors.UNKNOWN_ERROR' };
-    } finally { busy = false; }
+      const a = Number(amount), c = String(cur || '').toUpperCase(); if (!isFinite(a)) return null;
+      const per = c === 'OMR' ? 1 : FX_RATES[c]; if (!per || !FX_RATES.USD) return null;
+      return a / per * FX_RATES.USD;
+    } catch(e){ return null; }
   }
   async function authorizeCore(onPin){
     const st = await sb.rpc('pin_status');
@@ -244,6 +229,6 @@ const PinEngine = (() => {
     const d = unwrap(st) || {};
     return !!d.has_pin;
   }
-  return { authorize, verify, hasPin, change, forget, hasVault, _vault: { save: vaultSave, open: vaultOpen } };
+  return { authorize, usdOf, needsCode, verify, hasPin, change, forget, hasVault, _vault: { save: vaultSave, open: vaultOpen } };
 })();
 

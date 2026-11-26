@@ -14,8 +14,8 @@ propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce so
 | Élément | État |
 |---|---|
 | Dernier commit | voir `git log -1` sur la branche |
-| Site en production | https://yor-wallet.vercel.app — version 16.3.0 (contrôle : `curl -s https://yor-wallet.vercel.app/sw.js \| grep fp-shell` → `fp-shell-v16.3.0`) |
-| Version | web 16.3.0 (`js/data/reference-data.js`, `sw.js`, `changelog.md`) · Android 15.3.0 inchangé (`android/app/build.gradle.kts` 150300, `android/README.md`) |
+| Site en production | https://yor-wallet.vercel.app — version 16.4.0 (contrôle : `curl -s https://yor-wallet.vercel.app/sw.js \| grep fp-shell` → `fp-shell-v16.4.0`) |
+| Version | web 16.4.0 (`js/data/reference-data.js`, `sw.js`, `changelog.md`) · Android 15.3.0 inchangé (`android/app/build.gradle.kts` 150300, `android/README.md`) |
 | Base Supabase `gebjmguoauvutiqvoswl` | `20261124_crypto_swap.sql` **appliquée** (par le propriétaire, éditeur SQL) ; `20261125_close_legacy_instant_trades.sql` **appliquée** le 23/11 et `20261126_close_legacy_crypto_to_bank.sql` **appliquée** le 24/11 (anciennes fonctions à prix figés fermées aux utilisateurs, rien supprimé, retours arrière fournis — voir `changelog.md` 14.5.1) |
 | Fonctions Edge | `crypto-swap` v1 (verify_jwt **true**) · `send-email` v59 (verify_jwt **false**, appelée par la base avec `x-webhook-secret`) · `wallet-addresses`, `admin-action` inchangées |
 | Tests web | **23 suites vertes le 26/11** (toutes celles de `tests/ux/*.test.mjs`, dont la nouvelle `motion-system` — 15 vérifications image par image —, smoke 132 contrôles d'écran, words 180) ; mesures `tests/ux/motion-audit.mjs`, `tests/ux/motion-film.mjs`, `tests/ux/perf-spot.mjs` |

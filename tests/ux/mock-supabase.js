@@ -113,14 +113,14 @@
     beneficiary_lookup: function(a){ return FX.dyName && a.p_phone === '+96898765432' ? { found: true, name: FX.dyName } : { found: false }; },
     my_transactions: function(){ return txs; },
     pin_status: function(){ return { has_pin: true, locked: false }; },
-    verify_pin: function(){ if (window.__dyFlipOnPin) dyS.enabled = true; return { ok: true, grant: 'grant-1' }; },
+    verify_pin: function(){ (window.__pinLog = window.__pinLog || []).push(Date.now()); if (window.__dyFlipOnPin) dyS.enabled = true; return { ok: true, grant: 'grant-1' }; },
     set_pin: function(){ return { ok: true }; },
     find_user_by_yor_id: function(a){ return String(a && a.p_yor_id || '').toUpperCase() === 'YOR-ZZ1122' ? [{ yor_id: 'YOR-ZZ1122', display_name: 'Salim Al Harthy', country: 'OM', photo: null }] : []; },
     /* 14.5 — swap / Spot market order: the quote is used once, the amount paid is held, the operation is PENDING; nothing is credited */
     swap_execute: function(a){
       if (FX.swapOff) throw { message: 'Could not find the function public.swap_execute', code: 'PGRST202' };
-      if (!a.p_pin_grant) throw { message: 'pin_required', code: '42501' };
       var q = quotes[a.p_quote]; if (!q) throw { message: 'quote_not_found', code: 'P0002' };
+      if (!a.p_pin_grant && !(q.usd_value != null && q.usd_value <= 500)) throw { message: 'pin_required', code: '42501' };   /* 16.4.0 — like the server */
       if (q.used) throw { message: 'quote_used', code: '22023' };
       if (Date.parse(q.expires_at) <= Date.now()) throw { message: 'quote_expired', code: '22023' };
       var w = tables.crypto_wallets.filter(function(x){ return x.asset === q.from_asset && x.network === q.from_network; })[0];
@@ -286,7 +286,7 @@
         if (!w) return Promise.resolve({ data: { ok: false, error: 'sender_wallet_missing' }, error: null });
         if (w.available_balance < Number(b.from_amount)) return Promise.resolve({ data: { ok: false, error: 'insufficient_balance' }, error: null });
         var price = PX[b.from_asset] / PX[b.to_asset], q = { id: 'q-' + (++qn), from_asset: b.from_asset, from_network: b.from_network, to_asset: b.to_asset, to_network: b.to_network,
-          from_amount: Number(b.from_amount), to_amount: Math.floor(Number(b.from_amount) * price * 1e8) / 1e8, price: price, px_from_usdt: PX[b.from_asset], px_to_usdt: PX[b.to_asset],
+          from_amount: Number(b.from_amount), to_amount: Math.floor(Number(b.from_amount) * price * 1e8) / 1e8, price: price, px_from_usdt: PX[b.from_asset], px_to_usdt: PX[b.to_asset], usd_value: Math.round(Number(b.from_amount) * PX[b.from_asset] * 100) / 100,
           source: 'binance:data-api.binance.vision', side: b.side || null, created_at: new Date().toISOString(), expires_at: new Date(Date.now() + (FX.quoteTtl || 30) * 1000).toISOString() };
         quotes[q.id] = q; (window.__quotes = window.__quotes || []).push(q);
         return Promise.resolve({ data: { ok: true, fee: 0, ttl_s: 30, quote: q }, error: null });

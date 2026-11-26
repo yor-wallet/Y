@@ -149,7 +149,8 @@ async function pin(page){ await page.waitForSelector('.ps #ps-dots', { timeout: 
     await page.dispatchEvent('#wb-amt', 'input'); await page.dispatchEvent('#wb-acc', 'input'); await page.dispatchEvent('#wb-iban', 'input'); await wait(900); await page.click('#wb-next');
     assert.match(await page.locator('#wb-e-iban').innerText(), /IBAN/);
     await page.fill('#wb-iban', ''); await page.dispatchEvent('#wb-iban', 'input'); await wait(900); await page.click('#wb-next');
-    await page.waitForSelector('#withdraw-confirm.active #wr-go'); await page.check('#wr-ok'); await page.click('#wr-go'); await pin(page);
+    await page.waitForSelector('#withdraw-confirm.active #wr-go'); await page.check('#wr-ok'); await page.click('#wr-go'); await page.waitForTimeout(500);
+    assert.equal(await page.locator('.ps #ps-dots').count(), 0, '16.4.0 : 25 OMR (~65 USD) — aucun code sous 500 USD');
     await page.waitForSelector('#withdraw-track.active .wd-steps', { timeout: 8000 }); await wait(800);
     const a = (await calls(page, 'withdraw_request'))[0].args;
     assert.equal(a.p_amount, 25); assert.equal(a.p_bank_code, 'BMCT'); assert.equal(a.p_iban, null); assert.ok(a.p_key.length >= 16);

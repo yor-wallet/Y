@@ -48,7 +48,7 @@ const pin = async page => { await wait(700); for (const k of '482913') await pag
     assert.equal(await page.locator('#spot [data-tr-tf="4H"]').getAttribute('aria-pressed'), 'true');
     await page.click('#spot [data-tr="pair"]'); await wait(500); await page.click('.tr-sheet [data-sym="BTC"]'); await wait(1200);
   });
-  await ok('ordre au marché : 50 % du solde, prix du serveur, vérification, code, « En cours » (rien n’est crédité)', async () => {
+  await ok('ordre au marché : 50 % du solde, prix du serveur, vérification, sans code sous 500 USD, « En cours » (rien n’est crédité)', async () => {
     await page.click('#spot [data-tr-pct="50"]'); await wait(200);
     assert.equal(await page.inputValue('#tr-amt'), '125');
     assert.match(await page.locator('#tr-est').innerText(), /BTC/);
@@ -61,7 +61,7 @@ const pin = async page => { await wait(700); for (const k of '482913') await pag
     assert.equal(await cur(page), 'trade-done');
     assert.match(await page.locator('.wd-hero').innerText(), /En cours/);
     const calls = await page.evaluate(() => (window.__rpcLog || []).filter(x => x.name === 'swap_execute'));
-    assert.equal(calls.length, 1); assert.ok(calls[0].args.p_pin_grant); assert.ok(calls[0].args.p_idempotency_key);
+    assert.equal(calls.length, 1); assert.equal(calls[0].args.p_pin_grant, null, '16.4.0 : 125 USDT ≤ 500 USD → aucun code'); assert.ok(calls[0].args.p_idempotency_key);
     const w = await page.evaluate(() => (Runtime.wallets || []).find(x => x.asset === 'USDT'));
     assert.equal(Number(w.availableBalance), 125, 'the amount paid is set aside');
     assert.equal(await page.evaluate(() => (Runtime.wallets || []).filter(x => x.asset === 'BTC').reduce((a, x) => a + Number(x.balance), 0)), 0.01, 'nothing is credited before the administrator');

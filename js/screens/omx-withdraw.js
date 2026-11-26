@@ -248,7 +248,8 @@ const OMXWithdraw = (() => {
     const r = S.review; if (!r || r.busy) return;
     if (navigator.onLine === false){ toast(t('px.offlineSend'), 'error'); return; }
     r.busy = true; UIKit.loading(btn, true);
-    const pin = await PinEngine.authorize();
+    /* 16.4.0 — bank (OMR): code only above 500 USD; crypto: no server price, the code is always asked */
+    const pin = await PinEngine.authorize(r.kind === 'bank' ? { usd: PinEngine.usdOf(r.d.amount, 'OMR') } : undefined);
     if (!pin.ok){ r.busy = false; UIKit.loading(btn, false); if (pin.error) toast(t(pin.error), 'error'); return; }
     S.track = { kind: r.kind, id: null, submitting: true, review: r };
     R.go('withdraw-track', { reset: true });

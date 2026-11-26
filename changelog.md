@@ -1,3 +1,17 @@
+# OM Wallet 16.4.0 (web + base) — code à 6 chiffres seulement au-delà de 500 USD, aucune biométrie pour les transactions
+
+Étape 3 du cahier des charges du 26/11, §9. Choix du propriétaire : le code personnel existant (vérifié par le serveur), avec un seuil.
+
+- **Règle** : jusqu'à 500 USD inclus, aucun code demandé par cette règle ; **strictement au-delà**, code à 6 chiffres obligatoire, vérifié par le serveur (`verify_pin` : 5 essais puis blocage 15 min ; jeton à usage unique valable 2 min, consommé par l'opération).
+- **Calcul côté serveur** (`supabase/migrations/20261128_pin_threshold_500usd.sql` + `_rollback.sql`, appliquée avec l'accord du propriétaire) : `_usd_of` (montant réellement débité → USD par `fx_rates`, les taux déjà utilisés), `_pin_gate` (code si > 500 USD ou valeur inconnue ; vérification en deux étapes toujours exigée). Branché dans `bank_send`, `fiat_send_external`, `intl_send` (débit en OMR), `transfer_fiat` (devise de l'envoi) et `swap_execute` (`usd_value` du devis fixé par le serveur). Une valeur envoyée par l'application n'est jamais utilisée. 5 fonctions sauvegardées (`function_backups`, tag `16.4.0-before`). **Testé dans la base (bloc annulé)** : 500 USD → sans code ; 500,01 → code exigé ; valeur ou devise inconnue → code exigé ; 192,25 OMR = 500,0038 USD.
+- **Crypto** : envois et retraits de crypto (`transfer_crypto`, `crypto_send_external`, `crypto_withdraw_request`) — le serveur n'a aucun cours en direct fiable pour ces actifs ; **aucun taux n'est inventé**, le code reste donc demandé à chaque fois.
+- **Application** : `PinEngine.authorize({ usd })` — estimation avec les taux de l'application (marge de 2 % sous le seuil), le serveur tranche. **Face ID / Touch ID / empreinte ne valident plus aucune transaction** (l'ancien coffre du code chiffré par Face ID est effacé). Face ID reste seulement pour ouvrir l'application ; textes mis à jour (fr / en / ar).
+- **Site public** : sécurité et « Trois étapes » mis à jour (code au-delà de 500 USD, aucune biométrie, vérification en deux étapes facultative).
+- **Tests** : nouveau `tests/ux/threshold.test.mjs` ; `omx` (retrait bancaire de 25 OMR sans code) et `trade` (échange de 125 USDT sans code) mis à jour ; faux serveur aligné ; les 26 suites passent.
+- **Non vérifié** : aucune opération réelle faite en production.
+
+---
+
 # OM Wallet 16.3.0 (web + base) — vérification en deux étapes (TOTP), appliquée côté serveur
 
 Étape 2 (seconde partie) du cahier des charges du 26/11, §7. Sans numéro de téléphone.
