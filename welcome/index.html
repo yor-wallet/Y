@@ -32,10 +32,12 @@
   <div class="wrap top-in">
     <a class="brand" href="/welcome" aria-label="OM Wallet"><img src="/assets/brand/om-logo-horizontal-white.png" alt="OM Wallet" width="150" height="43"></a>
     <nav class="nav" aria-label="Menu">
+      <a href="#services" data-i="nav.services">Prestations</a>
       <a href="#features" data-i="nav.features">Fonctionnalités</a>
       <a href="#markets" data-i="nav.markets">Marchés</a>
       <a href="#security" data-i="nav.security">Sécurité</a>
       <a href="#faq" data-i="nav.faq">Questions</a>
+      <a href="#support" data-i="nav.support">Assistance</a>
     </nav>
     <div class="top-end">
       <div class="langs" role="group" aria-label="Langue">
@@ -59,6 +61,7 @@
         <div class="ctas">
           <a class="btn btn-primary" href="/#/signup" data-i="cta.signup">Créer mon compte</a>
           <a class="btn btn-ghost" href="/" data-i="cta.open">Ouvrir l’application</a>
+          <a class="btn btn-link" href="#services" data-i="cta.discover">Découvrir les prestations</a>
         </div>
         <ul class="hero-facts">
           <li><b data-i="fact1.b">Web</b><span data-i="fact1.s">sur téléphone et ordinateur</span></li>
@@ -87,6 +90,25 @@
       </div>
       <div class="ticker" id="ticker" role="list"></div>
       <p class="note" data-i="mk.note">Cours publics de Binance (paires contre USDT), actualisés toutes les 15 secondes. Les cryptomonnaies sont volatiles : leur valeur peut baisser comme monter.</p>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="services" id="services" aria-labelledby="sv-t">
+    <div class="wrap">
+      <div class="sec-head"><p class="eyebrow" data-i="sv.eyebrow">Prestations</p><h2 id="sv-t" data-i="sv.title">Toutes les prestations d’OM Wallet</h2>
+        <p class="lead" data-i="sv.lead">Chaque service ci-dessous existe dans l’application aujourd’hui. Vous pouvez le découvrir ici sans créer de compte.</p></div>
+      <nav class="svc-index" aria-label="Prestations"><a href="#svc-dep" data-i="sv.dep.t">Déposer des cryptos</a><a href="#svc-swp" data-i="sv.swp.t">Échanger (Swap)</a><a href="#svc-mkt" data-i="sv.mkt.t">Marchés et Spot</a><a href="#svc-snd" data-i="sv.snd.t">Envoyer à un utilisateur</a><a href="#svc-wd" data-i="sv.wd.t">Retirer</a><a href="#svc-hst" data-i="sv.hst.t">Suivi et historique</a><a href="#svc-acc" data-i="sv.acc.t">Compte et appareils</a></nav>
+      <div class="svc-grid">
+<article class="svc" id="svc-dep"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h3v3h-3zM18 18h3v3h-3z"/></svg></span><h3 data-i="sv.dep.t">Déposer des cryptos</h3><p class="svc-p" data-i="sv.dep.p">Recevez Bitcoin, Ethereum, USDT ou XRP sur votre adresse personnelle, créée par notre serveur pour votre compte.</p><p class="svc-h" data-i="sv.how">Comment ça marche</p><ol class="svc-steps"><li><span data-i="sv.dep.s1">Ouvrez Dépôt et choisissez l’actif et le réseau.</span></li><li><span data-i="sv.dep.s2">Copiez votre adresse ou scannez son QR code.</span></li><li><span data-i="sv.dep.s3">Envoyez depuis votre autre portefeuille ou plateforme ; le montant est crédité une fois l’opération vérifiée.</span></li></ol><p class="svc-k"><b data-i="sv.know">Bon à savoir</b> <span data-i="sv.dep.k">Envoyez uniquement l’actif choisi sur le réseau choisi. Si une adresse n’est pas disponible, l’application l’indique : elle n’en invente jamais.</span></p></article>
+<article class="svc" id="svc-swp"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg></span><h3 data-i="sv.swp.t">Échanger (Swap)</h3><p class="svc-p" data-i="sv.swp.p">Convertissez un actif en un autre à un prix fixé par le serveur, valable 30 secondes, sans frais d’échange.</p><p class="svc-h" data-i="sv.how">Comment ça marche</p><ol class="svc-steps"><li><span data-i="sv.swp.s1">Choisissez l’actif à payer, celui à recevoir, puis le montant.</span></li><li><span data-i="sv.swp.s2">Vérifiez le prix et le montant reçu avant de confirmer.</span></li><li><span data-i="sv.swp.s3">Suivez l’opération : « En cours », puis « Confirmé », avec un e-mail dans votre langue.</span></li></ol><p class="svc-k"><b data-i="sv.know">Bon à savoir</b> <span data-i="sv.swp.k">Minimum : 1 USD de valeur. Le prix n’est jamais calculé par votre appareil.</span></p></article>
+<article class="svc" id="svc-mkt"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 4 8-8M15 8h5v5"/></svg></span><h3 data-i="sv.mkt.t">Marchés et Spot</h3><p class="svc-p" data-i="sv.mkt.p">Suivez BTC, ETH, BNB, SOL, XRP, LTC et USDC : graphique, carnet d’ordres et dernières transactions en temps réel.</p><p class="svc-h" data-i="sv.how">Comment ça marche</p><ol class="svc-steps"><li><span data-i="sv.mkt.s1">Ouvrez Marchés pour voir les cours et vos favoris.</span></li><li><span data-i="sv.mkt.s2">Touchez un actif : son graphique s’affiche sur plusieurs périodes.</span></li><li><span data-i="sv.mkt.s3">Passez sur Spot pour le carnet d’ordres et les dernières transactions.</span></li></ol><p class="svc-k"><b data-i="sv.know">Bon à savoir</b> <span data-i="sv.mkt.k">Cours publics de Binance. Les cryptomonnaies sont volatiles : leur valeur peut baisser comme monter.</span></p></article>
+<article class="svc" id="svc-snd"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 7l9 6 9-6M3 5h18v14H3z"/></svg></span><h3 data-i="sv.snd.t">Envoyer à un utilisateur</h3><p class="svc-p" data-i="sv.snd.p">Envoyez des cryptos à un autre utilisateur OM Wallet, sans recopier d’adresse blockchain.</p><p class="svc-h" data-i="sv.how">Comment ça marche</p><ol class="svc-steps"><li><span data-i="sv.snd.s1">Touchez Envoyer sur l’accueil.</span></li><li><span data-i="sv.snd.s2">Indiquez l’identifiant OM Wallet ou l’adresse e-mail du destinataire, puis le montant.</span></li><li><span data-i="sv.snd.s3">Vérifiez le récapitulatif, puis confirmez.</span></li></ol><p class="svc-k"><b data-i="sv.know">Bon à savoir</b> <span data-i="sv.snd.k">Le destinataire doit déjà avoir un compte OM Wallet.</span></p></article>
+<article class="svc" id="svc-wd"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 10l9-6 9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/></svg></span><h3 data-i="sv.wd.t">Retirer</h3><p class="svc-p" data-i="sv.wd.p">Retirez vers un compte bancaire en rial omanais ou vers une adresse crypto externe.</p><p class="svc-h" data-i="sv.how">Comment ça marche</p><ol class="svc-steps"><li><span data-i="sv.wd.s1">Ouvrez Retrait et choisissez banque ou crypto.</span></li><li><span data-i="sv.wd.s2">Saisissez les informations et le montant ; les frais éventuels s’affichent avant la confirmation.</span></li><li><span data-i="sv.wd.s3">Suivez la demande étape par étape jusqu’à « Confirmé ».</span></li></ol><p class="svc-k"><b data-i="sv.know">Bon à savoir</b> <span data-i="sv.wd.k">Une demande de retrait est vérifiée avant d’être exécutée : elle reste « En cours » jusque-là.</span></p></article>
+<article class="svc" id="svc-hst"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 8v5l3 2M3 12a9 9 0 109-9 9 9 0 00-6.4 2.6L3 8M3 3v5h5"/></svg></span><h3 data-i="sv.hst.t">Suivi et historique</h3><p class="svc-p" data-i="sv.hst.p">Chaque opération a son état, son reçu et son e-mail de confirmation dans votre langue.</p><p class="svc-h" data-i="sv.how">Comment ça marche</p><ol class="svc-steps"><li><span data-i="sv.hst.s1">L’historique liste toutes vos opérations.</span></li><li><span data-i="sv.hst.s2">Touchez une opération pour voir son détail et son reçu.</span></li><li><span data-i="sv.hst.s3">Les notifications vous préviennent des mouvements sur votre compte.</span></li></ol><p class="svc-k"><b data-i="sv.know">Bon à savoir</b> <span data-i="sv.hst.k">Rien n’est « confirmé » tant que le serveur ne l’a pas confirmé.</span></p></article>
+<article class="svc" id="svc-acc"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0"/></svg></span><h3 data-i="sv.acc.t">Compte et appareils</h3><p class="svc-p" data-i="sv.acc.p">Arabe, anglais ou français, thème sombre ou clair, et gestion de vos sessions et appareils connectés.</p><p class="svc-h" data-i="sv.how">Comment ça marche</p><ol class="svc-steps"><li><span data-i="sv.acc.s1">Réglages : langue, thème et notifications.</span></li><li><span data-i="sv.acc.s2">Appareils et sessions : voyez où votre compte est ouvert.</span></li><li><span data-i="sv.acc.s3">Aide : questions fréquentes et contact du support.</span></li></ol><p class="svc-k"><b data-i="sv.know">Bon à savoir</b> <span data-i="sv.acc.k">Application web : rien à installer, ou ajoutez-la à l’écran d’accueil de votre téléphone.</span></p></article>
+      </div>
+      <div class="ctas center"><a class="btn btn-primary" href="/#/signup" data-i="sv.cta">Créer mon compte pour les utiliser</a></div>
     </div>
   </section>
 
@@ -155,6 +177,8 @@
         <li><b data-i="k2.t">Code à chaque opération sensible</b><span data-i="k2.p">Votre code à 6 chiffres est demandé pour envoyer, échanger ou retirer.</span></li>
         <li><b data-i="k3.t">Prix fixés côté serveur</b><span data-i="k3.p">Le prix d’un échange vient de Binance et est fixé par notre serveur, jamais par l’appareil.</span></li>
         <li><b data-i="k4.t">Adresses réelles uniquement</b><span data-i="k4.p">Une adresse de dépôt n’est jamais inventée : si le serveur n’en a pas, l’application le dit clairement.</span></li>
+        <li><b data-i="k5.t">Chaque compte ne voit que ses données</b><span data-i="k5.p">Les règles d’accès de la base de données limitent chaque compte à ses propres informations.</span></li>
+        <li><b data-i="k6.t">Clés des adresses protégées</b><span data-i="k6.p">Les clés des adresses de dépôt sont générées et conservées chiffrées côté serveur, jamais dans l’application.</span></li>
       </ul>
     </div>
   </section>
@@ -168,6 +192,20 @@
       <details><summary data-i="q3">Y a-t-il des frais ?</summary><p data-i="a3">Les échanges (Swap) sont sans frais. Pour un retrait, les frais éventuels (par exemple les frais de réseau) sont affichés avant que vous confirmiez.</p></details>
       <details><summary data-i="q4">Pourquoi mon opération est-elle « en cours » ?</summary><p data-i="a4">Chaque opération est vérifiée avant d’être créditée. Elle passe ensuite à « Confirmé », et vous recevez un e-mail dans votre langue.</p></details>
       <details><summary data-i="q5">Existe-t-il une application Android ?</summary><p data-i="a5">L’application fonctionne dès maintenant dans le navigateur de votre téléphone et de votre ordinateur. Une application Android est en préparation.</p></details>
+      <details><summary data-i="q6">J’ai oublié mon mot de passe.</summary><p data-i="a6">Sur l’écran de connexion, touchez « Mot de passe oublié » et indiquez votre e-mail : vous recevez un lien pour en choisir un nouveau.</p></details>
+      <details><summary data-i="q7">Quelles langues sont disponibles ?</summary><p data-i="a7">Arabe, anglais et français, y compris pour les e-mails ; l’arabe s’affiche de droite à gauche.</p></details>
+      <details><summary data-i="q8">Puis-je explorer sans créer de compte ?</summary><p data-i="a8">Oui : ce site présente les prestations et les cours en direct sans inscription. Un compte n’est nécessaire que pour utiliser votre portefeuille.</p></details>
+      <details><summary data-i="q9">Je ne reconnais pas une activité sur mon compte.</summary><p data-i="a9">Changez votre mot de passe, puis contactez immédiatement le support par e-mail.</p></details>
+      <details><summary data-i="q10">Comment contacter le support ?</summary><p data-i="a10">Par e-mail à yordigitalefinance@gmail.com, ou depuis l’écran Aide de l’application.</p></details>
+    </div>
+  </section>
+
+  <!-- SUPPORT -->
+  <section class="support" id="support" aria-labelledby="su-t">
+    <div class="wrap narrow support-in">
+      <div><p class="eyebrow" data-i="su.eyebrow">Assistance</p><h2 id="su-t" data-i="su.title">Une question ? Écrivez-nous.</h2>
+        <p class="lead" data-i="su.p">Le support répond par e-mail. Dans l’application, l’écran Aide réunit les questions fréquentes et le même contact.</p></div>
+      <a class="btn btn-primary" href="mailto:yordigitalefinance@gmail.com" data-i="su.btn">Écrire au support</a>
     </div>
   </section>
 

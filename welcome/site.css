@@ -225,3 +225,30 @@ details p{padding:0 20px 20px;color:var(--ink2)}
   *,*::before,*::after{animation:none!important;transition:none!important}
   .rv{opacity:1;transform:none}
 }
+
+/* ---------- 16.1.0 — prestations, assistance ---------- */
+.services{padding:96px 0 40px}
+.svc-index{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 28px}
+.svc-index a{padding:9px 16px;border-radius:999px;background:var(--card);border:1px solid var(--edge2);color:var(--ink2);text-decoration:none;font-weight:600;font-size:14px;transition:color .2s,border-color .2s,background .2s}
+.svc-index a:hover{color:var(--y-hi);border-color:var(--y-line);background:var(--y-soft)}
+.svc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:32px}
+.svc{padding:28px;border-radius:var(--r-l);background:var(--card);border:1px solid var(--edge2);scroll-margin-top:96px;transition:border-color .3s,box-shadow .3s}
+.svc:hover,.svc:target{border-color:var(--y-line);box-shadow:0 22px 44px -26px rgba(255,200,0,.28)}
+.svc h3{font-size:22px;margin:16px 0 8px}
+.svc-p{color:var(--ink2);font-size:15px}
+.svc-h{margin:20px 0 8px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--y);font-weight:700}
+html[lang="ar"] .svc-h{letter-spacing:0}
+.svc-steps{margin:0;padding:0;list-style:none;display:grid;gap:8px;counter-reset:sv}
+.svc-steps li{counter-increment:sv;display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:start;font-size:15px;color:var(--ink)}
+.svc-steps li::before{content:counter(sv);display:grid;place-items:center;width:28px;height:28px;border-radius:9px;background:var(--y-soft);color:var(--y-hi);font-weight:700;font-size:13px}
+.svc-k{margin-top:18px;padding:12px 14px;border-radius:var(--r-s);background:var(--card2);border:1px solid var(--edge2);color:var(--ink2);font-size:14px}
+.svc-k b{color:var(--ink)}
+.btn-link{background:none;border:0;color:var(--y-hi);padding-inline:6px}
+.btn-link:hover{text-decoration:underline}
+.support{padding:56px 0}
+.support-in{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;padding:32px;border-radius:var(--r-l);background:var(--card);border:1px solid var(--edge2)}
+.support-in h2{font-size:clamp(24px,3vw,34px);font-weight:800}
+.support-in .lead{margin-top:8px;max-width:52ch}
+@media (max-width:860px){.svc-grid{grid-template-columns:1fr}.services{padding-top:64px}.svc{padding:22px}}
+@media (prefers-reduced-motion:reduce){.svc,.svc-index a{transition:none}}
+@media (min-width:861px){.svc-grid>.svc:last-child:nth-child(odd){grid-column:1/-1}.svc-grid>.svc:last-child:nth-child(odd) .svc-steps{grid-template-columns:repeat(3,1fr)}}

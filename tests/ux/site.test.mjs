@@ -129,6 +129,28 @@ async function site(opts = {}){
   });
   await a.ctx.close();
 }
+{
+  console.log('\n[site vitrine — prestations (16.1.0)]');
+  for (const [loc, lang, titre, bouton] of [['fr-FR', 'fr', /Toutes les prestations/, /Créer mon compte pour les utiliser/], ['en-US', 'en', /Everything OM Wallet offers/, /Create my account to use them/], ['ar-OM', 'ar', /كل ما يقدّمه/, /أنشئ حسابي/]]){
+    const { ctx, page, errs } = await site({ locale: loc });
+    await ok(lang + ' : catalogue de 7 prestations, index, guide en 3 étapes chacune, sans erreur ni défilement horizontal', async () => {
+      assert.deepEqual(errs, []);
+      assert.match(await page.locator('#sv-t').innerText(), titre);
+      assert.equal(await page.locator('.svc').count(), 7);
+      assert.equal(await page.locator('.svc-index a').count(), 7);
+      assert.equal(await page.locator('.svc-steps li').count(), 21);
+      assert.match(await page.locator('.services .ctas a').innerText(), bouton);
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), 0);
+      assert.equal(await page.evaluate(() => [...document.querySelectorAll('.svc [data-i]')].filter(e => !e.textContent.trim()).length), 0);
+    });
+    await ok(lang + ' : FAQ de 10 questions, assistance par e-mail réel, chaque lien d’index mène à une prestation', async () => {
+      assert.equal(await page.locator('#faq details').count(), 10);
+      assert.equal(await page.locator('#support a[href^="mailto:yordigitalefinance@gmail.com"]').count(), 1);
+      for (const h of await page.locator('.svc-index a').evaluateAll(a => a.map(x => x.getAttribute('href')))) assert.equal(await page.locator(h).count(), 1, h);
+    });
+    await ctx.close();
+  }
+}
 await browser.close(); srv.close();
 console.log(failed ? '\n' + failed + ' FAILED' : '\nALL PASSED');
 process.exit(failed ? 1 : 0);

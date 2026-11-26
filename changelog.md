@@ -1,3 +1,16 @@
+# OM Wallet 16.1.0 (web) — site public : catalogue des prestations, assistance, FAQ étendue
+
+Étape 1 du cahier des charges du 26/11 (le propriétaire a demandé de commencer par le site public). Rien n'est touché dans l'application ni dans la base.
+
+- **Catalogue de 7 prestations** (`/welcome#services`) : Déposer, Échanger (Swap), Marchés et Spot, Envoyer à un utilisateur, Retirer, Suivi et historique, Compte et appareils. Chacune : résumé, guide en 3 étapes, « bon à savoir ». Index à puces, bouton « Créer mon compte pour les utiliser », lien « Découvrir les prestations » dans l'en-tête de page. **Seules les prestations qui existent dans l'application** (vérifié : minimum du Swap 1 USD, envoi par identifiant ou e-mail, retrait banque OMR / crypto). Ni virement fiat vers un numéro (Oman, Orange Money), dont l'accès depuis l'application n'est pas confirmé, ni transfert de crédit (réservé à l'administrateur) : non présentés.
+- **Sécurité** : deux garanties réelles ajoutées (chaque compte ne voit que ses données — RLS ; clés des adresses chiffrées côté serveur).
+- **FAQ** : 10 questions (mot de passe oublié, langues, explorer sans compte, activité inconnue, contact). **Assistance** : section avec l'e-mail réel du support, sans faux service client.
+- **Trois langues** (fr / en / ar de droite à gauche) ; test `tests/ux/site.test.mjs` étendu (7 prestations, 21 étapes, 10 questions, index, sans défilement horizontal, en fr / en / ar).
+- **À réviser quand les étapes suivantes seront livrées** : le texte « numéro de téléphone » (créer un compte, question 1) et « code à chaque opération sensible » (sécurité, étape 2 de « Trois étapes ») décrivent l'application d'aujourd'hui ; ils deviendront faux avec l'inscription sans téléphone et la règle des 500 USD.
+- **Non vérifié** : aucun essai sur un vrai téléphone ; pas encore d'images AVIF.
+
+---
+
 # OM Wallet 16.0.0 (web) — un seul système de mouvement, vérifié image par image
 
 Demande du propriétaire (26/11) : auditer tout le mouvement de l'application, puis l'amener au niveau d'iOS et des meilleures applications financières — sans animation gadget, sans rien casser, en mesurant.
