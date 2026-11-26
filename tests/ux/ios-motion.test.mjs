@@ -23,7 +23,7 @@ const state = (page, id) => page.evaluate(id => { const e = document.getElementB
     const v = await page.evaluate(() => ({ s: getComputedStyle(document.documentElement).getPropertyValue('--ios-smooth'), d: getComputedStyle(document.documentElement).getPropertyValue('--ios-snappy-d') }));
     assert.match(v.s, /linear\(|cubic-bezier/); assert.match(v.d, /\d+ms/);
   });
-  await ok('push home -> settings: the new screen comes forward out of the glass, the old one recedes, then both settle', async () => {
+  await ok('push home -> settings (16.0.0): the new screen slides in from the trailing edge over the old one, which drifts 30 % under a veil — the same motion as the edge swipe — then both settle', async () => {
     await page.evaluate(() => R.go('settings'));
     await wait(110);
     const a = await state(page, 'settings'), b = await state(page, 'home');
@@ -41,7 +41,7 @@ const state = (page, id) => page.evaluate(id => { const e = document.getElementB
     assert.ok(/ios-collapsed/.test((await state(page, 'settings')).cls));
     await page.evaluate(() => { document.getElementById('settings').scrollTop = 0; }); await wait(250);
   });
-  await ok('pop (back button): settings recedes into the glass while home comes forward', async () => {
+  await ok('pop (back button, 16.0.0): settings slides back out to the trailing edge while home returns from under the veil', async () => {
     await page.click('#settings [data-action="back"]'); await wait(110);
     const a = await state(page, 'settings'), b = await state(page, 'home');
     assert.ok(/ios-leaving/.test(a.cls) && b.active, 'during pop: ' + a.cls); assert.equal(a.vis, 'visible');

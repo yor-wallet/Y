@@ -67,7 +67,7 @@ html:root body input:focus-visible,html:root body textarea:focus-visible{outline
 html body .screen{background:var(--canvas);transition:none!important;--enter-x:0px}
 html body .screen.active{animation:none!important;transform:none;opacity:1;visibility:visible}
 html body .screen:not(.active){opacity:0;visibility:hidden}
-html body .screen.ios-leaving{opacity:1!important;visibility:visible!important;pointer-events:none}
+html body .screen.ios-leaving{opacity:1;visibility:visible!important;pointer-events:none}
 html body .screen.ios-entering{opacity:1;visibility:visible}
 #settings,#profile,#profile-edit,#help,#privacy,#about,#devices,#sessions,#notifications,#banks,#contact-add{background:var(--grouped)}
 .screen[data-ios-mode="push"]{box-shadow:-14px 0 36px -12px rgba(0,0,30,.3)}

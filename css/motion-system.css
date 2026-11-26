@@ -1,0 +1,177 @@
+/* ==========================================================================
+   OM WALLET — MOTION SYSTEM (16.0.0). The last stylesheet. Audit, measures and rules: docs/mouvement/AUDIT.md.
+   - one set of tokens: the springs are computed by js/ui/ios-motion.js (--m-smooth, --m-push, --m-snappy, --m-gentle, --m-press
+     and their -d durations); every older family (--t-*, --om-*, --w-*, --px-*, --ds-*, --mo-*) becomes an alias of them
+   - one press language, sized by the control (button .97, card .985, round icon .92, tab .94, list row: iOS highlight, no scale)
+   - sheets and alerts leave the way they came (they vanished in one frame), no blur behind them, the app scales back on the same spring
+   - loops on the compositor only (transform / opacity), paused on hidden screens: no style work per frame when nothing moves
+   - no strong bounce, no spin, no balloon: the dated effects are toned down
+   Under « reduce motion »: no movement, short fades only.
+   ========================================================================== */
+
+/* ---------- 1. tokens, and every older family mapped onto them ---------- */
+html:root:root:root:root{
+  --m-out:cubic-bezier(.2,.8,.2,1);          /* decelerate: what arrives */
+  --m-in:cubic-bezier(.4,0,1,1);             /* accelerate: what leaves */
+  --m-std:cubic-bezier(.32,.72,0,1);         /* UIKit standard: fallback of the springs */
+  --m-d-xs:120ms; --m-d-s:200ms; --m-d-m:320ms; --m-d-l:480ms;
+  --t-instant:var(--m-d-xs); --t-fast:var(--m-d-s); --t-normal:var(--m-d-m); --t-slow:var(--m-d-l); --t-major:var(--m-d-l);
+  --om-t-tap:var(--m-d-xs); --om-t-move:var(--m-d-m); --om-t-sheet:var(--m-d-l); --om-ease:var(--m-out);
+  --w-ease:var(--m-out); --w-spring:var(--m-gentle,var(--m-out));
+  --px-ease:var(--m-out); --px-spring:var(--m-gentle,var(--m-out));
+  --mo-out:var(--m-out); --mo-spring:var(--m-gentle,var(--m-out));
+  --ease-ds:var(--m-out); --t-ds-1:var(--m-d-xs); --t-ds-2:var(--m-d-s); --t-ds-3:var(--m-d-m);
+  --ease:var(--m-std); --ease-out:var(--m-out);
+  --m-press-bg:rgba(255,255,255,.07);
+}
+html:root:root:root:root[data-theme="light"]{--m-press-bg:rgba(60,55,40,.08)}
+
+/* ---------- 2. screens ---------- */
+/* push / pop slide horizontally now: both screens are opaque while they move (they were transparent: the old one showed through) */
+html:root:root:root:root body .screen:is(.ios-entering,.ios-leaving){background:var(--lt-bg,#0B0A07)!important}
+/* the screen being left stays visible while it moves — as a normal declaration: an « !important » opacity (ui.css until 16.0.0) beats
+   every animation, so the old tab never faded and the new one was only painted over it (both visible at once) */
+html:root:root:root:root body .screen.ios-leaving{opacity:1}
+html:root:root:root:root body .screen[data-ios-mode="push"]{box-shadow:-18px 0 40px -18px rgba(0,0,0,.55)}
+html:root:root:root:root[dir="rtl"] body .screen[data-ios-mode="push"]{box-shadow:18px 0 40px -18px rgba(0,0,0,.55)}
+html:root:root:root:root[data-theme="light"] body .screen[data-ios-mode="push"]{box-shadow:-14px 0 34px -16px rgba(40,30,10,.28)}
+html:root:root:root:root body .screen[data-ios-mode="sheet"]{border-radius:16px 16px 0 0;box-shadow:0 -12px 40px -14px rgba(0,0,0,.5)}
+/* a screen coming back used to be animated twice (CSS « from-back » + the spring of ios-motion.js): only the spring remains */
+html:root:root:root:root body .screen.active.from-back{animation:none!important}
+/* entrances: one cascade on the compositor (js/ui/omw.js) — the per-block CSS rise of 620 ms is gone */
+html:root:root:root:root body .w-rise{animation:none!important}
+@keyframes dsRise{from{opacity:0}to{opacity:1}}
+html:root:root:root:root body .w-reveal{opacity:0;transform:translate3d(0,10px,0);transition:opacity 280ms var(--m-out),transform var(--m-smooth-d,500ms) var(--m-smooth,var(--m-out))!important}
+html:root:root:root:root body .w-reveal.w-in{opacity:1;transform:none}
+
+/* ---------- 3. sheets and alerts ---------- */
+html:root:root:root:root body .ov .ov-panel{animation:none!important}
+html:root:root:root:root body .ov:not(.is-modal) .ov-panel{transform:translate3d(0,100%,0);opacity:1;transition:transform 300ms cubic-bezier(.4,0,.7,1)!important}
+html:root:root:root:root body .ov.is-open:not(.is-modal) .ov-panel{transform:translate3d(0,0,0);transition:transform var(--m-smooth-d,500ms) var(--m-smooth,var(--m-std))!important}
+html:root:root:root:root body .ov.is-modal .ov-panel{opacity:0;transform:translate3d(0,8px,0) scale(.96);transition:opacity 180ms var(--m-out),transform 220ms var(--m-in)!important}
+html:root:root:root:root body .ov.is-modal.is-open .ov-panel{opacity:1;transform:none;transition:opacity 220ms var(--m-out),transform var(--m-gentle-d,420ms) var(--m-gentle,var(--m-out))!important}
+@media (min-width:1024px){
+  html:root:root:root:root body .ov:not(.is-modal) .ov-panel{opacity:0;transform:translate3d(0,16px,0) scale(.97);transition:opacity 180ms var(--m-out),transform 220ms var(--m-in)!important}
+  html:root:root:root:root body .ov.is-open:not(.is-modal) .ov-panel{opacity:1;transform:none;transition:opacity 220ms var(--m-out),transform var(--m-gentle-d,420ms) var(--m-gentle,var(--m-out))!important}
+}
+/* the veil: dims, no blur (a blur behind a moving sheet is redrawn every frame) */
+html:root:root:root:root body .ov-backdrop{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;transition:opacity 320ms var(--m-out)!important}
+html:root:root:root:root body .ov:not(.is-open) .ov-backdrop{transition:opacity 260ms var(--m-in)!important}
+/* what is inside a sheet arrives with it, once, briefly (was a 500 ms rise of every child after the panel) */
+@keyframes mSheetIn{from{opacity:0;transform:translate3d(0,6px,0)}to{opacity:1;transform:none}}
+html:root:root:root:root body .ov.is-open .ov-panel > *{animation:mSheetIn 320ms var(--m-out) 60ms both!important}
+/* the app behind a sheet steps back on the same spring; its corners round at once (animating 4 radii repainted the whole app) */
+html:root:root:root:root body #app{transition:transform var(--m-smooth-d,500ms) var(--m-smooth,var(--m-std))!important}
+html:root:root:root:root body.ios-sheet-open #app{transform:translate3d(0,calc(env(safe-area-inset-top,0px) * .5 + 6px),0) scale(.94)}
+/* a wide screen is not a phone: the sheet sits in the middle as a dialog and nothing behind it steps back (the whole app, sidebar
+   included, used to shrink behind it) */
+@media (min-width:1024px){
+  html:root:root:root:root body.ios-sheet-open #app{transform:none;border-radius:0}
+  html:root:root:root:root body .ov:not(.is-modal) .ov-panel{border-radius:28px!important;border-bottom:1px solid var(--lt-edge,rgba(255,255,255,.08))!important}
+}
+
+/* ---------- 4. press: one language ---------- */
+html:root:root:root:root body :is(.btn,.omx-act,.lt-act,.omx-pick,.chip,.nav-item,.hub-circ,.topbar-back,.w-sq,.w-pill,.w-promo-card,.ds-eye,.yd-nav button,.omx-net.pick,.wp-skip,.lt-key,.lt-mv,.omx-star,.yb-svc,.px-chip,.wd-max,.wd-paste,.tr-flip,.tr-pairbtn){
+  transition-property:transform,background-color,color,opacity,filter,box-shadow;
+  transition-duration:var(--m-snappy-d,360ms),260ms,200ms,200ms,200ms,260ms;
+  transition-timing-function:var(--m-snappy,var(--m-out)),var(--m-out),var(--m-out),var(--m-out),var(--m-out),var(--m-out)}
+html:root:root:root:root body :is(.btn,.w-pill,.px-chip,.wd-max,.wd-paste,.omx-pick,.wp-skip,.chip):is(.m-down,:active){transform:scale(.97)}
+html:root:root:root:root body :is(.lt-mv,.w-promo-card,.yb-svc,.omx-act,.lt-act,.tr-pairbtn):is(.m-down,:active){transform:scale(.985)}
+html:root:root:root:root body :is(.topbar-back,.w-sq,.hub-circ,.ds-eye,.omx-star,.tr-flip,.nav-cta .nav-cta-tile):is(.m-down,:active),
+html:root:root:root:root body .nav-cta:is(.m-down,:active) .nav-cta-tile{transform:scale(.92)}
+html:root:root:root:root body #bottom-nav .nav-item:not(.nav-cta):is(.m-down,:active){transform:scale(.94)}
+/* …and its icon does not shrink a second time inside it (friendly.css: 0.86, 0.81 in all); the icon's own overshooting transition
+   (v12.css, 1.6 — inert, its transform is pinned) is dropped from the vocabulary */
+html:root:root:root:root body #bottom-nav .nav-item:not(.nav-cta):is(.m-down,:active) .nav-ic{transform:none}
+html:root:root:root:root body #bottom-nav .nav-item svg{transition:none}
+html:root:root:root:root body .nav-cta:is(.m-down,:active){transform:none}
+html:root:root:root:root body .lt-key:is(.m-down,:active){transform:scale(.92);background-color:var(--m-press-bg)}
+/* home quick actions (a round icon over its label): the circle sinks like a round button, the label stays put */
+html:root:root:root:root body .lt-acts > .omx-act:is(.m-down,:active){transform:none}
+html:root:root:root:root body .lt-acts > .omx-act > i{transition:transform var(--m-snappy-d,360ms) var(--m-snappy,var(--m-out))}
+html:root:root:root:root body .lt-acts > .omx-act.m-down > i{transition-duration:var(--m-press-d,110ms);transition-timing-function:var(--m-press,var(--m-out))}
+html:root:root:root:root body .lt-acts > .omx-act:is(.m-down,:active) > i{transform:scale(.92)}
+/* the touch going down is immediate; the way back is the spring above */
+html:root:root:root:root body :is(.btn,.omx-act,.lt-act,.omx-pick,.chip,.nav-item,.hub-circ,.topbar-back,.w-sq,.w-pill,.w-promo-card,.ds-eye,.omx-net.pick,.wp-skip,.lt-key,.lt-mv,.omx-star,.yb-svc,.px-chip,.wd-max,.wd-paste,.tr-flip,.tr-pairbtn).m-down,
+html:root:root:root:root body .nav-cta.m-down .nav-cta-tile{transition-duration:var(--m-press-d,110ms),0s,120ms,120ms,120ms,120ms;transition-timing-function:var(--m-press,var(--m-out))}
+/* list rows: the iOS highlight, no scale (it appears at once and fades out on release) */
+html:root:root:root:root body :is(.omx-row,.hub-row,.w-row,.settings-row,.item.tx-row,.omx-net.pick):is(.m-down,:active){transform:none!important;background-color:var(--m-press-bg)!important;transition:background-color 0s!important}
+html:root:root:root:root body :is(.omx-row,.hub-row,.w-row,.settings-row,.item.tx-row){transition:background-color 320ms var(--m-out)}
+/* the light under the finger: softer, it fades instead of flashing */
+@keyframes wLight{0%{transform:translate(-50%,-50%) scale(.2);opacity:.5}100%{transform:translate(-50%,-50%) scale(1);opacity:0}}
+html:root:root:root:root body .w-light{animation:wLight 560ms var(--m-out) forwards}
+
+/* ---------- 5. navigation: the liquid pill under the current tab (drawn by js/ui/motion.js) ---------- */
+html:root:root:root:root body #bottom-nav .nav-dock{position:relative}
+html:root:root:root:root body #bottom-nav .nav-ind{display:block!important;position:absolute;left:0;top:8px;bottom:auto;height:52px!important;border-radius:20px!important;
+  border:0!important;transform-origin:0 50%;transition:opacity .2s ease!important;z-index:0;pointer-events:none;
+  /* a drop of tinted glass: light from above and a hairline rim, which stretch with the drop */
+  background:linear-gradient(180deg,rgba(255,214,90,.19),rgba(255,200,0,.085) 72%)!important;
+  box-shadow:inset 0 1px 0 rgba(255,232,160,.20),inset 0 0 0 .5px rgba(255,214,90,.14)!important}
+html:root:root:root:root[data-theme="light"] body #bottom-nav .nav-ind{background:linear-gradient(180deg,rgba(150,108,0,.13),rgba(122,88,0,.075) 72%)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 0 0 .5px rgba(122,88,0,.12)!important}
+html:root:root:root:root body #bottom-nav .nav-item{position:relative;z-index:1}
+html:root:root:root:root body #bottom-nav .nav-item .nav-ic{display:inline-flex;transition:transform var(--m-snappy-d,360ms) var(--m-snappy,var(--m-out))}
+html:root:root:root:root body #bottom-nav .nav-item[aria-current="page"] .nav-ic{transform:translate3d(0,-1px,0) scale(1.04)}
+
+/* ---------- 6. numbers ---------- */
+/* the balance: the overlay that draws the digits (js/ui/motion.js); the text of the app stays underneath */
+html:root:root:root:root body .m-odo-on{position:relative;color:transparent!important}
+html:root:root:root:root body .m-odo{position:absolute;inset:0;display:block;color:var(--m-odo-c);text-align:inherit;white-space:pre;pointer-events:none;user-select:none;-webkit-user-select:none;font:inherit;letter-spacing:inherit}
+html:root:root:root:root body .m-od{position:relative;display:inline-block;clip-path:inset(0 -.06em)}
+html:root:root:root:root body .m-od-n{display:inline-block}
+html:root:root:root:root body .m-od-o{position:absolute;left:0;top:0}
+/* a value that moves: a short colour cue, no glow */
+@keyframes lvUp{0%{color:var(--lt-pos)}100%{}}
+@keyframes lvDn{0%{color:var(--lt-neg)}100%{}}
+html:root:root:root:root body .lv-up{animation:lvUp .9s var(--m-out)}
+html:root:root:root:root body .lv-dn{animation:lvDn .9s var(--m-out)}
+@keyframes lvType{0%{transform:scale(1.03)}100%{transform:none}}
+html:root:root:root:root body .lv-type{animation:lvType var(--m-snappy-d,360ms) var(--m-snappy,var(--m-out))}
+/* charts: when a chart takes the place of its loading block (opening, change of period) the line draws itself and the fill rises under
+   it, once — the fill used to appear at once under a 320 ms line on an older curve */
+@keyframes mAreaIn{from{opacity:0}to{opacity:1}}
+html:root:root:root:root body .omx-line{animation:omxDraw var(--m-d-l,480ms) var(--m-out) forwards}
+html:root:root:root:root body .omx-area{animation:mAreaIn var(--m-d-l,480ms) var(--m-out) 80ms both}
+
+/* ---------- 7. loops: compositor only, paused where nobody can see them ---------- */
+@keyframes mPulse{0%{transform:scale(1);opacity:.55}80%,100%{transform:scale(2.6);opacity:0}}
+html:root:root:root:root body .omx-status.st-live i{animation:none!important;box-shadow:none!important;position:relative}
+html:root:root:root:root body .omx-status.st-live i::after{content:"";position:absolute;inset:0;border-radius:50%;background:inherit;animation:mPulse 2s var(--m-out) infinite}
+@keyframes mShimmer{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+html:root:root:root:root body .omx-chart-load{animation:none!important;background:rgba(255,255,255,.045)!important;position:relative;overflow:hidden}
+html:root:root:root:root[data-theme="light"] body .omx-chart-load{background:rgba(60,55,40,.06)!important}
+html:root:root:root:root body .omx-chart-load::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent);animation:mShimmer 1.5s var(--m-std) infinite}
+html:root:root:root:root body .omx-spark.none{animation:none!important}
+html:root:root:root:root body .screen:not(.active):not(.ios-leaving) :is(.omx-status.st-live i,.tr-dot.live,.omx-chart-load,.wd-step.now i)::after,
+html:root:root:root:root body .screen:not(.active):not(.ios-leaving) :is(.omx-status.st-live i,.tr-dot.live,.omx-chart-load,.wd-step.now i){animation-play-state:paused!important}
+
+/* ---------- 8. the dated effects, toned down ---------- */
+@keyframes lvRing{0%,100%{transform:none}22%{transform:rotate(8deg)}48%{transform:rotate(-5deg)}74%{transform:rotate(2deg)}}
+html:root:root:root:root body .lv-ring svg{animation:lvRing .7s var(--m-out)}
+@keyframes lvPop{0%{transform:scale(.6);opacity:0}100%{transform:none;opacity:1}}
+html:root:root:root:root body .lt-badge.lv-pop{animation:lvPop var(--m-gentle-d,420ms) var(--m-gentle,var(--m-out))}
+@keyframes lvCopied{0%{transform:scale(.94)}100%{transform:none}}
+html:root:root:root:root body .lv-copied{animation:lvCopied var(--m-snappy-d,360ms) var(--m-snappy,var(--m-out))}
+html:root:root:root:root body .nav-cta .nav-cta-tile svg,html:root:root:root:root body .nav-cta[aria-current="page"] .nav-cta-tile svg{transform:none!important;transition:none!important}
+@keyframes wToastIn{0%{opacity:0;transform:translate3d(0,-110%,0)}100%{opacity:1;transform:none}}
+html:root:root:root:root body .toast.w-toast{animation-duration:var(--m-gentle-d,420ms)!important;animation-timing-function:var(--m-gentle,var(--m-out))!important}
+html:root:root:root:root body .chips > .chip-pill{will-change:auto}
+
+/* ---------- reduced motion: no movement, short fades ---------- */
+@media (prefers-reduced-motion:reduce){
+  /* the open states are named too: the open rules above are more specific and would bring their transform-only transition back */
+  html:root:root:root:root body .ov:not(.is-modal) .ov-panel,html:root:root:root:root body .ov.is-modal .ov-panel,
+  html:root:root:root:root body .ov.is-open:not(.is-modal) .ov-panel,html:root:root:root:root body .ov.is-modal.is-open .ov-panel{transform:none!important;transition:opacity 140ms linear!important}
+  html:root:root:root:root body .ov:not(.is-open) .ov-panel{opacity:0}
+  html:root:root:root:root body .ov.is-open .ov-panel{opacity:1}
+  html:root:root:root:root body .ov.is-open .ov-panel > *{animation:none!important}
+  html:root:root:root:root body.ios-sheet-open #app{transform:none}
+  html:root:root:root:root body #bottom-nav .nav-item .nav-ic,html:root:root:root:root body .w-reveal{transition:none!important}
+  html:root:root:root:root body .w-reveal{opacity:1;transform:none}
+  html:root:root:root:root body :is(.omx-status.st-live i,.omx-chart-load)::after,html:root:root:root:root body .w-light{animation:none!important}
+  html:root:root:root:root body .omx-area{animation:none!important}
+  html:root:root:root:root body .lv-up{animation:lvFadeUp 1.2s linear}
+  html:root:root:root:root body .lv-dn{animation:lvFadeDn 1.2s linear}
+  html:root:root:root:root body :is(.m-down,:active){transform:none!important}
+}

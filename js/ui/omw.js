@@ -26,35 +26,77 @@ const OMW = (() => {
   }
 
   /* ---------- touch: light + spring ---------- */
-  const PRESS = '.btn,.omx-act,.hub-row,.omx-row,.omx-pick,.chip,.nav-item,.hub-circ,.topbar-back,.w-sq,.w-pill,.w-row,.w-promo-card,.ds-eye,.hub-out,.w-out,.yd-nav button,.settings-row,.omx-net.pick,.wp-skip,.lt-key,.lt-mv,.omx-star,.yb-svc,.px-chip,.wd-max,.wd-paste,.nav-cta';
+  const PRESS = '.btn,.omx-act,.hub-row,.omx-row,.omx-pick,.chip,.nav-item,.hub-circ,.topbar-back,.w-sq,.w-pill,.w-row,.w-promo-card,.ds-eye,.hub-out,.w-out,.yd-nav button,.settings-row,.omx-net.pick,.wp-skip,.lt-key,.lt-mv,.omx-star,.yb-svc,.px-chip,.wd-max,.wd-paste,.nav-cta,.tr-flip,.tr-pairbtn,.item.tx-row,.lt-act';
+  /* 16.0.0 — the light blooms only on surfaces (buttons, cards, tiles); list rows get the iOS highlight instead (css/motion-system.css) */
+  const LIGHT = '.btn,.omx-act:not(.lt-acts > .omx-act),.lt-act,.w-promo-card,.lt-mv,.yb-svc,.w-pill,.omx-pick,.px-chip,.tr-pairbtn';   /* home quick actions: their circle sinks instead */
   function press(){
     D.addEventListener('pointerdown', e => {
       const el = e.target.closest && e.target.closest(PRESS); if (!el || el.disabled) return;
-      el.classList.add('w-press');
-      if (reduced()) return;
+      el.classList.add('w-press', 'm-down');                 /* m-down = really held now (some templates carry w-press as a static marker) */
+      if (reduced() || !el.matches(LIGHT)) return;
       const r = el.getBoundingClientRect(), dot = D.createElement('span');
       dot.className = 'w-light'; dot.style.left = (e.clientX - r.left) + 'px'; dot.style.top = (e.clientY - r.top) + 'px';
-      if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
-      el.style.overflow = el.style.overflow || 'hidden';
-      el.appendChild(dot); setTimeout(() => dot.remove(), 650);
+      /* 16.0.0 — the element gets its own position / overflow back once the light is gone (before, overflow:hidden stayed for good and
+         clipped shadows, badges and focus rings after the first touch) */
+      if (el.__wl == null){ el.__wl = 0; el.__wlPos = getComputedStyle(el).position === 'static' ? el.style.position : null; el.__wlOv = el.style.overflow; }
+      el.__wl++;
+      if (el.__wlPos !== null) el.style.position = 'relative';
+      el.style.overflow = 'hidden';
+      el.appendChild(dot);
+      setTimeout(() => {
+        dot.remove();
+        if (--el.__wl <= 0){ el.style.overflow = el.__wlOv || ''; if (el.__wlPos !== null) el.style.position = el.__wlPos || ''; el.__wl = null; }
+      }, 650);
     }, { passive: true });
-    const up = () => D.querySelectorAll('.w-press').forEach(x => x.classList.remove('w-press'));
+    const up = () => D.querySelectorAll('.w-press,.m-down').forEach(x => x.classList.remove('w-press', 'm-down'));
     ['pointerup', 'pointercancel', 'pointerleave', 'blur'].forEach(t => window.addEventListener(t, up, { passive: true }));
   }
 
   /* ---------- screens: cascade + scroll reveal ---------- */
   let io = null;
+  /* 16.0.0 — one entrance per screen, on the compositor: at most 8 visible blocks rise 10 px and fade in, 28 ms apart, on the soft spring.
+     Before: up to 14 blocks, each class removed and re-added with a forced layout in between (14 synchronous reflows in the first frame
+     of the transition), 620 ms each, plus static .w-rise in the templates — about 840 ms before a screen was still. */
+  const ENTER = { duration: 440, delay: 24, step: 28, max: 8 };
+  /* When the blocks rise (16.0.0): the first screen after start-up or sign-in, and a tab opened for the first time in this session.
+     Never when the same screen is redrawn with fresh data (a confirmed deposit used to make the whole home screen rise again), never inside
+     a screen that already slides in or rises as a whole (push / present), never when going back: one navigation, one motion. */
+  const seen = new Set();
+  function wantsEntrance(info){
+    const first = !seen.has(info.id); seen.add(info.id);
+    if (!info.from) return true;
+    if (info.from === info.id) return false;
+    const kind = (typeof IOS !== 'undefined' && IOS.kindOf) ? IOS.kindOf(info) : 'fade';
+    return kind === 'fade' && (info.reset || first);
+  }
   function cascade(el){
-    if (!el || reduced()) return;
+    if (!el || reduced() || !el.animate) return;
     const host = el.querySelector('.w-home, .w-assets, .w-set, .hub, .screen-body') || el;
-    const kids = [...host.children].filter(k => k.offsetParent !== null).slice(0, 14);
-    kids.forEach((k, n) => { k.classList.remove('w-rise'); void k.offsetWidth; k.style.setProperty('--w-i', n); k.classList.add('w-rise'); });
-    if (!io && 'IntersectionObserver' in window) io = new IntersectionObserver(es => es.forEach(x => { if (x.isIntersecting){ x.target.classList.add('w-in'); io.unobserve(x.target); } }), { rootMargin: '0px 0px -6% 0px' });
+    const vh = window.innerHeight || 800, curve = (typeof IOS !== 'undefined' && IOS.SPR) ? IOS.SPR.smooth.css : 'cubic-bezier(.2,.8,.2,1)';
+    let n = 0;
+    for (const k of host.children){                                  /* reads only, no style writes between them: one layout at most */
+      if (n >= ENTER.max) break;
+      const b = k.getBoundingClientRect();
+      if (!b.height || !b.width) continue;
+      if (b.top > vh) break;
+      k.animate([{ opacity: 0, transform: 'translate3d(0,10px,0)' }, { opacity: 1, transform: 'none' }],
+        { duration: ENTER.duration, delay: ENTER.delay + n * ENTER.step, easing: curve, fill: 'backwards' });
+      n++;
+    }
+    if (!io && 'IntersectionObserver' in window) io = new IntersectionObserver(es => {
+      let i = 0;
+      es.forEach(x => {
+        if (!x.isIntersecting) return;
+        const r = x.target, d = Math.min(i++, 5) * 26;
+        r.style.transitionDelay = d + 'ms'; r.classList.add('w-in'); io.unobserve(r);
+        /* 16.0.0 — once in place the row becomes a plain row again: before, the delay stayed on it and its press highlight lagged */
+        setTimeout(() => { r.classList.remove('w-reveal', 'w-in'); r.style.transitionDelay = ''; }, d + 1000);
+      });
+    }, { rootMargin: '0px 0px -6% 0px' });
     if (!io) return;
-    const vh = window.innerHeight || 800;
-    el.querySelectorAll('.omx-row, .w-arow, .hub-row, .w-row, .settings-row, .rv-list > *').forEach(r => {
-      if (r.getBoundingClientRect().top > vh * 0.92){ r.classList.add('w-reveal'); io.observe(r); }
-    });
+    const late = [...el.querySelectorAll('.omx-row, .w-arow, .hub-row, .w-row, .settings-row, .rv-list > *')]
+      .filter(r => r.getBoundingClientRect().top > vh * 0.92);         /* all reads first, then the writes: one style pass, not one per row */
+    late.forEach(r => { r.classList.add('w-reveal'); io.observe(r); });
   }
 
   /* ---------- messages ---------- */
@@ -128,7 +170,15 @@ const OMW = (() => {
     try { errors(); } catch(e){ fail(e); }
     try { anchors(); } catch(e){ fail(e); }
     try { if (typeof toast === 'function') toast = newToast; } catch(e){ fail(e); }        /* every existing toast(msg, type) call now uses the new capsule */
-    try { R.on(info => { try { cascade(info.el); carousel(info.el); } catch(e){ fail(e); } }); } catch(e){ fail(e); }
+    try {
+      R.on(info => {
+        try {
+          if (io) io.disconnect();                     /* every navigation redraws its screen: rows still waiting belong to a replaced page */
+          if (wantsEntrance(info)) cascade(info.el);
+          carousel(info.el);
+        } catch(e){ fail(e); }
+      });
+    } catch(e){ fail(e); }
   }
   if (D.readyState === 'loading') D.addEventListener('DOMContentLoaded', init); else init();
   return { init, toast: newToast, reduced };

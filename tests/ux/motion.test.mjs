@@ -54,14 +54,24 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
     }
     assert.ok(landed, 'intermediate values were shown and the last one is exact: ' + trace.join(' || '));
   });
-  await ok('solde : le total défile aussi (décimales comprises) et se pose sur la valeur exacte', async () => {
+  /* 16.0.0: the balance changes digit by digit (Revolut / Stocks): the digits that changed slide out and in, over the text of the app,
+     which is right at once (screen readers never hear a count) and stays underneath */
+  const odo = () => page.evaluate(() => { const el = document.querySelector('#home [data-omx-total]'), ov = el.querySelector('.m-odo');
+    return { cells: ov ? ov.querySelectorAll('.m-od').length : 0, olds: ov ? ov.querySelectorAll('.m-od-o').length : 0, aria: ov ? ov.getAttribute('aria-hidden') : null,
+      own: [...el.childNodes].filter(n => !(n.classList && n.classList.contains('m-odo'))).map(n => n.textContent).join(''), color: getComputedStyle(el).color }; });
+  await ok('solde : il change chiffre par chiffre (les chiffres modifiés glissent), le texte est juste tout de suite, puis tout se pose', async () => {
     await page.evaluate(() => { Runtime.hideBalance = false; R.go('home', { force: true }); }); await wait(1300);
     const html0 = await page.evaluate(() => document.querySelector('#home [data-omx-total]').innerHTML);
     assert.match(html0, /lt-dec/, 'decimals are in their own span');
-    await page.evaluate(() => { const el = document.querySelector('#home [data-omx-total]'); el.innerHTML = '$3,000.50<span class="lt-dec"></span>'.replace('$3,000.50<span class="lt-dec"></span>', '$3,000<span class="lt-dec">.50</span>'); });
-    const seen = new Set(); for (let i = 0; i < 24; i++){ await wait(30); seen.add(await page.evaluate(() => document.querySelector('#home [data-omx-total]').textContent)); }
-    assert.ok(seen.size > 2, 'the figure rolled through ' + seen.size + ' values');
-    await wait(700);
+    await page.evaluate(() => { const el = document.querySelector('#home [data-omx-total]'); el.innerHTML = '$3,000<span class="lt-dec">.50</span>'; });
+    await wait(80);
+    const mid = await odo();
+    assert.ok(mid.cells >= 3, 'digits moving: ' + mid.cells); assert.ok(mid.olds >= 1, 'old digits leaving: ' + mid.olds);
+    assert.equal(mid.own, '$3,000.50', 'the value under the motion is already the new one'); assert.equal(mid.aria, 'true');
+    assert.equal(mid.color, 'rgba(0, 0, 0, 0)', 'the text of the app is drawn by the overlay during the motion');
+    await wait(900);
+    const end = await odo();
+    assert.equal(end.cells, 0, 'the overlay is gone'); assert.notEqual(end.color, 'rgba(0, 0, 0, 0)');
     assert.equal(await page.evaluate(() => document.querySelector('#home [data-omx-total]').textContent), '$3,000.50');
     assert.match(await page.evaluate(() => document.querySelector('#home [data-omx-total]').innerHTML), /<span class="lt-dec">\.50<\/span>/, 'the light decimals are back');
   });
@@ -98,13 +108,15 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
     await page.evaluate(() => { const b = document.querySelector('#profile .px-chip.id'); if (b) b.click(); }); await wait(120);
     assert.equal(await page.locator('#profile .px-chip.id.lv-copied').count(), 1);
   });
-  await ok('solde : quand on découvre le solde (œil), il se compte jusqu’à sa valeur au lieu d’apparaître d’un coup', async () => {
+  await ok('solde : quand on découvre le solde (œil), ses chiffres montent en place un à un au lieu d’apparaître d’un coup', async () => {
     await page.evaluate(() => { Runtime.hideBalance = true; R.go('home', { force: true }); }); await wait(1500);
     assert.match(await page.locator('#home [data-omx-total]').textContent(), /^[•\s]+$/);
     await page.click('#home [data-action="toggle-balance"]');
-    const seen = new Set(); for (let i = 0; i < 30; i++){ await wait(30); seen.add(await page.evaluate(() => document.querySelector('#home [data-omx-total]').textContent)); }
-    assert.ok([...seen].filter(s => /^\$[\d,]+\.\d{2}$/.test(s)).length > 2, 'the balance counted up: ' + [...seen].join(' '));
-    await wait(700);
+    await wait(80);
+    const mid = await odo();
+    assert.ok(mid.cells >= 4, 'every digit rises: ' + mid.cells); assert.match(mid.own, /^\$[\d,]+\.\d{2}$/);
+    await wait(900);
+    assert.equal((await odo()).cells, 0);
     assert.match(await page.locator('#home [data-omx-total]').textContent(), /^\$[\d,]+\.\d{2}$/);
   });
   await ok('pavé numérique : chaque touche fait « battre » le montant', async () => {
@@ -114,9 +126,14 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
     await wait(400);
     assert.equal(await page.locator('#exchange .lv-type').count(), 0);
   });
-  await ok('centre : la touche Swap fait un demi-tour quand on la presse', async () => {
-    const r = await page.evaluate(() => { const b = document.querySelector('#bottom-nav .nav-cta .nav-cta-tile svg'); return b ? getComputedStyle(b).transitionDuration : null; });
-    assert.ok(r && parseFloat(r) >= 0.3, 'the arrows turn with a spring (' + r + ')');
+  /* 16.0.0 (audit: « unnecessary rotations »): the centre button no longer spins 180°; it presses in, like every round control */
+  await ok('centre : la touche Swap s’enfonce sous le doigt (sans faire de demi-tour)', async () => {
+    const b = await page.$('#bottom-nav .nav-cta'); const box = await b.boundingBox();
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2); await page.mouse.down(); await wait(200);
+    const r = await page.evaluate(() => { const t = document.querySelector('#bottom-nav .nav-cta .nav-cta-tile'), s = t.querySelector('svg'); return { tile: getComputedStyle(t).transform, svg: getComputedStyle(s).transform }; });
+    await page.mouse.up(); await wait(300);
+    assert.equal(r.svg, 'none', 'the arrows do not turn');
+    assert.match(r.tile, /^matrix\(0\.9[0-4]/, 'the tile presses in: ' + r.tile);
   });
   await ok('aucune erreur de page', async () => assert.deepEqual(logs, []));
   await ctx.close();

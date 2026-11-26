@@ -62,7 +62,11 @@ const V12 = (() => {
       ? '<a class="nav-item nav-cta" href="#/' + nav2 + '" data-nav="' + nav2 + '"><span class="nav-cta-tile">' + icon(ic, 26) + '</span><span class="nav-lb">' + lbl + '</span></a>'
       : '<a class="nav-item" href="#/' + nav2 + '" data-nav="' + nav2 + '"><span class="nav-ic">' + icon(ic, 24) + '</span><span class="nav-lb">' + lbl + '</span></a>';
     /* 14.7.0 (owner's reference image): Home · Markets · Swap (raised round button in the middle) · Wallet · Spot */
+    /* 16.0.0 — the router marks the current tab before this rebuild runs (first screen after start-up, language change): keep that mark,
+       otherwise no tab was highlighted after unlocking until the first navigation */
+    const was = nav.querySelector('.nav-item[aria-current="page"]'), key = was && was.getAttribute('data-nav');
     nav.innerHTML = '<div class="nav-dock">' + it('home', 'home', t('omx.home')) + it('markets', 'chart', t('omx.markets')) + it('exchange', 'swap', t('tr.swap'), true) + it('wallet', 'wallet', t('lt.walletTab')) + it('spot', 'trending', t('tr.spot')) + '<i class="nav-ind" aria-hidden="true"></i></div>';
+    if (key){ const a = nav.querySelector('.nav-item[data-nav="' + key + '"]'); if (a) a.setAttribute('aria-current', 'page'); }
     requestAnimationFrame(placeInd);
   }
   /* The highlight pill glides under the active tab (12.9.0). Measured, so it also works in RTL and at any width. */

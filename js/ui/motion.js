@@ -72,7 +72,7 @@ const MOTION = (() => {
     if (!nm) return;
     const decimals = (nm[0].split('.')[1] || '').length;
     const fmt = v => v.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
-    const t0 = performance.now(), dur = 560, ease = x => 1 - Math.pow(1 - x, 3), token = el.__rt = (el.__rt || 0) + 1;
+    const t0 = performance.now(), dur = 600, ease = x => 1 - (1 + 7 * x) * Math.exp(-7 * x), token = el.__rt = (el.__rt || 0) + 1;   /* 16.0.0: critically damped, the physics of every other motion */
     busy.add(el); el.__w = null;                                          /* a stale marker from an aborted roll must not abort this one */
     const write = v => {
       el.__cur = v;
@@ -89,9 +89,62 @@ const MOTION = (() => {
     };
     raf(step);
   }
+  /* 16.0.0 \u2014 the balance changes digit by digit, like Revolut or Stocks: each digit that changed slides out and its new value slides in
+     (up when the balance grows, down when it falls), from the right, 22 ms apart, on the snappy spring. The text the app wrote stays in
+     the element (screen readers read it, layout does not move); a light overlay draws the motion above it and is removed at the end. */
+  function stopOdo(el){
+    const s = el.__odo; if (!s) return;
+    el.__odo = null; clearTimeout(s.t); s.anims.forEach(a => { try { a.cancel(); } catch(e){ /* rien */ } });
+    if (s.ov.isConnected) s.ov.remove();
+    el.classList.remove('m-odo-on'); el.style.removeProperty('--m-odo-c');
+  }
+  function odometer(el, fromStr, toStr, dir){
+    if (reduced() || !el.animate || !toStr || fromStr === toStr) return false;
+    stopOdo(el);
+    const cs = getComputedStyle(el);
+    if (cs.display === 'none' || /text/.test(cs.backgroundClip || cs.webkitBackgroundClip || '')) return false;
+    const dec = el.querySelector(':scope > .lt-dec'), decLen = dec ? dec.textContent.length : 0;
+    const n = toStr.length, m = fromStr ? fromStr.length : 0, cells = [];
+    const esc = c => c === '<' ? '&lt;' : c === '&' ? '&amp;' : c === '>' ? '&gt;' : c;
+    let html = '';
+    for (let i = 0; i < n; i++){
+      const ch = toStr[i], j = m - (n - i), old = fromStr && j >= 0 ? fromStr[j] : null;
+      const moves = /\d/.test(ch) && (fromStr == null || old !== ch);
+      const cell = moves ? '<span class="m-od" data-i="' + i + '"><span class="m-od-n">' + ch + '</span>' + (old && /\d/.test(old) ? '<span class="m-od-o">' + old + '</span>' : '') + '</span>' : esc(ch);
+      if (moves) cells.push(i);
+      html += i >= n - decLen ? '<span class="lt-dec">' + cell + '</span>' : cell;
+    }
+    if (!cells.length) return false;
+    const ov = D.createElement('span'); ov.className = 'm-odo'; ov.setAttribute('aria-hidden', 'true'); ov.innerHTML = html;
+    el.style.setProperty('--m-odo-c', cs.color);
+    el.classList.add('m-odo-on'); el.appendChild(ov);
+    const S = (typeof IOS !== 'undefined' && IOS.SPR) ? IOS.SPR.snappy : { css: 'cubic-bezier(.2,.8,.2,1)', ms: 360 };
+    const up = dir >= 0 ? 1 : -1, anims = [];
+    const order = cells.slice().reverse();                 /* from the right: cents first, like a counter */
+    ov.querySelectorAll('.m-od').forEach(c => {
+      const k = order.indexOf(+c.getAttribute('data-i')), delay = Math.max(0, k) * 22, nw = c.firstChild, od = c.querySelector('.m-od-o');
+      anims.push(nw.animate([{ transform: 'translate3d(0,' + (up * 62) + '%,0)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: S.ms, delay, easing: S.css, fill: 'backwards' }));
+      if (od) anims.push(od.animate([{ transform: 'none', opacity: 1 }, { transform: 'translate3d(0,' + (-up * 62) + '%,0)', opacity: 0 }], { duration: Math.round(S.ms * .8), delay, easing: S.css, fill: 'forwards' }));
+    });
+    const total = S.ms + (cells.length - 1) * 22 + 40;
+    el.__odo = { ov, anims, t: setTimeout(() => { if (el.__odo && el.__odo.ov === ov) stopOdo(el); }, total) };
+    return true;
+  }
   function check(el){
     if (!el.isConnected) return;
-    if (el.hasAttribute('data-omx-mask') || /\u2022/.test(el.textContent)){ if (el.hasAttribute('data-omx-total')) masked.add(keyOf(el)); return; }
+    if (el.hasAttribute('data-omx-mask') || /\u2022/.test(el.textContent)){ if (el.hasAttribute('data-omx-total')){ masked.add(keyOf(el)); stopOdo(el); } return; }
+    if (el.hasAttribute('data-omx-total')){                  /* the balance: digit by digit (the overlay is ours: never read it as a value) */
+      const txt = [...el.childNodes].filter(x => !(x.classList && x.classList.contains('m-odo'))).map(x => x.textContent).join('');
+      const v = num(txt); if (!isFinite(v)) return;
+      const k = keyOf(el), old = prev.get(k), was = el.__txt; prev.set(k, v);
+      if (masked.has(k)){ masked.delete(k); el.__txt = txt; odometer(el, null, txt, 1); return; }       /* the eye: the digits rise into view */
+      if (old == null || old === v || was === txt){ el.__txt = txt; return; }
+      el.__txt = txt;
+      const scr = el.closest('.screen'); if (scr && quiet[scr.id] && Date.now() < quiet[scr.id]) return;
+      flash(el, v > old ? 1 : -1);
+      if (!odometer(el, was || null, txt, v - old)) roll(el, old, v);
+      return;
+    }
     let shown = null;
     if (busy.has(el)){ if (el.textContent === el.__w) return; shown = el.__cur; el.__rt = (el.__rt || 0) + 1; el.__w = null; busy.delete(el); }       /* newer value mid-roll: chain from what is shown */
     const v = num(el.textContent); if (!isFinite(v)) return;
@@ -159,6 +212,60 @@ const MOTION = (() => {
     }, true);
   }
 
+  /* ---------------------------------------------------------- 4b. navigation, depth (16.0.0) ---------------------------------------------------------- */
+  /* the tab bar: the pill under the current tab moves like a drop of liquid — its leading edge goes first, the trailing edge follows,
+     it stretches across the gap and settles on the new tab (compositor only: translate + scaleX from the left edge). v12.js still owns
+     the pill's final place (it measures it); this only draws the travel between the two places. */
+  let navCause = null;                   /* how the last navigation arrived (IOS.kindOf), set by the route hook below, read once by the pill */
+  function navLiquid(){
+    const nav = D.getElementById('bottom-nav'); if (!nav || nav.__liquid) return;
+    nav.__liquid = true;
+    let last = null;
+    const measure = () => {
+      const dock = nav.querySelector('.nav-dock'), a = nav.querySelector('.nav-item[aria-current="page"]:not(.nav-cta)');
+      if (!dock || !a || nav.hidden || !dock.offsetWidth) return null;
+      const d = dock.getBoundingClientRect(), r = a.getBoundingClientRect();
+      return { x: r.left - d.left, w: r.width };
+    };
+    const move = () => {
+      const ind = nav.querySelector('.nav-ind'), to = measure();
+      if (!ind || !to){ last = null; return; }
+      const from = last; last = to;
+      const cause = navCause && performance.now() - navCause.t < 600 ? navCause.kind : null; navCause = null;
+      if (!from || reduced() || !ind.animate || Math.abs(to.x - from.x) < 1) return;
+      /* the page is already sliding (push / pop / sheet): a second sideways motion would compete with it — the pill just appears in place */
+      if (cause && cause !== 'fade'){ ind.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, easing: 'cubic-bezier(.2,.8,.2,1)' }); return; }
+      const dx = to.x - from.x, w = to.w, lead = dx * .78, lag = dx * .16;
+      const L = dx > 0 ? from.x + lag : from.x + lead, Rr = dx > 0 ? from.x + w + lead : from.x + w + lag;
+      const S = (typeof IOS !== 'undefined' && IOS.SPR) ? IOS.SPR.smooth : { css: 'cubic-bezier(.2,.8,.2,1)', ms: 420 };
+      ind.animate([
+        { transform: 'translateX(' + from.x + 'px) scaleX(1)', opacity: 1 },
+        { transform: 'translateX(' + L.toFixed(1) + 'px) scaleX(' + ((Rr - L) / w).toFixed(3) + ')', opacity: 1, offset: .4 },
+        { transform: 'translateX(' + to.x + 'px) scaleX(1)', opacity: 1 }
+      ], { duration: Math.max(380, S.ms), easing: S.css });
+    };
+    new MutationObserver(() => raf(move)).observe(nav, { attributes: true, subtree: true, attributeFilter: ['aria-current', 'hidden'] });
+    window.addEventListener('resize', () => { last = null; raf(move); }, { passive: true });
+    raf(move);
+  }
+  /* home: the balance block drifts slower than the page and steps back a little as you scroll (depth), compositor only */
+  function heroDepth(scr){
+    if (!scr || scr.__depth || reduced()) return; scr.__depth = true;
+    let busy = false, lastY = -1, lastHero = null;
+    scr.addEventListener('scroll', () => {
+      if (busy) return; busy = true;
+      raf(() => {
+        busy = false;
+        const y = Math.min(scr.scrollTop, 420), hero = scr.querySelector('.lt-hero'); if (!hero) return;
+        if (y === lastY && hero === lastHero) return;            /* a redrawn home screen has a new hero: paint it even at the same scroll */
+        lastY = y; lastHero = hero;
+        const k = Math.min(1, y / 260);
+        hero.style.transform = y > 0 ? 'translate3d(0,' + (y * .3).toFixed(1) + 'px,0) scale(' + (1 - k * .045).toFixed(4) + ')' : '';
+        hero.style.opacity = y > 0 ? (1 - k * .6).toFixed(3) : '';
+      });
+    }, { passive: true });
+  }
+
   /* ---------------------------------------------------------- 5. observer ---------------------------------------------------------- */
   function observe(){
     const mo = new MutationObserver(list => {
@@ -189,9 +296,16 @@ const MOTION = (() => {
     try { observe(); } catch(e){ fail(e); }
     try { copyFx(); } catch(e){ fail(e); }
     try { keypadFx(); } catch(e){ fail(e); }
+    try { navLiquid(); } catch(e){ fail(e); }
     try {
       R.on(info => {
         try {
+          /* only a real change of screen names the cause: a screen that redraws itself right after arriving (the asset screen does, 9 ms
+             later) must not erase the « push » of the navigation that brought it */
+          const kind = (typeof IOS !== 'undefined' && IOS.kindOf) ? IOS.kindOf(info) : null;
+          if (kind) navCause = { kind, t: performance.now() };
+          if (info.id === 'home') heroDepth(info.el);
+          if (!D.getElementById('bottom-nav') || !D.getElementById('bottom-nav').__liquid) navLiquid();
           if (info.id !== lastScreen){ quiet[info.id] = Date.now() + 900; lastScreen = info.id; }     /* a screen change is not a price move */
           raf(() => { placeAll(info.el); badgeCheck(); });
           setTimeout(() => placeAll(info.el), 380);
@@ -200,5 +314,5 @@ const MOTION = (() => {
     } catch(e){ fail(e); }
   }
   if (D.readyState === 'loading') D.addEventListener('DOMContentLoaded', init); else init();
-  return { init, patchList, patchStatus, placeAll, reduced, peek: () => ({ prev: [...prev], busy: busy.size }) };       /* peek: for the tests */
+  return { init, patchList, patchStatus, placeAll, reduced, odometer, peek: () => ({ prev: [...prev], busy: busy.size }) };       /* peek: for the tests */
 })();

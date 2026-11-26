@@ -33,15 +33,52 @@ const IOS = (() => {
     pts[n] = 1;
     return { css: LINEAR_OK ? 'linear(' + pts.join(', ') + ')' : EASE_FALLBACK, ms: Math.round(settle * 1000) };
   }
+  /* 16.0.0 — one motion system (docs/mouvement/AUDIT.md): every animation of the app takes one of these springs.
+     No strong bounce anywhere: the most playful spring overshoots by less than 2 %. */
   const SPR = {
-    smooth: spring(.5, 1),          /* UIKit push / sheet: critically damped, no overshoot */
-    snappy: spring(.38, .86),       /* small controls: a hint of overshoot */
-    bouncy: spring(.5, .62)         /* playful: switches, badges, success */
+    smooth: spring(.5, 1),          /* sheets, present / dismiss, scale-back: critically damped */
+    push: spring(.52, 1),           /* push / pop between screens: the UIKit navigation spring */
+    snappy: spring(.34, .9),        /* controls, spring-back after a touch: 0.15 % overshoot */
+    bouncy: spring(.42, .8),        /* « gentle »: switches, confirmations, badges — 1.5 % overshoot (was 8 % before 16.0.0) */
+    press: spring(.16, 1)           /* the touch going down: immediate, no overshoot */
   };
+  SPR.gentle = SPR.bouncy;
   function setVars(){
     const st = ROOT.style;
-    Object.keys(SPR).forEach(k => { st.setProperty('--ios-' + k, SPR[k].css); st.setProperty('--ios-' + k + '-d', SPR[k].ms + 'ms'); });
+    Object.keys(SPR).forEach(k => {
+      st.setProperty('--ios-' + k, SPR[k].css); st.setProperty('--ios-' + k + '-d', SPR[k].ms + 'ms');
+      st.setProperty('--m-' + k, SPR[k].css); st.setProperty('--m-' + k + '-d', SPR[k].ms + 'ms');      /* the unified tokens (css/motion-system.css) */
+    });
     st.setProperty('--ios-ease', EASE_FALLBACK);
+  }
+  /* analytic damped spring, for the end of a gesture: x0 = distance to the target, v0 = the finger's velocity (units / s).
+     The motion that follows the finger keeps its speed — no jump in velocity at release (what a fixed curve cannot do). */
+  function springAt(x0, v0, response, damping, t){
+    const w = 2 * Math.PI / response, z = Math.min(damping, 1);
+    if (z >= 1) return (x0 + (v0 + w * x0) * t) * Math.exp(-w * t);
+    const wd = w * Math.sqrt(1 - z * z);
+    return Math.exp(-z * w * t) * (x0 * Math.cos(wd * t) + ((v0 + z * w * x0) / wd) * Math.sin(wd * t));
+  }
+  function animateSpring(o){
+    const x0 = o.from - o.to, v0 = o.velocity || 0, rs = o.response || .45, dp = o.damping == null ? 1 : o.damping;
+    let t0 = null, id = 0, done = false;
+    const step = now => {
+      if (done) return;
+      if (t0 == null) t0 = now;
+      const t = (now - t0) / 1000, x = springAt(x0, v0, rs, dp, t), x2 = springAt(x0, v0, rs, dp, t + .004);
+      const settled = t > .04 && Math.abs(x) < 5e-4 && Math.abs((x2 - x) / .004) < .02;
+      if (settled || t > 2){ done = true; o.onUpdate(o.to); if (o.onDone) o.onDone(); return; }
+      o.onUpdate(o.to + x); id = requestAnimationFrame(step);
+    };
+    id = requestAnimationFrame(step);
+    return () => { done = true; cancelAnimationFrame(id); };
+  }
+  /* finger velocity from the last 90 ms of samples ([time ms, position px]) -> px / ms */
+  function velocity(samples){
+    if (!samples || samples.length < 2) return 0;
+    const last = samples[samples.length - 1]; let first = samples[0];
+    for (let i = samples.length - 1; i >= 0; i--){ if (last[0] - samples[i][0] > 90) break; first = samples[i]; }
+    const dt = last[0] - first[0]; return dt > 0 ? (last[1] - first[1]) / dt : 0;
   }
 
   /* ---------- haptics ---------- */
@@ -74,7 +111,7 @@ const IOS = (() => {
 
   /* ---------- screen transitions ---------- */
   const PRESENT = { processing:1, receipt:1, 'tx-result':1, 'cards-add':1, 'contact-add':1, 'banks-add':1, 'profile-edit':1 };
-  const TABS = { home:1, wallet:1, markets:1, history:1, account:1, services:1 };
+  const TABS = { home:1, wallet:1, markets:1, history:1, account:1, services:1, exchange:1, spot:1 };   /* 16.0.0: Swap and Spot are tabs of the bar (14.7.0) */
   let running = [], skipNext = false, dimEl = null;
   function dim(){
     if (dimEl && dimEl.isConnected) return dimEl;
@@ -95,41 +132,48 @@ const IOS = (() => {
   }
   function run(kind, el, prevEl){
     const d = rtl() ? -1 : 1, dm = dim();
-    const SM = SPR.smooth, dur = kind === 'present' || kind === 'dismiss' ? Math.max(SM.ms, 480) : Math.max(SM.ms, 420);
-    const ez = SM.css;
-    const T = (x, y, s) => 'translate3d(' + x + ',' + y + ',0)' + (s ? ' scale(' + s + ')' : '');
-    const o = { duration: dur, easing: ez };
+    const T = (x, y, s) => 'translate3d(' + x + ',' + y + ',0)' + (s != null ? ' scale(' + s + ')' : '');
     const jobs = [];
     el.classList.add('ios-entering'); prevEl.classList.add('ios-leaving');
-    /* 14.4.0 — « glass depth »: screens no longer slide sideways. The new screen comes forward out of the glass (from slightly behind,
-       a little low, softly blurred), the old one recedes into it. Blur only on capable phones (html.w-lite turns it off). */
-    const lite = ROOT.classList.contains('w-lite'), B = v => lite ? 'none' : 'blur(' + v + 'px)';
-    const S = (y, s) => 'translate3d(0,' + y + ',0) scale(' + s + ')';
-    if (kind === 'push'){
-      el.style.zIndex = 3; prevEl.style.zIndex = 2; el.dataset.iosMode = 'push';
-      jobs.push(anim(el, [{ transform: S('26px', .92), opacity: 0, filter: B(8) }, { transform: S(0, 1), opacity: 1, filter: B(0) }], o));
-      jobs.push(anim(prevEl, [{ transform: S(0, 1), opacity: 1, filter: B(0) }, { transform: S('-10px', 1.04), opacity: 0, filter: B(6) }], o));
-      if (dm) jobs.push(anim(dm, [{ opacity: 0 }, { opacity: .6 }], o));
-    } else if (kind === 'pop'){
-      el.style.zIndex = 2; prevEl.style.zIndex = 3; prevEl.dataset.iosMode = 'push';
-      jobs.push(anim(prevEl, [{ transform: S(0, 1), opacity: 1, filter: B(0) }, { transform: S('26px', .9), opacity: 0, filter: B(8) }], o));
-      jobs.push(anim(el, [{ transform: S('-10px', 1.04), opacity: 0, filter: B(6) }, { transform: S(0, 1), opacity: 1, filter: B(0) }], o));
-      if (dm) jobs.push(anim(dm, [{ opacity: .6 }, { opacity: 0 }], o));
-    } else if (kind === 'present'){
-      el.style.zIndex = 3; prevEl.style.zIndex = 2; el.dataset.iosMode = 'sheet';
-      jobs.push(anim(el, [{ transform: T(0, '100%', .96) }, { transform: T(0, 0, 1) }], o));
-      jobs.push(anim(prevEl, [{ transform: T(0, 0, 1), filter: B(0) }, { transform: T(0, 0, .92), filter: B(4) }], o));
-      if (dm) jobs.push(anim(dm, [{ opacity: 0 }, { opacity: 1 }], o));
-    } else if (kind === 'dismiss'){
-      el.style.zIndex = 2; prevEl.style.zIndex = 3; prevEl.dataset.iosMode = 'sheet';
-      jobs.push(anim(prevEl, [{ transform: T(0, 0, 1) }, { transform: T(0, '100%', .96) }], o));
-      jobs.push(anim(el, [{ transform: T(0, 0, .92), filter: B(4) }, { transform: T(0, 0, 1), filter: B(0) }], o));
-      if (dm) jobs.push(anim(dm, [{ opacity: 1 }, { opacity: 0 }], o));
-    } else {                                    /* tab switches, sign-in: the new screen rises a little while the old one fades */
+    /* 16.0.0 — one gesture, one motion: pushing and going back are the same horizontal slide as the edge swipe (UIKit: the new screen
+       covers from the trailing edge, the old one drifts 30 % under a dimming veil). Compositor only (transform / opacity): the « glass
+       depth » zoom with 8 px blur of 14.4.0 re-blurred two full screens every frame and did not match the gesture. */
+    if (kind === 'push' || kind === 'pop'){
+      const o = { duration: SPR.push.ms, easing: SPR.push.css };
+      const top = kind === 'push' ? el : prevEl, under = kind === 'push' ? prevEl : el;
+      top.style.zIndex = 3; under.style.zIndex = 1; if (dm) dm.style.zIndex = 2; top.dataset.iosMode = 'push';
+      const off = T((d * 100) + '%', 0), rest = T(0, 0), drift = T((-d * 30) + '%', 0);
+      if (kind === 'push'){
+        jobs.push(anim(el, [{ transform: off }, { transform: rest }], o));
+        jobs.push(anim(prevEl, [{ transform: rest }, { transform: drift }], o));
+        if (dm) jobs.push(anim(dm, [{ opacity: 0 }, { opacity: 1 }], o));
+      } else {
+        jobs.push(anim(prevEl, [{ transform: rest }, { transform: off }], o));
+        jobs.push(anim(el, [{ transform: drift }, { transform: rest }], o));
+        if (dm) jobs.push(anim(dm, [{ opacity: 1 }, { opacity: 0 }], o));
+      }
+    } else if (kind === 'present' || kind === 'dismiss'){
+      /* a full-screen sheet (receipt, result): rises from the bottom while the screen under it steps back (scale .94, no blur) */
+      const o = { duration: SPR.smooth.ms + 60, easing: SPR.smooth.css };
+      const top = kind === 'present' ? el : prevEl, under = kind === 'present' ? prevEl : el;
+      top.style.zIndex = 3; under.style.zIndex = 1; if (dm) dm.style.zIndex = 2; top.dataset.iosMode = 'sheet';
+      const low = T(0, '100%'), up = T(0, 0), back = T(0, '10px', .94), front = T(0, 0, 1);
+      jobs.push(anim(top, kind === 'present' ? [{ transform: low }, { transform: up }] : [{ transform: up }, { transform: low }], o));
+      jobs.push(anim(under, kind === 'present' ? [{ transform: front }, { transform: back }] : [{ transform: back }, { transform: front }], o));
+      if (dm) jobs.push(anim(dm, kind === 'present' ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: 0 }], o));
+    } else {
+      /* tab switches, sign-in: a fade-through, in place. The old screen leaves first (100 ms, accelerating), the new one arrives just
+         after it (from 90 ms, decelerating), so the two never show through each other. Opacity only: the blocks of a screen seen for
+         the first time rise on their own (js/ui/omw.js), the screen itself does not move. */
       el.style.zIndex = 3; prevEl.style.zIndex = 2;
-      const od = { duration: reduced() ? 120 : 360, easing: 'cubic-bezier(.22,1,.36,1)' };
-      jobs.push(anim(el, reduced() ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: S('14px', .985) }, { opacity: 1, transform: S(0, 1) }], od));
-      jobs.push(anim(prevEl, [{ opacity: 1 }, { opacity: 0 }], { duration: reduced() ? 120 : 220, easing: 'ease-out' }));
+      if (reduced()){
+        jobs.push(anim(el, [{ opacity: 0 }, { opacity: 1 }], { duration: 120 }));
+        jobs.push(anim(prevEl, [{ opacity: 1 }, { opacity: 0 }], { duration: 120 }));
+      } else {
+        const total = 300, out = 100, lag = 90;               /* the old screen stays hidden until the end (no fill: the element is reused later) */
+        jobs.push(anim(el, [{ opacity: 0 }, { opacity: 1 }], { duration: total - lag, delay: lag, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'backwards' }));
+        jobs.push(anim(prevEl, [{ opacity: 1, easing: 'cubic-bezier(.4,0,1,1)' }, { opacity: 0, offset: out / total }, { opacity: 0 }], { duration: total }));
+      }
     }
     Promise.all(jobs).then(() => {
       el.classList.remove('ios-entering'); prevEl.classList.remove('ios-leaving');
@@ -137,19 +181,24 @@ const IOS = (() => {
       running = [];
     });
   }
+  /* 16.0.0 — the one place that names how a screen arrives: 'push' / 'pop' (horizontal), 'present' / 'dismiss' (from the bottom),
+     'fade' (tabs, sign-in, start), or null when the same screen is only redrawn with fresh data (nothing moves). The entrance of the
+     blocks (omw.js) and the tab-bar pill (motion.js) read it so that one navigation gives one coherent motion. */
+  function kindOf(info){
+    const { id, from, el, prevEl } = info || {};
+    if (!el || !from || from === id || !prevEl || prevEl === el) return null;
+    if (reduced()) return 'fade';
+    if (info.back) return PRESENT[from] ? 'dismiss' : 'pop';
+    if (PRESENT[id] && !info.reset) return 'present';
+    if (info.reset || (TABS[id] && TABS[from])) return 'fade';
+    return 'push';
+  }
   function transition(info){
-    const { id, from, el, prevEl } = info;
-    if (!el) return;
+    if (!info.el) return;
     if (skipNext){ skipNext = false; return; }
-    if (!from || from === id || !prevEl || prevEl === el) return;
+    const kind = kindOf(info); if (!kind) return;
     settleAll();
-    let kind;
-    if (reduced()) kind = 'fade';
-    else if (info.back) kind = PRESENT[from] ? 'dismiss' : 'pop';
-    else if (PRESENT[id] && !info.reset) kind = 'present';
-    else if (info.reset || (TABS[id] && TABS[from])) kind = 'fade';
-    else kind = 'push';
-    run(kind, el, prevEl);
+    run(kind, info.el, info.prevEl);
   }
 
   /* ---------- large titles, collapsing bar, back label ---------- */
@@ -231,29 +280,25 @@ const IOS = (() => {
       }
       if (e.cancelable) e.preventDefault();
       g.dx = clamp(dx, 0, widthOf());
+      (g.samples = g.samples || []).push([performance.now(), g.dx]); if (g.samples.length > 8) g.samples.shift();
       paint(g, g.dx / widthOf());
     }, { passive: false });
     const end = () => {
       if (!g) return;
       const s = g; g = null;
       if (!s.on) return;
-      const w = widthOf(), v = s.dx / Math.max(1, Date.now() - s.t0);
-      const commit = s.dx > w * .34 || v > .55;
-      const from = s.dx / w, to = commit ? 1 : 0, SM = SPR.smooth;
+      const w = widthOf(), vpx = velocity(s.samples);                 /* px / ms, the finger's speed at release */
+      const commit = (s.dx > w * .34 && vpx > -.2) || vpx > .55;      /* a flick back cancels even past one third */
+      const from = s.dx / w, to = commit ? 1 : 0;
       const dm = dim();
       const finish = () => {
         [s.cur, s.prev].forEach(x => { x.style.transform = ''; x.style.transition = ''; x.style.zIndex = ''; x.classList.remove('ios-leaving', 'ios-entering'); delete x.dataset.iosMode; });
         if (dm) dm.style.opacity = '';
         if (commit){ skipNext = true; try { R.back(); } catch(err){ fail(err); } setTimeout(() => { skipNext = false; }, 60); }
       };
-      const dur = Math.max(260, Math.round(SM.ms * (commit ? 1 - from : from) * 1.1));
-      const t0 = performance.now();
-      const step = now => {
-        const k = clamp((now - t0) / dur, 0, 1), e2 = 1 - Math.pow(1 - k, 3);
-        paint(s, from + (to - from) * e2);
-        if (k < 1) requestAnimationFrame(step); else finish();
-      };
-      if (reduced()) { paint(s, to); finish(); } else requestAnimationFrame(step);
+      /* 16.0.0 — the screen leaves (or comes back) on a spring that starts at the finger's speed: no jump in velocity at release */
+      if (reduced()) { paint(s, to); finish(); }
+      else animateSpring({ from, to, velocity: vpx * 1000 / w, response: .42, damping: 1, onUpdate: p => paint(s, clamp(p, 0, 1)), onDone: finish });
       if (commit) Haptics.light();
     };
     host.addEventListener('touchend', end, { passive: true });
@@ -293,26 +338,36 @@ const IOS = (() => {
           s.on = true; panel.style.transition = 'none';
         }
         if (e.cancelable) e.preventDefault();
-        s.dy = Math.max(0, dy);
-        const rub = s.dy;                         /* follows the finger 1:1 */
+        s.dy = dy;
+        /* follows the finger 1:1 downwards; upwards it resists (rubber band), like a UIKit sheet at its top detent */
+        const rub = dy >= 0 ? dy : -Math.min(28, Math.pow(-dy, .72));
+        (s.samples = s.samples || []).push([performance.now(), dy]); if (s.samples.length > 8) s.samples.shift();
         panel.style.transform = 'translate3d(0,' + rub + 'px,0)';
-        if (back) back.style.opacity = String(clamp(1 - rub / Math.max(1, panel.offsetHeight), 0, 1));
+        if (back) back.style.opacity = String(clamp(1 - Math.max(0, rub) / Math.max(1, panel.offsetHeight), 0, 1));
       }, { passive: false });
       const end = () => {
         if (!s) return; const k = s; s = null;
         if (!k.on) return;
-        const v = k.dy / Math.max(1, Date.now() - k.t0);
-        const dismiss = k.dy > Math.min(150, panel.offsetHeight * .32) || v > .6;
-        panel.style.transition = ''; if (back) back.style.opacity = '';
+        const v = velocity(k.samples), h = panel.offsetHeight, dy = Math.max(0, k.dy);
+        const dismiss = (dy > Math.min(150, h * .32) && v > -.25) || v > .6;
         if (dismiss){
-          panel.style.transform = '';
+          /* 16.0.0 — the sheet keeps going from where the finger left it, at the finger's speed (it used to jump back to the top and then
+             vanish in one frame). The inline transform wins over the closed state, so closing the overlay does not interrupt it. */
+          const dist = h + 24 - dy, sp = Math.max(v, 1.1), dur = Math.round(clamp(dist / sp, 140, 300));
+          panel.style.transition = 'transform ' + dur + 'ms cubic-bezier(.3,.75,.4,1)';
+          panel.style.transform = 'translate3d(0,' + (h + 24) + 'px,0)';
+          if (back){ back.style.transition = 'opacity ' + dur + 'ms linear'; back.style.opacity = '0'; }
           try { R.overlay.close(); } catch(err){ fail(err); }
-          if (ov.classList.contains('is-open')){ /* not dismissible: it stays, spring back */ }
+          if (ov.classList.contains('is-open')){            /* not dismissible: it stays, spring back */
+            panel.style.transition = 'transform ' + SPR.snappy.ms + 'ms ' + SPR.snappy.css; panel.style.transform = '';
+            if (back){ back.style.transition = ''; back.style.opacity = ''; }
+          }
           Haptics.light();
         } else {
           panel.style.transition = 'transform ' + SPR.snappy.ms + 'ms ' + SPR.snappy.css;
           panel.style.transform = '';
-          setTimeout(() => { panel.style.transition = ''; }, SPR.snappy.ms + 30);
+          if (back){ back.style.transition = 'opacity ' + SPR.snappy.ms + 'ms ease'; back.style.opacity = ''; }
+          setTimeout(() => { panel.style.transition = ''; if (back) back.style.transition = ''; }, SPR.snappy.ms + 30);
         }
       };
       panel.addEventListener('touchend', end, { passive: true });
@@ -414,5 +469,5 @@ const IOS = (() => {
     } catch(e){ fail(e); }
   }
   if (D.readyState === 'loading') D.addEventListener('DOMContentLoaded', init); else init();
-  return { init, spring, SPR, Haptics, reduced };
+  return { init, spring, SPR, Haptics, reduced, springAt, animateSpring, velocity, kindOf };
 })();

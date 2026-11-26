@@ -166,7 +166,11 @@ const R = (() => {
     wrap.innerHTML = '<div class="ov-backdrop"></div><div class="ov-panel" role="dialog" aria-modal="true" tabindex="-1">' + html + '</div>';
     const rec = { wrap, panel: wrap.querySelector('.ov-panel'), prev: document.activeElement, onClose: o.onClose, dismissible: o.dismissible !== false, closed:false };
     root.appendChild(wrap); overlays.push(rec);
-    wrap.querySelector('.ov-backdrop').addEventListener('click', () => { if (rec.dismissible) closeRec(rec); });
+    const bd = wrap.querySelector('.ov-backdrop');
+    bd.addEventListener('click', () => { if (rec.dismissible) closeRec(rec); });
+    /* 16.0.0 — read the closed state once (style only, no layout) so the browser has a starting point: without it the class below is
+       already there the first time the panel is styled, and the sheet / dialog appears at once instead of travelling */
+    try { void getComputedStyle(rec.panel).opacity; void getComputedStyle(bd).opacity; } catch(e){}
     requestAnimationFrame(() => { wrap.classList.add('is-open'); try { rec.panel.focus({ preventScroll:true }); } catch(e){} });
     arm();
     return () => closeRec(rec);

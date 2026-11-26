@@ -14,11 +14,11 @@ propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce so
 | Élément | État |
 |---|---|
 | Dernier commit | voir `git log -1` sur la branche |
-| Site en production | https://yor-wallet.vercel.app — version 15.3.0 (contrôle : `curl -s https://yor-wallet.vercel.app/sw.js \| grep fp-shell` → `fp-shell-v15.3.0`) |
-| Version | 15.3.0 partout (`js/data/reference-data.js`, `sw.js`, `android/app/build.gradle.kts` 150300, `android/README.md`, `changelog.md`) |
+| Site en production | https://yor-wallet.vercel.app — version 16.0.0 (contrôle : `curl -s https://yor-wallet.vercel.app/sw.js \| grep fp-shell` → `fp-shell-v16.0.0`) |
+| Version | web 16.0.0 (`js/data/reference-data.js`, `sw.js`, `changelog.md`) · Android 15.3.0 inchangé (`android/app/build.gradle.kts` 150300, `android/README.md`) |
 | Base Supabase `gebjmguoauvutiqvoswl` | `20261124_crypto_swap.sql` **appliquée** (par le propriétaire, éditeur SQL) ; `20261125_close_legacy_instant_trades.sql` **appliquée** le 23/11 et `20261126_close_legacy_crypto_to_bank.sql` **appliquée** le 24/11 (anciennes fonctions à prix figés fermées aux utilisateurs, rien supprimé, retours arrière fournis — voir `changelog.md` 14.5.1) |
 | Fonctions Edge | `crypto-swap` v1 (verify_jwt **true**) · `send-email` v59 (verify_jwt **false**, appelée par la base avec `x-webhook-secret`) · `wallet-addresses`, `admin-action` inchangées |
-| Tests web | 9 suites vertes le 24/11 : omw, omx, trade, smoke (138 écrans), shell, bugfix, ios-motion, admin-console, admin-payouts ; mesure `tests/ux/perf-spot.mjs` |
+| Tests web | **23 suites vertes le 26/11** (toutes celles de `tests/ux/*.test.mjs`, dont la nouvelle `motion-system` — 15 vérifications image par image —, smoke 132 contrôles d'écran, words 180) ; mesures `tests/ux/motion-audit.mjs`, `tests/ux/motion-film.mjs`, `tests/ux/perf-spot.mjs` |
 | Tests Android | 53 tests Robolectric, 0 échec (24/11, 14.7.0) ; APK de publication 14.7.0 signé avec une **clé temporaire de session** (hors dépôt, perdue avec la session : la prochaine version devra être signée avec la clé du propriétaire, ce qui obligera à désinstaller puis réinstaller) |
 | Figma | fichier `sboQhYUgrVX2ocLBjlmNDu`, groupe `3:438` (cadres Marchés `3:2`, Spot `3:155`, Swap `3:357`), verre bleu + nouveau menu |
 
@@ -34,6 +34,17 @@ propriétaire, carte du projet, procédures) **avant** de toucher quoi que ce so
   Refus = montant rendu. Essai complet sur le serveur fait le 23/11 dans une transaction annulée : tout conforme (détail dans `changelog.md`).
 
 ---
+
+## 1 octies. 16.0.0 (26/11) — système de mouvement (web) : où il vit, les règles à garder
+
+- **Audit et mesures** : `docs/mouvement/AUDIT.md` (avant / après). Re-mesurer : `node tests/ux/motion-audit.mjs <dossier> 4` (processeur ralenti 4×) ; voir une transition image par image : `node tests/ux/motion-film.mjs <dossier>` (planches S0.png…).
+- **Jetons** : ressorts calculés dans `js/ui/ios-motion.js` (`IOS.SPR` : smooth, push, snappy, gentle, press → variables CSS `--m-<nom>` et `--m-<nom>-d`) ; durées et courbes dans `css/motion-system.css` §1 (`--m-out`, `--m-in`, `--m-std`, `--m-d-xs/s/m/l`). Les anciennes familles (`--t-*`, `--om-*`, `--w-*`, `--px-*`, `--mo-*`) y renvoient : ne pas en créer de nouvelle. `css/motion-system.css` est **la dernière feuille** : la garder en dernier.
+- **Une navigation = un mouvement** : `IOS.kindOf(info)` nomme la manière d'arriver (`push`, `pop`, `present`, `dismiss`, `fade`, ou `null` = même écran redessiné). L'entrée des blocs (`js/ui/omw.js`) et la pastille (`js/ui/motion.js`) la lisent. Un nouvel onglet de la barre du bas doit être ajouté à `TABS` (`js/ui/ios-motion.js`), sinon il glisse comme une page.
+- **Jamais d'`!important` sur `opacity` ou `transform` d'un élément animé** : une déclaration importante l'emporte sur toute animation (c'est ce qui empêchait l'ancien onglet de s'effacer, `css/ui.css` jusqu'en 16.0.0).
+- **Feuilles et fenêtres** : `R.overlay.open` lit l'état fermé avant d'ajouter `.is-open` (`js/core/router.js`) — sans cette lecture, la feuille apparaît sans glisser. Ne pas la retirer.
+- **Boucles infinies** : seulement `transform` / `opacity` (pseudo-élément), et mises en pause sur les écrans cachés (`css/motion-system.css` §7) ; « réduire les animations » : fondus seulement (bloc en fin de fichier).
+- **Tests** : `tests/ux/motion-system.test.mjs`, `motion.test.mjs`, `ios-motion.test.mjs`.
+- **Android** : non touché en 16.0.0 ; l'inventaire et la proposition `MotionTokens.kt` sont dans l'audit.
 
 ## 1 septies. Outils externes et sauvegarde (25/11) — où sont les choses hors du dépôt
 - **Deuxième site, en ligne** : https://om-wallet.weinc.app/ (Copy Any Design / WeInc, offre gratuite : badge WeInc, non indexé par
