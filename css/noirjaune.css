@@ -382,3 +382,17 @@ html:root:root:root body .ce-p{color:var(--lt-ink2,#BDB9AC);font-size:15px;line-
 html:root:root:root body .ce-p.small{font-size:13px}
 html:root:root:root body .ce-card .btn{width:100%}
 html:root:root:root body #ce-msg.ok{color:var(--lt-pos,#0ECB81)}
+/* 16.3.0 — two-step verification sheets */
+html:root:root:root body .mfa-sheet{display:grid;gap:12px}
+html:root:root:root body .mfa-gate{justify-items:stretch;text-align:center}
+html:root:root:root body .mfa-gate .ce-ic{margin:0 auto}
+html:root:root:root body .mfa-p{color:var(--lt-ink2,#BDB9AC);font-size:15px;line-height:1.5;margin:0}
+html:root:root:root body .mfa-p.small{font-size:13px}
+html:root:root:root body .mfa-qr{display:grid;place-items:center;padding:14px;border-radius:18px;background:#fff;justify-self:center}
+html:root:root:root body .mfa-qr img{display:block;width:200px;height:200px;image-rendering:pixelated}
+html:root:root:root body .mfa-secret{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:10px 12px;border-radius:14px;background:var(--lt-card2,#1F1D17)}
+html:root:root:root body .mfa-secret code{font-size:14px;letter-spacing:.06em;overflow-wrap:anywhere}
+html:root:root:root body .mfa-code{font-size:22px;letter-spacing:.3em;text-align:center}
+html:root:root:root body .mfa-ov{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px}
+html:root:root:root body .mfa-ov .ov-backdrop{position:absolute;inset:0;opacity:1}
+html:root:root:root body .mfa-ov .ov-panel{position:relative;opacity:1;transform:none;width:min(100%,420px)}

@@ -253,6 +253,20 @@
       signUp: function(a){ (window.__authLog = window.__authLog || []).push({ fn: 'signUp', args: a }); return Promise.resolve({ data: { session: null }, error: null }); },
       resend: function(a){ (window.__authLog = window.__authLog || []).push({ fn: 'resend', args: a }); return Promise.resolve({ data: {}, error: null }); },
       signOut: function(){ session = null; listeners.forEach(function(l){ l('SIGNED_OUT', null); }); return Promise.resolve({ error: null }); },
+      mfa: (function(){
+        var factors = [], aal = 'aal1';
+        var log = function(fn, a){ (window.__authLog = window.__authLog || []).push({ fn: 'mfa.' + fn, args: a }); };
+        return {
+          listFactors: function(){ var all = factors.slice(); return Promise.resolve({ data: { all: all, totp: all.filter(function(f){ return f.factor_type === 'totp'; }) }, error: null }); },
+          enroll: function(a){ log('enroll', a); var f = { id: 'fac-' + (factors.length + 1), factor_type: 'totp', status: 'unverified' }; factors.push(f);
+            return Promise.resolve({ data: { id: f.id, type: 'totp', totp: { qr_code: 'data:image/svg+xml;utf-8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22/>', secret: 'JBSWY3DPEHPK3PXP', uri: 'otpauth://totp/x' } }, error: null }); },
+          unenroll: function(a){ log('unenroll', a); factors = factors.filter(function(f){ return f.id !== a.factorId; }); return Promise.resolve({ data: {}, error: null }); },
+          challengeAndVerify: function(a){ log('challengeAndVerify', a); if (a.code !== '123456') return Promise.resolve({ data: null, error: { message: 'Invalid TOTP code entered' } });
+            factors.forEach(function(f){ if (f.id === a.factorId) f.status = 'verified'; }); aal = 'aal2'; return Promise.resolve({ data: {}, error: null }); },
+          getAuthenticatorAssuranceLevel: function(){ var v = factors.some(function(f){ return f.status === 'verified'; }); return Promise.resolve({ data: { currentLevel: aal, nextLevel: v ? 'aal2' : 'aal1' }, error: null }); },
+          __preset: function(){ factors = [{ id: 'fac-pre', factor_type: 'totp', status: 'verified' }]; aal = 'aal1'; }
+        };
+      })(),
       resetPasswordForEmail: function(){ return Promise.resolve({ data: {}, error: null }); },
       updateUser: function(){ return Promise.resolve({ data: {}, error: null }); }
     },

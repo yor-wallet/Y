@@ -170,6 +170,7 @@ function renderSettings(){
   html += '<div class="settings-group">' +
     '<button class="settings-row" type="button" data-px="pin"><div class="tile">' + icon('lock', 20) + '</div><div class="settings-row-body"><div class="settings-row-title">' + escapeHtml(t('px.pinChange')) + '</div><div class="settings-row-sub">' + escapeHtml(t('px.pinChangeD')) + '</div></div><span class="settings-row-chev">' + icon('chev', 18) + '</span></button>' +
     faceIdRow() +
+    (typeof Mfa !== 'undefined' ? Mfa.row() : '') +
     settingsToggleRow({ icon:'lock', title:t('settings.txConfirm'), sub:t('settings.txConfirmDesc'), checked:txConfirmOn, action:'settings-toggle-txconfirm' }) +
     settingsLinkRow({ icon:'device', title:t('devices.title'), sub:t('devices.current'), nav:'devices' }) +
     settingsLinkRow({ icon:'session', title:t('sessions.title'), sub:t('sessions.current'), nav:'sessions' }) +

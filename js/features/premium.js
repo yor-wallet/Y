@@ -510,6 +510,7 @@ const Premium = (() => {
         settingsSection(t('px.security')) + '<div class="settings-group">' +
           row('lock', t('px.pinChange'), t('px.pinChangeD'), 'data-px="pin"') +
           (typeof faceIdRow === 'function' ? faceIdRow() : '') +
+          (typeof Mfa !== 'undefined' ? Mfa.row() : '') +
           row('device', t('devices.title'), t('devices.current'), 'data-nav="devices"') +
           row('session', t('sessions.title'), t('sessions.current'), 'data-nav="sessions"') +
         '</div>' +

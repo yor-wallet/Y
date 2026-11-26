@@ -106,11 +106,19 @@ const AuthEngine = (() => {
       if (pendingUid === user.id) return;
       pendingUid = user.id;
       try {
+        /* 16.3.0 — two-step verification: with a verified TOTP factor, nothing is loaded before the code (session aal2) */
+        /* an event queued before a sign-out (e.g. INITIAL_SESSION) must not reopen anything: the session must still exist */
+        if (typeof Mfa !== 'undefined'){ const cs = await sb.auth.getSession(); if (!cs || !cs.data || !cs.data.session) throw new Error('no_session'); }
+        if (typeof Mfa !== 'undefined' && !(await Mfa.gate())){
+          try { await sb.auth.signOut(); } catch(e){}
+          throw new Error('mfa_cancelled');
+        }
         const ctx = await loadContextFromUser(user);
         if (ctx){
           UserContext.set(ctx);
           await hydrateRuntime();
           startRealtime(user.id);
+          try { if (typeof Mfa !== 'undefined') Mfa.refresh(); } catch(e){}
           try { if (typeof Push !== 'undefined') Push.sync(); } catch(e){}           /* 12.13.0 : réenregistre l'appareil des alertes (adresse de livraison renouvelée, autre personne) */
           if (typeof onChange === 'function') onChange(true, event);
           return;

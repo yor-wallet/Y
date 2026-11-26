@@ -90,6 +90,7 @@ function wire(id){
         await UserDataEngine.writeDoc(uid, 'preferences', Object.assign({}, Runtime.settings, { vibration: next }));
         Runtime.settings.vibration = next;
       });
+      else if (a === 'settings-mfa'){ await Mfa.toggle(); }
       else if (a === 'settings-faceid'){
         /* 12.9.0: Face ID is mandatory where the device has it. This row shows the state; it can turn it ON, never OFF. */
         const fi = FaceId.info();

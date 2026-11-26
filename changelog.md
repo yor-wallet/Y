@@ -1,3 +1,17 @@
+# OM Wallet 16.3.0 (web + base) — vérification en deux étapes (TOTP), appliquée côté serveur
+
+Étape 2 (seconde partie) du cahier des charges du 26/11, §7. Sans numéro de téléphone.
+
+- **Activer** (Réglages → Sécurité, et Profil → Sécurité) : Supabase Auth crée la clé et le QR code ; on scanne avec une application d'authentification (ou on saisit la clé) ; le facteur n'est **actif qu'après un code à 6 chiffres vérifié**. Fermer la feuille avant supprime le facteur non vérifié.
+- **Connexion** : après le mot de passe, si le compte a un TOTP, **rien n'est chargé** tant que le code n'est pas vérifié (session aal2) ; « Se déconnecter » possible depuis cet écran. Couche propre, hors du routeur (une navigation au démarrage ne peut pas la fermer). Un événement de session en file après une déconnexion ne rouvre plus rien.
+- **Désactiver** : depuis une session aal2, après confirmation.
+- **Côté serveur** (`supabase/migrations/20261128_mfa_totp.sql`, + `_rollback.sql`, appliquée avec l'accord du propriétaire) : fonction `mfa_ok()` ; règle restrictive `mfa_required` sur les 22 tables personnelles ; contrôle dans `verify_pin` et `_consume_grant` (les 15 fonctions qui déplacent de l'argent) et dans `is_admin` / `_bn_is_admin` (administration). Aucune table ni donnée modifiée ; 4 fonctions sauvegardées (`function_backups`, tag `16.3.0-before`). **Testé dans la base, bloc annulé** : sans TOTP → accès inchangé ; TOTP + session aal1 → 0 compte visible, `verify_pin` refusé (`mfa_required`) ; TOTP + aal2 → accès rétabli.
+- Le code TOTP de connexion et le code des transactions restent **deux mécanismes distincts**.
+- **Tests** : nouveau `tests/ux/mfa.test.mjs` (activation, abandon, code faux, connexion bloquée puis ouverte, déconnexion, arabe) ; auth, smoke, bugfix, ios-settings, omw, omx, trade, admin-console, admin-payouts, a11y, rtl, motion-system, words.
+- **Non vérifié** : aucun facteur réel créé en production ; l'option TOTP de Supabase Auth est activée par défaut sur les projets, mais je n'ai pas pu lire ce réglage — si elle est coupée, l'activation affiche « indisponible ». Les fonctions de lecture `security definer` qui ne passent ni par les tables ni par le PIN (ex. recherche de bénéficiaire) ne demandent pas encore le niveau aal2.
+
+---
+
 # OM Wallet 16.2.0 (web + base) — inscription sans téléphone, confirmation de l'e-mail
 
 Étape 2 (première partie) du cahier des charges du 26/11.
