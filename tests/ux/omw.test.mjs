@@ -57,14 +57,14 @@ const cur = page => page.evaluate(() => R.current());
     await page.click('#home .w-hdr [data-nav="account"]'); await wait(700); assert.equal(await cur(page), 'account');
     await back(); await page.click('#home .w-hdr [data-action="notifications"]'); await wait(700); assert.equal(await cur(page), 'notifications');
   });
-  await ok('accueil (14.7.0, image du propriétaire) : les trois actions rondes ouvrent dépôt, retrait, envoi ; une carte de variation ouvre l’actif', async () => {
-    for (const [i, to] of [[0, 'deposit'], [1, 'withdraw'], [2, 'send-internal']]){
+  await ok('accueil (14.7.0, image du propriétaire) : les quatre actions ouvrent dépôt, échange, retrait, envoi ; une ligne de la liste des cryptos ouvre l’actif', async () => {
+    for (const [i, to] of [[0, 'deposit'], [1, 'exchange'], [2, 'withdraw'], [3, 'send-internal']]){
       await back();
       await page.evaluate(k => document.querySelectorAll('#home .lt-acts .omx-act')[k].click(), i); await wait(700);
       assert.equal(await cur(page), to);
     }
     await back(); await wait(600);
-    const sym = await page.evaluate(() => { const c = document.querySelector('#home .lt-mv'); c.click(); return c.getAttribute('data-omx-asset'); }); await wait(800);
+    const sym = await page.evaluate(() => { const c = document.querySelector('#home .lt-cryptos .omx-row'); c.click(); return c.getAttribute('data-omx-asset'); }); await wait(800);
     assert.equal(await cur(page), 'asset');
     assert.ok(sym);
   });

@@ -131,15 +131,7 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
     assert.equal(await page.locator('#exchange .lv-type').count(), 0, 'the amount does not pulse');
     assert.equal(await page.evaluate(() => document.getAnimations().filter(a => a.effect && a.effect.target && a.effect.target.closest && a.effect.target.closest('.lt-keys')).length), 0);
   });
-  /* 16.0.0 (audit: « unnecessary rotations »): the centre button no longer spins 180°; it presses in, like every round control */
-  await ok('centre : la touche Swap s’enfonce sous le doigt (sans faire de demi-tour)', async () => {
-    const b = await page.$('#bottom-nav .nav-cta'); const box = await b.boundingBox();
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2); await page.mouse.down(); await wait(200);
-    const r = await page.evaluate(() => { const t = document.querySelector('#bottom-nav .nav-cta .nav-cta-tile'), s = t.querySelector('svg'); return { tile: getComputedStyle(t).transform, svg: getComputedStyle(s).transform }; });
-    await page.mouse.up(); await wait(300);
-    assert.equal(r.svg, 'none', 'the arrows do not turn');
-    assert.match(r.tile, /^matrix\(0\.9[0-4]/, 'the tile presses in: ' + r.tile);
-  });
+  /* 17.1.0: the raised centre button is gone (five equal entries); the press feedback of the bar and of the Swap tile is covered by motion-system.test.mjs */
   await ok('aucune erreur de page', async () => assert.deepEqual(logs, []));
   await ctx.close();
 }

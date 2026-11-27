@@ -22,7 +22,7 @@ Object.assign(TR.en, {
   'tr.fee':'Fees','tr.priceL':'Price','tr.priceV':'fixed when you ask (valid 30 s)','tr.follow':'Tracking','tr.followV':'In progress, then Confirmed','tr.src':'Price source','tr.go':'Swap',
   'tr.review':'Check your swap','tr.pay':'You pay','tr.get':'You receive','tr.valid':'Price valid for {s} s','tr.expired':'This price has expired','tr.refresh':'Get a new price','tr.confirm':'Confirm',
   'tr.rule':'The amount you pay is set aside until DYT confirms. You receive exactly the amount shown here.',
-  'tr.pick':'Choose a pair','tr.pickA':'Choose a crypto','tr.noBal':'No available balance','tr.risk':'Crypto prices are volatile.','tr.data':'Market data: Binance (public).',
+  'tr.pick':'Choose a pair','tr.pickA':'Choose a crypto','tr.noBal':'No available balance','tr.risk':'Crypto prices are volatile.','tr.data':'Market data: public, live.',
   'tr.s.SUBMIT':'Recording your swap…','tr.s.PENDING':'In progress','tr.s.CONFIRMED':'Swap confirmed','tr.s.REJECTED':'Refused — the amount was returned to your balance','tr.s.FAILED':'Not recorded',
   'tr.st.rec':'Submitted','tr.st.wait':'In progress','tr.st.done':'Confirmed','tr.again':'Back','tr.home':'Back to Swap',
   'tr.e.insufficient_balance':'Insufficient available balance.','tr.e.min_amount':'The minimum is 1 USD of value.','tr.e.price_unavailable':'The price is unavailable right now. Try again.',
@@ -43,7 +43,7 @@ Object.assign(TR.fr, {
   'tr.fee':'Frais','tr.priceL':'Prix','tr.priceV':'fixé au moment de la demande (valable 30 s)','tr.follow':'Suivi','tr.followV':'En cours, puis Confirmé','tr.src':'Source du prix','tr.go':'Échanger',
   'tr.review':'Vérifiez votre échange','tr.pay':'Vous payez','tr.get':'Vous recevez','tr.valid':'Prix valable {s} s','tr.expired':'Ce prix a expiré','tr.refresh':'Obtenir un nouveau prix','tr.confirm':'Confirmer',
   'tr.rule':'Le montant payé est mis de côté jusqu’à la confirmation par DYT. Vous recevez exactement le montant affiché ici.',
-  'tr.pick':'Choisir une paire','tr.pickA':'Choisir une crypto','tr.noBal':'Aucun solde disponible','tr.risk':'Les prix des cryptos sont volatils.','tr.data':'Données de marché : Binance (public).',
+  'tr.pick':'Choisir une paire','tr.pickA':'Choisir une crypto','tr.noBal':'Aucun solde disponible','tr.risk':'Les prix des cryptos sont volatils.','tr.data':'Données de marché : publiques, en direct.',
   'tr.s.SUBMIT':'Enregistrement de votre échange…','tr.s.PENDING':'En cours','tr.s.CONFIRMED':'Échange confirmé','tr.s.REJECTED':'Refusé — le montant est revenu sur votre solde','tr.s.FAILED':'Non enregistré',
   'tr.st.rec':'Soumis','tr.st.wait':'En cours','tr.st.done':'Confirmé','tr.again':'Retour','tr.home':'Retour au Swap',
   'tr.e.insufficient_balance':'Solde disponible insuffisant.','tr.e.min_amount':'Le minimum est de 1 USD de valeur.','tr.e.price_unavailable':'Le prix est indisponible pour le moment. Réessayez.',
@@ -64,7 +64,7 @@ Object.assign(TR.ar, {
   'tr.fee':'الرسوم','tr.priceL':'السعر','tr.priceV':'مثبّت عند الطلب (صالح 30 ث)','tr.follow':'المتابعة','tr.followV':'قيد التنفيذ، ثم مؤكَّد','tr.src':'مصدر السعر','tr.go':'تبديل',
   'tr.review':'راجع عملية التبديل','tr.pay':'تدفع','tr.get':'تستلم','tr.valid':'السعر صالح لمدة {s} ث','tr.expired':'انتهت صلاحية هذا السعر','tr.refresh':'الحصول على سعر جديد','tr.confirm':'تأكيد',
   'tr.rule':'يُحجز المبلغ المدفوع حتى يؤكده DYT. تستلم بالضبط المبلغ المعروض هنا.',
-  'tr.pick':'اختر زوجاً','tr.pickA':'اختر عملة','tr.noBal':'لا يوجد رصيد متاح','tr.risk':'أسعار العملات الرقمية متقلبة.','tr.data':'بيانات السوق: Binance (عامة).',
+  'tr.pick':'اختر زوجاً','tr.pickA':'اختر عملة','tr.noBal':'لا يوجد رصيد متاح','tr.risk':'أسعار العملات الرقمية متقلبة.','tr.data':'بيانات السوق: عامة ومباشرة.',
   'tr.s.SUBMIT':'جارٍ تسجيل عملية التبديل…','tr.s.PENDING':'قيد التنفيذ','tr.s.CONFIRMED':'تم تأكيد التبديل','tr.s.REJECTED':'مرفوض — أُعيد المبلغ إلى رصيدك','tr.s.FAILED':'لم يُسجَّل',
   'tr.st.rec':'أُرسل','tr.st.wait':'قيد التنفيذ','tr.st.done':'مؤكَّد','tr.again':'رجوع','tr.home':'العودة إلى التبديل',
   'tr.e.insufficient_balance':'الرصيد المتاح غير كافٍ.','tr.e.min_amount':'الحد الأدنى قيمة 1 دولار.','tr.e.price_unavailable':'السعر غير متاح حالياً. حاول مرة أخرى.',
@@ -105,7 +105,7 @@ const OMXTrade = (() => {
   const cut8 = n => Math.floor(Number(n) * 1e8 + 1e-6) / 1e8;
   /* « 1 BTC = 96,972 USDT » rather than « 1 USDT = 0.00001 BTC »: the side worth more than 1 is named first */
   const rateTxt = (fa, ta, price, approx) => !(price > 0) ? '—' : price >= 1 ? '1 ' + fa + (approx ? ' ≈ ' : ' = ') + fmtP(price) + ' ' + ta : '1 ' + ta + (approx ? ' ≈ ' : ' = ') + fmtP(1 / price) + ' ' + fa;
-  const srcTxt = s2 => String(s2 || 'binance').replace(/^binance:?/i, 'Binance · ').replace(/ · $/, '');
+  const srcTxt = s2 => String(s2 || '').replace(/binance[:\s·]*/ig, '').trim() || 'DYT';   /* 17.1.0: the data provider is not named to the user */
   const num = v => { const n = Number(String(v == null ? '' : v).replace(/\s/g, '').replace(',', '.')); return isFinite(n) ? n : NaN; };
 
   /* ---------- live market for the Spot screen ---------- */

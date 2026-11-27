@@ -136,14 +136,7 @@ const scaleX = tf => { const m = /^matrix\(([^,]+),/.exec(tf || ''); return m ? 
     assert.equal(held.light, 0);
     assert.ok(!/\bm-down\b/.test(after.cls)); assert.ok(scaleX(after.itf) > .995, 'back: ' + after.itf);
   });
-  await ok('a held card sinks with the light under the finger, then gets its own position / overflow back (they used to stay clipped for good)', async () => {
-    const { held, after } = await hold('#home .lt-mv');
-    assert.ok(/\bm-down\b/.test(held.cls), 'held class: ' + held.cls);
-    assert.ok(scaleX(held.tf) < .995, 'sinks: ' + held.tf);
-    assert.equal(held.ov, 'hidden', 'the light is clipped while it blooms'); assert.equal(held.light, 1);
-    assert.ok(!/\bm-down\b/.test(after.cls)); assert.equal(after.ov, ''); assert.equal(after.pos, ''); assert.equal(after.light, 0);
-  });
-
+  /* 17.1.0: the home screen no longer has variation cards (the crypto list replaced them); the press / light clean-up is covered by the quick-action test above */
   await ok('at rest, no endless animation runs on a hidden screen', async () => {
     await wait(800);
     const n = await page.evaluate(() => document.getAnimations().filter(a => {

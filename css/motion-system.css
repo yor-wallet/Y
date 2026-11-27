@@ -295,3 +295,46 @@ html:root:root:root:root body .w-auth-icon{filter:none!important;border-radius:8
 html:root:root:root:root body .wp-art-2fa{height:43%}
 html:root:root:root:root body .wp-art-2fa .wp-card{height:min(calc(var(--art-h,400px) - 84px - env(safe-area-inset-top,0px)),360px)}
 html:root:root:root:root body .wp-art-2fa .wp-chip{bottom:-14px}
+
+/* ---------- 13. 17.1.0 — home and navigation from the owner's two references (composition only; DYT's own identity) ---------- */
+/* balance (reference 1): small label, large figure, change line — left-aligned (right-aligned in Arabic), on the page, no centred hero */
+html:root:root:root:root body .lt-home .lt-hero{text-align:start;padding-bottom:6px}
+html:root:root:root:root body .lt-home .lt-bal{justify-content:flex-start;margin-top:18px;text-transform:none;letter-spacing:0;font-size:14px;font-weight:600}
+html:root:root:root:root body .lt-home .omx-tv{text-align:start;font-size:clamp(36px,11.5vw,50px)!important;margin:4px 0 8px}
+html:root:root:root:root body .lt-home .omx-ts{justify-content:flex-start;font-size:14px;font-weight:600}
+/* actions (reference 2): four equal rounded tiles, label under each; Swap is the lime one */
+html:root:root:root:root body .lt-home .lt-acts{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0 8px!important;justify-content:stretch}
+html:root:root:root:root body .lt-home .lt-acts .omx-act{min-width:0;width:100%;gap:9px;font-size:13px;font-weight:600;align-items:center}
+html:root:root:root:root body .lt-home .lt-acts .omx-act i{width:100%!important;height:56px!important;border-radius:18px!important;background:var(--lt-card2)!important;border:0!important;color:var(--lt-ink)!important}
+html:root:root:root:root body .lt-home .lt-acts .omx-act i svg{color:var(--lt-ink)!important;stroke:currentColor!important}
+html:root:root:root:root body .lt-home .lt-acts .omx-act.p i{background:var(--lt-yellow)!important}
+html:root:root:root:root body .lt-home .lt-acts .omx-act.p i svg{color:var(--lt-on-yellow)!important}
+html:root:root:root:root body .lt-home .lt-acts .omx-act.p{box-shadow:none!important}
+html:root:root:root:root body .lt-home .lt-acts .omx-act span{color:var(--lt-ink)!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+/* crypto list (reference 2): logo, name and balance on one side, value and change on the other — no curve */
+html:root:root:root:root body .lt-cryptos .omx-rs{display:none}
+html:root:root:root:root body .lt-cryptos .omx-list{gap:0}
+html:root:root:root:root body .lt-cryptos .omx-row{padding:14px 2px;background:transparent!important;border:0!important;border-radius:0;box-shadow:none!important}
+html:root:root:root:root body .lt-cryptos .omx-row + .omx-row{border-top:1px solid var(--lt-edge)!important}
+html:root:root:root:root body .lt-cryptos .omx-rn b{font-size:17px;font-weight:700}
+html:root:root:root:root body .lt-cryptos .omx-rn small{font-size:14px;color:var(--lt-ink2)}
+html:root:root:root:root body .lt-cryptos .omx-rv b{font-size:17px;font-weight:700}
+/* networks screen */
+html:root:root:root:root body .nw-sub{margin:0 2px 12px;font-size:14px;color:var(--lt-ink2)}
+html:root:root:root:root body .nw-row .omx-rv small{max-width:46vw;text-align:end;white-space:normal;color:var(--lt-ink2)}
+/* floating bottom bar: a detached rounded dock, five equal entries, the current one in a lime disc */
+html:root:root:root:root body #bottom-nav{padding:0 12px calc(10px + env(safe-area-inset-bottom,0px))!important}
+html:root:root:root:root body #bottom-nav .nav-dock{height:66px!important;padding:6px!important;border-radius:28px!important;border:1px solid var(--lt-edge)!important;
+  box-shadow:0 18px 40px -16px rgba(0,0,0,.65),0 2px 0 rgba(255,255,255,.03) inset!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:0}
+html:root:root:root:root[data-theme="light"] body #bottom-nav .nav-dock{box-shadow:0 18px 36px -18px rgba(9,9,9,.32)!important}
+html:root:root:root:root body #bottom-nav .nav-item{min-width:0;height:54px;gap:2px;justify-content:center}
+html:root:root:root:root body #bottom-nav .nav-lb{font-size:10.5px!important;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:-1px!important}
+html:root:root:root:root body #bottom-nav .nav-item:not(.nav-cta) .nav-ic{width:32px;height:32px}
+html:root:root:root:root body #bottom-nav .nav-ind{top:6px!important;height:54px!important;border-radius:22px!important}
+html:root:root:root:root[dir="rtl"] body .lt-home .omx-tv{text-align:right}
+html:root:root:root:root body .nw-row .omx-rn small{white-space:normal;line-height:1.35}
+html:root:root:root:root body .nw-row::after{content:"";width:8px;height:8px;border:solid var(--lt-ink3);border-width:2px 2px 0 0;transform:rotate(45deg);margin-inline-start:6px;flex:none}
+html:root:root:root:root[dir="rtl"] body .nw-row::after{transform:rotate(-135deg)}
+/* the administrator's fifth tile (Credit) keeps the same grid */
+html:root:root:root:root body .lt-home .lt-acts:has(.omx-act:nth-child(5)){grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+html:root:root:root:root body .lt-home .lt-acts:has(.omx-act:nth-child(5)) .omx-act{font-size:11.5px}

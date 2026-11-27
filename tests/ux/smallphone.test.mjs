@@ -12,10 +12,10 @@ const go = async (page, id) => { await page.evaluate(i => R.go(i, { force: true 
 for (const [lang, w] of [['fr', 360], ['ar', 360], ['fr', 320]]) {
   console.log('\n[petit téléphone ' + w + ' px, ' + lang + ']');
   const { ctx, page, logs } = await openApp(browser, url, { lang, theme: 'dark', scheme: 'dark', width: w, height: 700, touch: true, admin: true });
-  await ok('Accueil : les 4 actions (Crédit pour l’administrateur) tiennent entre les bords', async () => {
+  await ok('Accueil : les 5 actions (dont Crédit, pour l’administrateur) tiennent entre les bords', async () => {
     await go(page, 'home');
     const r = await page.evaluate(() => [...document.querySelectorAll('#home .lt-acts .omx-act')].map(b => { const x = b.getBoundingClientRect(); return [Math.round(x.left), Math.round(x.right)]; }));
-    assert.equal(r.length, 4, 'quatre actions : ' + r.length);
+    assert.equal(r.length, 5, 'cinq actions : ' + r.length);
     assert.ok(r.every(([a, b]) => a >= 0 && b <= w), 'actions hors écran : ' + JSON.stringify(r));
   });
   await ok('Historique : le nom a de la place, le statut « Terminée » tient sur une ligne, « en cours » / « échouée » sont visibles', async () => {

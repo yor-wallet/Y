@@ -1,3 +1,16 @@
+# DYT 17.1.0 (web) — accueil et navigation à cinq sections
+
+Demande du propriétaire (27/11) : accueil composé à partir de deux références (solde de la première ; actions, liste des cryptos et barre flottante de la seconde), cinq sections : Portefeuilles, Spot, Marché, Réseaux, Tokens. Binance reste invisible pour l'utilisateur (géré en interne par l'administrateur).
+
+- **Barre du bas flottante, cinq entrées égales** : Portefeuilles (accueil) · Spot · Marché · Réseaux · Tokens. Le bouton Swap central disparaît de la barre ; Swap est une des quatre actions de l'accueil. L'entrée courante est dans un rond lime.
+- **Accueil (Portefeuilles)** : solde aligné à gauche (libellé, grand chiffre, variation 24 h) ; quatre tuiles Dépôt · Swap (lime) · Retrait · Envoyer (+ Crédit pour l'administrateur) ; liste des cryptos : logo, nom, quantité détenue, valeur et variation 24 h, la plus forte valeur d'abord. Les cartes « plus fortes variations » et les favoris quittent l'accueil (ils restent dans Marché).
+- **Réseaux** (nouvel écran) : les réseaux réellement pris en charge pour les dépôts et retraits (Bitcoin, Ethereum, BNB Smart Chain, TRON, Solana, Polygon, Arbitrum, Base, Avalanche, XRP Ledger, Litecoin) avec leur norme et les actifs qu'ils portent ; toucher une ligne ouvre le dépôt. Données de l'application, rien d'inventé.
+- **Tokens** : l'écran existant « Mes actifs » (soldes et marchés), renommé.
+- **Binance** : le nom n'apparaît plus dans l'interface ni sur le site public (« cours en direct », « source : données de marché en direct »).
+- Tests adaptés à la nouvelle barre et aux quatre actions.
+
+---
+
 # DYT 17.0.0 (web) — l'accueil affiche les cryptomonnaies
 
 Demande du propriétaire (27/11) : « le menu principal, je voudrais qu'il affiche les cryptos ».

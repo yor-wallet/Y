@@ -12,7 +12,7 @@ const owner = 'تمت عملية تحويل مبلغ 1.000 ريال بنجاح �
   console.log('\n[administrateur — français]');
   const { ctx, page, logs } = await openApp(browser, url, { lang: 'fr', settle: 900, admin: true });
   await ok('l’accueil propose « Crédit » à l’administrateur', async () => {
-    assert.deepEqual(await page.$$eval('#home .omx-acts [data-nav]', a => a.map(b => b.getAttribute('data-nav'))), ['deposit', 'withdraw', 'send-internal', 'topup']);
+    assert.deepEqual(await page.$$eval('#home .omx-acts [data-nav]', a => a.map(b => b.getAttribute('data-nav'))), ['deposit', 'exchange', 'withdraw', 'send-internal', 'topup']);
     await page.click('#home .omx-acts [data-nav="topup"]'); await wait(800); assert.equal(await cur(page), 'topup');
     assert.deepEqual(await page.$$eval('#topup [data-tp-op]', a => a.map(b => b.textContent.trim())), ['Ooredoo', 'Omantel', 'Vodafone']);
   });
@@ -61,7 +61,7 @@ const owner = 'تمت عملية تحويل مبلغ 1.000 ريال بنجاح �
   console.log('\n[utilisateur ordinaire · TID déjà utilisé]');
   let a = await openApp(browser, url, { lang: 'fr', settle: 900 });
   await ok('un utilisateur ordinaire ne voit pas « Crédit » et ne peut pas ouvrir l’écran', async () => {
-    assert.deepEqual(await a.page.$$eval('#home .omx-acts [data-nav]', x => x.map(b => b.getAttribute('data-nav'))), ['deposit', 'withdraw', 'send-internal']);
+    assert.deepEqual(await a.page.$$eval('#home .omx-acts [data-nav]', x => x.map(b => b.getAttribute('data-nav'))), ['deposit', 'exchange', 'withdraw', 'send-internal']);
     await a.page.evaluate(() => R.go('topup', { force: true })); await wait(900); assert.equal(await cur(a.page), 'home');
   });
   await a.ctx.close();

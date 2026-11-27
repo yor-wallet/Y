@@ -18,9 +18,9 @@ const pin = async page => { await wait(700); for (const k of '482913') await pag
   console.log('\n[menu principal, Spot en direct, ordre au marché]');
   const { ctx, page, logs } = await openApp(browser, url, { lang: 'fr', settle: 900, ws: 'live' });
   await ok('menu principal (14.7.0, image du propriétaire) : Accueil · Marchés · Swap (bouton rond au milieu) · Portefeuille · Spot', async () => {
-    assert.deepEqual(await page.$$eval('#bottom-nav .nav-item', a => a.map(x => x.getAttribute('data-nav'))), ['home', 'markets', 'exchange', 'wallet', 'spot']);
-    assert.deepEqual(await page.$$eval('#bottom-nav .nav-item', a => a.map(x => x.textContent.trim())), ['Accueil', 'Marchés', 'Swap', 'Portefeuille', 'Spot']);
-    assert.equal(await page.locator('#bottom-nav .nav-cta[data-nav="exchange"] .nav-cta-tile').count(), 1);
+    assert.deepEqual(await page.$$eval('#bottom-nav .nav-item', a => a.map(x => x.getAttribute('data-nav'))), ['home', 'spot', 'markets', 'networks', 'wallet']);
+    assert.deepEqual(await page.$$eval('#bottom-nav .nav-item', a => a.map(x => x.textContent.trim())), ['Portefeuilles', 'Spot', 'Marché', 'Réseaux', 'Tokens']);
+    assert.equal(await page.locator('#bottom-nav .nav-cta').count(), 0);   /* 17.1.0: five equal entries in a floating bar */
   });
   await ok('Activité et Compte restent à un geste depuis l’accueil', async () => {
     await page.click('#home .w-hdr [data-nav="history"]'); await wait(700); assert.equal(await cur(page), 'history');
@@ -83,7 +83,7 @@ const pin = async page => { await wait(700); for (const k of '482913') await pag
 {
   console.log('\n[Swap]');
   const { ctx, page, logs } = await openApp(browser, url, { lang: 'fr', settle: 900 });
-  await page.click('#bottom-nav [data-nav="exchange"]'); await wait(900);
+  await page.click('#home .lt-acts [data-nav="exchange"]'); await wait(900);
   await ok('Swap : De USDT, Vers BTC, Max = solde disponible, estimation en direct', async () => {
     assert.match(await page.locator('#exchange [data-tr="pick-from"]').innerText(), /USDT/);
     assert.match(await page.locator('#exchange [data-tr="pick-to"]').innerText(), /BTC/);
@@ -140,29 +140,29 @@ const pin = async page => { await wait(700); for (const k of '482913') await pag
 {
   console.log('\n[verre, réduction des animations, arabe]');
   const { ctx, page, logs } = await openApp(browser, url, { lang: 'ar', settle: 900, ws: 'live', reduced: true, theme: 'dark' });
-  await ok('apparence Noir & Jaune (14.8.0) : fond noir, texte clair, jaune pour l’action principale (texte foncé dessus), bouton central rond jaune', async () => {
+  await ok('apparence Noir & Jaune (14.8.0) : fond noir, texte clair, jaune pour l’action principale (texte foncé dessus), onglet courant de la barre flottante dans un rond jaune', async () => {
     await page.evaluate(() => R.go('home', { force: true })); await wait(700);
     const r = await page.evaluate(() => {
-      const tile = document.querySelector('#bottom-nav .nav-cta .nav-cta-tile'), act = document.querySelector('#home .lt-acts .omx-act i');
+      const tile = document.querySelector('#bottom-nav .nav-item[aria-current="page"] .nav-ic'), act = document.querySelector('#home .lt-acts .omx-act:not(.p) i');
       const px = el => el ? getComputedStyle(el) : null;
       return { theme: document.documentElement.getAttribute('data-theme'), bg: px(document.body).backgroundColor, col: px(document.body).color,
-        tileBg: px(tile).backgroundImage, tileRadius: px(tile).borderTopLeftRadius, tileInk: px(tile).color, actBg: px(act).backgroundColor, meta: document.querySelector('meta[name="theme-color"]').getAttribute('content') };
+        tileBg: px(tile).backgroundColor, tileRadius: px(tile).borderTopLeftRadius, tileInk: px(tile).color, actBg: px(act).backgroundColor, meta: document.querySelector('meta[name="theme-color"]').getAttribute('content') };
     });
     assert.equal(r.theme, 'dark');
     assert.equal(r.bg, 'rgb(9, 9, 9)');
     assert.equal(r.col, 'rgb(245, 245, 240)');
-    assert.match(r.tileBg, /rgb\((?:1|2)\d\d, 2\d\d, \d+\)/);   /* the yellow gradient */
+    assert.equal(r.tileBg, 'rgb(215, 230, 0)');   /* the lime disc */
     assert.equal(r.tileRadius, '50%');
     assert.equal(r.tileInk, 'rgb(9, 9, 9)');                                  /* dark glyph ON the yellow */
-    assert.equal(r.actBg, 'rgb(32, 32, 32)');                                    /* round dark action buttons */
+    assert.equal(r.actBg, 'rgb(32, 32, 32)');                                    /* dark rounded action tiles */
     assert.equal(r.meta, '#090909');
   });
   await ok('mode clair (réglage de la personne) : page crème, texte noir, même jaune', async () => {
     await page.evaluate(() => { Runtime.settings = Object.assign({}, Runtime.settings, { theme: 'light' }); applyTheme('light'); }); await wait(400);
     const r = await page.evaluate(() => ({ theme: document.documentElement.getAttribute('data-theme'), bg: getComputedStyle(document.body).backgroundColor, col: getComputedStyle(document.body).color,
-      tile: getComputedStyle(document.querySelector('#bottom-nav .nav-cta .nav-cta-tile')).backgroundImage }));
+      tile: getComputedStyle(document.querySelector('#bottom-nav .nav-item[aria-current="page"] .nav-ic')).backgroundColor }));
     assert.equal(r.theme, 'light'); assert.equal(r.bg, 'rgb(245, 245, 240)'); assert.equal(r.col, 'rgb(9, 9, 9)');
-    assert.match(r.tile, /rgb\((?:1|2)\d\d, 2\d\d, \d+\)/);
+    assert.equal(r.tile, 'rgb(215, 230, 0)');
     await page.evaluate(() => { Runtime.settings = Object.assign({}, Runtime.settings, { theme: 'dark' }); applyTheme('dark'); }); await wait(300);
   });
   await ok('sans réglage enregistré, l’application s’ouvre en noir et jaune (sombre par défaut)', async () => {

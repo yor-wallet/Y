@@ -9,10 +9,10 @@ Object.assign(TR.en, {
   'omx.welcome':'Welcome, {n}','omx.total':'Total assets','omx.omr':'≈ {v} OMR','omx.chg':'24 h','omx.pfNote':'Value of your current holdings at market prices (Binance)',
   'omx.deposit':'Deposit','omx.withdraw':'Withdraw','omx.exchange':'Exchange','omx.markets':'Markets','omx.crypto':'Crypto','omx.activity':'Activity','omx.account':'Account',
   'omx.yourAssets':'Your assets','omx.noAssets':'No crypto yet','omx.noAssetsD':'Your crypto holdings will appear here with their real value.','omx.seeMarkets':'See the markets',
-  'lt.movers':'Movers and Shakers','lt.cryptos':'Cryptocurrencies','lt.walletTab':'Wallet','lt.watchlist':'Watchlist','lt.wallet':'Your wallet','lt.myAssets':'My Assets','lt.receive':'Receive','lt.share':'share of your wallet','lt.chg24':'{v} over 24 h',
+  'lt.movers':'Movers and Shakers','nw.sub':'Networks for your deposits and withdrawals','nw.on':'Assets: {a}','lt.cryptos':'Cryptocurrencies','lt.walletTab':'Wallet','lt.watchlist':'Watchlist','lt.wallet':'Your wallet','lt.myAssets':'My Assets','lt.receive':'Receive','lt.share':'share of your wallet','lt.chg24':'{v} over 24 h',
   'omx.movers':'Markets','omx.all':'All','omx.fav':'Favourites','omx.search':'Search an asset','omx.price':'Price','omx.value':'Value','omx.holding':'Holding',
   'omx.st.live':'Live','omx.st.polling':'Refreshed every 20 s','omx.st.connecting':'Connecting…','omx.st.offline':'Offline — last prices','omx.st.error':'Market data unavailable','omx.st.idle':'—',
-  'omx.sync':'Last sync {t}','omx.retry':'Try again','omx.source':'Source: Binance market data · prices in USDT ≈ USD',
+  'omx.sync':'Last sync {t}','omx.retry':'Try again','omx.source':'Source: live market data · prices in USDT ≈ USD',
   'omx.noChart':'Chart unavailable for now.','omx.chartLbl':'Price chart','omx.high':'24 h high','omx.low':'24 h low','omx.vol':'24 h volume','omx.yours':'Your balance',
   'omx.networks':'Networks','omx.contract':'Contract','omx.native':'Native coin','omx.chain':'Chain ID','omx.explorer':'Explorer','omx.fee':'Network fee','omx.avail':'Available',
   'omx.unsupported':'Not supported by DYT','omx.wdOk':'Withdrawals','omx.depNo':'Deposits: no address configured',
@@ -35,10 +35,10 @@ Object.assign(TR.fr, {
   'omx.welcome':'Bienvenue, {n}','omx.total':'Total des actifs','omx.omr':'≈ {v} OMR','omx.chg':'24 h','omx.pfNote':'Valeur de vos avoirs actuels aux cours du marché (Binance)',
   'omx.deposit':'Dépôt','omx.withdraw':'Retrait','omx.exchange':'Échange','omx.markets':'Marchés','omx.crypto':'Crypto','omx.activity':'Activité','omx.account':'Compte',
   'omx.yourAssets':'Vos actifs','omx.noAssets':'Pas encore de crypto','omx.noAssetsD':'Vos avoirs crypto apparaîtront ici avec leur valeur réelle.','omx.seeMarkets':'Voir les marchés',
-  'lt.movers':'Plus fortes variations','lt.cryptos':'Cryptomonnaies','lt.walletTab':'Portefeuille','lt.watchlist':'Favoris','lt.wallet':'Votre portefeuille','lt.myAssets':'Mes actifs','lt.receive':'Recevoir','lt.share':'part de votre portefeuille','lt.chg24':'{v} sur 24 h',
+  'lt.movers':'Plus fortes variations','nw.sub':'Réseaux de vos dépôts et retraits','nw.on':'Actifs : {a}','lt.cryptos':'Cryptomonnaies','lt.walletTab':'Portefeuille','lt.watchlist':'Favoris','lt.wallet':'Votre portefeuille','lt.myAssets':'Mes actifs','lt.receive':'Recevoir','lt.share':'part de votre portefeuille','lt.chg24':'{v} sur 24 h',
   'omx.movers':'Marchés','omx.all':'Tous','omx.fav':'Favoris','omx.search':'Rechercher un actif','omx.price':'Cours','omx.value':'Valeur','omx.holding':'Solde',
   'omx.st.live':'En direct','omx.st.polling':'Actualisé toutes les 20 s','omx.st.connecting':'Connexion…','omx.st.offline':'Hors ligne — derniers cours','omx.st.error':'Données de marché indisponibles','omx.st.idle':'—',
-  'omx.sync':'Dernière synchro {t}','omx.retry':'Réessayer','omx.source':'Source : données de marché Binance · cours en USDT ≈ USD',
+  'omx.sync':'Dernière synchro {t}','omx.retry':'Réessayer','omx.source':'Source : données de marché en direct · cours en USDT ≈ USD',
   'omx.noChart':'Graphique indisponible pour le moment.','omx.chartLbl':'Graphique du cours','omx.high':'Plus haut 24 h','omx.low':'Plus bas 24 h','omx.vol':'Volume 24 h','omx.yours':'Votre solde',
   'omx.networks':'Réseaux','omx.contract':'Contrat','omx.native':'Devise native','omx.chain':'Identifiant de chaîne','omx.explorer':'Explorateur','omx.fee':'Frais de réseau','omx.avail':'Disponible',
   'omx.unsupported':'Non pris en charge par DYT','omx.wdOk':'Retraits','omx.depNo':'Dépôts : aucune adresse configurée',
@@ -61,10 +61,10 @@ Object.assign(TR.ar, {
   'omx.welcome':'مرحباً، {n}','omx.total':'إجمالي الأصول','omx.omr':'≈ {v} ر.ع.','omx.chg':'24 ساعة','omx.pfNote':'قيمة أصولك الحالية بأسعار السوق (Binance)',
   'omx.deposit':'إيداع','omx.withdraw':'سحب','omx.exchange':'تبادل','omx.markets':'الأسواق','omx.crypto':'العملات الرقمية','omx.activity':'النشاط','omx.account':'الحساب',
   'omx.yourAssets':'أصولك','omx.noAssets':'لا توجد عملات رقمية بعد','omx.noAssetsD':'ستظهر أصولك الرقمية هنا بقيمتها الحقيقية.','omx.seeMarkets':'عرض الأسواق',
-  'lt.movers':'الأكثر تحركاً','lt.cryptos':'العملات الرقمية','lt.walletTab':'المحفظة','lt.watchlist':'المفضلة','lt.wallet':'محفظتك','lt.myAssets':'أصولي','lt.receive':'استلام','lt.share':'حصتها من محفظتك','lt.chg24':'{v} خلال 24 ساعة',
+  'lt.movers':'الأكثر تحركاً','nw.sub':'شبكات الإيداع والسحب','nw.on':'الأصول: {a}','lt.cryptos':'العملات الرقمية','lt.walletTab':'المحفظة','lt.watchlist':'المفضلة','lt.wallet':'محفظتك','lt.myAssets':'أصولي','lt.receive':'استلام','lt.share':'حصتها من محفظتك','lt.chg24':'{v} خلال 24 ساعة',
   'omx.movers':'الأسواق','omx.all':'الكل','omx.fav':'المفضلة','omx.search':'ابحث عن أصل','omx.price':'السعر','omx.value':'القيمة','omx.holding':'الرصيد',
   'omx.st.live':'مباشر','omx.st.polling':'تحديث كل 20 ثانية','omx.st.connecting':'جارٍ الاتصال…','omx.st.offline':'غير متصل — آخر الأسعار','omx.st.error':'بيانات السوق غير متاحة','omx.st.idle':'—',
-  'omx.sync':'آخر مزامنة {t}','omx.retry':'إعادة المحاولة','omx.source':'المصدر: بيانات سوق Binance · الأسعار بعملة USDT ≈ دولار',
+  'omx.sync':'آخر مزامنة {t}','omx.retry':'إعادة المحاولة','omx.source':'المصدر: بيانات السوق المباشرة · الأسعار بعملة USDT ≈ دولار',
   'omx.noChart':'الرسم البياني غير متاح حالياً.','omx.chartLbl':'رسم بياني للسعر','omx.high':'أعلى 24 ساعة','omx.low':'أدنى 24 ساعة','omx.vol':'حجم 24 ساعة','omx.yours':'رصيدك',
   'omx.networks':'الشبكات','omx.contract':'العقد','omx.native':'العملة الأصلية','omx.chain':'معرّف السلسلة','omx.explorer':'المستكشف','omx.fee':'رسوم الشبكة','omx.avail':'المتاح',
   'omx.unsupported':'غير مدعوم في DYT','omx.wdOk':'السحب','omx.depNo':'الإيداع: لا يوجد عنوان مُعدّ',
@@ -134,6 +134,18 @@ const OMX = (() => {
   /* the balance with its decimals in a lighter weight (Liv X / Binance style); the text of the figure is exactly omxUsd()'s */
   function balHtml(txt){ const m = /^(.*?)(\.\d+)$/.exec(String(txt)); return m ? escapeHtml(m[1]) + '<span class="lt-dec">' + escapeHtml(m[2]) + '</span>' : escapeHtml(txt); }
   /* ---------- HOME ---------- */
+  function cryptoRows(hide){
+    const q = {}; holdings().forEach(h => { q[h.sym] = h.qty; });
+    const val = a => { const k = OMXMarket.get(a.sym); return k ? (q[a.sym] || 0) * k.price : 0; };
+    return OMX_ASSETS.slice().sort((x, y) => val(y) - val(x)).map(a => assetRow(a, { qty: q[a.sym] || 0, mask: hide })).join('');
+  }
+  /* ---------- NETWORKS (17.1.0): the networks the app deposits to and withdraws from, with the assets each carries (real data of the app) ---------- */
+  function renderNetworks(){
+    const rows = Object.keys(OMX_NETWORKS).map(k => { const n = OMX_NETWORKS[k], on = OMX_ASSETS.filter(a => (a.nets || []).indexOf(k) !== -1).map(a => a.sym);
+      return '<button type="button" class="omx-row nw-row" data-nav="deposit">' + omxLogo(n.native, 40) +
+        '<span class="omx-rn"><b>' + escapeHtml(n.name) + '</b><small class="ltr">' + escapeHtml([n.std].concat(on).join(' · ')) + '</small></span></button>'; }).join('');
+    return top(t('nav.networks'), false) + '<div class="screen-body omx-page"><p class="omx-src nw-sub">' + escapeHtml(t('nw.sub')) + '</p><section class="omx-card omx-sec"><div class="omx-list">' + rows + '</div></section></div>';
+  }
   function renderHome(){
     const p = Runtime.profile || {}, hide = !!Runtime.hideBalance, tt = totals();
     const unread = (Runtime.notifications || []).filter(n => !n.read).length;
@@ -164,14 +176,10 @@ const OMX = (() => {
         '<div class="omx-ts">' + (hide ? '' : (tt.pct != null && tt.hasCrypto ? '<span class="omx-chip ' + (tt.pct >= 0 ? 'up' : 'down') + '">' + escapeHtml(omxPct(tt.pct)) + '</span>' : '') +
           '<span class="ltr" data-omx-omr>≈ ' + moneyHtml(CurrencyEngine.format(Math.round(tt.omr * 1000) / 1000, 'OMR')) + '</span>') + '</div>' +
       '</section>' +
-      '<nav class="omx-acts lt-acts" aria-label="' + escapeHtml(t('omx.total')) + '">' + act('deposit', 'receive', t('omx.deposit')) + act('withdraw', 'withdraw', t('omx.withdraw')) + act('send-internal', 'send', t('si.short')) + (Runtime.ctx && Runtime.ctx.role === 'admin' ? act('topup', 'mobile', t('tp.short')) : '') + '</nav>' +
-      /* 17.0.0 — owner (27/11): the home screen shows the cryptocurrencies — every asset of the app, live price and 24 h change (public Binance prices), tap = its page */
-      '<section class="lt-sec lt-cryptos"><div class="omx-sh"><h2>' + escapeHtml(t('lt.cryptos')) + '</h2><button data-nav="markets">' + escapeHtml(t('px.seeAll')) + '</button></div>' +
-        '<div class="omx-list" id="omx-home-cr">' + OMX_ASSETS.map(a => assetRow(a)).join('') + '</div></section>' +
-      '<section class="lt-sec"><div class="omx-sh"><h2>' + escapeHtml(t('lt.movers')) + '</h2><button data-nav="markets">' + escapeHtml(t('px.seeAll')) + '</button></div>' + statusLine() +
-        '<div class="lt-movers" id="omx-home-mk">' + (movers.length ? movers.map(card).join('') : skeletonRows(2)) + '</div></section>' +
-      '<section class="lt-sec"><div class="omx-sh"><h2>' + escapeHtml(t('lt.watchlist')) + '</h2><button data-nav="markets">' + escapeHtml(t('px.seeAll')) + '</button></div>' +
-        (favList.length ? '<div class="omx-list">' + favList.map(a => assetRow(a)).join('') + '</div>' : '<p class="lt-empty">' + escapeHtml(t('omx.noFavD')) + '</p>') + '</section>' +
+      '<nav class="omx-acts lt-acts" aria-label="' + escapeHtml(t('omx.total')) + '">' + act('deposit', 'receive', t('omx.deposit')) + act('exchange', 'swap', t('tr.swap'), true) + act('withdraw', 'withdraw', t('omx.withdraw')) + act('send-internal', 'send', t('si.short')) + (Runtime.ctx && Runtime.ctx.role === 'admin' ? act('topup', 'mobile', t('tp.short')) : '') + '</nav>' +
+      /* 17.1.0 (owner, 27/11): balance as in the first reference, four actions and the crypto list as in the second one — each asset with the person's own balance and its live price */
+      '<section class="lt-sec lt-cryptos"><div class="omx-sh"><h2>' + escapeHtml(t('lt.cryptos')) + '</h2><button data-nav="wallet">' + escapeHtml(t('px.seeAll')) + '</button></div>' +
+        '<div class="omx-list" id="omx-home-cr">' + cryptoRows(hide) + '</div></section>' +
       '<section class="lt-sec"><div class="omx-sh"><h2>' + escapeHtml(t('px.recent')) + '</h2><button data-nav="history">' + escapeHtml(t('px.seeAll')) + '</button></div>' +
         ((visibleTransactions(Runtime.transactions || []).slice(0, 4)).length ? txGroupedHtml(visibleTransactions(Runtime.transactions || []).slice(0, 4), hide) : '<div class="rv-list">' + emptyState('history', V12.vt('noTx'), t('ds.nohist_body')) + '</div>') + '</section>' +
       '</div>';
@@ -202,7 +210,7 @@ const OMX = (() => {
     const diff = now - before;
     return '<div class="w-assets lt-wallet">' +
       '<div class="w-title lt-title"><button class="w-sq" data-nav="account" aria-label="' + escapeHtml(t('px.openProfile')) + '">' + icon('menu', 22) + '</button>' +
-        '<h1>' + escapeHtml(t('lt.wallet')) + '</h1><span class="lt-mark sm" role="img" aria-label="DYT"></span></div>' +
+        '<h1>' + escapeHtml(t('nav.tokens')) + '</h1><span class="lt-mark sm" role="img" aria-label="DYT"></span></div>' +
       '<section class="lt-wbal"><span class="lt-lbl">' + escapeHtml(t('omx.total')) + '</span>' +
         '<div class="lt-wv"><b class="ltr" data-omx-total>' + (hide ? '••••••' : balHtml(omxUsd(tt.usd, { dp: 2 }))) + '</b>' +
           (!hide && tt.pct != null && tt.hasCrypto ? '<span class="omx-chip ' + (tt.pct >= 0 ? 'up' : 'down') + '">' + escapeHtml(omxPct(tt.pct)) + '</span>' : '') + '</div>' +
@@ -393,7 +401,7 @@ const OMX = (() => {
     });
   }
   function init(){
-    R.register({ home: renderHome, wallet: renderWallet, markets: renderMarkets, asset: renderAsset, deposit: renderDeposit, exchange: renderExchange });
+    R.register({ home: renderHome, networks: renderNetworks, wallet: renderWallet, markets: renderMarkets, asset: renderAsset, deposit: renderDeposit, exchange: renderExchange });
     R.on(info => { try { bind(info); } catch(e){ console.error('[omx]', e); } });
     OMXMarket.on(() => { try { live(); } catch(e){ console.error('[omx] live', e); } });
   }

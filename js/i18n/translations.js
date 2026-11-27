@@ -7,7 +7,7 @@ const TR = {
   en:{
     'common.next':'Continue','ui.back':'Back','ui.notifications':'Notifications','ui.markRead':'Mark all as read',
     'ui.toggleBalance':'Hide or show balance','ui.share':'Share','ui.remove':'Remove','ui.market':'Market','ui.addBank':'Add bank',
-    'nav.home':'Home','nav.history':'History','nav.markets':'Markets','nav.services':'Services','nav.cards':'Cards','nav.profile':'Profile','nav.crypto':'Crypto',
+    'nav.home':'Home','nav.wallets':'Wallets','nav.market':'Market','nav.networks':'Networks','nav.tokens':'Tokens','nav.history':'History','nav.markets':'Markets','nav.services':'Services','nav.cards':'Cards','nav.profile':'Profile','nav.crypto':'Crypto',
     'home.greeting':'Hello,','home.balance':'Available balance','home.main':'Main account','home.send':'Send','home.receive':'Receive','home.crypto':'Crypto','home.accounts':'Accounts','home.recent':'Recent transactions','home.view_all':'View all','home.no_tx':'No transactions yet',
     'accounts.main':'Main account','accounts.west_africa':'West Africa','accounts.crypto':'Crypto',
     'transfer.step_type':'Type','transfer.step_benef':'Beneficiary','transfer.step_amount':'Amount','transfer.step_review':'Review',
@@ -67,7 +67,7 @@ const TR = {
   fr:{
     'common.next':'Continuer','ui.back':'Retour','ui.notifications':'Notifications','ui.markRead':'Tout marquer comme lu',
     'ui.toggleBalance':'Masquer ou afficher le solde','ui.share':'Partager','ui.remove':'Supprimer','ui.market':'Marché crypto','ui.addBank':'Ajouter une banque',
-    'nav.home':'Accueil','nav.history':'Historique','nav.markets':'Marchés','nav.services':'Services','nav.cards':'Cartes','nav.profile':'Profil','nav.crypto':'Crypto',
+    'nav.home':'Accueil','nav.wallets':'Portefeuilles','nav.market':'Marché','nav.networks':'Réseaux','nav.tokens':'Tokens','nav.history':'Historique','nav.markets':'Marchés','nav.services':'Services','nav.cards':'Cartes','nav.profile':'Profil','nav.crypto':'Crypto',
     'home.greeting':'Bonjour,','home.balance':'Solde disponible','home.main':'Compte principal','home.send':'Envoyer','home.receive':'Recevoir','home.crypto':'Crypto','home.accounts':'Comptes','home.recent':'Transactions récentes','home.view_all':'Tout voir','home.no_tx':'Aucune transaction',
     'accounts.main':'Compte principal','accounts.west_africa':'West Africa','accounts.crypto':'Crypto',
     'transfer.step_type':'Type','transfer.step_benef':'Bénéficiaire','transfer.step_amount':'Montant','transfer.step_review':'Confirmation',
@@ -125,7 +125,7 @@ const TR = {
   ar:{
     'common.next':'متابعة','ui.back':'رجوع','ui.notifications':'الإشعارات','ui.markRead':'الكل مقروء',
     'ui.toggleBalance':'إظهار الرصيد','ui.share':'مشاركة','ui.remove':'حذف','ui.market':'السوق','ui.addBank':'إضافة بنك',
-    'nav.home':'الرئيسية','nav.history':'السجل','nav.markets':'الأسواق','nav.services':'الخدمات','nav.cards':'البطاقات','nav.profile':'حسابي','nav.crypto':'رقمية',
+    'nav.home':'الرئيسية','nav.wallets':'المحافظ','nav.market':'السوق','nav.networks':'الشبكات','nav.tokens':'الرموز','nav.history':'السجل','nav.markets':'الأسواق','nav.services':'الخدمات','nav.cards':'البطاقات','nav.profile':'حسابي','nav.crypto':'رقمية',
     'home.greeting':'مرحباً،','home.balance':'الرصيد','home.main':'الحساب الرئيسي','home.send':'إرسال','home.receive':'استلام','home.crypto':'رقمية','home.accounts':'الحسابات','home.recent':'العمليات','home.view_all':'الكل','home.no_tx':'لا عمليات',
     'accounts.main':'الحساب الرئيسي','accounts.west_africa':'غرب إفريقيا','accounts.crypto':'رقمية',
     'transfer.step_type':'النوع','transfer.step_benef':'المستفيد','transfer.step_amount':'المبلغ','transfer.step_review':'التأكيد',

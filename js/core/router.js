@@ -25,7 +25,7 @@ const R = (() => {
     'receive':'home', 'profile-edit':'profile', 'tx-result':'home',
     'devices':'settings', 'sessions':'settings', 'privacy':'settings', 'help':'account', 'about':'account', 'history':'home', 'dy-control':'account', 'payouts':'dy-control',
     /* 14.0.0 — DYT crypto + withdrawals */
-    'wallet':'home', 'markets':'home', 'asset':'markets', 'deposit':'home', 'exchange':'home',
+    'wallet':'home', 'markets':'home', 'networks':'home', 'asset':'markets', 'deposit':'home', 'exchange':'home',
     /* 14.5 — Spot / Swap */
     'spot':'home', 'trade-review':'exchange', 'trade-done':'home',
     'send-internal':'wallet', 'send-internal-review':'send-internal', 'send-internal-done':'wallet',
@@ -47,8 +47,8 @@ const R = (() => {
     'crypto-send':'crypto','crypto-send-network':'crypto','crypto-send-address':'crypto','crypto-send-amount':'crypto',
     'crypto-review':'crypto','crypto-receive':'crypto','crypto-receive-address':'crypto',
     'crypto-to-bank':'crypto','crypto-to-bank-account':'crypto','crypto-to-bank-amount':'crypto','crypto-bank-review':'crypto',
-    'wallet':'wallet','asset':'wallet','deposit':'wallet','exchange':'exchange','spot':'spot','trade-review':'exchange','trade-done':'exchange','withdraw':'wallet','withdraw-bank':'wallet','withdraw-crypto':'wallet','withdraw-confirm':'wallet','withdraw-track':'wallet',
-    'markets':'markets','topup':'home','topup-done':'home','receipt':'history','send-internal':'wallet','send-internal-review':'wallet','send-internal-done':'wallet'
+    'wallet':'wallet','networks':'networks','asset':'wallet','deposit':'home','exchange':'exchange','spot':'spot','trade-review':'exchange','trade-done':'exchange','withdraw':'home','withdraw-bank':'home','withdraw-crypto':'home','withdraw-confirm':'home','withdraw-track':'home',
+    'markets':'markets','topup':'home','topup-done':'home','receipt':'history','send-internal':'home','send-internal-review':'home','send-internal-done':'home'
   };
   function register(map){ Object.assign(SCREENS, map); }
   function onLeave(fn){ if (typeof fn === 'function') cleanups.push(fn); }
