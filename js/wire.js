@@ -91,16 +91,6 @@ function wire(id){
         Runtime.settings.vibration = next;
       });
       else if (a === 'settings-mfa'){ await Mfa.toggle(); }
-      else if (a === 'settings-faceid'){
-        /* 12.9.0: Face ID is mandatory where the device has it. This row shows the state; it can turn it ON, never OFF. */
-        const fi = FaceId.info();
-        if (fi.supported === false || fi.supported === null) toast(faceIdText('unsup'));
-        else if (fi.enrolled) toast(faceIdText('req'));
-        else {
-          const r = await FaceId.reenroll({ purpose:'generic', cancel:true });
-          if (r && r.ok) R.go('settings', { force:true });
-        }
-      }
       else if (a === 'settings-toggle-txconfirm') await settingsSwitch(el, () => Runtime.security.transactionConfirmationRequired !== false, async (next) => {
         const uid = UserContext.requireCtx().uid;
         await UserDataEngine.writeDoc(uid, 'security', Object.assign({}, Runtime.security, { transactionConfirmationRequired: next }));

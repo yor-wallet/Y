@@ -1,3 +1,15 @@
+# OM Wallet 16.5.0 (web) — Face ID retiré, écran de code sobre
+
+Demande du propriétaire (27/11) : « enlève Face ID et cette animation banale ; quelque chose de qualitatif, propre, professionnel ».
+
+- **Face ID / Touch ID / empreinte retirés de toute l'application** : plus à l'ouverture, plus après la connexion, plus dans les réglages ni le profil (module `faceid.js` retiré du paquet). Les clés et le code chiffré laissés par les versions précédentes sont effacés de l'appareil au démarrage. L'application s'ouvre avec le code à 6 chiffres (et, pour les comptes qui l'ont activée, la connexion demande la vérification en deux étapes).
+- **Écran Face ID supprimé** (anneaux qui pulsent, ligne de balayage, coins qui respirent, rebond).
+- **Pavé du code (ouverture et transactions)** : plus de chiffre qui « vole » vers les points, plus d'éclat, plus d'onde qui grossit 15 fois, plus de halos qui dérivent. La touche s'éclaircit sous le doigt, le point se remplit en 120 ms, un code faux fait un seul tremblement court. Touches aux neutres de la marque (elles étaient bleu clair en thème clair).
+- **Textes** : « Sécurité » = mot de passe, vérification en deux étapes, verrou ; création du code : « ouvre l'application et confirme les opérations au-delà de 500 USD et les envois de crypto » (fr / en / ar).
+- **Tests** : `threshold.test.mjs` (Face ID absent, aucune ligne Face ID dans les réglages) ; bugfix, smoke, ios-settings, omx, trade, mfa, auth, omw, a11y, rtl, motion-system, palette, shell.
+
+---
+
 # OM Wallet 16.4.0 (web + base) — code à 6 chiffres seulement au-delà de 500 USD, aucune biométrie pour les transactions
 
 Étape 3 du cahier des charges du 26/11, §9. Choix du propriétaire : le code personnel existant (vérifié par le serveur), avec un seuil.

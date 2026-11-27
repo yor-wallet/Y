@@ -89,9 +89,7 @@ const PinEngine = (() => {
           if (entry.length >= 6) return;
           entry += k; try { UIKit.haptic('tap'); } catch(e){}
           paint();
-          if (btn) Keypad.fly(btn, $('ps-dots'), entry.length - 1);
           if (entry.length < 6) return;
-          Keypad.bloom($('ps-dots'));
           if (create && step === 1){ first = entry; entry = ''; step = 2; paint(); return; }
           go();
         };

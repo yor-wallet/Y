@@ -14,9 +14,9 @@
 const AppLock = (() => {
   const GRACE_MS = 5000;
   const L = {
-    en:{ unlockTitle:'Enter your PIN', unlockSub:'Enter your 6-digit code to open OM Wallet', createTitle:'Create your PIN', createSub:'Choose a 6-digit code. It is needed to confirm your transfers.', confirmTitle:'Confirm your PIN', confirmSub:'Enter the same code again', mismatch:'Codes do not match. Try again.', weak:'This code is too easy to guess. Choose another one.', logout:'Log out', error:'Something went wrong. Try again.', del:'Delete' },
-    fr:{ unlockTitle:'Entrez votre code', unlockSub:'Saisissez votre code à 6 chiffres pour ouvrir OM Wallet', createTitle:'Créez votre code', createSub:'Choisissez un code à 6 chiffres. Il sert à confirmer vos transferts.', confirmTitle:'Confirmez votre code', confirmSub:'Saisissez de nouveau le même code', mismatch:'Les codes ne correspondent pas. Réessayez.', weak:'Ce code est trop facile à deviner. Choisissez-en un autre.', logout:'Se déconnecter', error:'Une erreur est survenue. Réessayez.', del:'Effacer' },
-    ar:{ unlockTitle:'أدخل رمز PIN', unlockSub:'أدخل رمزك المكوّن من 6 أرقام لفتح OM Wallet', createTitle:'أنشئ رمز PIN', createSub:'اختر رمزاً من 6 أرقام. يُستخدم لتأكيد تحويلاتك.', confirmTitle:'أكّد رمز PIN', confirmSub:'أدخل الرمز نفسه مرة أخرى', mismatch:'الرمزان غير متطابقين. حاول مرة أخرى.', weak:'هذا الرمز سهل التخمين. اختر رمزاً آخر.', logout:'تسجيل الخروج', error:'حدث خطأ. حاول مرة أخرى.', del:'حذف' }
+    en:{ unlockTitle:'Enter your PIN', unlockSub:'Enter your 6-digit code to open OM Wallet', createTitle:'Create your PIN', createSub:'Choose a 6-digit code. It opens the app and confirms operations above 500 USD and crypto sends.', confirmTitle:'Confirm your PIN', confirmSub:'Enter the same code again', mismatch:'Codes do not match. Try again.', weak:'This code is too easy to guess. Choose another one.', logout:'Log out', error:'Something went wrong. Try again.', del:'Delete' },
+    fr:{ unlockTitle:'Entrez votre code', unlockSub:'Saisissez votre code à 6 chiffres pour ouvrir OM Wallet', createTitle:'Créez votre code', createSub:'Choisissez un code à 6 chiffres. Il ouvre l’application et confirme les opérations au-delà de 500 USD et les envois de crypto.', confirmTitle:'Confirmez votre code', confirmSub:'Saisissez de nouveau le même code', mismatch:'Les codes ne correspondent pas. Réessayez.', weak:'Ce code est trop facile à deviner. Choisissez-en un autre.', logout:'Se déconnecter', error:'Une erreur est survenue. Réessayez.', del:'Effacer' },
+    ar:{ unlockTitle:'أدخل رمز PIN', unlockSub:'أدخل رمزك المكوّن من 6 أرقام لفتح OM Wallet', createTitle:'أنشئ رمز PIN', createSub:'اختر رمزاً من 6 أرقام. يفتح التطبيق ويؤكد العمليات التي تتجاوز 500 دولار وإرسال العملات الرقمية.', confirmTitle:'أكّد رمز PIN', confirmSub:'أدخل الرمز نفسه مرة أخرى', mismatch:'الرمزان غير متطابقين. حاول مرة أخرى.', weak:'هذا الرمز سهل التخمين. اختر رمزاً آخر.', logout:'تسجيل الخروج', error:'حدث خطأ. حاول مرة أخرى.', del:'حذف' }
   };
   const tx = (k) => (L[LANG] || L.en)[k] || L.en[k];
   let signedIn = false, pinKnown = false, hiddenAt = 0, ov = null, cover = null, keyHandler = null, faceBusy = false;
@@ -110,8 +110,7 @@ const AppLock = (() => {
       if (k === 'del'){ entry = entry.slice(0, -1); paint(); return; }
       if (entry.length >= 6) return;
       entry += k; try { UIKit.haptic('tap'); } catch(e){} paint();
-      if (btn) Keypad.fly(btn, $('yl-dots'), entry.length - 1);
-      if (entry.length === 6){ Keypad.bloom($('yl-dots')); submit(); }
+      if (entry.length === 6) submit();
     }
     Keypad.bind(me, press);
     $('yl-out').onclick = logout;
@@ -123,30 +122,9 @@ const AppLock = (() => {
   async function hasPin(){
     try { const r = await PinEngine.hasPin(); return r; } catch(e){ return null; }
   }
-  /* Après le code (vérifié ou créé) : sur un appareil compatible, Face ID doit être activé. */
-  async function afterPin(purpose, next){
-    let sup = false; try { sup = await FaceId.supported(); } catch(e){}
-    if (sup){
-      const r = await FaceId.reenroll({ purpose: purpose, logout: logout });
-      if (r && r.loggedOut) return;
-    }
-    close(); if (next) next();
-  }
-  /* Confirmation Face ID (obligatoire quand l'appareil le permet) à l'ouverture / au retour dans l'application */
-  async function unlockFlow(purpose, next){
-    css(); setInert(true);
-    let sup = false; try { sup = await FaceId.supported(); } catch(e){}
-    if (sup && FaceId.info().enrolled){
-      if (faceBusy) return; faceBusy = true;
-      let r; try { r = await FaceId.gate({ purpose: purpose, logout: logout }); } catch(e){ r = { ok:false, recover:true }; }
-      faceBusy = false;
-      if (r.ok){ pinKnown = true; close(); if (next) next(); return; }
-      if (r.loggedOut) return;
-      open('unlock', () => afterPin(purpose, next));            /* Face ID ne marche pas : code, puis nouvelle clé */
-      return;
-    }
-    open('unlock', () => afterPin(purpose, next));
-  }
+  /* 16.5.0 — no Face ID any more (owner, 27/11): the 6-digit code alone opens the app */
+  function afterPin(purpose, next){ close(); if (next) next(); }
+  function unlockFlow(purpose, next){ css(); setInert(true); open('unlock', () => afterPin(purpose, next)); }
   /* App start with an existing session: Face ID / the code is asked BEFORE anything is shown. */
   async function gate(next){
     if (!signedIn){ next(); return; }
@@ -156,20 +134,12 @@ const AppLock = (() => {
     if (has === false){ open('create', () => afterPin('unlock', next)); return; }
     unlockFlow('unlock', next);
   }
-  /* After a fresh sign-in / sign-up: the code must exist, then Face ID confirms the sign-in. */
+  /* After a fresh sign-in / sign-up (password, and the TOTP code when it is on): the 6-digit code must exist */
   async function ensurePin(){
-    if (!signedIn || ov || faceBusy) return;
+    if (!signedIn || ov) return;
     const has = await hasPin();
     if (has === false){ pinKnown = false; open('create', () => afterPin('login', null)); return; }
     if (has === true) pinKnown = true;
-    let sup = false; try { sup = await FaceId.supported(); } catch(e){}
-    if (!sup) return;
-    css(); setInert(true); faceBusy = true;
-    let r; try { r = await FaceId.gate({ purpose: 'login', logout: logout }); } catch(e){ r = { ok:false, recover:true }; }
-    faceBusy = false;
-    if (r.ok){ close(); return; }
-    if (r.loggedOut) return;
-    open('unlock', () => afterPin('login', null));
   }
   function setSignedIn(v){ signedIn = !!v; if (!signedIn){ pinKnown = false; faceBusy = false; close(); } }
   function onHide(){ hiddenAt = Date.now(); if (signedIn && pinKnown) showCover(); }
@@ -180,7 +150,8 @@ const AppLock = (() => {
     else removeCover();
   }
   function init(){
-    try { FaceId.warm(); } catch(e){}
+    /* 16.5.0 — Face ID removed: keys and the encrypted code left by older versions are erased from this device */
+    try { ['friendly_faceid_v1', 'friendly_pin_vault_v1', 'friendly_prf_upgrade_v1'].forEach(k => localStorage.removeItem(k)); } catch(e){}
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') onHide(); else onShow(); });
     window.addEventListener('pagehide', onHide);
     window.addEventListener('pageshow', (e) => { if (e.persisted) onShow(); });

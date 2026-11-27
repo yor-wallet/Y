@@ -84,15 +84,15 @@ function faceIdRow(){
 /* 12.14.0 — Settings in clear categories. Every control is the same real control as before (same data-action / ids, same writes);
    nothing here is decorative: a row either changes a stored preference, opens a screen, or states a fact read from the device. */
 Object.assign(TR.en, { 'set.c.look':'Appearance', 'set.c.lookD':'Theme, language and display on this device', 'set.c.notif':'Notifications', 'set.c.notifD':'Three different channels — choose each one',
-  'set.c.sec':'Security and privacy', 'set.c.secD':'Personal code, biometrics, devices and sessions', 'set.c.fin':'Money preferences', 'set.c.finD':'Display only: your operations keep their own currency',
+  'set.c.sec':'Security and privacy', 'set.c.secD':'Personal code, two-step verification, devices and sessions', 'set.c.fin':'Money preferences', 'set.c.finD':'Display only: your operations keep their own currency',
   'set.c.acc':'Account', 'set.c.info':'Information and help', 'set.chan':'In-app notifications appear in OM Wallet. Phone alerts (push) reach this phone even when the app is closed. SMS are text messages sent by the server to your number.',
   'set.inapp':'In-app notifications', 'set.inappD':'Money and security alerts in the app (also controls phone alerts)', 'set.sms':'SMS confirmations', 'set.curNote':'Balances are converted with the indicated rate; transfers, receipts and history are never converted.' });
 Object.assign(TR.fr, { 'set.c.look':'Apparence', 'set.c.lookD':'Thème, langue et affichage sur cet appareil', 'set.c.notif':'Notifications', 'set.c.notifD':'Trois canaux différents — à choisir un par un',
-  'set.c.sec':'Sécurité et confidentialité', 'set.c.secD':'Code personnel, biométrie, appareils et sessions', 'set.c.fin':'Préférences financières', 'set.c.finD':'Affichage seulement : vos opérations gardent leur devise',
+  'set.c.sec':'Sécurité et confidentialité', 'set.c.secD':'Code personnel, vérification en deux étapes, appareils et sessions', 'set.c.fin':'Préférences financières', 'set.c.finD':'Affichage seulement : vos opérations gardent leur devise',
   'set.c.acc':'Compte', 'set.c.info':'Informations et assistance', 'set.chan':'Les notifications dans l’application s’affichent dans OM Wallet. Les alertes sur le téléphone (push) arrivent même application fermée. Les SMS sont des messages texte envoyés par le serveur à votre numéro.',
   'set.inapp':'Notifications dans l’application', 'set.inappD':'Alertes d’argent et de sécurité dans l’application (commande aussi les alertes du téléphone)', 'set.sms':'Confirmations par SMS', 'set.curNote':'Les soldes sont convertis au taux indiqué ; les transferts, reçus et l’historique ne sont jamais convertis.' });
 Object.assign(TR.ar, { 'set.c.look':'المظهر', 'set.c.lookD':'المظهر واللغة والعرض على هذا الجهاز', 'set.c.notif':'الإشعارات', 'set.c.notifD':'ثلاث قنوات مختلفة — اختر كل واحدة',
-  'set.c.sec':'الأمان والخصوصية', 'set.c.secD':'الرمز الشخصي والقياسات الحيوية والأجهزة والجلسات', 'set.c.fin':'التفضيلات المالية', 'set.c.finD':'للعرض فقط: تحتفظ عملياتك بعملتها',
+  'set.c.sec':'الأمان والخصوصية', 'set.c.secD':'الرمز الشخصي والتحقق بخطوتين والأجهزة والجلسات', 'set.c.fin':'التفضيلات المالية', 'set.c.finD':'للعرض فقط: تحتفظ عملياتك بعملتها',
   'set.c.acc':'الحساب', 'set.c.info':'المعلومات والمساعدة', 'set.chan':'إشعارات التطبيق تظهر داخل OM Wallet. تنبيهات الهاتف (Push) تصل حتى والتطبيق مغلق. الرسائل النصية يرسلها الخادم إلى رقمك.',
   'set.inapp':'الإشعارات داخل التطبيق', 'set.inappD':'تنبيهات الأموال والأمان داخل التطبيق (تتحكم أيضاً في تنبيهات الهاتف)', 'set.sms':'التأكيد برسالة نصية', 'set.curNote':'تُحوَّل الأرصدة بالسعر المذكور؛ ولا تُحوَّل التحويلات والإيصالات والسجل أبداً.' });
 function setCat(ic, title, desc){
@@ -169,7 +169,6 @@ function renderSettings(){
   html += setCat('shield', t('set.c.sec'), t('set.c.secD'));
   html += '<div class="settings-group">' +
     '<button class="settings-row" type="button" data-px="pin"><div class="tile">' + icon('lock', 20) + '</div><div class="settings-row-body"><div class="settings-row-title">' + escapeHtml(t('px.pinChange')) + '</div><div class="settings-row-sub">' + escapeHtml(t('px.pinChangeD')) + '</div></div><span class="settings-row-chev">' + icon('chev', 18) + '</span></button>' +
-    faceIdRow() +
     (typeof Mfa !== 'undefined' ? Mfa.row() : '') +
     settingsToggleRow({ icon:'lock', title:t('settings.txConfirm'), sub:t('settings.txConfirmDesc'), checked:txConfirmOn, action:'settings-toggle-txconfirm' }) +
     settingsLinkRow({ icon:'device', title:t('devices.title'), sub:t('devices.current'), nav:'devices' }) +

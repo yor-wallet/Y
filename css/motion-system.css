@@ -175,3 +175,22 @@ html:root:root:root:root body .chips > .chip-pill{will-change:auto}
   html:root:root:root:root body .lv-dn{animation:lvFadeDn 1.2s linear}
   html:root:root:root:root body :is(.m-down,:active){transform:none!important}
 }
+
+/* ---------- 9. 16.5.0 — the code screens (app lock, transaction code): clean, iOS passcode-like ----------
+   The flying digit, the burst of the dots, the key ripple growing 15×, the overshooting dots and the drifting halos are gone.
+   A key lightens while it is held; a dot fills in 120 ms; a wrong code: one short horizontal shake. */
+html:root:root:root:root body .fk-key,html:root:root:root:root body .fk-pad.reflow .fk-key{animation:none!important;transition:background-color 220ms var(--m-out),transform 160ms var(--m-out)!important}
+html:root:root:root:root body .fk-key .fk-ring{display:none!important}
+html:root:root:root:root body .fk-key:is(.m-down,:active){background-color:var(--m-press-bg)!important;transform:scale(.96)!important;transition-duration:0s,90ms!important}
+html:root:root:root:root body .fk-dots i{animation:none!important;transition:background-color 120ms var(--m-out),border-color 120ms var(--m-out)!important;transform:none!important}
+html:root:root:root:root body .fk-dots.done i,html:root:root:root:root body .fk-dots i.land{animation:none!important}
+html:root:root:root:root body .fk-orb{display:none!important}
+html:root:root:root:root body .yl::before,html:root:root:root:root body .yl::after{display:none!important;animation:none!important}
+@keyframes mShake{0%,100%{transform:none}20%{transform:translateX(-9px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
+html:root:root:root:root body :is(.ps-shake,.yl-shake,.fk-dots.shake){animation:mShake 360ms var(--m-out)!important}
+@media (prefers-reduced-motion:reduce){html:root:root:root:root body :is(.ps-shake,.yl-shake,.fk-dots.shake){animation:none!important}}
+/* keys on the brand neutrals (they were light blue in the light theme) */
+html:root:root:root:root body .fk-key:not(.fk-fn):not(.fk-del):not(.fk-shuffle){background:rgba(255,255,255,.07)!important;color:var(--lt-ink,#F5F3EE)!important;border:0!important;box-shadow:none!important}
+html:root:root:root:root[data-theme="light"] body .fk-key:not(.fk-fn):not(.fk-del):not(.fk-shuffle){background:rgba(60,55,40,.06)!important;color:var(--lt-ink,#14110A)!important}
+html:root:root:root:root body .fk-key:not(.fk-fn):not(.fk-del):not(.fk-shuffle):is(.m-down,:active){background:rgba(255,255,255,.16)!important}
+html:root:root:root:root[data-theme="light"] body .fk-key:not(.fk-fn):not(.fk-del):not(.fk-shuffle):is(.m-down,:active){background:rgba(60,55,40,.14)!important}

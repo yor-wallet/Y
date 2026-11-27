@@ -23,10 +23,11 @@ await ok('conversion de l’application : 192,25 OMR ≈ 500 USD, 220 EUR ≈ 25
   const v = await page.evaluate(() => [PinEngine.usdOf(192.25, 'OMR'), PinEngine.usdOf(220, 'EUR'), PinEngine.usdOf(5, 'ZZZ')]);
   assert.ok(Math.abs(v[0] - 500) < 0.01); assert.ok(Math.abs(v[1] - 251.52) < 0.01); assert.equal(v[2], null);
 });
-await ok('aucune biométrie : authorize n’appelle jamais Face ID', async () => {
-  const n = await page.evaluate(async () => { let c = 0; const g = FaceId.gate; FaceId.gate = function(){ c++; return g.apply(this, arguments); };
-    await PinEngine.authorize({ usd: 10 }); const p = PinEngine.authorize({ usd: 900 }); await new Promise(r => setTimeout(r, 500)); R.overlay.close(); FaceId.gate = g; return c; });
-  assert.equal(n, 0);
+await ok('Face ID retiré de l’application (16.5.0) : module absent, aucune ligne Face ID dans les réglages', async () => {
+  assert.equal(await page.evaluate(() => typeof FaceId), 'undefined');
+  await page.evaluate(() => R.go('settings')); await wait(600);
+  assert.equal(await page.locator('.fid-row, [data-action="settings-faceid"]').count(), 0);
+  assert.doesNotMatch(await page.locator('#settings').innerText(), /Face ID|Touch ID/);
 });
 await ok('aucune erreur de page', async () => { assert.deepEqual(logs, []); });
 await ctx.close(); await browser.close(); srv.close();
