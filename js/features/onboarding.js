@@ -1,7 +1,7 @@
 'use strict';
 
 /* ============================================================
-   OPENING PRESENTATION (14.4.0) — full-screen promo built from the owner's DYT visuals, shown once at first launch.
+   OPENING PRESENTATION (14.4.0; 16.9.0: art cut out of the owner's « Next Level » board, no photos) — shown once at first launch.
    - three screens, each with its own message and its own button; « تخطي / Passer / Skip » on every screen but the last;
    - the photos are the owner's visuals with their printed text removed, so every word and every button on screen is real,
      translated and usable (nothing printed in an image pretends to be a button);
@@ -27,8 +27,21 @@ const Onboarding = (() => {
       { title:'تجربة أسهل', text:'أودِع وأرسِل واسحب بخطوات بسيطة.', cta:'متابعة' },
       { title:'محمية برمزك السري', text:'رمزك المكوّن من 6 أرقام يقفل التطبيق في كل مرة تعود فيها، والتحقق بخطوتين يحمي تسجيل دخولك.', cta:'إنشاء حسابي' } ] }
   };
-  /* art of each screen: the two owner photos, then the glass app icon */
-  const ART = [{ photo:'assets/promo/promo-1-lime.jpg', pos:'50% 12%' }, { photo:'assets/promo/promo-2-lime.jpg', pos:'28% 30%' }, { icon:true }];
+  /* art of each screen (16.9.0): pieces cut out of the owner's « Next Level » board — the mascot (as drawn), its lime light waves —
+     placed in the page, plus real controls of the app drawn in CSS (no photo, no number, nothing printed that pretends to be data) */
+  const ART = [{ art:'card' }, { art:'acts' }, { art:'card', chip:'2fa' }];
+  const X = { en:{ acts:['Deposit', 'Send', 'Withdraw'], chip:'Two-step verification' }, fr:{ acts:['Dépôt', 'Envoyer', 'Retrait'], chip:'Vérification en deux étapes' },
+              ar:{ acts:['إيداع', 'إرسال', 'سحب'], chip:'التحقق بخطوتين' } };
+  const ic = (n, sz) => (typeof icon === 'function' ? icon(n, sz || 22) : '');
+  function artHtml(a, lang){
+    const x = X[lang] || X.en, wave = '<img class="wp-wavelight" src="assets/brand/dyt-wave.webp" alt="" width="2048" height="236" decoding="async">';
+    if (a.art === 'acts') return '<div class="wp-art wp-art-acts" aria-hidden="true"><span class="wp-halo"></span>' +
+      '<img class="wp-head" src="assets/brand/dyt-mascot-head.webp" alt="" width="760" height="760" decoding="async">' +
+      '<div class="wp-acts">' + [['receive', 0], ['send', 1], ['withdraw', 2]].map(([n, k]) => '<span class="wp-act"><i>' + ic(n, 22) + '</i><b>' + escapeHtml(x.acts[k]) + '</b></span>').join('') + '</div>' + wave + '</div>';
+    return '<div class="wp-art wp-art-card' + (a.chip ? ' wp-art-2fa' : '') + '" aria-hidden="true"><span class="wp-halo"></span>' +
+      '<img class="wp-card" src="assets/brand/dyt-mascot.webp" alt="" width="796" height="1404" decoding="async">' +
+      (a.chip ? '<span class="wp-chip"><i>' + ic('check', 14) + '</i>' + escapeHtml(x.chip) + '</span>' : '') + wave + '</div>';
+  }
   const LANGS = [['en', 'EN'], ['fr', 'FR'], ['ar', 'عربي']];
   const NAMES = { en:'English', fr:'Français', ar:'العربية' };
 
@@ -41,6 +54,7 @@ const Onboarding = (() => {
     let i = 0, lang = (S[LANG] ? LANG : 'en'), drag = null, closing = false;
     const prevFocus = document.activeElement;
     const el = document.createElement('div');
+    let glassRO = null, fitQueued = false;   // watches the text cards (see fitArt)
     el.className = 'wp';
     el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-roledescription', 'carousel');
     document.body.appendChild(el);
@@ -57,8 +71,7 @@ const Onboarding = (() => {
           T.slides.map((s, k) => {
             const a = ART[k];
             return '<section class="wp-slide" data-k="' + k + '" role="group" aria-roledescription="slide" aria-label="' + escapeHtml(T.page(k + 1, n)) + '">' +
-              (a.photo ? '<div class="wp-photo" style="background-image:url(' + a.photo + ');--wp-pos:' + a.pos + '"></div>'
-                : '<div class="wp-third" aria-hidden="true"><span class="wp-ring"></span><span class="wp-icon"></span></div>') +
+              artHtml(a, lang) +
               '<span class="wp-wave" aria-hidden="true"></span>' +
               '<div class="wp-glass">' +
                 '<img class="wp-logo" src="assets/brand/om-logo-horizontal-white.png" alt="DYT" width="150" height="54" style="height:38px;margin-bottom:12px">' +
@@ -71,6 +84,10 @@ const Onboarding = (() => {
         '</div><div class="ob-live" id="ob-live" role="status" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></div>';
       bind();
       paint(true);
+      fitArt();
+      /* the text card changes height when a web font arrives (Arabic) or the phone turns: fit again then — once per change, not per frame */
+      try { if (glassRO) glassRO.disconnect(); glassRO = new ResizeObserver(() => { if (fitQueued) return; fitQueued = true; requestAnimationFrame(() => { fitQueued = false; if (!closing) fitArt(); }); });
+        el.querySelectorAll('.wp-glass').forEach(g => glassRO.observe(g)); } catch(e){ /* old browser: the first fit stays */ }
     }
 
     const W = () => el.getBoundingClientRect().width || window.innerWidth || 1;
@@ -81,7 +98,7 @@ const Onboarding = (() => {
       tr.classList.toggle('drag', !animate);
       tr.style.setProperty('--wp-x', (dir * i * w + (dx || 0)) + 'px');
       el.querySelectorAll('.wp-slide').forEach((s, k) => {
-        const p = s.querySelector('.wp-photo, .wp-third'); if (!p) return;
+        const p = s.querySelector('.wp-art'); if (!p) return;
         const rel = (k - i) * w * -dir + (dx || 0);          /* where this slide sits relative to the screen */
         p.style.setProperty('--wp-par', (reduced() ? 0 : -rel * 0.35) + 'px');
         p.style.transition = animate ? '' : 'none';
@@ -96,7 +113,7 @@ const Onboarding = (() => {
     }
     function go(d){ const j = i + d; if (j < 0 || j >= n){ place(0, !reduced()); return; } i = j; paint(false); try { UIKit.haptic('tap'); } catch(e){ /* rien */ } }
     function goTo(k){ if (k >= 0 && k < n && k !== i){ i = k; paint(false); } }
-    function teardown(){ document.removeEventListener('keydown', onKey, true); window.removeEventListener('resize', onResize); }
+    function teardown(){ try { if (glassRO) glassRO.disconnect(); } catch(e){ /* rien */ } document.removeEventListener('keydown', onKey, true); window.removeEventListener('resize', onResize); }
     function finish(target){
       if (closing) return; closing = true;
       mark(); el.classList.add('is-leaving');
@@ -143,7 +160,13 @@ const Onboarding = (() => {
       if (e.shiftKey && (ae === first || !el.contains(ae))){ e.preventDefault(); last.focus(); }
       else if (!e.shiftKey && (ae === last || !el.contains(ae))){ e.preventDefault(); first.focus(); }
     }
-    function onResize(){ if (!closing) place(0, false); }
+    /* each picture takes exactly the room left above its text card (the card is taller in Arabic or on a small phone): read once per layout, never per frame */
+    function fitArt(){
+      el.querySelectorAll('.wp-slide').forEach(sl => { const a = sl.querySelector('.wp-art'), g = sl.querySelector('.wp-glass'); if (!a || !g) return;
+        const top = g.offsetTop; if (top > 0){ const h = Math.max(180, top + (a.classList.contains('wp-art-2fa') ? -22 : 14)); a.style.height = h + 'px'; a.style.setProperty('--art-h', h + 'px'); } });
+    }
+
+    function onResize(){ if (!closing){ fitArt(); place(0, false); } }
     document.addEventListener('keydown', onKey, true);
     window.addEventListener('resize', onResize);
     build();

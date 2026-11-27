@@ -1,3 +1,14 @@
+# DYT 16.9.0 (web) — présentation refaite avec la planche, plus aucune photo ; fluidité 60 / 90 / 120 Hz
+
+Demande du propriétaire (27/11) : enlever l'ancien démarrage bleu et les photos de la présentation ; découper la planche « Next Level » pour bien placer ses éléments ; expérience fluide quel que soit l'écran.
+
+- **Présentation (3 pages)** : plus de photo. Pièces découpées de la planche (`brand/make_mascot.py`) : la mascotte telle quelle (carte entière, ou tête), les vagues lumineuses lime du bas de la planche (`assets/brand/dyt-wave.webp`), un halo lime. Page 2 : les vraies actions de l'application (Dépôt, Envoyer, Retrait) en ronds lime comme sur la planche ; page 3 : badge « Vérification en deux étapes » façon « Connecté ». Aucun chiffre, aucun faux solde. fr / en / ar.
+- **Mise en page** : chaque illustration prend exactement la place libre au-dessus du texte (mesurée, et remesurée quand la police arabe arrive ou que le téléphone tourne).
+- **Fluidité** : tout ce qui bouge n'anime que la position et la transparence (calculé par le compositeur, à la cadence de l'écran : 60, 90 ou 120 Hz ; durées en temps, donc même vitesse partout) ; plus de flou d'arrière-plan sur la présentation, plus de flou à la sortie de l'écran de démarrage, plus de filtre sur la mascotte de connexion. « Réduire les animations » respecté.
+- **Démarrage iPhone** (application ajoutée à l'écran d'accueil) : 12 images refaites — icône DYT sur noir avec les vagues lime, ou sur ivoire.
+
+---
+
 # DYT 16.8.0 (web) — la planche « Next Level » appliquée : composants et mascotte
 
 Demande du propriétaire (27/11) : « utiliser exactement les mêmes couleurs et la mascotte » de sa planche « Next Level Design System ».

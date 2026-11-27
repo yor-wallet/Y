@@ -5,14 +5,14 @@
    - Hors ligne : l'application démarre depuis la copie locale ; si elle n'existe pas encore, « offline.html » explique la situation.
    - Il ne touche JAMAIS aux ressources d'autres sites (client Supabase sur le CDN, WalletConnect, chaîne) : le navigateur les charge lui-même.
      (12.11.0 interceptait le client Supabase : la CSP bloquait ce rechargement par le service worker et l'application ne démarrait plus dès la 2e ouverture.) */
-const CACHE = 'fp-shell-v16.8.0';
+const CACHE = 'fp-shell-v16.9.0';
 const SLOW_MS = 4500;      /* au-delà, on sert la copie locale si on en a une */
 
 const SHELL = [
   './', 'index.html', 'offline.html', 'manifest.webmanifest', 'favicon.ico',
   'css/app.css', 'js/app.js',
   'assets/brand/logo-mark.svg', 'assets/brand/logo-mark-light.svg', 'assets/brand/om-wordmark-white.png', 'assets/brand/om-empty.svg', 'assets/brand/om-empty-light.svg', 'assets/brand/om-logo-horizontal.png', 'assets/brand/om-logo-horizontal-white.png', 'assets/brand/omr-symbol.svg', 'public/branding/om-wallet-favicon.svg', 'public/branding/apple-touch-icon.png',
-  'assets/promo/promo-1-lime.jpg', 'assets/promo/promo-2-lime.jpg', 'assets/brand/dyt-mascot.webp', 'assets/brand/dyt-mascot-head.webp',
+  'assets/promo/promo-1-lime.jpg', 'assets/promo/promo-2-lime.jpg', 'assets/brand/dyt-mascot.webp', 'assets/brand/dyt-mascot-head.webp', 'assets/brand/dyt-wave.webp',
   'assets/fonts/sora-latin-var.woff2', 'assets/fonts/sora-latin-ext-var.woff2',
   'assets/fonts/tajawal-arabic-400.woff2', 'assets/fonts/tajawal-arabic-500.woff2', 'assets/fonts/tajawal-arabic-700.woff2', 'assets/fonts/tajawal-arabic-800.woff2',
   'assets/icons/icon.svg', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/apple-touch-icon.png',

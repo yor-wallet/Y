@@ -251,3 +251,47 @@ html:root:root:root:root body .sp2-word span{display:block;margin-top:6px;font-s
 html:root:root:root:root body .sp2-tag{color:var(--lt-ink2)!important}
 html:root:root:root:root body .sp2-bar{background:var(--lt-edge)!important}
 html:root:root:root:root body .sp2-bar i{background:var(--lt-yellow)!important}
+
+/* ---------- 12. 16.9.0 — presentation pages: art cut out of the owner's board (mascot, lime light waves), no photos.
+   Fluid at 60 / 90 / 120 Hz: everything that moves is a composited transform or opacity (time-based, so the same speed at any refresh rate);
+   no backdrop blur and no filter on anything that moves (they are repainted every frame). ---------- */
+html:root:root:root:root body .wp-art{position:absolute;left:0;right:0;top:0;height:52%;display:grid;place-items:center;padding-top:calc(58px + env(safe-area-inset-top,0px));
+  transform:translate3d(var(--wp-par,0px),0,0);transition:transform .75s var(--w-ease);will-change:transform;overflow:visible;pointer-events:none}
+html:root:root:root:root body .wp-halo{position:absolute;left:50%;top:56%;width:min(130vw,620px);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(closest-side,rgba(215,230,0,.26),rgba(215,230,0,.08) 55%,rgba(215,230,0,0))}
+html:root:root:root:root body .wp-wavelight{position:absolute;left:-12%;width:124%;height:auto;bottom:-40px;opacity:.95;z-index:0}
+html:root:root:root:root body .wp-card{position:relative;z-index:1;height:min(calc(var(--art-h,440px) - 70px - env(safe-area-inset-top,0px)),400px);width:auto;max-width:72vw;object-fit:contain;border-radius:8.04%/4.56%;
+  box-shadow:0 26px 60px -24px rgba(215,230,0,.45),0 30px 50px -30px rgba(0,0,0,.9);transform:translate3d(0,16px,0) scale(.97);opacity:.4;transition:transform .8s var(--w-ease),opacity .5s ease}
+html:root:root:root:root body .wp-head{position:relative;z-index:1;width:min(44vw,190px);height:auto;margin-top:-16%;border-radius:19.7%;
+  box-shadow:0 22px 50px -22px rgba(215,230,0,.5),0 26px 44px -28px rgba(0,0,0,.9);transform:translate3d(0,16px,0) scale(.97);opacity:.4;transition:transform .8s var(--w-ease),opacity .5s ease}
+html:root:root:root:root body .wp-slide.on :is(.wp-card,.wp-head){transform:none;opacity:1}
+html:root:root:root:root body .wp-acts{position:absolute;z-index:2;left:0;right:0;bottom:14%;display:flex;justify-content:center;gap:clamp(18px,7vw,34px)}
+html:root:root:root:root body .wp-act{display:flex;flex-direction:column;align-items:center;gap:8px;transform:translate3d(0,18px,0);opacity:0;transition:transform .7s var(--w-ease),opacity .5s ease}
+html:root:root:root:root body .wp-slide.on .wp-act{transform:none;opacity:1}
+html:root:root:root:root body .wp-slide.on .wp-act:nth-child(2){transition-delay:.06s}
+html:root:root:root:root body .wp-slide.on .wp-act:nth-child(3){transition-delay:.12s}
+html:root:root:root:root body .wp-act i{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:#D7E600;color:#090909;box-shadow:0 10px 24px -10px rgba(215,230,0,.8)}
+html:root:root:root:root body .wp-act i svg{color:#090909;stroke:#090909}
+html:root:root:root:root body .wp-act b{font-size:13px;font-weight:700;color:#F5F5F0}
+html:root:root:root:root body .wp-chip{position:absolute;z-index:2;left:50%;bottom:9%;display:inline-flex;align-items:center;gap:8px;padding:7px 14px 7px 7px;border-radius:999px;white-space:nowrap;
+  background:#1A2A08;border:1px solid rgba(139,201,0,.35);color:#D7E600;font-size:14px;font-weight:700;box-shadow:0 12px 26px -14px rgba(0,0,0,.9);
+  transform:translate3d(-50%,14px,0);opacity:0;transition:transform .7s .1s var(--w-ease),opacity .5s .1s ease}
+html:root:root:root:root body .wp-slide.on .wp-chip{transform:translate3d(-50%,0,0);opacity:1}
+html:root:root:root:root body .wp-chip i{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#D7E600}
+html:root:root:root:root body .wp-chip i svg{color:#090909;stroke:#090909;stroke-width:3}
+/* the card and the corner buttons: solid, no backdrop blur (it would be recomputed every frame while the pages slide) */
+html:root:root:root:root body .wp-glass{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:#111111!important}
+html:root:root:root:root body :is(.wp-skip,.wp-langs button){-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:rgba(22,22,22,.92)!important}
+html:root:root:root:root body .wp-langs button[aria-pressed="true"]{background:var(--lt-yellow)!important}
+html:root:root:root:root body .wp-track{will-change:transform}
+/* start-up screen leaves with opacity + transform only (the blur it had is a full-screen repaint per frame) */
+html:root:root:root:root body #splash.is-hidden{filter:none!important}
+/* sign-in hero: glow drawn with a shadow on the rounded box, not a filter */
+html:root:root:root:root body .w-auth-icon{filter:none!important;border-radius:8.04%/4.56%;box-shadow:0 22px 50px -24px rgba(215,230,0,.45)}
+@media (prefers-reduced-motion:reduce){
+  html:root:root:root:root body :is(.wp-art,.wp-card,.wp-head,.wp-act,.wp-chip){transition:none!important}
+}
+/* the last page has a longer text: its art is shorter, the badge sits under the card, above the text card */
+html:root:root:root:root body .wp-art-2fa{height:43%}
+html:root:root:root:root body .wp-art-2fa .wp-card{height:min(calc(var(--art-h,400px) - 84px - env(safe-area-inset-top,0px)),360px)}
+html:root:root:root:root body .wp-art-2fa .wp-chip{bottom:-14px}
