@@ -1,7 +1,7 @@
 'use strict';
 
 /* ============================================================
-   OM Wallet 12.14.0 — premium layer
+   DYT 12.14.0 — premium layer
    Home, Receive, global search, Profile (+ edit), transfer outcome screen (refused / uncertain), balance change animation.
    Rules kept from earlier versions: every number shown is read from the server data in Runtime; nothing is invented, no balance,
    reference, status or verification state is ever simulated. Loaded after js/screens/register.js (it registers the screens it owns)
@@ -13,14 +13,14 @@ Object.assign(TR.en, {
   'px.recent':'Recent activity','px.seeAll':'See all','px.search':'Search','px.searchPh':'Transactions, references, settings…',
   'px.sTx':'Transactions','px.sPeople':'Recipients','px.sScreens':'Screens and settings','px.sNone':'No result for “{q}”','px.sHint':'Search your real transactions by name, number, reference or amount.',
   'px.profile':'Profile','px.openProfile':'Open my profile','px.notifs':'Notifications',
-  'px.rcvTitle':'Receive money','px.rcvLead':'Share your account details. Every amount credited to your OM Wallet balance appears here and in your history, with its real status.',
+  'px.rcvTitle':'Receive money','px.rcvLead':'Share your account details. Every amount credited to your DYT balance appears here and in your history, with its real status.',
   'px.rcvId':'Your Wallet ID','px.rcvPhone':'Your mobile number','px.rcvShare':'Share my details','px.rcvCopy':'Copy',
-  'px.rcvNote':'Transfers made to a mobile number leave OM Wallet (the recipient is told by SMS); they do not credit a OM Wallet balance.',
+  'px.rcvNote':'Transfers made to a mobile number leave DYT (the recipient is told by SMS); they do not credit a DYT balance.',
   'px.rcvRecent':'Money received','px.rcvNone':'Nothing received yet','px.rcvNoneD':'Confirmed credits will be listed here.',
-  'px.shareText':'My OM Wallet details — Wallet ID: {id}',
+  'px.shareText':'My DYT details — Wallet ID: {id}',
   'px.edit':'Edit profile','px.personal':'Personal information','px.first':'First name','px.last':'Last name','px.phone':'Mobile number','px.email':'E-mail','px.country':'Country','px.accountId':'Account ID',
   'px.verif':'Account verification','px.kyc.VERIFIED':'Verified','px.kyc.PENDING':'Verification in progress','px.kyc.REJECTED':'Verification refused','px.kyc.UNVERIFIED':'Not verified',
-  'px.kycD.VERIFIED':'Your identity has been confirmed by OM Wallet.','px.kycD.PENDING':'Your documents are being reviewed. Nothing to do for now.',
+  'px.kycD.VERIFIED':'Your identity has been confirmed by DYT.','px.kycD.PENDING':'Your documents are being reviewed. Nothing to do for now.',
   'px.kycD.REJECTED':'Your verification was not accepted. Contact support to know what is needed.','px.kycD.UNVERIFIED':'Identity verification is not offered in the app yet. No document is requested for now.',
   'px.security':'Security','px.pinChange':'Change personal code','px.pinChangeD':'6 digits, asked to confirm every transfer','px.pinOldT':'Current code','px.pinOldS':'Enter your current 6-digit code.','px.pinNewT':'New code','px.pinSame':'Choose a code different from the current one.','px.pinDone':'Personal code changed',
   'px.prefs':'Preferences','px.language':'Language','px.theme':'Theme','px.dispCur':'Display currency','px.support':'Help and information','px.version':'Version {v}',
@@ -38,14 +38,14 @@ Object.assign(TR.fr, {
   'px.recent':'Activité récente','px.seeAll':'Voir tout','px.search':'Rechercher','px.searchPh':'Opérations, références, réglages…',
   'px.sTx':'Opérations','px.sPeople':'Bénéficiaires','px.sScreens':'Écrans et réglages','px.sNone':'Aucun résultat pour « {q} »','px.sHint':'Retrouvez vos vraies opérations par nom, numéro, référence ou montant.',
   'px.profile':'Profil','px.openProfile':'Ouvrir mon profil','px.notifs':'Notifications',
-  'px.rcvTitle':'Recevoir de l’argent','px.rcvLead':'Partagez les informations de votre compte. Chaque montant crédité sur votre solde OM Wallet apparaît ici et dans l’historique, avec son statut réel.',
+  'px.rcvTitle':'Recevoir de l’argent','px.rcvLead':'Partagez les informations de votre compte. Chaque montant crédité sur votre solde DYT apparaît ici et dans l’historique, avec son statut réel.',
   'px.rcvId':'Votre Wallet ID','px.rcvPhone':'Votre numéro de mobile','px.rcvShare':'Partager mes informations','px.rcvCopy':'Copier',
-  'px.rcvNote':'Les transferts vers un numéro de mobile sortent de OM Wallet (le destinataire est prévenu par SMS) : ils ne créditent pas un solde OM Wallet.',
+  'px.rcvNote':'Les transferts vers un numéro de mobile sortent de DYT (le destinataire est prévenu par SMS) : ils ne créditent pas un solde DYT.',
   'px.rcvRecent':'Argent reçu','px.rcvNone':'Rien reçu pour l’instant','px.rcvNoneD':'Les crédits confirmés seront listés ici.',
-  'px.shareText':'Mes informations OM Wallet — Wallet ID : {id}',
+  'px.shareText':'Mes informations DYT — Wallet ID : {id}',
   'px.edit':'Modifier le profil','px.personal':'Informations personnelles','px.first':'Prénom','px.last':'Nom','px.phone':'Numéro de mobile','px.email':'E-mail','px.country':'Pays','px.accountId':'Identifiant du compte',
   'px.verif':'Vérification du compte','px.kyc.VERIFIED':'Vérifié','px.kyc.PENDING':'Vérification en cours','px.kyc.REJECTED':'Vérification refusée','px.kyc.UNVERIFIED':'Non vérifié',
-  'px.kycD.VERIFIED':'Votre identité a été confirmée par OM Wallet.','px.kycD.PENDING':'Vos documents sont en cours d’examen. Rien à faire pour le moment.',
+  'px.kycD.VERIFIED':'Votre identité a été confirmée par DYT.','px.kycD.PENDING':'Vos documents sont en cours d’examen. Rien à faire pour le moment.',
   'px.kycD.REJECTED':'Votre vérification n’a pas été acceptée. Contactez l’assistance pour savoir quoi fournir.','px.kycD.UNVERIFIED':'La vérification d’identité n’est pas encore proposée dans l’application. Aucun document n’est demandé pour le moment.',
   'px.security':'Sécurité','px.pinChange':'Modifier le code personnel','px.pinChangeD':'6 chiffres, demandé pour confirmer chaque transfert','px.pinOldT':'Code actuel','px.pinOldS':'Saisissez votre code actuel à 6 chiffres.','px.pinNewT':'Nouveau code','px.pinSame':'Choisissez un code différent du code actuel.','px.pinDone':'Code personnel modifié',
   'px.prefs':'Préférences','px.language':'Langue','px.theme':'Thème','px.dispCur':'Devise d’affichage','px.support':'Aide et informations','px.version':'Version {v}',
@@ -63,14 +63,14 @@ Object.assign(TR.ar, {
   'px.recent':'آخر العمليات','px.seeAll':'عرض الكل','px.search':'بحث','px.searchPh':'العمليات، المراجع، الإعدادات…',
   'px.sTx':'العمليات','px.sPeople':'المستفيدون','px.sScreens':'الشاشات والإعدادات','px.sNone':'لا نتائج لـ «{q}»','px.sHint':'ابحث في عملياتك الحقيقية بالاسم أو الرقم أو المرجع أو المبلغ.',
   'px.profile':'الملف الشخصي','px.openProfile':'فتح ملفي الشخصي','px.notifs':'الإشعارات',
-  'px.rcvTitle':'استلام الأموال','px.rcvLead':'شارك بيانات حسابك. كل مبلغ يُضاف إلى رصيدك في OM Wallet يظهر هنا وفي السجل بحالته الحقيقية.',
+  'px.rcvTitle':'استلام الأموال','px.rcvLead':'شارك بيانات حسابك. كل مبلغ يُضاف إلى رصيدك في DYT يظهر هنا وفي السجل بحالته الحقيقية.',
   'px.rcvId':'معرّف محفظتك','px.rcvPhone':'رقم هاتفك','px.rcvShare':'مشاركة بياناتي','px.rcvCopy':'نسخ',
-  'px.rcvNote':'التحويلات إلى رقم هاتف تخرج من OM Wallet (يُبلَّغ المستلم برسالة نصية)، ولا تُضاف إلى رصيد في OM Wallet.',
+  'px.rcvNote':'التحويلات إلى رقم هاتف تخرج من DYT (يُبلَّغ المستلم برسالة نصية)، ولا تُضاف إلى رصيد في DYT.',
   'px.rcvRecent':'الأموال المستلمة','px.rcvNone':'لم يصلك شيء بعد','px.rcvNoneD':'ستظهر هنا المبالغ المؤكدة.',
-  'px.shareText':'بياناتي في OM Wallet — المعرّف: {id}',
+  'px.shareText':'بياناتي في DYT — المعرّف: {id}',
   'px.edit':'تعديل الملف','px.personal':'المعلومات الشخصية','px.first':'الاسم الأول','px.last':'اسم العائلة','px.phone':'رقم الهاتف','px.email':'البريد الإلكتروني','px.country':'الدولة','px.accountId':'معرّف الحساب',
   'px.verif':'التحقق من الحساب','px.kyc.VERIFIED':'تم التحقق','px.kyc.PENDING':'التحقق جارٍ','px.kyc.REJECTED':'رُفض التحقق','px.kyc.UNVERIFIED':'لم يتم التحقق',
-  'px.kycD.VERIFIED':'تم تأكيد هويتك من قِبل OM Wallet.','px.kycD.PENDING':'وثائقك قيد المراجعة. لا شيء مطلوب منك الآن.',
+  'px.kycD.VERIFIED':'تم تأكيد هويتك من قِبل DYT.','px.kycD.PENDING':'وثائقك قيد المراجعة. لا شيء مطلوب منك الآن.',
   'px.kycD.REJECTED':'لم يُقبل التحقق. تواصل مع الدعم لمعرفة المطلوب.','px.kycD.UNVERIFIED':'التحقق من الهوية غير متاح في التطبيق بعد. لا تُطلب أي وثيقة حالياً.',
   'px.security':'الأمان','px.pinChange':'تغيير الرمز الشخصي','px.pinChangeD':'6 أرقام، يُطلب لتأكيد كل تحويل','px.pinOldT':'الرمز الحالي','px.pinOldS':'أدخل رمزك الحالي المكوّن من 6 أرقام.','px.pinNewT':'الرمز الجديد','px.pinSame':'اختر رمزاً مختلفاً عن الرمز الحالي.','px.pinDone':'تم تغيير الرمز الشخصي',
   'px.prefs':'التفضيلات','px.language':'اللغة','px.theme':'المظهر','px.dispCur':'عملة العرض','px.support':'المساعدة والمعلومات','px.version':'الإصدار {v}',
@@ -315,14 +315,14 @@ const PxSearch = (() => {
 
 
 /* ============================================================
-   INSTALL WITHOUT AN APP STORE (12.14.0) — OM Wallet is a web app (PWA): it is added to the home screen from its HTTPS address.
+   INSTALL WITHOUT AN APP STORE (12.14.0) — DYT is a web app (PWA): it is added to the home screen from its HTTPS address.
    iPhone / iPad (Safari): Apple offers no install button to web pages; the card shows the two real steps (Share → Add to Home Screen).
    Android / desktop Chrome / Edge: the browser's own install prompt (beforeinstallprompt) is used when it is offered.
    Nothing is shown once the app runs from its icon (standalone). "Later" hides the card for 14 days on this device.
    ============================================================ */
-Object.assign(TR.en, { 'pi.title':'Install OM Wallet on this phone', 'pi.sub':'Opens full screen from its own icon, like an app. No App Store needed.', 'pi.ios1':'Tap the Share button', 'pi.ios2':'Choose “Add to Home Screen”', 'pi.ios3':'Open OM Wallet from the new icon', 'pi.iosOther':'On iPhone, open this page in Safari to install it.', 'pi.go':'Install', 'pi.later':'Later', 'pi.row':'Install the app', 'pi.rowD':'Add OM Wallet to your home screen', 'pi.note':'OM Wallet is a web app: it is not an App Store app and it uses only what Safari allows.' });
-Object.assign(TR.fr, { 'pi.title':'Installer OM Wallet sur ce téléphone', 'pi.sub':'S’ouvre en plein écran depuis sa propre icône, comme une application. Sans App Store.', 'pi.ios1':'Touchez le bouton Partager', 'pi.ios2':'Choisissez « Sur l’écran d’accueil »', 'pi.ios3':'Ouvrez OM Wallet depuis la nouvelle icône', 'pi.iosOther':'Sur iPhone, ouvrez cette page dans Safari pour l’installer.', 'pi.go':'Installer', 'pi.later':'Plus tard', 'pi.row':'Installer l’application', 'pi.rowD':'Ajouter OM Wallet à l’écran d’accueil', 'pi.note':'OM Wallet est une application web : ce n’est pas une application de l’App Store et elle n’utilise que ce que Safari autorise.' });
-Object.assign(TR.ar, { 'pi.title':'ثبّت OM Wallet على هذا الهاتف', 'pi.sub':'يفتح بملء الشاشة من أيقونته مثل التطبيقات. دون متجر App Store.', 'pi.ios1':'المس زر المشاركة', 'pi.ios2':'اختر «إضافة إلى الشاشة الرئيسية»', 'pi.ios3':'افتح OM Wallet من الأيقونة الجديدة', 'pi.iosOther':'على iPhone افتح هذه الصفحة في Safari لتثبيتها.', 'pi.go':'تثبيت', 'pi.later':'لاحقاً', 'pi.row':'تثبيت التطبيق', 'pi.rowD':'أضف OM Wallet إلى الشاشة الرئيسية', 'pi.note':'OM Wallet تطبيق ويب: ليس من متجر App Store ويستخدم فقط ما يسمح به Safari.' });
+Object.assign(TR.en, { 'pi.title':'Install DYT on this phone', 'pi.sub':'Opens full screen from its own icon, like an app. No App Store needed.', 'pi.ios1':'Tap the Share button', 'pi.ios2':'Choose “Add to Home Screen”', 'pi.ios3':'Open DYT from the new icon', 'pi.iosOther':'On iPhone, open this page in Safari to install it.', 'pi.go':'Install', 'pi.later':'Later', 'pi.row':'Install the app', 'pi.rowD':'Add DYT to your home screen', 'pi.note':'DYT is a web app: it is not an App Store app and it uses only what Safari allows.' });
+Object.assign(TR.fr, { 'pi.title':'Installer DYT sur ce téléphone', 'pi.sub':'S’ouvre en plein écran depuis sa propre icône, comme une application. Sans App Store.', 'pi.ios1':'Touchez le bouton Partager', 'pi.ios2':'Choisissez « Sur l’écran d’accueil »', 'pi.ios3':'Ouvrez DYT depuis la nouvelle icône', 'pi.iosOther':'Sur iPhone, ouvrez cette page dans Safari pour l’installer.', 'pi.go':'Installer', 'pi.later':'Plus tard', 'pi.row':'Installer l’application', 'pi.rowD':'Ajouter DYT à l’écran d’accueil', 'pi.note':'DYT est une application web : ce n’est pas une application de l’App Store et elle n’utilise que ce que Safari autorise.' });
+Object.assign(TR.ar, { 'pi.title':'ثبّت DYT على هذا الهاتف', 'pi.sub':'يفتح بملء الشاشة من أيقونته مثل التطبيقات. دون متجر App Store.', 'pi.ios1':'المس زر المشاركة', 'pi.ios2':'اختر «إضافة إلى الشاشة الرئيسية»', 'pi.ios3':'افتح DYT من الأيقونة الجديدة', 'pi.iosOther':'على iPhone افتح هذه الصفحة في Safari لتثبيتها.', 'pi.go':'تثبيت', 'pi.later':'لاحقاً', 'pi.row':'تثبيت التطبيق', 'pi.rowD':'أضف DYT إلى الشاشة الرئيسية', 'pi.note':'DYT تطبيق ويب: ليس من متجر App Store ويستخدم فقط ما يسمح به Safari.' });
 const PxInstall = (() => {
   let deferred = null;
   const KEY = 'fp_install_later';
@@ -525,7 +525,7 @@ const Premium = (() => {
           row('info', t('settings.about'), tf('px.version', { v: CONFIG.APP.version }), 'data-nav="about"') +
         '</div>' +
         '<div class="settings-group" style="margin-top:var(--sp-5)">' + row('logout', t('profile.logout'), '', 'data-action="sign-out"', '', true) + '</div>' +
-        '<p class="px-ver ltr">OM Wallet ' + escapeHtml(CONFIG.APP.version) + '</p>' +
+        '<p class="px-ver ltr">DYT ' + escapeHtml(CONFIG.APP.version) + '</p>' +
       '</div>';
   }
   /* first / last name: the only profile fields the server lets the person change here (column grants on public.profiles) */
@@ -582,7 +582,7 @@ const Premium = (() => {
   async function share(){
     const yid = Runtime.ctx && Runtime.ctx.yorId ? dispId(Runtime.ctx.yorId) : ''; if (!yid) return;
     const text = tf('px.shareText', { id: yid });
-    if (navigator.share){ try { await navigator.share({ title: 'OM Wallet', text }); return; } catch(e){ if (e && e.name === 'AbortError') return; } }
+    if (navigator.share){ try { await navigator.share({ title: 'DYT', text }); return; } catch(e){ if (e && e.name === 'AbortError') return; } }
     copyText(text);
   }
 

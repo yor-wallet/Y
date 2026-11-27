@@ -638,7 +638,7 @@ function wire(id){
             shown = CurrencyEngine.formatCrypto(got, sym);
             receipt = { id: ID.receipt(), transactionId: txId, status:'SUCCESS', amount: got, currency:'OMR', asset: sym,
               fee: Number(row.fee != null ? row.fee : d.fee), total: Number(d.fiatAmount), costOMR: true,
-              beneficiary: { name, networkName:'OM Wallet' }, network:'OM Wallet', reference: ref, createdAt: Date.now() };
+              beneficiary: { name, networkName:'DYT' }, network:'DYT', reference: ref, createdAt: Date.now() };
           } else if (p.kind === 'SEND'){
             /* server result is authoritative: CONFIRMED = internal YOR transfer, PENDING = awaiting blockchain validation */
             const internal = !!row.internal; const pending = row.status === 'PENDING';
@@ -655,7 +655,7 @@ function wire(id){
             shown = CurrencyEngine.format(got, 'OMR');
             receipt = { id: ID.receipt(), transactionId: txId, status:'SUCCESS', amount: Number(row.amount != null ? row.amount : d.amount), currency:'OMR', asset: sym,
               fee: Number(row.fee != null ? row.fee : d.fee), total: got, costOMR: true,
-              beneficiary: { name, networkName:'OM Wallet' }, network:'OM Wallet', reference: ref, createdAt: Date.now() };
+              beneficiary: { name, networkName:'DYT' }, network:'DYT', reference: ref, createdAt: Date.now() };
           } else {
             const to = d.toAssetObj ? d.toAssetObj.symbol : '';
             const got = Number(row.destination_amount != null ? row.destination_amount : d.destinationAmount);
@@ -664,7 +664,7 @@ function wire(id){
             receipt = { id: ID.receipt(), transactionId: txId, status:'SUCCESS', amount: amt, currency: sym, asset: sym,
               fee: Number(row.fee != null ? row.fee : d.fee), total: amt,
               destinationAmount: got, destinationCurrency: to, exchangeRate: amt > 0 ? got / amt : null,
-              beneficiary: { name: d.toAssetObj ? d.toAssetObj.name : to, networkName:'OM Wallet' }, network:'OM Wallet', reference: ref, createdAt: Date.now() };
+              beneficiary: { name: d.toAssetObj ? d.toAssetObj.name : to, networkName:'DYT' }, network:'DYT', reference: ref, createdAt: Date.now() };
           }
           try { await recordLocalReceipt(receipt); } catch(e){ console.error(e); }
           resetCryptoFlow();

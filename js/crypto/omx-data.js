@@ -1,7 +1,7 @@
 'use strict';
 
 /* ============================================================
-   OM WALLET 14 — CRYPTO DATA
+   DYT 14 — CRYPTO DATA
    - OMX_ASSETS / OMX_NETWORKS : reference data. Logos: assets/crypto (web3icons, MIT, see assets/crypto/LICENSE.txt).
      Token contracts were checked on-chain on 2026-11-22 (symbol + decimals read from each contract / mint).
    - OMXMarket : REAL market data from Binance's public market-data service

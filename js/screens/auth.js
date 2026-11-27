@@ -9,7 +9,7 @@ function mainAccount(){
 
 function renderLogin(){
   /* sign-in, laid out like the owner's reference: glass icon, word mark, greeting, one glass card (e-mail, password, forgotten password, sign-in) */
-  return '<div class="topbar"><span class="topbar-title">OM Wallet</span><span style="width:calc(44px*var(--ui))"></span></div>' +
+  return '<div class="topbar"><span class="topbar-title">DYT</span><span style="width:calc(44px*var(--ui))"></span></div>' +
     '<div class="screen-body">' +
       '<section class="glass w-auth-card">' +
         '<div class="field"><label class="field-label" for="au-email">' + t('auth.username') + '</label><div class="field-box">' + icon('mail', 22) + '<input type="email" id="au-email" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" class="ltr" placeholder="' + escapeHtml(t('auth.username')) + '"></div></div>' +

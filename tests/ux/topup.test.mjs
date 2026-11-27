@@ -1,4 +1,4 @@
-/* OM Wallet 15.0.1 — Transfert de crédit, RÉSERVÉ À L'ADMINISTRATEUR : opérateur + numéro + montant + Envoyer = confirmé tout de suite
+/* DYT 15.0.1 — Transfert de crédit, RÉSERVÉ À L'ADMINISTRATEUR : opérateur + numéro + montant + Envoyer = confirmé tout de suite
    (SMS envoyé par le serveur), message exact du propriétaire, rien d'autre d'obligatoire. Un utilisateur ordinaire ne voit pas le service. */
 import assert from 'node:assert/strict';
 import { serve, launch, openApp } from './harness.mjs';

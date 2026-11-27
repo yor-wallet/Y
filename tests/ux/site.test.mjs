@@ -1,4 +1,4 @@
-/* OM Wallet 14.6.0 — showcase site (/welcome), separate from the app but linked to it
+/* DYT 14.6.0 — showcase site (/welcome), separate from the app but linked to it
    - loads with the production security policy, no page error, no horizontal scroll on a phone
    - three languages (fr / en / ar right to left), real screenshots per language, remembered choice
    - live prices: real Binance public data only; network down -> an honest « unavailable », never a made-up number
@@ -131,7 +131,7 @@ async function site(opts = {}){
 }
 {
   console.log('\n[site vitrine — prestations (16.1.0)]');
-  for (const [loc, lang, titre, bouton] of [['fr-FR', 'fr', /Toutes les prestations/, /Créer mon compte pour les utiliser/], ['en-US', 'en', /Everything OM Wallet offers/, /Create my account to use them/], ['ar-OM', 'ar', /كل ما يقدّمه/, /أنشئ حسابي/]]){
+  for (const [loc, lang, titre, bouton] of [['fr-FR', 'fr', /Toutes les prestations/, /Créer mon compte pour les utiliser/], ['en-US', 'en', /Everything DYT offers/, /Create my account to use them/], ['ar-OM', 'ar', /كل ما يقدّمه/, /أنشئ حسابي/]]){
     const { ctx, page, errs } = await site({ locale: loc });
     await ok(lang + ' : catalogue de 7 prestations, index, guide en 3 étapes chacune, sans erreur ni défilement horizontal', async () => {
       assert.deepEqual(errs, []);

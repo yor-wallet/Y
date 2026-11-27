@@ -1,7 +1,7 @@
 'use strict';
 
 /* ============================================================
-   ADMIN CONTROL (OM Wallet 14) — administrators only. Screen id kept: 'dy-control'.
+   ADMIN CONTROL (DYT 14) — administrators only. Screen id kept: 'dy-control'.
    Every section is a window on the server; each admin_* function checks is_admin() itself and writes the audit log.
    Sections: dashboard (admin_console_stats + open withdrawals), users (admin_recent_users / admin_search_users),
    bank withdrawals (admin_withdrawal_list / decide / mark_paid), crypto withdrawals (admin_crypto_withdrawal_list / process / complete with the

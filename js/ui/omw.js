@@ -1,7 +1,7 @@
 'use strict';
 
 /* ============================================================
-   OM WALLET — INTERACTIONS (14.4.0)
+   DYT — INTERACTIONS (14.4.0)
    Presentation only. Nothing here decides what an action does: buttons keep their ids / data-* and their existing handlers.
    - touch: a soft light blooms from the finger and the control springs (scale .96 → 1)
    - screens: cards rise in a cascade when a screen opens; list rows appear as they scroll into view

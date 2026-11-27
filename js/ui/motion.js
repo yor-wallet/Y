@@ -1,7 +1,7 @@
 'use strict';
 
 /* ============================================================
-   OM WALLET — MOTION (14.10.0): feedback you can feel, in real time.
+   DYT — MOTION (14.10.0): feedback you can feel, in real time.
    Presentation only: nothing here changes what an action does; ids, data-* and handlers are untouched.
    - segmented controls: a yellow pill glides to the chosen option (also when the screen re-renders)
    - live numbers: prices, percentages and the balance flash green / red when they move; the balance and the main price roll to the new value

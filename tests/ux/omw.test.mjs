@@ -1,4 +1,4 @@
-/* OM Wallet 14.4.0 — the redesigned screens keep every action wired to the existing function:
+/* DYT 14.4.0 — the redesigned screens keep every action wired to the existing function:
    - opening presentation: three screens, real buttons, « Skip » → sign-in, last button → sign-up, language switch
    - sign-in: forgotten password → reset, create account → sign-up
    - home: avatar → account, bell → notifications, four actions, three banners → deposit / send / markets

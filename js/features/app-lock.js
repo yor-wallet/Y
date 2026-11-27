@@ -1,7 +1,7 @@
 'use strict';
 
 /* ============================================================
-   APP LOCK — OM Wallet 12.9.0
+   APP LOCK — DYT 12.9.0
    Ouverture de l'application (démarrage à froid, rechargement, ou retour après plus de GRACE_MS) :
      - appareil compatible, Face ID déjà activé  -> confirmation Face ID (obligatoire), sans saisie du code ;
      - appareil compatible, Face ID pas encore activé -> code à 6 chiffres puis activation de Face ID (obligatoire) ;
@@ -14,9 +14,9 @@
 const AppLock = (() => {
   const GRACE_MS = 5000;
   const L = {
-    en:{ unlockTitle:'Enter your PIN', unlockSub:'Enter your 6-digit code to open OM Wallet', createTitle:'Create your PIN', createSub:'Choose a 6-digit code. It opens the app and confirms operations above 500 USD and crypto sends.', confirmTitle:'Confirm your PIN', confirmSub:'Enter the same code again', mismatch:'Codes do not match. Try again.', weak:'This code is too easy to guess. Choose another one.', logout:'Log out', error:'Something went wrong. Try again.', del:'Delete' },
-    fr:{ unlockTitle:'Entrez votre code', unlockSub:'Saisissez votre code à 6 chiffres pour ouvrir OM Wallet', createTitle:'Créez votre code', createSub:'Choisissez un code à 6 chiffres. Il ouvre l’application et confirme les opérations au-delà de 500 USD et les envois de crypto.', confirmTitle:'Confirmez votre code', confirmSub:'Saisissez de nouveau le même code', mismatch:'Les codes ne correspondent pas. Réessayez.', weak:'Ce code est trop facile à deviner. Choisissez-en un autre.', logout:'Se déconnecter', error:'Une erreur est survenue. Réessayez.', del:'Effacer' },
-    ar:{ unlockTitle:'أدخل رمز PIN', unlockSub:'أدخل رمزك المكوّن من 6 أرقام لفتح OM Wallet', createTitle:'أنشئ رمز PIN', createSub:'اختر رمزاً من 6 أرقام. يفتح التطبيق ويؤكد العمليات التي تتجاوز 500 دولار وإرسال العملات الرقمية.', confirmTitle:'أكّد رمز PIN', confirmSub:'أدخل الرمز نفسه مرة أخرى', mismatch:'الرمزان غير متطابقين. حاول مرة أخرى.', weak:'هذا الرمز سهل التخمين. اختر رمزاً آخر.', logout:'تسجيل الخروج', error:'حدث خطأ. حاول مرة أخرى.', del:'حذف' }
+    en:{ unlockTitle:'Enter your PIN', unlockSub:'Enter your 6-digit code to open DYT', createTitle:'Create your PIN', createSub:'Choose a 6-digit code. It opens the app and confirms operations above 500 USD and crypto sends.', confirmTitle:'Confirm your PIN', confirmSub:'Enter the same code again', mismatch:'Codes do not match. Try again.', weak:'This code is too easy to guess. Choose another one.', logout:'Log out', error:'Something went wrong. Try again.', del:'Delete' },
+    fr:{ unlockTitle:'Entrez votre code', unlockSub:'Saisissez votre code à 6 chiffres pour ouvrir DYT', createTitle:'Créez votre code', createSub:'Choisissez un code à 6 chiffres. Il ouvre l’application et confirme les opérations au-delà de 500 USD et les envois de crypto.', confirmTitle:'Confirmez votre code', confirmSub:'Saisissez de nouveau le même code', mismatch:'Les codes ne correspondent pas. Réessayez.', weak:'Ce code est trop facile à deviner. Choisissez-en un autre.', logout:'Se déconnecter', error:'Une erreur est survenue. Réessayez.', del:'Effacer' },
+    ar:{ unlockTitle:'أدخل رمز PIN', unlockSub:'أدخل رمزك المكوّن من 6 أرقام لفتح DYT', createTitle:'أنشئ رمز PIN', createSub:'اختر رمزاً من 6 أرقام. يفتح التطبيق ويؤكد العمليات التي تتجاوز 500 دولار وإرسال العملات الرقمية.', confirmTitle:'أكّد رمز PIN', confirmSub:'أدخل الرمز نفسه مرة أخرى', mismatch:'الرمزان غير متطابقين. حاول مرة أخرى.', weak:'هذا الرمز سهل التخمين. اختر رمزاً آخر.', logout:'تسجيل الخروج', error:'حدث خطأ. حاول مرة أخرى.', del:'حذف' }
   };
   const tx = (k) => (L[LANG] || L.en)[k] || L.en[k];
   let signedIn = false, pinKnown = false, hiddenAt = 0, ov = null, cover = null, keyHandler = null, faceBusy = false;

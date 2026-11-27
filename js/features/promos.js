@@ -1,7 +1,7 @@
 'use strict';
 
 /* ===== FRIENDLY PAY 12.10.0 — carrousel de publicités de l'accueil =====
-   Quatre cartes illustrées (personnages originaux dessinés pour OM Wallet, assets/ads/ad-*.svg) placées sous les actions rapides.
+   Quatre cartes illustrées (personnages originaux dessinés pour DYT, assets/ads/ad-*.svg) placées sous les actions rapides.
    Règles :
    - chaque carte porte l'étiquette « Publicité » ; elle ne promet rien que l'application ne fait pas aujourd'hui (aucun frais, délai ou taux annoncé) ;
    - aucun logo ni nom de marque tiers ; (12.12.0 : la carte « Wallet ID » est retirée, on ne reçoit plus par identifiant dans l'interface) ;
@@ -14,21 +14,21 @@ const Promos = (() => {
   const ITEMS = [
     { id: 'send', tone: 'send', nav: 'markets',
       title: { fr: 'Suivez les marchés crypto en direct', en: 'Follow the crypto markets live', ar: 'تابع أسواق العملات الرقمية مباشرة' },
-      body:  { fr: 'Cours réels, graphiques et favoris dans OM Wallet', en: 'Real prices, charts and favourites in OM Wallet', ar: 'أسعار حقيقية ورسوم بيانية ومفضلة في OM Wallet' },
+      body:  { fr: 'Cours réels, graphiques et favoris dans DYT', en: 'Real prices, charts and favourites in DYT', ar: 'أسعار حقيقية ورسوم بيانية ومفضلة في DYT' },
       cta:   { fr: 'Voir les marchés', en: 'See markets', ar: 'عرض الأسواق' } },
     { id: 'secure', tone: 'secure', nav: 'settings',
       title: { fr: 'Votre compte protégé', en: 'Your account, protected', ar: 'حسابك محمي' },
       body:  { fr: 'Code PIN et Face ID gardent l’accès à votre argent.', en: 'PIN and Face ID guard access to your money.', ar: 'رمز PIN وFace ID يحميان الوصول إلى أموالك.' },
       cta:   { fr: 'Réglages', en: 'Settings', ar: 'الإعدادات' } },
     { id: 'lang', tone: 'lang', nav: 'settings',
-      title: { fr: 'OM Wallet parle votre langue', en: 'OM Wallet speaks your language', ar: 'OM Wallet بلغتك' },
+      title: { fr: 'DYT parle votre langue', en: 'DYT speaks your language', ar: 'DYT بلغتك' },
       body:  { fr: 'Français, English et العربية, à votre choix.', en: 'Français, English and العربية, your choice.', ar: 'العربية وEnglish وFrançais، كما تفضّل.' },
       cta:   { fr: 'Langue', en: 'Language', ar: 'اللغة' } },
   ];
   const UI = {
-    fr: { tag: 'Publicité', region: 'Publicités OM Wallet', hide: 'Masquer', hideLbl: 'Masquer les publicités', go: (i, n) => 'Aller à la carte ' + i + ' sur ' + n, slide: (i, n) => i + ' sur ' + n },
-    en: { tag: 'Ad', region: 'OM Wallet ads', hide: 'Hide', hideLbl: 'Hide ads', go: (i, n) => 'Go to card ' + i + ' of ' + n, slide: (i, n) => i + ' of ' + n },
-    ar: { tag: 'إعلان', region: 'إعلانات OM Wallet', hide: 'إخفاء', hideLbl: 'إخفاء الإعلانات', go: (i, n) => 'الانتقال إلى البطاقة ' + i + ' من ' + n, slide: (i, n) => i + ' من ' + n },
+    fr: { tag: 'Publicité', region: 'Publicités DYT', hide: 'Masquer', hideLbl: 'Masquer les publicités', go: (i, n) => 'Aller à la carte ' + i + ' sur ' + n, slide: (i, n) => i + ' sur ' + n },
+    en: { tag: 'Ad', region: 'DYT ads', hide: 'Hide', hideLbl: 'Hide ads', go: (i, n) => 'Go to card ' + i + ' of ' + n, slide: (i, n) => i + ' of ' + n },
+    ar: { tag: 'إعلان', region: 'إعلانات DYT', hide: 'إخفاء', hideLbl: 'إخفاء الإعلانات', go: (i, n) => 'الانتقال إلى البطاقة ' + i + ' من ' + n, slide: (i, n) => i + ' من ' + n },
   };
   const lang = () => (typeof LANG === 'string' && UI[LANG]) ? LANG : 'en';
   const tx = (o) => o[lang()] || o.en;

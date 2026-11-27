@@ -247,7 +247,7 @@ function renderReceipt(){
   return '<div class="receipt-view rc rc-' + state + '">' +
     /* receipt reference: back · logo · share, then one glass ticket (badge, title, rows with icon tiles, highlighted amount) */
     '<div class="receipt-head w-rc-head"><button class="w-sq" data-action="done" aria-label="' + escapeHtml(t('receipt.back_home')) + '"><span class="dir-flip" style="display:inline-flex">' + icon('back', 20) + '</span></button>' +
-      '<span class="w-brand"><img class="w-l" src="assets/brand/om-logo-horizontal.png" alt="OM Wallet" width="150" height="54"><img class="w-d" src="assets/brand/om-logo-horizontal-white.png" alt="" width="150" height="54"></span>' +
+      '<span class="w-brand"><img class="w-l" src="assets/brand/om-logo-horizontal.png" alt="DYT" width="150" height="54"><img class="w-d" src="assets/brand/om-logo-horizontal-white.png" alt="" width="150" height="54"></span>' +
       '<button class="w-sq" data-action="share-receipt" aria-label="' + escapeHtml(t('action.share')) + '">' + icon('share', 20) + '</button>' +
     '</div>' +
     '<section class="rc-sheet receipt-panel w-ticket">' +

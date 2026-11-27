@@ -2,7 +2,7 @@
 
 /* ============================================================
    OPENING ART (13.0.0) — splash + the four illustrations of the introduction.
-   OM Wallet (13.2.0): the OM monogram on a translucent glass tile, sky-blue gradients on white.
+   DYT (13.2.0): the OM monogram on a translucent glass tile, sky-blue gradients on white.
    No external image. Animations live in css/ui.css (section 13); with "reduce motion" every drawing is already in its final state.
    API (unchanged): OpeningArt.splash(lang), OpeningArt.hero(i), OpeningArt.DEFS, OpeningArt.count.
    ============================================================ */
@@ -23,7 +23,7 @@ const OpeningArt = (() => {
   function splash(lang){
     lang = lang || (typeof LANG === 'string' ? LANG : 'en');
     const ar = lang === 'ar';
-    return '<div class="sp2" role="img" aria-label="' + (ar ? 'OM Wallet' : 'OM Wallet') + '">' +
+    return '<div class="sp2" role="img" aria-label="' + (ar ? 'DYT' : 'DYT') + '">' +
       '<svg class="sp2-mark" viewBox="0 0 512 512" focusable="false" aria-hidden="true">' + defs('sp2') + mark('sp2-tile', 'sp2') + '</svg>' +
       '<div class="sp2-word" aria-hidden="true">' + 'OM <span>Wallet</span>' + '</div>' +
       '<p class="sp2-tag">' + esc(SPLASH_TXT[lang] || SPLASH_TXT.en) + '</p>' +

@@ -1,7 +1,7 @@
 'use strict';
 
 /* ============================================================
-   OM WALLET 14 — crypto screens: home (dashboard), Crypto (portfolio), Markets, asset detail, networks, deposit, exchange.
+   DYT 14 — crypto screens: home (dashboard), Crypto (portfolio), Markets, asset detail, networks, deposit, exchange.
    Every figure comes from the account (Runtime.wallets / Runtime.accounts) or from OMXMarket (real Binance market data).
    What is not connected to a real service says so: deposit addresses (none configured), exchange (no real execution).
    ============================================================ */
@@ -15,11 +15,11 @@ Object.assign(TR.en, {
   'omx.sync':'Last sync {t}','omx.retry':'Try again','omx.source':'Source: Binance market data · prices in USDT ≈ USD',
   'omx.noChart':'Chart unavailable for now.','omx.chartLbl':'Price chart','omx.high':'24 h high','omx.low':'24 h low','omx.vol':'24 h volume','omx.yours':'Your balance',
   'omx.networks':'Networks','omx.contract':'Contract','omx.native':'Native coin','omx.chain':'Chain ID','omx.explorer':'Explorer','omx.fee':'Network fee','omx.avail':'Available',
-  'omx.unsupported':'Not supported by OM Wallet','omx.wdOk':'Withdrawals','omx.depNo':'Deposits: no address configured',
+  'omx.unsupported':'Not supported by DYT','omx.wdOk':'Withdrawals','omx.depNo':'Deposits: no address configured',
   'omx.favAdd':'Add to favourites','omx.favDel':'Remove from favourites','omx.noFav':'No favourite yet','omx.noFavD':'Tap the star of an asset to follow it here.',
   'omx.noResult':'No asset matches your search.',
   'omx.depT':'Deposit crypto','omx.dep1':'Choose the crypto','omx.dep2':'Choose the network','omx.depNoAddrT':'No deposit address for this network',
-  'omx.depNoAddrD':'OM Wallet has no real receiving address for {a} on {n} yet. Do NOT send funds: there is no address to receive them. Deposits will open as soon as a real address is configured.',
+  'omx.depNoAddrD':'DYT has no real receiving address for {a} on {n} yet. Do NOT send funds: there is no address to receive them. Deposits will open as soon as a real address is configured.',
   'omx.depWarn':'Send only {a} on {n}. Any other asset or network would be lost.','omx.depMemo':'This network needs a destination tag: always add it.',
   'omx.depErr':'The deposit address could not be read. Try again.',
   'omx.exT':'Exchange','omx.exNoT':'Crypto exchange is unavailable','omx.exNoD':'Exchange is not connected to a real trading service yet. It stays off so that no order is ever executed at an invented price.',
@@ -29,7 +29,7 @@ Object.assign(TR.en, {
   'omx.navCrypto':'Crypto',
   'omx.back':'Back','omx.copy':'Copy','omx.copied':'Copied',
   'omx.details':'View details','omx.myAssets':'My assets','omx.digital':'Digital wallet',
-  'omx.pr1':'Deposit your crypto safely','omx.pr1d':'Your own address and QR code','omx.pr2':'Send to an OM Wallet user','omx.pr2d':'By e-mail, in a few steps','omx.pr3':'Follow the markets live','omx.pr3d':'Real prices from Binance'
+  'omx.pr1':'Deposit your crypto safely','omx.pr1d':'Your own address and QR code','omx.pr2':'Send to an DYT user','omx.pr2d':'By e-mail, in a few steps','omx.pr3':'Follow the markets live','omx.pr3d':'Real prices from Binance'
 });
 Object.assign(TR.fr, {
   'omx.welcome':'Bienvenue, {n}','omx.total':'Total des actifs','omx.omr':'≈ {v} OMR','omx.chg':'24 h','omx.pfNote':'Valeur de vos avoirs actuels aux cours du marché (Binance)',
@@ -41,11 +41,11 @@ Object.assign(TR.fr, {
   'omx.sync':'Dernière synchro {t}','omx.retry':'Réessayer','omx.source':'Source : données de marché Binance · cours en USDT ≈ USD',
   'omx.noChart':'Graphique indisponible pour le moment.','omx.chartLbl':'Graphique du cours','omx.high':'Plus haut 24 h','omx.low':'Plus bas 24 h','omx.vol':'Volume 24 h','omx.yours':'Votre solde',
   'omx.networks':'Réseaux','omx.contract':'Contrat','omx.native':'Devise native','omx.chain':'Identifiant de chaîne','omx.explorer':'Explorateur','omx.fee':'Frais de réseau','omx.avail':'Disponible',
-  'omx.unsupported':'Non pris en charge par OM Wallet','omx.wdOk':'Retraits','omx.depNo':'Dépôts : aucune adresse configurée',
+  'omx.unsupported':'Non pris en charge par DYT','omx.wdOk':'Retraits','omx.depNo':'Dépôts : aucune adresse configurée',
   'omx.favAdd':'Ajouter aux favoris','omx.favDel':'Retirer des favoris','omx.noFav':'Aucun favori','omx.noFavD':'Touchez l’étoile d’un actif pour le suivre ici.',
   'omx.noResult':'Aucun actif ne correspond à votre recherche.',
   'omx.depT':'Déposer des cryptos','omx.dep1':'Choisissez la crypto','omx.dep2':'Choisissez le réseau','omx.depNoAddrT':'Aucune adresse de dépôt pour ce réseau',
-  'omx.depNoAddrD':'OM Wallet n’a pas encore d’adresse de réception réelle pour {a} sur {n}. N’envoyez AUCUN fonds : aucune adresse ne pourrait les recevoir. Les dépôts ouvriront dès qu’une adresse réelle sera configurée.',
+  'omx.depNoAddrD':'DYT n’a pas encore d’adresse de réception réelle pour {a} sur {n}. N’envoyez AUCUN fonds : aucune adresse ne pourrait les recevoir. Les dépôts ouvriront dès qu’une adresse réelle sera configurée.',
   'omx.depWarn':'Envoyez uniquement du {a} sur {n}. Tout autre actif ou réseau serait perdu.','omx.depMemo':'Ce réseau exige un tag de destination : ajoutez-le toujours.',
   'omx.depErr':'L’adresse de dépôt n’a pas pu être lue. Réessayez.',
   'omx.exT':'Échange','omx.exNoT':'L’échange crypto est indisponible','omx.exNoD':'L’échange n’est pas encore relié à un vrai service de marché. Il reste désactivé pour qu’aucun ordre ne soit jamais exécuté à un prix inventé.',
@@ -55,7 +55,7 @@ Object.assign(TR.fr, {
   'omx.navCrypto':'Crypto',
   'omx.back':'Retour','omx.copy':'Copier','omx.copied':'Copié',
   'omx.details':'Voir les détails','omx.myAssets':'Mes actifs','omx.digital':'Portefeuille numérique',
-  'omx.pr1':'Déposez vos cryptos en sécurité','omx.pr1d':'Votre adresse et votre QR code personnels','omx.pr2':'Envoyez à un utilisateur OM Wallet','omx.pr2d':'Par e-mail, en quelques étapes','omx.pr3':'Suivez les marchés en direct','omx.pr3d':'Cours réels Binance'
+  'omx.pr1':'Déposez vos cryptos en sécurité','omx.pr1d':'Votre adresse et votre QR code personnels','omx.pr2':'Envoyez à un utilisateur DYT','omx.pr2d':'Par e-mail, en quelques étapes','omx.pr3':'Suivez les marchés en direct','omx.pr3d':'Cours réels Binance'
 });
 Object.assign(TR.ar, {
   'omx.welcome':'مرحباً، {n}','omx.total':'إجمالي الأصول','omx.omr':'≈ {v} ر.ع.','omx.chg':'24 ساعة','omx.pfNote':'قيمة أصولك الحالية بأسعار السوق (Binance)',
@@ -67,11 +67,11 @@ Object.assign(TR.ar, {
   'omx.sync':'آخر مزامنة {t}','omx.retry':'إعادة المحاولة','omx.source':'المصدر: بيانات سوق Binance · الأسعار بعملة USDT ≈ دولار',
   'omx.noChart':'الرسم البياني غير متاح حالياً.','omx.chartLbl':'رسم بياني للسعر','omx.high':'أعلى 24 ساعة','omx.low':'أدنى 24 ساعة','omx.vol':'حجم 24 ساعة','omx.yours':'رصيدك',
   'omx.networks':'الشبكات','omx.contract':'العقد','omx.native':'العملة الأصلية','omx.chain':'معرّف السلسلة','omx.explorer':'المستكشف','omx.fee':'رسوم الشبكة','omx.avail':'المتاح',
-  'omx.unsupported':'غير مدعوم في OM Wallet','omx.wdOk':'السحب','omx.depNo':'الإيداع: لا يوجد عنوان مُعدّ',
+  'omx.unsupported':'غير مدعوم في DYT','omx.wdOk':'السحب','omx.depNo':'الإيداع: لا يوجد عنوان مُعدّ',
   'omx.favAdd':'إضافة إلى المفضلة','omx.favDel':'إزالة من المفضلة','omx.noFav':'لا توجد مفضلة بعد','omx.noFavD':'المس نجمة أي أصل لمتابعته هنا.',
   'omx.noResult':'لا يوجد أصل مطابق لبحثك.',
   'omx.depT':'إيداع عملات رقمية','omx.dep1':'اختر العملة','omx.dep2':'اختر الشبكة','omx.depNoAddrT':'لا يوجد عنوان إيداع لهذه الشبكة',
-  'omx.depNoAddrD':'لا يملك OM Wallet بعد عنوان استلام حقيقياً لـ {a} على شبكة {n}. لا ترسل أي أموال: لا يوجد عنوان يستقبلها. سيُفتح الإيداع فور إعداد عنوان حقيقي.',
+  'omx.depNoAddrD':'لا يملك DYT بعد عنوان استلام حقيقياً لـ {a} على شبكة {n}. لا ترسل أي أموال: لا يوجد عنوان يستقبلها. سيُفتح الإيداع فور إعداد عنوان حقيقي.',
   'omx.depWarn':'أرسل {a} فقط على شبكة {n}. أي أصل أو شبكة أخرى ستضيع.','omx.depMemo':'تتطلب هذه الشبكة وسم الوجهة: أضفه دائماً.',
   'omx.depErr':'تعذّرت قراءة عنوان الإيداع. حاول مرة أخرى.',
   'omx.exT':'التبادل','omx.exNoT':'تبادل العملات الرقمية غير متاح','omx.exNoD':'التبادل غير مرتبط بعد بخدمة تداول حقيقية. يبقى معطلاً حتى لا يُنفَّذ أي أمر بسعر غير حقيقي.',
@@ -81,7 +81,7 @@ Object.assign(TR.ar, {
   'omx.navCrypto':'الكريبتو',
   'omx.back':'رجوع','omx.copy':'نسخ','omx.copied':'تم النسخ',
   'omx.details':'عرض التفاصيل','omx.myAssets':'أصولي','omx.digital':'المحفظة الرقمية',
-  'omx.pr1':'أودع عملاتك الرقمية بأمان','omx.pr1d':'عنوانك ورمز QR الخاص بك','omx.pr2':'أرسل إلى مستخدم OM Wallet','omx.pr2d':'عبر البريد الإلكتروني بخطوات قليلة','omx.pr3':'تابع الأسواق مباشرة','omx.pr3d':'أسعار حقيقية من Binance'
+  'omx.pr1':'أودع عملاتك الرقمية بأمان','omx.pr1d':'عنوانك ورمز QR الخاص بك','omx.pr2':'أرسل إلى مستخدم DYT','omx.pr2d':'عبر البريد الإلكتروني بخطوات قليلة','omx.pr3':'تابع الأسواق مباشرة','omx.pr3d':'أسعار حقيقية من Binance'
 });
 
 const OMX = (() => {
@@ -156,7 +156,7 @@ const OMX = (() => {
     return '<div class="omx-home w-home lt-home">' +
       '<section class="lt-hero">' +
         '<header class="omx-head w-hdr lt-top"><button class="hub-circ lt-hb" data-nav="account" aria-label="' + escapeHtml(t('px.openProfile')) + '">' + icon('menu', 22) + '</button>' +
-          '<span class="lt-mark" role="img" aria-label="OM Wallet"></span>' +
+          '<span class="lt-mark" role="img" aria-label="DYT"></span>' +
           '<span class="w-hdr-end"><button class="hub-circ lt-hb" data-nav="history" aria-label="' + escapeHtml(t('tr.activity')) + '">' + icon('history', 20) + '</button>' +
           '<button class="hub-circ lt-hb" data-action="notifications" aria-label="' + escapeHtml(t('px.notifs')) + '">' + icon('bell', 20) + (unread ? '<span class="lt-badge ltr">' + (unread > 99 ? '99+' : unread) + '</span>' : '') + '</button></span></header>' +
         '<div class="omx-tl lt-bal"><span>' + escapeHtml(t('omx.total')) + '</span><button class="ds-eye" data-action="toggle-balance" aria-pressed="' + (hide ? 'true' : 'false') + '" aria-label="' + escapeHtml(t(hide ? 'px.showBal' : 'px.hideBal')) + '">' + icon(hide ? 'eyeOff' : 'eye', 18) + '</button></div>' +
@@ -174,7 +174,7 @@ const OMX = (() => {
       '</div>';
   }
   /* the logo lockup heads the page, as in the owner's references (light and dark files) */
-  function omxLogoLine(){ return '<span class="omx-brand w-brand" role="img" aria-label="OM Wallet"><img class="w-l" src="assets/brand/om-logo-horizontal.png" alt="" width="150" height="54" decoding="async"><img class="w-d" src="assets/brand/om-logo-horizontal-white.png" alt="" width="150" height="54" decoding="async"></span>'; }
+  function omxLogoLine(){ return '<span class="omx-brand w-brand" role="img" aria-label="DYT"><img class="w-l" src="assets/brand/om-logo-horizontal.png" alt="" width="150" height="54" decoding="async"><img class="w-d" src="assets/brand/om-logo-horizontal-white.png" alt="" width="150" height="54" decoding="async"></span>'; }
   async function paintPortfolio(){
     const host = document.getElementById('omx-pf'); if (!host || Runtime.hideBalance) return;
     const hs = holdings(); if (!hs.length){ host.innerHTML = ''; return; }
@@ -199,7 +199,7 @@ const OMX = (() => {
     const diff = now - before;
     return '<div class="w-assets lt-wallet">' +
       '<div class="w-title lt-title"><button class="w-sq" data-nav="account" aria-label="' + escapeHtml(t('px.openProfile')) + '">' + icon('menu', 22) + '</button>' +
-        '<h1>' + escapeHtml(t('lt.wallet')) + '</h1><span class="lt-mark sm" role="img" aria-label="OM Wallet"></span></div>' +
+        '<h1>' + escapeHtml(t('lt.wallet')) + '</h1><span class="lt-mark sm" role="img" aria-label="DYT"></span></div>' +
       '<section class="lt-wbal"><span class="lt-lbl">' + escapeHtml(t('omx.total')) + '</span>' +
         '<div class="lt-wv"><b class="ltr" data-omx-total>' + (hide ? '••••••' : balHtml(omxUsd(tt.usd, { dp: 2 }))) + '</b>' +
           (!hide && tt.pct != null && tt.hasCrypto ? '<span class="omx-chip ' + (tt.pct >= 0 ? 'up' : 'down') + '">' + escapeHtml(omxPct(tt.pct)) + '</span>' : '') + '</div>' +

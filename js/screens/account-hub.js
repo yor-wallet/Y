@@ -1,36 +1,36 @@
 'use strict';
 
 /* ============================================================
-   ACCOUNT HUB (13.2.0) — « Profil et paramètres » : the page behind the bottom bar's last tab, laid out like the OM Wallet reference.
+   ACCOUNT HUB (13.2.0) — « Profil et paramètres » : the page behind the bottom bar's last tab, laid out like the DYT reference.
    Profile card, wallet card, account level, then one list that opens the existing pages (security → Settings, notifications, language → Settings,
    help, about) and the red « Log out » button. Everything shown is read from the signed-in account (name, number, verified status, balance);
    nothing is invented: "Verified account" appears only when the server's KYC status says so.
    ============================================================ */
 Object.assign(TR.en, {
-  'nav.account':'Account','nav.tx':'Activity','hm.transfer':'Transfer','hm.welcome':'Welcome, {n}','hm.dear':'dear customer','hm.sub':'to your OM Wallet digital wallet',
-  'ac.title':'Profile & settings','ac.sub':'Manage your account and app preferences','ac.user':'OM Wallet user','ac.verified':'Verified account','ac.unverified':'Account not verified',
+  'nav.account':'Account','nav.tx':'Activity','hm.transfer':'Transfer','hm.welcome':'Welcome, {n}','hm.dear':'dear customer','hm.sub':'to your DYT digital wallet',
+  'ac.title':'Profile & settings','ac.sub':'Manage your account and app preferences','ac.user':'DYT user','ac.verified':'Verified account','ac.unverified':'Account not verified',
   'ac.wallet':'Wallet','ac.avail':'Available balance','ac.level':'Account level','ac.full':'Fully verified','ac.notyet':'Not verified yet',
   'ac.sec':'Security & protection','ac.secD':'Password, two-step verification, app lock','ac.notif':'Notifications','ac.notifD':'Manage alerts and messages','ac.lang':'Language','ac.help':'Help & support','ac.helpD':'Contact the support team',
-  'ac.about':'About OM Wallet','ac.aboutD':'App version, terms and policies','ac.logout':'Log out','ac.admin':'Admin control','ac.adminD':'Transfer settings and payouts','ac.edit':'Edit profile'
+  'ac.about':'About DYT','ac.aboutD':'App version, terms and policies','ac.logout':'Log out','ac.admin':'Admin control','ac.adminD':'Transfer settings and payouts','ac.edit':'Edit profile'
 });
 Object.assign(TR.fr, {
-  'nav.account':'Compte','nav.tx':'Opérations','hm.transfer':'Transférer','hm.welcome':'Bienvenue, {n}','hm.dear':'cher client','hm.sub':'dans votre portefeuille numérique OM Wallet',
-  'ac.title':'Profil et paramètres','ac.sub':'Gérez votre compte et les préférences de l’application','ac.user':'Utilisateur OM Wallet','ac.verified':'Compte vérifié','ac.unverified':'Compte non vérifié',
+  'nav.account':'Compte','nav.tx':'Opérations','hm.transfer':'Transférer','hm.welcome':'Bienvenue, {n}','hm.dear':'cher client','hm.sub':'dans votre portefeuille numérique DYT',
+  'ac.title':'Profil et paramètres','ac.sub':'Gérez votre compte et les préférences de l’application','ac.user':'Utilisateur DYT','ac.verified':'Compte vérifié','ac.unverified':'Compte non vérifié',
   'ac.wallet':'Portefeuille','ac.avail':'Solde disponible','ac.level':'Niveau du compte','ac.full':'Entièrement vérifié','ac.notyet':'Pas encore vérifié',
   'ac.sec':'Sécurité et protection','ac.secD':'Mot de passe, vérification en deux étapes, verrou de l’application','ac.notif':'Notifications','ac.notifD':'Gérer les alertes et les messages','ac.lang':'Langue','ac.help':'Aide et assistance','ac.helpD':'Contacter l’équipe d’assistance',
-  'ac.about':'À propos d’OM Wallet','ac.aboutD':'Version, conditions et politiques','ac.logout':'Se déconnecter','ac.admin':'Contrôle administrateur','ac.adminD':'Réglages des transferts et versements','ac.edit':'Modifier le profil'
+  'ac.about':'À propos d’DYT','ac.aboutD':'Version, conditions et politiques','ac.logout':'Se déconnecter','ac.admin':'Contrôle administrateur','ac.adminD':'Réglages des transferts et versements','ac.edit':'Modifier le profil'
 });
 Object.assign(TR.ar, {
-  'nav.account':'الحساب','nav.tx':'العمليات','hm.transfer':'تحويل','hm.welcome':'مرحباً، {n}','hm.dear':'عزيزي العميل','hm.sub':'في محفظة OM Wallet الرقمية',
-  'ac.title':'الملف الشخصي والإعدادات','ac.sub':'إدارة حسابك وتفضيلات التطبيق','ac.user':'مستخدم OM Wallet','ac.verified':'حساب موثّق','ac.unverified':'حساب غير موثّق',
+  'nav.account':'الحساب','nav.tx':'العمليات','hm.transfer':'تحويل','hm.welcome':'مرحباً، {n}','hm.dear':'عزيزي العميل','hm.sub':'في محفظة DYT الرقمية',
+  'ac.title':'الملف الشخصي والإعدادات','ac.sub':'إدارة حسابك وتفضيلات التطبيق','ac.user':'مستخدم DYT','ac.verified':'حساب موثّق','ac.unverified':'حساب غير موثّق',
   'ac.wallet':'المحفظة','ac.avail':'الرصيد المتاح','ac.level':'مستوى الحساب','ac.full':'موثّق بالكامل','ac.notyet':'غير موثّق بعد',
   'ac.sec':'الأمان والحماية','ac.secD':'كلمة المرور، التحقق بخطوتين، قفل التطبيق','ac.notif':'الإشعارات','ac.notifD':'إدارة التنبيهات والرسائل','ac.lang':'اللغة','ac.help':'مساعدة ودعم','ac.helpD':'تواصل مع فريق الدعم',
-  'ac.about':'عن OM Wallet','ac.aboutD':'إصدار التطبيق، الشروط والسياسات','ac.logout':'تسجيل الخروج','ac.admin':'لوحة التحكم الإدارية','ac.adminD':'إعدادات التحويل والدفعات','ac.edit':'تعديل الملف'
+  'ac.about':'عن DYT','ac.aboutD':'إصدار التطبيق، الشروط والسياسات','ac.logout':'تسجيل الخروج','ac.admin':'لوحة التحكم الإدارية','ac.adminD':'إعدادات التحويل والدفعات','ac.edit':'تعديل الملف'
 });
 
-/* 14.5.3 — the app's own logo (OM Wallet, horizontal lock-up), never the old « OM PAY » mark: light and dark variants
+/* 14.5.3 — the app's own logo (DYT, horizontal lock-up), never the old « OM PAY » mark: light and dark variants
    (the stylesheet shows the one that matches the theme; the glass look always uses the white one) */
-function omLogoHtml(w){ const W = Math.round(w * 1.7), h = Math.round(W * 136 / 480); return '<span class="px-logo om-h" role="img" aria-label="OM Wallet" style="width:' + W + 'px"><img class="lg-l" src="assets/brand/om-logo-horizontal.png" alt="" width="' + W + '" height="' + h + '" decoding="async"><img class="lg-d" src="assets/brand/om-logo-horizontal-white.png" alt="" width="' + W + '" height="' + h + '" decoding="async"></span>'; }
+function omLogoHtml(w){ const W = Math.round(w * 1.7), h = Math.round(W * 136 / 480); return '<span class="px-logo om-h" role="img" aria-label="DYT" style="width:' + W + 'px"><img class="lg-l" src="assets/brand/om-logo-horizontal.png" alt="" width="' + W + '" height="' + h + '" decoding="async"><img class="lg-d" src="assets/brand/om-logo-horizontal-white.png" alt="" width="' + W + '" height="' + h + '" decoding="async"></span>'; }
 function renderAccount(){
   const p = Runtime.profile || {}, main = (typeof mainAccount === 'function') ? mainAccount() : {};
   const hide = !!Runtime.hideBalance;

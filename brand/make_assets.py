@@ -18,7 +18,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 ap = argparse.ArgumentParser(); ap.add_argument('--out', default=ROOT); OUT = os.path.abspath(ap.parse_args().out)
 os.chdir(ROOT)
 LANCZOS = Image.LANCZOS
-master = Image.open('brand/originals/logo-om-noir-jaune.png').convert('RGB')
+master = Image.open('brand/originals/logo-dyt-icon-master.png').convert('RGB')
 
 
 # ---------- 1. the icon with transparent corners (the file has pure-black corners outside the yellow rim) ----------
@@ -37,7 +37,7 @@ icon, BODY = cut_corners(master)
 # ---------- 2. the « OM » wallet mark alone (only for the Android themed icon: a single-colour silhouette) ----------
 def extract_mark(m):
     a = np.asarray(m).astype(int)
-    yel = (a[..., 0] > 150) & (a[..., 1] > 90) & (a[..., 2] < 140)
+    yel = ((a[..., 0] > 150) & (a[..., 1] > 90) & (a[..., 2] < 140)) | (a.min(axis=2) > 200)
     small = np.asarray(Image.fromarray((yel * 255).astype('uint8'), 'L').resize((m.width // 2, m.height // 2), Image.NEAREST)) > 0
     H, W = small.shape; lab = np.zeros((H, W), int); keep = np.zeros((H, W), bool); n = 0
     for sy in range(H):

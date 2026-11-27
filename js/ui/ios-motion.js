@@ -247,7 +247,7 @@ const IOS = (() => {
     }
     try {
       const ttl = screenTitle(el);
-      D.title = ttl && id !== 'home' ? ttl + ' · ' + ((typeof CONFIG !== 'undefined' && CONFIG.APP && CONFIG.APP.name) || 'OM Wallet') : ((typeof CONFIG !== 'undefined' && CONFIG.APP && CONFIG.APP.name) || 'OM Wallet');
+      D.title = ttl && id !== 'home' ? ttl + ' · ' + ((typeof CONFIG !== 'undefined' && CONFIG.APP && CONFIG.APP.name) || 'DYT') : ((typeof CONFIG !== 'undefined' && CONFIG.APP && CONFIG.APP.name) || 'DYT');
     } catch(e){ /* rien */ }
   }
 
@@ -378,7 +378,7 @@ const IOS = (() => {
     scan();
   }
 
-  /* ---------- pull to refresh: the OM Wallet arch fills as you pull, the coin flips while it loads (14.10.0; markets and wallet added) ---------- */
+  /* ---------- pull to refresh: the DYT arch fills as you pull, the coin flips while it loads (14.10.0; markets and wallet added) ---------- */
   function pullToRefresh(){
     const OK = { home:1, history:1, notifications:1, wallet:1, markets:1, asset:1 };
     const LIVE = { wallet:1, markets:1, asset:1, home:1 };          /* these also reload the live prices */

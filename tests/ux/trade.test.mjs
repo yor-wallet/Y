@@ -1,4 +1,4 @@
-/* OM Wallet 14.5.0 — Spot / Swap / main menu / « Verre » glass look
+/* DYT 14.5.0 — Spot / Swap / main menu / « Verre » glass look
    - main menu: Home · Markets · Spot · Swap · Assets; Activity and Account stay one tap away (home header)
    - Spot: live market (stand-in of the Binance stream): status « En direct », price, order book, market trades that arrive
    - Spot market order: % of the available balance, server quote, review, PIN, « En cours » (nothing credited), swap_execute called once

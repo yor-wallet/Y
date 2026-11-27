@@ -2296,7 +2296,7 @@ var qrcode = function() {
     return qrcode;
 }));
 
-/* OM Wallet: real QR codes (ISO/IEC 18004) drawn as inline SVG from a REAL value only (a deposit address returned by the server). */
+/* DYT: real QR codes (ISO/IEC 18004) drawn as inline SVG from a REAL value only (a deposit address returned by the server). */
 var OMXQR = {
   svg: function(text){
     var q = qrcode(0, 'M'); q.addData(String(text)); q.make();

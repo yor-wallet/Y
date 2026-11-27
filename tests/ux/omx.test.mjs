@@ -1,4 +1,4 @@
-/* OM Wallet 14 — crypto and withdrawals, against fixed local market data (Binance format) and the fake Supabase client:
+/* DYT 14 — crypto and withdrawals, against fixed local market data (Binance format) and the fake Supabase client:
    - home: balance hidden first; the total is the real holdings x market price + the OMR account (pegged), nothing invented;
    - market down: no price is invented, the state says so and offers Retry;
    - markets: the 13 assets, live state + last sync, search, favourites saved in the preferences;
@@ -175,7 +175,7 @@ async function pin(page){ await page.waitForSelector('.ps #ps-dots', { timeout: 
     await page.evaluate(() => R.go('wallet')); await wait(700);
     await page.click('#wallet [data-nav="send-internal"]'); await page.waitForSelector('#send-internal.active #si-to');
     await page.fill('#si-to', 'FRD-NOBODY'); await page.dispatchEvent('#si-to', 'blur'); await wait(700);
-    assert.match(await page.locator('#si-e-to').innerText(), /Aucun compte OM Wallet/);
+    assert.match(await page.locator('#si-e-to').innerText(), /Aucun compte DYT/);
     await page.fill('#si-to', 'FRD-ZZ1122'); await page.dispatchEvent('#si-to', 'blur'); await wait(700);
     assert.match(await page.locator('#si-who').innerText(), /Salim Al Harthy/);
     await page.click('[data-si-src="USDT/tron"]'); await wait(500);
@@ -190,7 +190,7 @@ async function pin(page){ await page.waitForSelector('.ps #ps-dots', { timeout: 
     const c = (await calls(page, 'transfer_crypto'))[0].args;
     assert.equal(c.p_to_yor_id, 'YOR-ZZ1122'); assert.equal(c.p_asset, 'USDT'); assert.equal(c.p_network, 'tron'); assert.equal(c.p_amount, 10); assert.equal(c.p_pin_grant, 'grant-1'); assert.ok(c.p_idempotency_key.length >= 16);
     const txt = await page.locator('#send-internal-done').innerText();
-    assert.match(txt, /En cours/); assert.match(txt, /OMT48215555/); assert.doesNotMatch(txt, /Transfert confirmé|Crédité|confirmation|administrateur|OM Wallet confirme/i); assert.equal(await page.locator('#send-internal-done .omx-prog i').count(), 3);
+    assert.match(txt, /En cours/); assert.match(txt, /OMT48215555/); assert.doesNotMatch(txt, /Transfert confirmé|Crédité|confirmation|administrateur|DYT confirme/i); assert.equal(await page.locator('#send-internal-done .omx-prog i').count(), 3);
   });
   await ok('quand l’administrateur confirme : l’écran et l’historique passent à « Transfert confirmé »', async () => {
     await page.evaluate(async () => { window.__txs()[0].status = 'CONFIRMED'; await AuthEngine.hydrateRuntime(); R.go('send-internal-done', { force: true }); }); await wait(600);

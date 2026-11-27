@@ -82,7 +82,7 @@ function renderServices(){
   /* groupe Blockchain (YOR-USDT, réseau de test) : administrateurs uniquement */
   if (FEATURES.crypto && typeof canUseChain === 'function' && canUseChain()) G.splice(1, 0, ['gChain', [['chain','wallet','chainTile']]]);
   if (!FEATURES.crypto) G.splice(1, 1);                  /* the Crypto group is hidden with the rest of the crypto section */
-  /* 14.0.0 — OM Wallet crypto services (real data) first; labels from the omx.* keys */
+  /* 14.0.0 — DYT crypto services (real data) first; labels from the omx.* keys */
   G.splice(1, 0, ['omx.crypto', [['wallet','crypto','omx.crypto'],['markets','chart','omx.markets'],['deposit','receive','omx.deposit'],['exchange','swap','omx.exchange']]]);
   const lbl = k => /^omx\./.test(k) ? escapeHtml(t(k)) : k === 'withdraw' ? escapeHtml(t('omx.withdraw')) : yt(k);
   return '<div class="yb"><div class="yb-top"><h1 class="yb-title" style="text-align:start">' + yt('svcTitle') + '</h1></div>' +

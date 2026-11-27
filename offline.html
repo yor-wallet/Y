@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0B0A07">
 <meta name="robots" content="noindex">
-<title>You're offline · OM Wallet</title>
+<title>You're offline · DYT</title>
 <link rel="icon" href="favicon.ico" sizes="48x48">
 <link rel="icon" type="image/svg+xml" href="assets/icons/icon.svg">
 <style>*{box-sizing:border-box}html,body{margin:0;height:100%}
@@ -26,19 +26,19 @@ a.s{display:block;margin-top:12px;min-height:44px;line-height:44px;color:#FFC800
 <main role="main">
 <svg class="mk" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="96" height="96" aria-hidden="true"><defs><linearGradient id="lma" gradientUnits="userSpaceOnUse" x1="0" y1="59" x2="0" y2="452"><stop offset="0" stop-color="#FFE98A"/><stop offset=".5" stop-color="#FFC800"/><stop offset="1" stop-color="#E39B00"/></linearGradient><radialGradient id="lmc" cx=".34" cy=".28" r=".85"><stop offset="0" stop-color="#FFF3B8"/><stop offset=".38" stop-color="#FFD23A"/><stop offset="1" stop-color="#E39B00"/></radialGradient></defs><path d="M106 452V232A150 150 0 0 1 406 232V452" fill="none" stroke="url(#lma)" stroke-width="46" stroke-linejoin="round"/><circle cx="256" cy="350" r="84" fill="url(#lmc)"/><circle cx="256" cy="350" r="62.2" fill="none" stroke="#14110A" stroke-opacity=".26" stroke-width="5.0"/><circle cx="257.0" cy="351.7" r="55.9" fill="none" stroke="#fff" stroke-opacity=".32" stroke-width="1.7"/><path d="M187.3 325.0A73.1 73.1 0 0 1 233.4 280.5" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="7.6" stroke-linecap="round"/></svg>
 <h1 id="t">You're offline</h1>
-<p id="p">OM Wallet needs an internet connection to show your money. Check your connection, then try again.</p>
+<p id="p">DYT needs an internet connection to show your money. Check your connection, then try again.</p>
 <button type="button" id="b">Try again</button>
 </main>
 <script>
 var T={
-en:{t:'You\'re offline',p:'OM Wallet needs an internet connection to show your money. Check your connection, then try again.',b:'Try again',s:''},
-fr:{t:'Vous êtes hors ligne',p:'OM Wallet a besoin d\'internet pour afficher votre argent. Vérifiez votre connexion, puis réessayez.',b:'Réessayer',s:''},
-ar:{t:'أنت غير متصل بالإنترنت',p:'يحتاج OM Wallet إلى الإنترنت لعرض أموالك. تحقّق من اتصالك ثم أعد المحاولة.',b:'إعادة المحاولة',s:''}};
+en:{t:'You\'re offline',p:'DYT needs an internet connection to show your money. Check your connection, then try again.',b:'Try again',s:''},
+fr:{t:'Vous êtes hors ligne',p:'DYT a besoin d\'internet pour afficher votre argent. Vérifiez votre connexion, puis réessayez.',b:'Réessayer',s:''},
+ar:{t:'أنت غير متصل بالإنترنت',p:'يحتاج DYT إلى الإنترنت لعرض أموالك. تحقّق من اتصالك ثم أعد المحاولة.',b:'إعادة المحاولة',s:''}};
 (function(){var l='en';try{var L=(navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||'en']);
  for(var i=0;i<L.length;i++){var c=String(L[i]).toLowerCase().slice(0,2);if(T[c]){l=c;break}}
  var st=localStorage.getItem('yor_device_lang');if(T[st])l=st;}catch(e){}
  var d=document.documentElement;d.lang=l;d.dir=l==='ar'?'rtl':'ltr';var x=T[l];
- document.title=x.t+' · '+(l==='ar'?'OM Wallet':'OM Wallet');
+ document.title=x.t+' · '+(l==='ar'?'DYT':'DYT');
  document.getElementById('t').textContent=x.t;document.getElementById('p').textContent=x.p;
  var b=document.getElementById('b');b.textContent=x.b;var s=document.getElementById('s');if(s)s.textContent=x.s;
 })();

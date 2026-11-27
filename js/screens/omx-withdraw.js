@@ -1,7 +1,7 @@
 'use strict';
 
 /* ============================================================
-   OM WALLET 14 — WITHDRAWALS (Retrait — Withdraw)
+   DYT 14 — WITHDRAWALS (Retrait — Withdraw)
    - to an Omani bank account in OMR: withdraw_overview / withdraw_request / withdraw_cancel (existing rules, unchanged: minimum, KYC, 3 open requests, bank list, IBAN check)
    - crypto to an external address: crypto_withdraw_overview / crypto_withdraw_request (server-checked PIN grant, address format, network) / crypto_withdraw_cancel
    Crypto withdrawals are paid MANUALLY by an administrator who records the real blockchain hash; nothing is shown as confirmed before that.
@@ -19,7 +19,7 @@ Object.assign(TR.en, {
   'wd.err.iban':'This IBAN is not valid.','wd.err.addr':'This is not a valid {n} address.','wd.err.memo':'The tag contains numbers only (up to 10 digits).','wd.err.net':'Choose a network.',
   'wd.e.idempotency_key_required':'The request could not be prepared. Try again.','wd.e.withdraw_disabled':'Withdrawals are paused for now.','wd.e.kyc_required':'Verify your identity before withdrawing.','wd.e.amount_out_of_range':'The amount is below the minimum.',
   'wd.e.invalid_holder':'The holder name is not valid.','wd.e.invalid_bank':'This bank is not available.','wd.e.invalid_account':'The account number is not valid.','wd.e.invalid_iban':'This IBAN is not valid.','wd.e.too_many_open':'You already have 3 withdrawals in progress.',
-  'wd.e.insufficient_balance':'Insufficient available balance.','wd.e.invalid_address':'This address is not valid for the network.','wd.e.internal_address_not_allowed':'This address belongs to OM Wallet. Choose an external address.','wd.e.invalid_memo':'The tag is not valid.',
+  'wd.e.insufficient_balance':'Insufficient available balance.','wd.e.invalid_address':'This address is not valid for the network.','wd.e.internal_address_not_allowed':'This address belongs to DYT. Choose an external address.','wd.e.invalid_memo':'The tag is not valid.',
   'wd.e.invalid_amount':'The amount is not valid.','wd.e.unsupported_asset_network':'This crypto is not available on this network.','wd.e.sender_inactive':'Your account cannot make withdrawals.','wd.e.pin_required':'Confirm with your code.','wd.e.invalid_state':'This request can no longer be changed.',
   'wd.e.unknown':'The withdrawal could not be sent.','wd.e.uncertain':'No answer from the server. Check your withdrawals before trying again: the same request will never be counted twice.',
   'wd.st.prep':'Submitted','wd.st.verif':'','wd.st.proc':'In progress','wd.st.wait':'In progress','wd.st.done':'Completed','wd.st.fail':'Failed','wd.st.cancel':'Cancelled',
@@ -42,7 +42,7 @@ Object.assign(TR.fr, {
   'wd.err.iban':'Cet IBAN n’est pas valide.','wd.err.addr':'Ce n’est pas une adresse {n} valide.','wd.err.memo':'Le tag ne contient que des chiffres (10 au maximum).','wd.err.net':'Choisissez un réseau.',
   'wd.e.idempotency_key_required':'La demande n’a pas pu être préparée. Réessayez.','wd.e.withdraw_disabled':'Les retraits sont suspendus pour le moment.','wd.e.kyc_required':'Vérifiez votre identité avant de retirer.','wd.e.amount_out_of_range':'Le montant est inférieur au minimum.',
   'wd.e.invalid_holder':'Le nom du titulaire n’est pas valide.','wd.e.invalid_bank':'Cette banque n’est pas disponible.','wd.e.invalid_account':'Le numéro de compte n’est pas valide.','wd.e.invalid_iban':'Cet IBAN n’est pas valide.','wd.e.too_many_open':'Vous avez déjà 3 retraits en cours.',
-  'wd.e.insufficient_balance':'Solde disponible insuffisant.','wd.e.invalid_address':'Cette adresse n’est pas valide pour le réseau.','wd.e.internal_address_not_allowed':'Cette adresse appartient à OM Wallet. Choisissez une adresse externe.','wd.e.invalid_memo':'Le tag n’est pas valide.',
+  'wd.e.insufficient_balance':'Solde disponible insuffisant.','wd.e.invalid_address':'Cette adresse n’est pas valide pour le réseau.','wd.e.internal_address_not_allowed':'Cette adresse appartient à DYT. Choisissez une adresse externe.','wd.e.invalid_memo':'Le tag n’est pas valide.',
   'wd.e.invalid_amount':'Le montant n’est pas valide.','wd.e.unsupported_asset_network':'Cette crypto n’est pas disponible sur ce réseau.','wd.e.sender_inactive':'Votre compte ne peut pas effectuer de retrait.','wd.e.pin_required':'Confirmez avec votre code.','wd.e.invalid_state':'Cette demande ne peut plus être modifiée.',
   'wd.e.unknown':'Le retrait n’a pas pu être envoyé.','wd.e.uncertain':'Aucune réponse du serveur. Vérifiez vos retraits avant de réessayer : la même demande ne sera jamais comptée deux fois.',
   'wd.st.prep':'Soumis','wd.st.verif':'','wd.st.proc':'En cours','wd.st.wait':'En cours','wd.st.done':'Terminé','wd.st.fail':'Échec','wd.st.cancel':'Annulé',
@@ -65,7 +65,7 @@ Object.assign(TR.ar, {
   'wd.err.iban':'رقم الآيبان غير صحيح.','wd.err.addr':'هذا ليس عنوان {n} صحيحاً.','wd.err.memo':'الوسم أرقام فقط (10 أرقام كحد أقصى).','wd.err.net':'اختر شبكة.',
   'wd.e.idempotency_key_required':'تعذّر تجهيز الطلب. حاول مرة أخرى.','wd.e.withdraw_disabled':'السحب متوقف حالياً.','wd.e.kyc_required':'وثّق هويتك قبل السحب.','wd.e.amount_out_of_range':'المبلغ أقل من الحد الأدنى.',
   'wd.e.invalid_holder':'اسم صاحب الحساب غير صحيح.','wd.e.invalid_bank':'هذا البنك غير متاح.','wd.e.invalid_account':'رقم الحساب غير صحيح.','wd.e.invalid_iban':'رقم الآيبان غير صحيح.','wd.e.too_many_open':'لديك بالفعل 3 عمليات سحب قيد التنفيذ.',
-  'wd.e.insufficient_balance':'الرصيد المتاح غير كافٍ.','wd.e.invalid_address':'هذا العنوان غير صالح لهذه الشبكة.','wd.e.internal_address_not_allowed':'هذا العنوان تابع لـ OM Wallet. اختر عنواناً خارجياً.','wd.e.invalid_memo':'الوسم غير صحيح.',
+  'wd.e.insufficient_balance':'الرصيد المتاح غير كافٍ.','wd.e.invalid_address':'هذا العنوان غير صالح لهذه الشبكة.','wd.e.internal_address_not_allowed':'هذا العنوان تابع لـ DYT. اختر عنواناً خارجياً.','wd.e.invalid_memo':'الوسم غير صحيح.',
   'wd.e.invalid_amount':'المبلغ غير صحيح.','wd.e.unsupported_asset_network':'هذه العملة غير متاحة على هذه الشبكة.','wd.e.sender_inactive':'لا يمكن لحسابك إجراء عمليات سحب.','wd.e.pin_required':'أكّد برمزك.','wd.e.invalid_state':'لم يعد بالإمكان تعديل هذا الطلب.',
   'wd.e.unknown':'تعذّر إرسال طلب السحب.','wd.e.uncertain':'لا يوجد رد من الخادم. تحقق من عمليات السحب قبل إعادة المحاولة: لن يُحتسب الطلب نفسه مرتين أبداً.',
   'wd.st.prep':'تم الإرسال','wd.st.verif':'','wd.st.proc':'قيد التنفيذ','wd.st.wait':'قيد التنفيذ','wd.st.done':'مكتمل','wd.st.fail':'فشل','wd.st.cancel':'أُلغي',
@@ -350,7 +350,7 @@ const OMXWithdraw = (() => {
     const fee = Number(it.fee || 0);
     window.__YOR_LAST_RECEIPT__ = { id: it.id, transactionId: it.transaction_id || it.id, reference: it.reference, status: st, fee: bank ? 0 : fee };
     window.__YOR_LAST_RECEIPT_VIEW__ = {
-      state: stateOf(st), title: t(bank ? 'wd.title.bank' : 'wd.title.crypto'), eyebrow: 'OM Wallet', sub: t('wd.s.' + st),
+      state: stateOf(st), title: t(bank ? 'wd.title.bank' : 'wd.title.crypto'), eyebrow: 'DYT', sub: t('wd.s.' + st),
       amtFmt: bank ? OMRt(it.amount) : omxQty(it.amount, it.asset), feeFmt: bank ? OMRt(0) : omxQty(fee, it.asset),
       totalFmt: bank ? OMRt(it.amount) : omxQty(Number(it.amount) + fee, it.asset), hasCost: true,
       date: d.toLocaleDateString(loc, { day: '2-digit', month: 'long', year: 'numeric' }), time: d.toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' }),

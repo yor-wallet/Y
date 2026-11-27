@@ -1,7 +1,7 @@
 'use strict';
 
 /* ============================================================
-   OPENING PRESENTATION (14.4.0) — full-screen promo built from the owner's OM Wallet visuals, shown once at first launch.
+   OPENING PRESENTATION (14.4.0) — full-screen promo built from the owner's DYT visuals, shown once at first launch.
    - three screens, each with its own message and its own button; « تخطي / Passer / Skip » on every screen but the last;
    - the photos are the owner's visuals with their printed text removed, so every word and every button on screen is real,
      translated and usable (nothing printed in an image pretends to be a button);
@@ -48,7 +48,7 @@ const Onboarding = (() => {
 
     function build(){
       const T = S[lang], rtl = lang === 'ar';
-      el.setAttribute('dir', rtl ? 'rtl' : 'ltr'); el.setAttribute('lang', lang); el.setAttribute('aria-label', 'OM Wallet');
+      el.setAttribute('dir', rtl ? 'rtl' : 'ltr'); el.setAttribute('lang', lang); el.setAttribute('aria-label', 'DYT');
       el.innerHTML =
         '<div class="wp-top"><div class="wp-langs" role="group" aria-label="' + escapeHtml(T.lang) + '">' +
           LANGS.map(([c, l]) => '<button type="button" data-ob-lang="' + c + '" lang="' + c + '" aria-label="' + escapeHtml(l + ' ' + NAMES[c]) + '" aria-pressed="' + (c === lang) + '">' + l + '</button>').join('') + '</div>' +
@@ -61,7 +61,7 @@ const Onboarding = (() => {
                 : '<div class="wp-third" aria-hidden="true"><span class="wp-ring"></span><span class="wp-icon"></span></div>') +
               '<span class="wp-wave" aria-hidden="true"></span>' +
               '<div class="wp-glass">' +
-                '<img class="wp-logo" src="assets/brand/om-logo-horizontal-white.png" alt="OM Wallet" width="150" height="54" style="height:38px;margin-bottom:12px">' +
+                '<img class="wp-logo" src="assets/brand/om-logo-horizontal-white.png" alt="DYT" width="150" height="54" style="height:38px;margin-bottom:12px">' +
                 '<h1 class="ob-h">' + escapeHtml(s.title) + '</h1><p class="ob-p">' + escapeHtml(s.text) + '</p>' +
                 '<div><button type="button" class="btn btn-primary ob-next" data-ob-cta="' + k + '">' + escapeHtml(s.cta) + '</button>' +
                   '<div class="wp-dots" role="group" aria-label="' + escapeHtml(T.page(k + 1, n)) + '">' + T.slides.map((_, j) => '<button type="button" data-dot="' + j + '" aria-label="' + escapeHtml(T.page(j + 1, n)) + '"' + (j === k ? ' aria-current="true"' : '') + '></button>').join('') + '</div>' +

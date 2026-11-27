@@ -24,7 +24,7 @@ const R = (() => {
     'tx-amount':'country-select', 'tx-review':'tx-amount', 'receipt':'home',
     'receive':'home', 'profile-edit':'profile', 'tx-result':'home',
     'devices':'settings', 'sessions':'settings', 'privacy':'settings', 'help':'account', 'about':'account', 'history':'home', 'dy-control':'account', 'payouts':'dy-control',
-    /* 14.0.0 — OM Wallet crypto + withdrawals */
+    /* 14.0.0 — DYT crypto + withdrawals */
     'wallet':'home', 'markets':'home', 'asset':'markets', 'deposit':'home', 'exchange':'home',
     /* 14.5 — Spot / Swap */
     'spot':'home', 'trade-review':'exchange', 'trade-done':'home',

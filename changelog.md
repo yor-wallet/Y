@@ -1,3 +1,14 @@
+# DYT 16.7.0 (web) — OM Wallet devient « DYT — Dream You Trade »
+
+Demande du propriétaire (27/11) : « Renommé », avec son logo DYT (couronne, lettres DYT, anneau lime, ligne « DREAM YOU TRADE »).
+
+- **Nom** : « OM Wallet » → « DYT » dans tous les textes visibles en fr / en / ar (connexion, inscription, notifications, reçus, aide, confidentialité, site `/welcome`, pages hors ligne et 404). Titre de l'onglet et nom d'installation : « DYT — Dream You Trade » (court : « DYT »).
+- **Logo** : `brand/make_dyt.py` découpe le logo du propriétaire (`brand/originals/logo-dyt-source.png`) sans le redessiner, rend le fond noir transparent et produit le logo d'en-tête (format 5:2, cadres élargis), les logotypes horizontaux et le maître de l'icône. Seul changement de couleur : sur fond clair, les lettres blanches passent en noir `#090909` (sinon invisibles).
+- **Icônes** (PWA, favicon, apple-touch, Android) : régénérées par `make_assets.py` depuis le nouveau maître (tuile noire, liseré lime, logo DYT).
+- **Non modifié** : identifiants techniques (`om-*`, `omx`, rial omanais `OMR`), adresse e-mail du support, domaine `yor-wallet.vercel.app`, base de données. Les e-mails envoyés par le serveur (`send-email`), les images de partage et de démarrage et l'illustration de connexion (« Arche » dorée) portent encore l'ancien nom ou l'ancien dessin ; l'application Android n'est pas recompilée.
+
+---
+
 # OM Wallet 16.6.0 (web) — palette « Next Level » (lime, noir, ivoire)
 
 Demande du propriétaire (27/11, planche « Next Level Design System ») : remplacer les couleurs actuelles par cette palette, sans modifier la structure, les composants ni les fonctionnalités.

@@ -1,10 +1,10 @@
 'use strict';
 
 /* ============================================================
-   OM WALLET 14.5 — SPOT · SWAP
+   DYT 14.5 — SPOT · SWAP
    - Live market (public Binance stream, data-stream.binance.vision): order book, market trades, candles, last price. The state of the
      feed is always shown (« En direct » / « Actualisé à … » / « Hors ligne — dernier cours à … »). Nothing is invented: no data → « — ».
-   - REAL execution, same rules as every money movement in OM Wallet:
+   - REAL execution, same rules as every money movement in DYT:
        1. the server function crypto-swap fixes the price (Binance, read on the server) for 30 seconds — the app never sets a price;
        2. swap_execute (PIN checked by the server, one request per idempotency key) sets the amount paid aside and records the
           operation IN PROGRESS; nothing is credited;
@@ -21,7 +21,7 @@ Object.assign(TR.en, {
   'tr.from':'From','tr.to':'To (estimated)','tr.flip':'Swap the two cryptos','tr.rate':'Live rate: 1 {a} ≈ {v}','tr.rateL':'Live rate:','tr.max':'Max',
   'tr.fee':'Fees','tr.priceL':'Price','tr.priceV':'fixed when you ask (valid 30 s)','tr.follow':'Tracking','tr.followV':'In progress, then Confirmed','tr.src':'Price source','tr.go':'Swap',
   'tr.review':'Check your swap','tr.pay':'You pay','tr.get':'You receive','tr.valid':'Price valid for {s} s','tr.expired':'This price has expired','tr.refresh':'Get a new price','tr.confirm':'Confirm',
-  'tr.rule':'The amount you pay is set aside until OM Wallet confirms. You receive exactly the amount shown here.',
+  'tr.rule':'The amount you pay is set aside until DYT confirms. You receive exactly the amount shown here.',
   'tr.pick':'Choose a pair','tr.pickA':'Choose a crypto','tr.noBal':'No available balance','tr.risk':'Crypto prices are volatile.','tr.data':'Market data: Binance (public).',
   'tr.s.SUBMIT':'Recording your swap…','tr.s.PENDING':'In progress','tr.s.CONFIRMED':'Swap confirmed','tr.s.REJECTED':'Refused — the amount was returned to your balance','tr.s.FAILED':'Not recorded',
   'tr.st.rec':'Submitted','tr.st.wait':'In progress','tr.st.done':'Confirmed','tr.again':'Back','tr.home':'Back to Swap',
@@ -42,7 +42,7 @@ Object.assign(TR.fr, {
   'tr.from':'De','tr.to':'Vers (estimé)','tr.flip':'Inverser les deux cryptos','tr.rate':'Cours en direct : 1 {a} ≈ {v}','tr.rateL':'Cours en direct :','tr.max':'Max',
   'tr.fee':'Frais','tr.priceL':'Prix','tr.priceV':'fixé au moment de la demande (valable 30 s)','tr.follow':'Suivi','tr.followV':'En cours, puis Confirmé','tr.src':'Source du prix','tr.go':'Échanger',
   'tr.review':'Vérifiez votre échange','tr.pay':'Vous payez','tr.get':'Vous recevez','tr.valid':'Prix valable {s} s','tr.expired':'Ce prix a expiré','tr.refresh':'Obtenir un nouveau prix','tr.confirm':'Confirmer',
-  'tr.rule':'Le montant payé est mis de côté jusqu’à la confirmation par OM Wallet. Vous recevez exactement le montant affiché ici.',
+  'tr.rule':'Le montant payé est mis de côté jusqu’à la confirmation par DYT. Vous recevez exactement le montant affiché ici.',
   'tr.pick':'Choisir une paire','tr.pickA':'Choisir une crypto','tr.noBal':'Aucun solde disponible','tr.risk':'Les prix des cryptos sont volatils.','tr.data':'Données de marché : Binance (public).',
   'tr.s.SUBMIT':'Enregistrement de votre échange…','tr.s.PENDING':'En cours','tr.s.CONFIRMED':'Échange confirmé','tr.s.REJECTED':'Refusé — le montant est revenu sur votre solde','tr.s.FAILED':'Non enregistré',
   'tr.st.rec':'Soumis','tr.st.wait':'En cours','tr.st.done':'Confirmé','tr.again':'Retour','tr.home':'Retour au Swap',
@@ -63,7 +63,7 @@ Object.assign(TR.ar, {
   'tr.from':'من','tr.to':'إلى (تقديري)','tr.flip':'تبديل العملتين','tr.rate':'السعر المباشر: 1 {a} ≈ {v}','tr.rateL':'السعر المباشر:','tr.max':'الكل',
   'tr.fee':'الرسوم','tr.priceL':'السعر','tr.priceV':'مثبّت عند الطلب (صالح 30 ث)','tr.follow':'المتابعة','tr.followV':'قيد التنفيذ، ثم مؤكَّد','tr.src':'مصدر السعر','tr.go':'تبديل',
   'tr.review':'راجع عملية التبديل','tr.pay':'تدفع','tr.get':'تستلم','tr.valid':'السعر صالح لمدة {s} ث','tr.expired':'انتهت صلاحية هذا السعر','tr.refresh':'الحصول على سعر جديد','tr.confirm':'تأكيد',
-  'tr.rule':'يُحجز المبلغ المدفوع حتى يؤكده OM Wallet. تستلم بالضبط المبلغ المعروض هنا.',
+  'tr.rule':'يُحجز المبلغ المدفوع حتى يؤكده DYT. تستلم بالضبط المبلغ المعروض هنا.',
   'tr.pick':'اختر زوجاً','tr.pickA':'اختر عملة','tr.noBal':'لا يوجد رصيد متاح','tr.risk':'أسعار العملات الرقمية متقلبة.','tr.data':'بيانات السوق: Binance (عامة).',
   'tr.s.SUBMIT':'جارٍ تسجيل عملية التبديل…','tr.s.PENDING':'قيد التنفيذ','tr.s.CONFIRMED':'تم تأكيد التبديل','tr.s.REJECTED':'مرفوض — أُعيد المبلغ إلى رصيدك','tr.s.FAILED':'لم يُسجَّل',
   'tr.st.rec':'أُرسل','tr.st.wait':'قيد التنفيذ','tr.st.done':'مؤكَّد','tr.again':'رجوع','tr.home':'العودة إلى التبديل',

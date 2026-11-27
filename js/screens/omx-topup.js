@@ -1,15 +1,15 @@
 'use strict';
 
 /* ============================================================
-   OM WALLET 15.0 — TRANSFERT DE CRÉDIT (Omantel · Ooredoo · Vodafone) — RÉSERVÉ À L'ADMINISTRATEUR
+   DYT 15.0 — TRANSFERT DE CRÉDIT (Omantel · Ooredoo · Vodafone) — RÉSERVÉ À L'ADMINISTRATEUR
    Circuit voulu par le propriétaire : l'administrateur choisit le service « Crédit », saisit l'opérateur, le numéro et le montant, et appuie
    sur Envoyer : l'opération est CONFIRMÉE tout de suite (admin_topup_send), et le SMS part aussitôt (fonction credit-topup) avec le message :
    « تمت عملية تحويل مبلغ 1.000 ريال بنجاح إلى الرقم 96892888435. (TID: ...) ». Rien d'autre n'est obligatoire (ni code, ni deuxième validation).
-   Le TID est celui de l'opérateur si l'administrateur le saisit ; sinon l'opération reçoit son propre numéro OM Wallet.
+   Le TID est celui de l'opérateur si l'administrateur le saisit ; sinon l'opération reçoit son propre numéro DYT.
    ============================================================ */
 Object.assign(TR.en, {
   'tp.short':'Credit','tp.title':'Credit transfer','tp.lead':'Send mobile credit to an Omani number (Omantel, Ooredoo, Vodafone).',
-  'tp.op':'Operator','tp.phone':'Phone number','tp.phonePh':'e.g. 9288 8435','tp.amount':'Amount (OMR)','tp.tid':'Operator TID (optional)','tp.tidHint':'Leave empty: the operation gets its own OM Wallet number.',
+  'tp.op':'Operator','tp.phone':'Phone number','tp.phonePh':'e.g. 9288 8435','tp.amount':'Amount (OMR)','tp.tid':'Operator TID (optional)','tp.tidHint':'Leave empty: the operation gets its own DYT number.',
   'tp.go':'Send','tp.rule':'Confirmed right away. A confirmation SMS is sent to your phone number.',
   'tp.to':'To','tp.opL':'Operator',
   'tp.s.CONFIRMED':'Transfer confirmed','tp.s.FAILED':'Not sent','tp.again':'New transfer','tp.done':'Back to Home',
@@ -21,7 +21,7 @@ Object.assign(TR.en, {
 });
 Object.assign(TR.fr, {
   'tp.short':'Crédit','tp.title':'Transfert de crédit','tp.lead':'Envoyez du crédit mobile à un numéro omanais (Omantel, Ooredoo, Vodafone).',
-  'tp.op':'Opérateur','tp.phone':'Numéro de téléphone','tp.phonePh':'ex. 9288 8435','tp.amount':'Montant (OMR)','tp.tid':'TID de l’opérateur (facultatif)','tp.tidHint':'Laissé vide : l’opération reçoit son propre numéro OM Wallet.',
+  'tp.op':'Opérateur','tp.phone':'Numéro de téléphone','tp.phonePh':'ex. 9288 8435','tp.amount':'Montant (OMR)','tp.tid':'TID de l’opérateur (facultatif)','tp.tidHint':'Laissé vide : l’opération reçoit son propre numéro DYT.',
   'tp.go':'Envoyer','tp.rule':'Confirmé tout de suite. Un SMS de confirmation est envoyé à votre numéro de téléphone.',
   'tp.to':'Vers','tp.opL':'Opérateur',
   'tp.s.CONFIRMED':'Transfert confirmé','tp.s.FAILED':'Non envoyé','tp.again':'Nouveau transfert','tp.done':'Retour à l’accueil',
@@ -33,7 +33,7 @@ Object.assign(TR.fr, {
 });
 Object.assign(TR.ar, {
   'tp.short':'رصيد','tp.title':'تحويل رصيد','tp.lead':'أرسل رصيداً لهاتف عُماني (عُمانتل، أوريدو، فودافون).',
-  'tp.op':'المشغّل','tp.phone':'رقم الهاتف','tp.phonePh':'مثال 9288 8435','tp.amount':'المبلغ (ريال عُماني)','tp.tid':'TID المشغّل (اختياري)','tp.tidHint':'إن تُرك فارغاً: تحصل العملية على رقمها الخاص من OM Wallet.',
+  'tp.op':'المشغّل','tp.phone':'رقم الهاتف','tp.phonePh':'مثال 9288 8435','tp.amount':'المبلغ (ريال عُماني)','tp.tid':'TID المشغّل (اختياري)','tp.tidHint':'إن تُرك فارغاً: تحصل العملية على رقمها الخاص من DYT.',
   'tp.go':'إرسال','tp.rule':'يتم التأكيد فوراً. تُرسل رسالة SMS للتأكيد إلى رقم هاتفك.',
   'tp.to':'إلى','tp.opL':'المشغّل',
   'tp.s.CONFIRMED':'تم تأكيد التحويل','tp.s.FAILED':'لم يُرسل','tp.again':'تحويل جديد','tp.done':'العودة إلى الرئيسية',

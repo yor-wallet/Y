@@ -85,7 +85,7 @@ const AuthEngine = (() => {
       try {
         await hydrateRuntime();
         const cur = R.current();
-        if (['home','history','notifications','wallet','send-internal-done'].indexOf(cur) !== -1) R.go(cur, { force:true });   /* 14.2: balances and history refresh at once when OM Wallet confirms */
+        if (['home','history','notifications','wallet','send-internal-done'].indexOf(cur) !== -1) R.go(cur, { force:true });   /* 14.2: balances and history refresh at once when DYT confirms */
       } catch(e){}
     }, 350);
   }

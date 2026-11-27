@@ -53,7 +53,7 @@ const Mfa = (() => {
     try {
       const pending = totp((await sb.auth.mfa.listFactors()).data).filter(f => f.status !== 'verified');      /* leftovers of an abandoned set-up */
       for (const f of pending){ try { await sb.auth.mfa.unenroll({ factorId: f.id }); } catch(e){} }
-      const { data, error } = await sb.auth.mfa.enroll({ factorType: 'totp', friendlyName: 'OM Wallet ' + new Date().toISOString().slice(0, 10) });
+      const { data, error } = await sb.auth.mfa.enroll({ factorType: 'totp', friendlyName: 'DYT ' + new Date().toISOString().slice(0, 10) });
       if (error || !data) throw error || new Error('enroll');
       fid = data.id;
       const qr = data.totp && data.totp.qr_code, secret = data.totp && data.totp.secret;

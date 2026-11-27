@@ -398,3 +398,8 @@ html:root:root:root body .mfa-code{font-size:22px;letter-spacing:.3em;text-align
 html:root:root:root body .mfa-ov{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px}
 html:root:root:root body .mfa-ov .ov-backdrop{position:absolute;inset:0;opacity:1}
 html:root:root:root body .mfa-ov .ov-panel{position:relative;opacity:1;transform:none;width:min(100%,420px)}
+
+/* ---------- 16.7.0 — DYT: the header mark is the DYT logo, a word (5:2), so its boxes are wide, not square ---------- */
+html:root:root:root body .lt-mark{width:96px;height:40px}
+html:root:root:root body .lt-mark.sm{width:84px;height:34px}
+html:root:root:root body .topbar.w-reftop .w-sp:last-child,html:root:root:root body .w-title .w-sp:last-child{background-size:contain!important;background-position:center right!important;width:60px!important;flex:0 0 60px!important}
