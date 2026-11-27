@@ -23,7 +23,9 @@ L'ancien logo de verre bleu est retiré partout (originaux archivés dans `brand
 - Pas de texte ni de bouton imprimé dans une image présenté comme réel (voir `om-wallet` §1). Les images de partage portent seulement le nom et une courte ligne de slogan, en fr / en / ar.
 - **Regarder en ligne avant de changer une direction visuelle** (consigne du propriétaire) et citer ce qui a été vu. S'inspirer (Liv X, Binance) = rythme, hiérarchie, densité, jamais les éléments eux-mêmes.
 
-## 2. Palette (Noir & Jaune)
+## 2. Palette (« Next Level » depuis 16.6.0, web)
+
+Depuis le 27/11 (planche du propriétaire « Next Level ») : lime `#D7E600` à la place du jaune, vert `#8BC900` pour les gains (sombre), ivoire `#F5F5F0`, noir `#090909`, charbon `#292929`. Les valeurs à jour sont les jetons `--lt-*` de `css/noirjaune.css` ; le tableau ci-dessous est l'ancienne palette (encore celle d'Android et des images de marque).
 
 Source de vérité : les jetons `--lt-*` en tête de `css/noirjaune.css` (web) et `OmColors` dans `android/core-design/…/Theme.kt` (mêmes noms). Ne pas recopier d'autres valeurs.
 

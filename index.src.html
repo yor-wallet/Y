@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
-<meta name="theme-color" content="#0B0A07">
+<meta name="theme-color" content="#090909">
 <meta name="apple-mobile-web-app-title" content="OM Wallet">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="description" content="OM Wallet — send money to a mobile number in Oman and manage your cards. Simple, secure, in English, Français and العربية.">
@@ -72,7 +72,7 @@
   /* 14.8.0 « Noir & Jaune »: dark by default, light only when the saved setting says so (« system » follows the phone) */
   var dk=t==='light'?false:t==='system'?!!(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches):true;
   d.setAttribute('data-theme',dk?'dark':'light');d.setAttribute('data-tone',dk?'night':'day');
-  var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',dk?'#0B0A07':'#FFFBF0');
+  var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',dk?'#090909':'#F5F5F0');
 }catch(e){}})();
 </script>
 <meta name="mobile-web-app-capable" content="yes">

@@ -39,7 +39,7 @@ for (const lang of ['en', 'ar']) {
       return { w: Math.round(b.width), h: Math.round(b.height), kw: k.width, bg: getComputedStyle(sw).backgroundColor, tf: k.transform };
     });
     assert.equal(r.w, 51); assert.equal(r.h, 31); assert.equal(r.kw, '27px');
-    assert.equal(r.bg, 'rgb(255, 200, 0)');
+    assert.equal(r.bg, 'rgb(215, 230, 0)');
     assert.match(r.tf, lang === 'ar' ? /matrix\(1, 0, 0, 1, -20, 0\)/ : /matrix\(1, 0, 0, 1, 20, 0\)/);
   });
   await ok('grand titre : 34 px gras, aligné au début ; au défilement une barre compacte montre le titre et un bouton retour nommé', async () => {
@@ -55,7 +55,7 @@ for (const lang of ['en', 'ar']) {
     await go(page, 'exchange');
     const r = await page.evaluate(() => { const b = document.querySelector('#exchange .btn.btn-primary'); const cs = getComputedStyle(b), rc = b.getBoundingClientRect(); return { h: Math.round(rc.height), r: cs.borderRadius, fw: cs.fontWeight, fs: cs.fontSize, bg: cs.backgroundColor, img: cs.backgroundImage }; });
     assert.ok(r.h >= 50 && r.h <= 54, 'hauteur ' + r.h); assert.equal(r.r, '999px'); assert.equal(r.fw, '600'); assert.equal(r.fs, '17px');
-    assert.equal(r.bg, 'rgb(255, 200, 0)'); assert.equal(r.img, 'none');
+    assert.equal(r.bg, 'rgb(215, 230, 0)'); assert.equal(r.img, 'none');
   });
   await ok('aucune erreur de page', async () => { assert.deepEqual(logs, []); });
   await ctx.close();

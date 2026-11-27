@@ -23,15 +23,15 @@ html:root:root:root:root{
   /* light (cream) */
   --ios-page:var(--lt-bg); --ios-group:var(--lt-card); --ios-group2:var(--lt-card2);
   --ios-label:var(--lt-ink); --ios-label2:var(--lt-ink2); --ios-label3:var(--lt-ink3);
-  --ios-sep:rgba(60,55,40,.20); --ios-fill:rgba(120,120,128,.20); --ios-fill2:rgba(120,120,128,.12); --ios-press:rgba(60,55,40,.10);
-  --ios-tint:var(--lt-yellow); --ios-on-tint:var(--lt-on-yellow); --ios-tint-soft:rgba(245,184,0,.16); --ios-tint-text:#8A6400;
+  --ios-sep:rgba(50,50,40,.20); --ios-fill:rgba(120,120,128,.20); --ios-fill2:rgba(120,120,128,.12); --ios-press:rgba(50,50,40,.10);
+  --ios-tint:var(--lt-yellow); --ios-on-tint:var(--lt-on-yellow); --ios-tint-soft:rgba(195,210,0,.16); --ios-tint-text:#4F5A00;
   --ios-red:#E5352B; --ios-green:#2FB457; --ios-orange:#F08C00; --ios-gray:#8E8E93; --ios-brown:#A2845E;
-  --ios-chev:rgba(60,55,40,.32); --ios-knob-shadow:0 3px 8px rgba(0,0,0,.15),0 3px 1px rgba(0,0,0,.06);
+  --ios-chev:rgba(50,50,40,.32); --ios-knob-shadow:0 3px 8px rgba(0,0,0,.15),0 3px 1px rgba(0,0,0,.06);
   --ios-r-group:22px; --ios-r-tile:8px; --ios-margin:16px;
 }
 html:root:root:root:root[data-theme="dark"]{
   --ios-sep:rgba(84,80,70,.58); --ios-fill:rgba(120,120,128,.32); --ios-fill2:rgba(120,120,128,.20); --ios-press:rgba(255,255,255,.07);
-  --ios-tint-soft:rgba(255,200,0,.15); --ios-tint-text:#FFC800;
+  --ios-tint-soft:rgba(215,230,0,.15); --ios-tint-text:#D7E600;
   --ios-red:#FF453A; --ios-green:#30D158; --ios-orange:#FF9F0A; --ios-gray:#8E8E93;
   --ios-chev:rgba(235,235,245,.30);
 }

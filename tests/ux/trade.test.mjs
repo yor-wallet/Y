@@ -149,26 +149,26 @@ const pin = async page => { await wait(700); for (const k of '482913') await pag
         tileBg: px(tile).backgroundImage, tileRadius: px(tile).borderTopLeftRadius, tileInk: px(tile).color, actBg: px(act).backgroundColor, meta: document.querySelector('meta[name="theme-color"]').getAttribute('content') };
     });
     assert.equal(r.theme, 'dark');
-    assert.equal(r.bg, 'rgb(11, 10, 7)');
-    assert.equal(r.col, 'rgb(245, 243, 238)');
-    assert.match(r.tileBg, /rgb\(255, 2\d\d, \d+\)|rgb\(245, 184, 0\)/);   /* the yellow gradient */
+    assert.equal(r.bg, 'rgb(9, 9, 9)');
+    assert.equal(r.col, 'rgb(245, 245, 240)');
+    assert.match(r.tileBg, /rgb\((?:1|2)\d\d, 2\d\d, \d+\)/);   /* the yellow gradient */
     assert.equal(r.tileRadius, '50%');
-    assert.equal(r.tileInk, 'rgb(20, 17, 10)');                                  /* dark glyph ON the yellow */
-    assert.equal(r.actBg, 'rgb(37, 35, 30)');                                    /* round dark action buttons */
-    assert.equal(r.meta, '#0B0A07');
+    assert.equal(r.tileInk, 'rgb(9, 9, 9)');                                  /* dark glyph ON the yellow */
+    assert.equal(r.actBg, 'rgb(32, 32, 32)');                                    /* round dark action buttons */
+    assert.equal(r.meta, '#090909');
   });
   await ok('mode clair (réglage de la personne) : page crème, texte noir, même jaune', async () => {
     await page.evaluate(() => { Runtime.settings = Object.assign({}, Runtime.settings, { theme: 'light' }); applyTheme('light'); }); await wait(400);
     const r = await page.evaluate(() => ({ theme: document.documentElement.getAttribute('data-theme'), bg: getComputedStyle(document.body).backgroundColor, col: getComputedStyle(document.body).color,
       tile: getComputedStyle(document.querySelector('#bottom-nav .nav-cta .nav-cta-tile')).backgroundImage }));
-    assert.equal(r.theme, 'light'); assert.equal(r.bg, 'rgb(255, 251, 240)'); assert.equal(r.col, 'rgb(20, 17, 10)');
-    assert.match(r.tile, /rgb\(255, 2\d\d, \d+\)|rgb\(245, 184, 0\)/);
+    assert.equal(r.theme, 'light'); assert.equal(r.bg, 'rgb(245, 245, 240)'); assert.equal(r.col, 'rgb(9, 9, 9)');
+    assert.match(r.tile, /rgb\((?:1|2)\d\d, 2\d\d, \d+\)/);
     await page.evaluate(() => { Runtime.settings = Object.assign({}, Runtime.settings, { theme: 'dark' }); applyTheme('dark'); }); await wait(300);
   });
   await ok('sans réglage enregistré, l’application s’ouvre en noir et jaune (sombre par défaut)', async () => {
     const o = await openApp(browser, url, { lang: 'fr', settle: 700, theme: 'none' });
     const th = await o.page.evaluate(() => ({ t: document.documentElement.getAttribute('data-theme'), bg: getComputedStyle(document.body).backgroundColor }));
-    assert.equal(th.t, 'dark'); assert.equal(th.bg, 'rgb(11, 10, 7)');
+    assert.equal(th.t, 'dark'); assert.equal(th.bg, 'rgb(9, 9, 9)');
     await o.ctx.close();
   });
   await ok('le solde garde son texte exact, décimales plus légères', async () => {

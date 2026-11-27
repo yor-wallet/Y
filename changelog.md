@@ -1,3 +1,16 @@
+# OM Wallet 16.6.0 (web) — palette « Next Level » (lime, noir, ivoire)
+
+Demande du propriétaire (27/11, planche « Next Level Design System ») : remplacer les couleurs actuelles par cette palette, sans modifier la structure, les composants ni les fonctionnalités.
+
+- **Accent principal** lime `#D7E600` (dégradé `#E3EF3C → #C4D300`) à la place du jaune `#FFC800` : bouton principal, segment et onglet actifs, bouton Swap, liens et icônes d'action. Texte sur l'accent : `#090909`.
+- **Gains** vert vif `#8BC900` en sombre (`#386600` en clair, lisible sur ivoire) ; pertes inchangées.
+- **Sombre** : fond noir profond `#090909`, cartes `#161616`, pistes `#202020`, liserés gris charbon `#292929`, texte ivoire `#F5F5F0` (teinte neutre, plus de noir « chaud »).
+- **Clair** : fond ivoire `#F5F5F0`, cartes blanches, texte `#090909`, liens olive `#4F5A00` (le lime pur est illisible sur fond clair).
+- Vitrine `/welcome`, couleur de la barre du navigateur et manifeste alignés. Contrastes vérifiés (`palette.test.mjs`, AA partout, texte sur lime ≥ 7 : 1).
+- **Non modifié** : le logo-icône du propriétaire, la marque « Arche » et les images (démarrage, partage, héros) restent dorées ; l'application Android garde l'ancienne palette.
+
+---
+
 # OM Wallet 16.5.1 (web) — pavés numériques plats et immédiats, sans animation
 
 Demande du propriétaire (27/11) : supprimer l'animation au toucher des chiffres, un clavier normal et réactif, une nouvelle apparence.

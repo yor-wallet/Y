@@ -63,8 +63,8 @@ async function site(opts = {}){
       return [...bad].slice(0, 8);
     });
     assert.deepEqual(blues, [], 'bleu restant : ' + blues.join(' | '));
-    assert.equal(await page.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(11, 10, 7)');
-    assert.equal(await page.locator('meta[name="theme-color"]').getAttribute('content'), '#0B0A07');
+    assert.equal(await page.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(9, 9, 9)');
+    assert.equal(await page.locator('meta[name="theme-color"]').getAttribute('content'), '#090909');
     assert.match(await page.locator('.top .brand img').getAttribute('src'), /om-logo-horizontal-white\.png/);
     assert.match(await page.locator('.final-in img').getAttribute('src'), /app-icon\.webp/);
     assert.equal(await page.locator('.hero-art .aura .arches').count(), 1);

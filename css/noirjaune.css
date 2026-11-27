@@ -9,21 +9,23 @@
    - light mode = cream yellow page, white cards, black text, the same yellow (Liv X light screens).
    What is NOT taken: their mascots, line art, photos, logos, names, screens. Real OM Wallet data and functions only.
    Appearance only: markup hooks (ids, data-*), handlers, data and server calls are unchanged. Loads LAST (replaces clair.css).
+   16.6.0 (27/11): owner's « Next Level » palette — lime #D7E600 (accent), green #8BC900 (gains), ivory #F5F5F0, black #090909, charcoal #292929.
+   Colours only: structure, components and functions unchanged. Token NAMES keep « yellow » (= the single accent).
    ========================================================================== */
 
 /* ---------- tokens: LIGHT (cream yellow) ---------- */
 html:root:root:root{
-  --lt-yellow:#FFC800; --lt-yellow-hi:#FFD84A; --lt-yellow-lo:#F5B800; --lt-on-yellow:#14110A;
-  --lt-bg:#FFFBF0; --lt-card:#FFFFFF; --lt-card2:#F8F0D6; --lt-edge:#EEE3C0;
-  --lt-ink:#14110A; --lt-ink2:#5C5748; --lt-ink3:#6B6552; --lt-link:#7A5800; --lt-soft:#FFEFB8; --lt-active:#14110A;
-  --lt-pos:#06704A; --lt-neg:#B8243A; --lt-chip-up:#DDF5EA; --lt-chip-dn:#FCE3E7;
-  --lt-hero:linear-gradient(180deg,#FFE48A 0%,#FFF1C2 58%,#FFFBF0 100%);
-  --lt-nav:#FFFFFF; --lt-glow:0 12px 28px -12px rgba(245,184,0,.75); --lt-lift:0 10px 26px -14px rgba(90,65,0,.35);
+  --lt-yellow:#D7E600; --lt-yellow-hi:#E3EF3C; --lt-yellow-lo:#C4D300; --lt-on-yellow:#090909;
+  --lt-bg:#F5F5F0; --lt-card:#FFFFFF; --lt-card2:#ECECE5; --lt-edge:#DEDED6;
+  --lt-ink:#090909; --lt-ink2:#4F4F48; --lt-ink3:#5F5F57; --lt-link:#4F5A00; --lt-soft:#EEF4C0; --lt-active:#090909;
+  --lt-pos:#386600; --lt-neg:#B8243A; --lt-chip-up:#E6F3D0; --lt-chip-dn:#FCE3E7;
+  --lt-hero:linear-gradient(180deg,#ECF49A 0%,#F2F5D8 58%,#F5F5F0 100%);
+  --lt-nav:#FFFFFF; --lt-glow:0 12px 28px -12px rgba(190,205,0,.7); --lt-lift:0 10px 26px -14px rgba(30,30,20,.3);
   --w-bg:var(--lt-bg); --w-bg2:var(--lt-bg); --w-ink:var(--lt-ink); --w-ink2:var(--lt-ink2); --w-ink3:var(--lt-ink3);
   --w-blue:var(--lt-link); --w-blue2:var(--lt-link); --w-sky:var(--lt-yellow); --w-sky2:var(--lt-soft);
   --w-pos:var(--lt-pos); --w-neg:var(--lt-neg); --w-warn:#C98A00; --w-violet:var(--lt-yellow);
   --w-glass:var(--lt-card); --w-glass2:var(--lt-card); --w-glass3:var(--lt-card2); --w-stroke:var(--lt-edge); --w-line:var(--lt-edge);
-  --w-shadow:none; --w-shadow-lg:0 24px 60px -28px rgba(20,17,10,.4); --w-blur:none;
+  --w-shadow:none; --w-shadow-lg:0 24px 60px -28px rgba(9,9,9,.4); --w-blur:none;
   --w-grad:linear-gradient(180deg,var(--lt-yellow-hi) 0%,var(--lt-yellow-lo) 100%); --w-tile:var(--lt-soft);
   --w-r-card:20px; --w-r-tile:16px; --w-r-btn:999px; --w-r-field:16px;
   --text:var(--w-ink); --text-2:var(--w-ink2); --text-3:var(--w-ink3); --ink:var(--w-ink); --accent:var(--w-blue); --tint:var(--w-blue);
@@ -37,11 +39,11 @@ html:root:root:root{
 }
 /* ---------- tokens: DARK (black and yellow — the default) ---------- */
 html:root:root:root[data-theme="dark"]{
-  --lt-bg:#0B0A07; --lt-card:#1B1A16; --lt-card2:#25231E; --lt-edge:#2F2D26;
-  --lt-ink:#F5F3EE; --lt-ink2:#B0AC9F; --lt-ink3:#939083; --lt-link:#FFC800; --lt-soft:#2B2410; --lt-active:#FFC800;
-  --lt-pos:#0ECB81; --lt-neg:#FF5A6E; --lt-chip-up:#0E2E23; --lt-chip-dn:#35151B;
-  --lt-hero:radial-gradient(90% 75% at 50% -10%,rgba(255,200,0,.27) 0%,rgba(255,200,0,.08) 46%,transparent 74%);
-  --lt-nav:#12110D; --lt-glow:0 12px 30px -14px rgba(255,200,0,.6); --lt-lift:0 14px 30px -18px rgba(0,0,0,.8);
+  --lt-bg:#090909; --lt-card:#161616; --lt-card2:#202020; --lt-edge:#292929;
+  --lt-ink:#F5F5F0; --lt-ink2:#B2B2AA; --lt-ink3:#97978F; --lt-link:#D7E600; --lt-soft:#1E2208; --lt-active:#D7E600;
+  --lt-pos:#8BC900; --lt-neg:#FF5A6E; --lt-chip-up:#1A2A08; --lt-chip-dn:#35151B;
+  --lt-hero:radial-gradient(90% 75% at 50% -10%,rgba(215,230,0,.24) 0%,rgba(215,230,0,.07) 46%,transparent 74%);
+  --lt-nav:#111111; --lt-glow:0 12px 30px -14px rgba(215,230,0,.55); --lt-lift:0 14px 30px -18px rgba(0,0,0,.8);
   --w-warn:#FFB020; --w-shadow-lg:0 30px 70px -28px rgba(0,0,0,.9); --st-wait:#FFB020;
   color-scheme:dark;
 }
@@ -73,7 +75,7 @@ html:root:root:root body .chips{background:var(--lt-card2)!important;border:0!im
 html:root:root:root body .chip{background:transparent!important;color:var(--lt-ink3)!important;border:0!important;box-shadow:none!important;border-radius:999px!important;font-weight:700}
 html:root:root:root body :is(.chip[aria-pressed="true"],.chip.on){background:var(--lt-yellow)!important;color:var(--lt-on-yellow)!important;box-shadow:none!important}
 html:root:root:root body :is(.input,.field-box){background:var(--lt-card2)!important;border:1px solid var(--lt-edge)!important;color:var(--lt-ink)!important;box-shadow:none!important}
-html:root:root:root body :is(.input,.field-box):focus-within,html:root:root:root body .input:focus{border-color:var(--lt-yellow)!important;box-shadow:0 0 0 4px rgba(255,200,0,.2)!important}
+html:root:root:root body :is(.input,.field-box):focus-within,html:root:root:root body .input:focus{border-color:var(--lt-yellow)!important;box-shadow:0 0 0 4px rgba(215,230,0,.2)!important}
 html:root:root:root body :is(input,textarea,select){color:var(--lt-ink)}
 html:root:root:root body :is(input,textarea)::placeholder{color:var(--lt-ink3)!important}
 html:root:root:root body .switch{background:var(--lt-edge)!important;border:0!important}
@@ -91,7 +93,7 @@ html:root:root:root body .topbar .topbar-title{color:var(--lt-ink)}
 html:root:root:root body :is(.ov-panel,.yd-p){background:var(--lt-card)!important;color:var(--lt-ink)!important;border:1px solid var(--lt-edge)!important;border-bottom:0!important;box-shadow:0 -14px 44px -20px rgba(0,0,0,.6)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 html:root:root:root body .ov.is-modal .ov-panel{border-bottom:1px solid var(--lt-edge)!important}
 html:root:root:root body .ov-backdrop{background:rgba(5,4,2,.66)!important}
-html:root:root:root body .toast.w-toast{background:#26241D!important;color:#fff!important;border:1px solid #3A372D!important}
+html:root:root:root body .toast.w-toast{background:#222222!important;color:#fff!important;border:1px solid #333333!important}
 
 /* ---------- bottom menu: dark bar, active tab yellow, Swap = the raised yellow button ---------- */
 html:root:root:root body #bottom-nav{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;left:0!important;right:0!important;bottom:0!important;overflow:visible!important}
@@ -209,21 +211,21 @@ html:root:root:root body :is(.omx-info,.omx-note){background:var(--lt-soft)!impo
 html:root:root:root body :is(.omx-info,.omx-note) svg{color:var(--lt-link)!important;stroke:currentColor}
 html:root:root:root body :is(.omx-empty,.wd-empty,.ds-empty) svg{color:var(--lt-link)}
 html:root:root:root body :is(.tr-max,.omx-max){background:var(--lt-soft)!important;color:var(--lt-link)!important;border:0!important;border-radius:999px!important;font-weight:800}
-html:root:root:root body :is(.omx-pick.on,.omx-net.pick.on,.omx-pick[aria-pressed="true"],.omx-net[aria-pressed="true"],.tr-asset.on){border-color:var(--lt-yellow)!important;box-shadow:0 0 0 2px rgba(255,200,0,.25)!important}
+html:root:root:root body :is(.omx-pick.on,.omx-net.pick.on,.omx-pick[aria-pressed="true"],.omx-net[aria-pressed="true"],.tr-asset.on){border-color:var(--lt-yellow)!important;box-shadow:0 0 0 2px rgba(215,230,0,.25)!important}
 
 /* ---------- OPENING PRESENTATION: always black and yellow (photos are baked black / yellow duotones) ---------- */
-html:root:root:root body .wp{background:#0B0A07}
-html:root:root:root body .wp-photo::after{background:linear-gradient(180deg,rgba(11,10,7,0) 50%,rgba(11,10,7,.82) 82%,#0B0A07 100%)!important}
+html:root:root:root body .wp{background:#090909}
+html:root:root:root body .wp-photo::after{background:linear-gradient(180deg,rgba(9,9,9,0) 50%,rgba(9,9,9,.82) 82%,#090909 100%)!important}
 html:root:root:root body .wp-wave{display:none!important}
 html:root:root:root body .wp-ring{display:none!important}   /* the arches of the artwork replace the ring */
 html:root:root:root body .wp-logo{filter:none!important}
-html:root:root:root body .wp-glass{background:rgba(18,17,13,.82)!important;border:1px solid #2F2D26!important;box-shadow:0 30px 60px -30px rgba(0,0,0,.9)!important;-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
-html:root:root:root body .wp-glass h1{color:#F5F3EE!important}
-html:root:root:root body .wp-glass p{color:#A7A397!important}
-html:root:root:root body :is(.wp-skip,.wp-langs button){background:rgba(18,17,13,.78)!important;border:1px solid #2F2D26!important;color:#F5F3EE!important;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+html:root:root:root body .wp-glass{background:rgba(17,17,17,.82)!important;border:1px solid #292929!important;box-shadow:0 30px 60px -30px rgba(0,0,0,.9)!important;-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+html:root:root:root body .wp-glass h1{color:#F5F5F0!important}
+html:root:root:root body .wp-glass p{color:#A5A59D!important}
+html:root:root:root body :is(.wp-skip,.wp-langs button){background:rgba(17,17,17,.78)!important;border:1px solid #292929!important;color:#F5F5F0!important;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
 html:root:root:root body .wp-skip{color:var(--lt-yellow)!important}
 html:root:root:root body .wp-langs button[aria-pressed="true"]{background:var(--lt-yellow)!important;color:var(--lt-on-yellow)!important;border-color:transparent!important}
-html:root:root:root body .wp-dots button{background:#3A372D!important}
+html:root:root:root body .wp-dots button{background:#333333!important}
 html:root:root:root body .wp-dots button[aria-current="true"]{background:var(--lt-yellow)!important}
 
 /* sign-in / sign-up: the wordmark and the glow follow the palette (white to yellow on black, black to gold on cream) */
@@ -232,8 +234,8 @@ html:root:root:root[data-theme="dark"] body .w-auth-icon{background-image:url(..
 /* in-app mark (logoMark() in js/ui/icons.js): original « Arche » mark, no tile, black arch on cream / yellow arch on black */
 html:root:root:root body .logo-mark{display:inline-block;flex:none;border-radius:0!important;box-shadow:none!important;filter:none!important;background:url(../assets/brand/logo-mark-light.svg) center/contain no-repeat}
 html:root:root:root[data-theme="dark"] body .logo-mark{background-image:url(../assets/brand/logo-mark.svg)}
-html:root:root:root body .w-auth-word,html:root:root:root[data-theme="dark"] body .w-auth-word{background:linear-gradient(180deg,#FFFFFF 10%,#FFC800 100%)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important}
-html:root:root:root[data-theme="light"] body .w-auth-word,html:root:root:root:not([data-theme="dark"]) body .w-auth-word{background:linear-gradient(180deg,#14110A 20%,#8A6500 100%)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important}
+html:root:root:root body .w-auth-word,html:root:root:root[data-theme="dark"] body .w-auth-word{background:linear-gradient(180deg,#FFFFFF 10%,#D7E600 100%)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important}
+html:root:root:root[data-theme="light"] body .w-auth-word,html:root:root:root:not([data-theme="dark"]) body .w-auth-word{background:linear-gradient(180deg,#090909 20%,#4F5A00 100%)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important}
 
 @media (prefers-reduced-motion:reduce){
   html:root:root:root body #bottom-nav .nav-cta .nav-cta-tile{transition:none!important}
@@ -256,7 +258,7 @@ html:root:root:root body .omx-act.p i,html:root:root:root body .omx-act.p span{c
 
 /* 3. blue / violet leftovers */
 html:root:root:root body .hub-edit{background:linear-gradient(180deg,var(--lt-yellow-hi),var(--lt-yellow-lo))!important;color:var(--lt-on-yellow)!important;box-shadow:0 6px 14px -6px rgba(0,0,0,.55)!important}
-html:root:root:root body .switch[aria-checked="true"],html:root:root:root body .settings-row[role="switch"][aria-checked="true"] .switch{box-shadow:0 6px 14px -8px rgba(255,200,0,.6)!important}
+html:root:root:root body .switch[aria-checked="true"],html:root:root:root body .settings-row[role="switch"][aria-checked="true"] .switch{box-shadow:0 6px 14px -8px rgba(215,230,0,.6)!important}
 html:root:root:root body img.omx-logo{box-shadow:0 6px 14px -8px rgba(0,0,0,.6)!important}
 html:root:root:root body .contact-avatar{background:linear-gradient(180deg,var(--lt-yellow-hi),var(--lt-yellow-lo))!important;color:var(--lt-on-yellow)!important}
 html:root:root:root body .hub-badges{background:var(--lt-card2)!important}
@@ -268,8 +270,8 @@ html:root:root:root body .omx-tag.ok{background:var(--lt-chip-up)!important;colo
 html:root:root:root body .omx-tag.no{background:var(--lt-card2)!important;color:var(--lt-ink2)!important}
 html:root:root:root body .st.st-pending{color:var(--st-wait)!important}
 
-html:root:root:root body .ov .ov-backdrop,html:root:root:root body .ov:has(.dy-modal) .ov-backdrop{background:rgba(11,10,7,.55)!important}
-html:root:root:root[data-theme="light"] body .ov .ov-backdrop,html:root:root:root[data-theme="light"] body .ov:has(.dy-modal) .ov-backdrop{background:rgba(20,17,10,.32)!important}
+html:root:root:root body .ov .ov-backdrop,html:root:root:root body .ov:has(.dy-modal) .ov-backdrop{background:rgba(9,9,9,.55)!important}
+html:root:root:root[data-theme="light"] body .ov .ov-backdrop,html:root:root:root[data-theme="light"] body .ov:has(.dy-modal) .ov-backdrop{background:rgba(9,9,9,.32)!important}
 
 /* 4. services: one calm tile for every row (a dark / soft-yellow tile and a yellow / gold line icon) instead of orange, red, green, violet, grey */
 html:root:root:root body .yb-svc-i,html:root:root:root body .yb-svc-i:has([data-i]){background:var(--lt-soft)!important;color:var(--lt-link)!important}
@@ -376,9 +378,9 @@ html:root:root:root body .wp-dots button{box-sizing:border-box;width:24px!import
 html:root:root:root body .wp-dots button[aria-current="true"]{width:40px!important}
 /* 16.2.0 — « check your e-mail » after sign-up */
 html:root:root:root body .ce-card{display:grid;gap:12px;text-align:center;justify-items:center}
-html:root:root:root body .ce-ic{width:64px;height:64px;border-radius:20px;display:grid;place-items:center;background:var(--lt-accent-soft,rgba(255,200,0,.14));color:var(--lt-link,#FFC800)}
+html:root:root:root body .ce-ic{width:64px;height:64px;border-radius:20px;display:grid;place-items:center;background:var(--lt-accent-soft,rgba(215,230,0,.14));color:var(--lt-link,#D7E600)}
 html:root:root:root body .ce-t{font-size:22px;font-weight:700;margin:4px 0 0}
-html:root:root:root body .ce-p{color:var(--lt-ink2,#BDB9AC);font-size:15px;line-height:1.5;margin:0;overflow-wrap:anywhere}
+html:root:root:root body .ce-p{color:var(--lt-ink2,#BBBBB3);font-size:15px;line-height:1.5;margin:0;overflow-wrap:anywhere}
 html:root:root:root body .ce-p.small{font-size:13px}
 html:root:root:root body .ce-card .btn{width:100%}
 html:root:root:root body #ce-msg.ok{color:var(--lt-pos,#0ECB81)}
@@ -386,11 +388,11 @@ html:root:root:root body #ce-msg.ok{color:var(--lt-pos,#0ECB81)}
 html:root:root:root body .mfa-sheet{display:grid;gap:12px}
 html:root:root:root body .mfa-gate{justify-items:stretch;text-align:center}
 html:root:root:root body .mfa-gate .ce-ic{margin:0 auto}
-html:root:root:root body .mfa-p{color:var(--lt-ink2,#BDB9AC);font-size:15px;line-height:1.5;margin:0}
+html:root:root:root body .mfa-p{color:var(--lt-ink2,#BBBBB3);font-size:15px;line-height:1.5;margin:0}
 html:root:root:root body .mfa-p.small{font-size:13px}
 html:root:root:root body .mfa-qr{display:grid;place-items:center;padding:14px;border-radius:18px;background:#fff;justify-self:center}
 html:root:root:root body .mfa-qr img{display:block;width:200px;height:200px;image-rendering:pixelated}
-html:root:root:root body .mfa-secret{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:10px 12px;border-radius:14px;background:var(--lt-card2,#1F1D17)}
+html:root:root:root body .mfa-secret{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:10px 12px;border-radius:14px;background:var(--lt-card2,#1C1C1C)}
 html:root:root:root body .mfa-secret code{font-size:14px;letter-spacing:.06em;overflow-wrap:anywhere}
 html:root:root:root body .mfa-code{font-size:22px;letter-spacing:.3em;text-align:center}
 html:root:root:root body .mfa-ov{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px}
