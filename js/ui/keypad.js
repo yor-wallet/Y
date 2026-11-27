@@ -62,18 +62,11 @@ const Keypad = (() => {
 
   /* root : conteneur de l'écran ; press(valeur, bouton) est appelé à chaque touche (« del » compris) */
   function bind(root, press){
+    /* 16.5.1 — a digit is typed on CONTACT (pointerdown): immediate, like a real keypad; no light following the finger, no ripple */
     root.addEventListener('pointerdown', (e) => {
-      const b = e.target.closest && e.target.closest('.fk-key'); if (!b) return;
-      const r = b.getBoundingClientRect();
-      b.style.setProperty('--rx', (((e.clientX - r.left) / Math.max(r.width, 1)) * 100).toFixed(1) + '%');
-      b.style.setProperty('--ry', (((e.clientY - r.top) / Math.max(r.height, 1)) * 100).toFixed(1) + '%');
-      b.classList.remove('hit'); void b.offsetWidth; b.classList.add('hit');
-    });
-    root.addEventListener('pointermove', (e) => {
-      const b = e.target.closest && e.target.closest('.fk-key'); if (!b || e.pointerType === 'touch') return;
-      const r = b.getBoundingClientRect();
-      b.style.setProperty('--px', (((e.clientX - r.left) / Math.max(r.width, 1)) * 100).toFixed(1) + '%');
-      b.style.setProperty('--py', (((e.clientY - r.top) / Math.max(r.height, 1)) * 100).toFixed(1) + '%');
+      if (e.button > 0) return;
+      const b = e.target.closest && e.target.closest('[data-k]'); if (!b) return;
+      b.__downAt = Date.now(); press(b.getAttribute('data-k'), b);
     });
     root.addEventListener('click', (e) => {
       const s = e.target.closest && e.target.closest('[data-shuf]');
@@ -81,12 +74,11 @@ const Keypad = (() => {
         const pad = s.closest('.fk-pad'); if (!pad) return;
         setShuffle(!shuffleOn());
         pad.innerHTML = keysHtml(pad.getAttribute('data-fk-cls') || 'yl');
-        pad.classList.remove('reflow'); void pad.offsetWidth; pad.classList.add('reflow');
         try { UIKit.haptic('tap'); } catch (err) {}
         return;
       }
       const b = e.target.closest && e.target.closest('[data-k]');
-      if (b) press(b.getAttribute('data-k'), b);
+      if (b && Date.now() - (b.__downAt || 0) > 600) press(b.getAttribute('data-k'), b);   /* keyboard / assistive click only */
     });
   }
   return { padHtml, bind, fly, bloom, shuffleOn };

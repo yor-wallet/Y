@@ -202,7 +202,7 @@ const MOTION = (() => {
     D.addEventListener('click', e => {
       const key = e.target.closest && e.target.closest('[data-tr="key"]'); if (!key || reduced()) return;
       const amt = key.closest('.screen') && key.closest('.screen').querySelector('.tr-amt, .lt-amt, input[inputmode="none"], [data-amt]'); if (!amt) return;
-      amt.classList.remove('lv-type'); void amt.offsetWidth; amt.classList.add('lv-type'); clearTimeout(amt.__ty); amt.__ty = setTimeout(() => amt.classList.remove('lv-type'), 260);
+      return;   /* 16.5.1 — the amount no longer pulses on each key (owner, 27/11): the digit simply appears */
     }, true);
   }
   function copyFx(){

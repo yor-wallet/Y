@@ -26,7 +26,7 @@ const OMW = (() => {
   }
 
   /* ---------- touch: light + spring ---------- */
-  const PRESS = '.btn,.omx-act,.hub-row,.omx-row,.omx-pick,.chip,.nav-item,.hub-circ,.topbar-back,.w-sq,.w-pill,.w-row,.w-promo-card,.ds-eye,.hub-out,.w-out,.yd-nav button,.settings-row,.omx-net.pick,.wp-skip,.lt-key,.lt-mv,.omx-star,.yb-svc,.px-chip,.wd-max,.wd-paste,.nav-cta,.tr-flip,.tr-pairbtn,.item.tx-row,.lt-act';
+  const PRESS = '.fk-key,.btn,.omx-act,.hub-row,.omx-row,.omx-pick,.chip,.nav-item,.hub-circ,.topbar-back,.w-sq,.w-pill,.w-row,.w-promo-card,.ds-eye,.hub-out,.w-out,.yd-nav button,.settings-row,.omx-net.pick,.wp-skip,.lt-key,.lt-mv,.omx-star,.yb-svc,.px-chip,.wd-max,.wd-paste,.nav-cta,.tr-flip,.tr-pairbtn,.item.tx-row,.lt-act';
   /* 16.0.0 — the light blooms only on surfaces (buttons, cards, tiles); list rows get the iOS highlight instead (css/motion-system.css) */
   const LIGHT = '.btn,.omx-act:not(.lt-acts > .omx-act),.lt-act,.w-promo-card,.lt-mv,.yb-svc,.w-pill,.omx-pick,.px-chip,.tr-pairbtn';   /* home quick actions: their circle sinks instead */
   function press(){

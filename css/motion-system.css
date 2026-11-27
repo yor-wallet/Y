@@ -194,3 +194,24 @@ html:root:root:root:root body .fk-key:not(.fk-fn):not(.fk-del):not(.fk-shuffle){
 html:root:root:root:root[data-theme="light"] body .fk-key:not(.fk-fn):not(.fk-del):not(.fk-shuffle){background:rgba(60,55,40,.06)!important;color:var(--lt-ink,#14110A)!important}
 html:root:root:root:root body .fk-key:not(.fk-fn):not(.fk-del):not(.fk-shuffle):is(.m-down,:active){background:rgba(255,255,255,.16)!important}
 html:root:root:root:root[data-theme="light"] body .fk-key:not(.fk-fn):not(.fk-del):not(.fk-shuffle):is(.m-down,:active){background:rgba(60,55,40,.14)!important}
+
+/* ---------- 10. 16.5.1 — keypads (code and amount): flat, immediate, no animation ----------
+   Owner, 27/11: no animation when a number is tapped — a real, reactive, normal keypad with a new look.
+   Flat full-width grid, no circles, no glow, no ripple, no scale, no entry animation. The key's background appears AT ONCE under the
+   finger (the digit is typed on contact) and fades in 140 ms on release. */
+html:root:root:root:root body .fk-pad{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:6px!important;width:min(100%,340px)!important;margin:4px auto 0!important;justify-content:stretch!important}
+html:root:root:root:root body .fk-pad .fk-key{width:auto!important;height:62px!important;border-radius:14px!important;background:transparent!important;box-shadow:none!important;border:0!important;
+  font-size:28px!important;font-weight:500!important;letter-spacing:0!important;color:var(--lt-ink,#F5F3EE)!important;animation:none!important;transform:none!important;
+  transition:background-color 140ms linear!important;overflow:hidden!important}
+html:root:root:root:root[data-theme="light"] body .fk-pad .fk-key{color:var(--lt-ink,#14110A)!important}
+html:root:root:root:root body .fk-pad .fk-key .fk-d{transform:none!important;transition:none!important;font-variant-numeric:tabular-nums}
+html:root:root:root:root body .fk-pad .fk-key .fk-ring{display:none!important}
+html:root:root:root:root body .fk-pad .fk-key:is(.m-down,:active){background:rgba(255,255,255,.10)!important;transform:none!important;transition:none!important}
+html:root:root:root:root[data-theme="light"] body .fk-pad .fk-key:is(.m-down,:active){background:rgba(60,55,40,.09)!important}
+html:root:root:root:root body .fk-pad .fk-key.fk-fn{color:var(--lt-ink2,#BDB9AC)!important}
+html:root:root:root:root body .lt-keys{gap:6px!important}
+html:root:root:root:root body .lt-key{height:58px!important;border-radius:14px!important;background:transparent!important;font-weight:500!important;font-variant-numeric:tabular-nums;
+  animation:none!important;transform:none!important;transition:background-color 140ms linear!important}
+html:root:root:root:root body .lt-key:is(.m-down,:active){background:rgba(255,255,255,.10)!important;transform:none!important;transition:none!important}
+html:root:root:root:root[data-theme="light"] body .lt-key:is(.m-down,:active){background:rgba(60,55,40,.09)!important}
+html:root:root:root:root body :is(.lt-amt,.tr-amt,[data-amt]).lv-type{animation:none!important}

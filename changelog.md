@@ -1,3 +1,14 @@
+# OM Wallet 16.5.1 (web) — pavés numériques plats et immédiats, sans animation
+
+Demande du propriétaire (27/11) : supprimer l'animation au toucher des chiffres, un clavier normal et réactif, une nouvelle apparence.
+
+- **Saisie au contact** : le chiffre est pris dès que le doigt touche la touche (et non plus au relâchement) ; un seul chiffre par appui ; le clavier physique et l'accessibilité restent possibles. Pavé du code (ouverture, transactions) et pavé de montant du Swap.
+- **Aucune animation** : plus de reflet qui suit le doigt, d'onde, de rebond, de chiffre qui grossit, d'entrée animée des touches, de montant qui « bat » à chaque chiffre.
+- **Nouvelle apparence** : grille plate sur toute la largeur (340 px au plus), touches rectangulaires aux coins arrondis (14 px), chiffres 28 px à chasse fixe, neutres de la marque ; la touche tenue fonce immédiatement et revient en 140 ms.
+- **Tests** : `motion.test.mjs` (chiffre saisi au contact, une fois, rien ne bouge) et `threshold.test.mjs` (même chose pour le pavé du code) ; trade, omx, bugfix, smoke, motion-system, ios-settings, a11y, omw, rtl, smallphone, shell.
+
+---
+
 # OM Wallet 16.5.0 (web) — Face ID retiré, écran de code sobre
 
 Demande du propriétaire (27/11) : « enlève Face ID et cette animation banale ; quelque chose de qualitatif, propre, professionnel ».

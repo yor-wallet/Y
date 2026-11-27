@@ -557,6 +557,20 @@ const OMXTrade = (() => {
       }
     }
     if (el.__tr) return; el.__tr = true;
+    /* 16.5.1 — the amount pad types on CONTACT (pointerdown), not on release: immediate, like a real keypad */
+    function typeKey(b){
+      const k = b.getAttribute('data-k'), i = el.querySelector('#sw-amt'); let v = S.sw.amt || '';
+      if (k === 'del') v = v.slice(0, -1);
+      else if (k === '.') v = v.indexOf('.') !== -1 ? v : (v ? v + '.' : '0.');
+      else { const n = v === '0' ? k : v + k; const dec = n.indexOf('.') === -1 ? '' : n.split('.')[1]; if (n.length <= 18 && dec.length <= 8) v = n; }
+      S.sw.amt = v; if (i) i.value = v; paintSwapLive();
+      try { UIKit.haptic('tap'); } catch(e){}
+    }
+    el.addEventListener('pointerdown', e => {
+      if (e.button > 0) return;
+      const b = e.target.closest && e.target.closest('[data-tr="key"]'); if (!b) return;
+      b.__downAt = Date.now(); typeKey(b);
+    });
     el.addEventListener('click', e => {
       const q = sel => e.target.closest && e.target.closest(sel);
       const tfb = q('[data-tr-tf]'); if (tfb){ S.tf = tfb.getAttribute('data-tr-tf'); el.querySelectorAll('[data-tr-tf]').forEach(c => c.setAttribute('aria-pressed', c === tfb ? 'true' : 'false')); open(); return; }
@@ -578,13 +592,7 @@ const OMXTrade = (() => {
       if (a === 'pair') pickPair();
       else if (a === 'pick-from') pickSwap('from');
       else if (a === 'pick-to') pickSwap('to');
-      else if (a === 'key'){
-        const k = b.getAttribute('data-k'), i = el.querySelector('#sw-amt'); let v = S.sw.amt || '';
-        if (k === 'del') v = v.slice(0, -1);
-        else if (k === '.') v = v.indexOf('.') !== -1 ? v : (v ? v + '.' : '0.');
-        else { const n = v === '0' ? k : v + k; const dec = n.indexOf('.') === -1 ? '' : n.split('.')[1]; if (n.length <= 18 && dec.length <= 8) v = n; }
-        S.sw.amt = v; if (i) i.value = v; paintSwapLive();
-      }
+      else if (a === 'key'){ if (Date.now() - (b.__downAt || 0) > 600) typeKey(b); }   /* keyboard / assistive click; a finger already typed on contact */
       else if (a === 'max'){ const s = S.sw, v = avail(s.from, fromNet(s.from)); s.amt = v > 0 ? String(cut8(v)) : ''; const i = el.querySelector('#sw-amt'); if (i) i.value = s.amt; paintSwapLive(); }
       else if (a === 'flip'){ const s = S.sw, x = s.from; s.from = s.to; s.to = x; s.amt = ''; if (!reduced()) b.classList.add('spin'); setTimeout(() => R.go('exchange', { force: true }), reduced() ? 0 : 260); }
       else if (a === 'done'){ S.done = null; R.go(S.back === 'spot' ? 'spot' : 'exchange', { reset: true }); }

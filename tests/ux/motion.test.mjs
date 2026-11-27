@@ -119,12 +119,17 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
     assert.equal((await odo()).cells, 0);
     assert.match(await page.locator('#home [data-omx-total]').textContent(), /^\$[\d,]+\.\d{2}$/);
   });
-  await ok('pavé numérique : chaque touche fait « battre » le montant', async () => {
+  /* 16.5.1 (owner, 27/11): no animation on the keypad — the digit is typed on contact (pointerdown), once, and nothing pulses */
+  await ok('pavé numérique : chiffre saisi dès le contact, une seule fois, sans animation du montant ni de la touche', async () => {
     await page.evaluate(() => R.go('exchange', { force: true })); await wait(1200);
-    await page.click('#exchange .lt-key[data-k="5"]'); await wait(60);
-    assert.equal(await page.locator('#exchange .lv-type').count(), 1, 'the amount pulses');
-    await wait(400);
-    assert.equal(await page.locator('#exchange .lv-type').count(), 0);
+    const k = await page.$('#exchange .lt-key[data-k="5"]'); await k.evaluate(e => e.scrollIntoView({ block: 'center' })); await wait(300); const box = await k.boundingBox();
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2); await page.mouse.down(); await wait(80);
+    assert.equal(await page.inputValue('#sw-amt'), '5', 'typed on contact, before the finger is lifted');
+    assert.equal(await k.evaluate(e => getComputedStyle(e).transform), 'none', 'the key does not scale');
+    await page.mouse.up(); await wait(200);
+    assert.equal(await page.inputValue('#sw-amt'), '5', 'not typed a second time on release');
+    assert.equal(await page.locator('#exchange .lv-type').count(), 0, 'the amount does not pulse');
+    assert.equal(await page.evaluate(() => document.getAnimations().filter(a => a.effect && a.effect.target && a.effect.target.closest && a.effect.target.closest('.lt-keys')).length), 0);
   });
   /* 16.0.0 (audit: « unnecessary rotations »): the centre button no longer spins 180°; it presses in, like every round control */
   await ok('centre : la touche Swap s’enfonce sous le doigt (sans faire de demi-tour)', async () => {

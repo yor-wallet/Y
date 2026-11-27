@@ -29,6 +29,19 @@ await ok('Face ID retiré de l’application (16.5.0) : module absent, aucune li
   assert.equal(await page.locator('.fid-row, [data-action="settings-faceid"]').count(), 0);
   assert.doesNotMatch(await page.locator('#settings').innerText(), /Face ID|Touch ID/);
 });
+await ok('pavé du code (16.5.1) : chiffre pris dès le contact, une seule fois, touche plate sans animation', async () => {
+  await page.evaluate(() => { PinEngine.authorize({ usd: 900 }); }); await wait(700);
+  const k = await page.$('.ps .fk-key[data-k="4"]'); await k.evaluate(e => e.scrollIntoView({ block: 'center' })); await wait(200);
+  const b = await k.boundingBox();
+  await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2); await page.mouse.down(); await wait(60);
+  assert.equal(await page.locator('#ps-dots i.on').count(), 1, 'typed on contact');
+  assert.equal(await k.evaluate(e => getComputedStyle(e).transform), 'none');
+  assert.equal(await k.evaluate(e => getComputedStyle(e).borderRadius), '14px');
+  await page.mouse.up(); await wait(200);
+  assert.equal(await page.locator('#ps-dots i.on').count(), 1, 'not typed again on release');
+  assert.equal(await page.evaluate(() => document.getAnimations().filter(a => a.effect && a.effect.target && a.effect.target.closest && a.effect.target.closest('.fk-pad')).length), 0);
+  await page.evaluate(() => R.overlay.close()); await wait(400);
+});
 await ok('aucune erreur de page', async () => { assert.deepEqual(logs, []); });
 await ctx.close(); await browser.close(); srv.close();
 console.log(failed ? '\n' + failed + ' FAILED' : '\nALL PASSED'); process.exit(failed ? 1 : 0);
