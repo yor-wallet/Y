@@ -116,6 +116,7 @@ const scaleX = tf => { const m = /^matrix\(([^,]+),/.exec(tf || ''); return m ? 
 
   /* holds a finger on the first element matching sel (no click: the touch is cancelled), reads state while held and 900 ms after */
   const hold = async sel => {
+    await page.locator(sel).first().scrollIntoViewIfNeeded(); await wait(300);   /* 17.0.0: the crypto list on the home screen pushes the cards below the fold */
     const box = await page.locator(sel).first().boundingBox();
     const c = await page.context().newCDPSession(page);
     await c.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: box.x + box.width / 2, y: box.y + box.height / 2, id: 0 }] });

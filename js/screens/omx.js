@@ -9,7 +9,7 @@ Object.assign(TR.en, {
   'omx.welcome':'Welcome, {n}','omx.total':'Total assets','omx.omr':'≈ {v} OMR','omx.chg':'24 h','omx.pfNote':'Value of your current holdings at market prices (Binance)',
   'omx.deposit':'Deposit','omx.withdraw':'Withdraw','omx.exchange':'Exchange','omx.markets':'Markets','omx.crypto':'Crypto','omx.activity':'Activity','omx.account':'Account',
   'omx.yourAssets':'Your assets','omx.noAssets':'No crypto yet','omx.noAssetsD':'Your crypto holdings will appear here with their real value.','omx.seeMarkets':'See the markets',
-  'lt.movers':'Movers and Shakers','lt.walletTab':'Wallet','lt.watchlist':'Watchlist','lt.wallet':'Your wallet','lt.myAssets':'My Assets','lt.receive':'Receive','lt.share':'share of your wallet','lt.chg24':'{v} over 24 h',
+  'lt.movers':'Movers and Shakers','lt.cryptos':'Cryptocurrencies','lt.walletTab':'Wallet','lt.watchlist':'Watchlist','lt.wallet':'Your wallet','lt.myAssets':'My Assets','lt.receive':'Receive','lt.share':'share of your wallet','lt.chg24':'{v} over 24 h',
   'omx.movers':'Markets','omx.all':'All','omx.fav':'Favourites','omx.search':'Search an asset','omx.price':'Price','omx.value':'Value','omx.holding':'Holding',
   'omx.st.live':'Live','omx.st.polling':'Refreshed every 20 s','omx.st.connecting':'Connecting…','omx.st.offline':'Offline — last prices','omx.st.error':'Market data unavailable','omx.st.idle':'—',
   'omx.sync':'Last sync {t}','omx.retry':'Try again','omx.source':'Source: Binance market data · prices in USDT ≈ USD',
@@ -35,7 +35,7 @@ Object.assign(TR.fr, {
   'omx.welcome':'Bienvenue, {n}','omx.total':'Total des actifs','omx.omr':'≈ {v} OMR','omx.chg':'24 h','omx.pfNote':'Valeur de vos avoirs actuels aux cours du marché (Binance)',
   'omx.deposit':'Dépôt','omx.withdraw':'Retrait','omx.exchange':'Échange','omx.markets':'Marchés','omx.crypto':'Crypto','omx.activity':'Activité','omx.account':'Compte',
   'omx.yourAssets':'Vos actifs','omx.noAssets':'Pas encore de crypto','omx.noAssetsD':'Vos avoirs crypto apparaîtront ici avec leur valeur réelle.','omx.seeMarkets':'Voir les marchés',
-  'lt.movers':'Plus fortes variations','lt.walletTab':'Portefeuille','lt.watchlist':'Favoris','lt.wallet':'Votre portefeuille','lt.myAssets':'Mes actifs','lt.receive':'Recevoir','lt.share':'part de votre portefeuille','lt.chg24':'{v} sur 24 h',
+  'lt.movers':'Plus fortes variations','lt.cryptos':'Cryptomonnaies','lt.walletTab':'Portefeuille','lt.watchlist':'Favoris','lt.wallet':'Votre portefeuille','lt.myAssets':'Mes actifs','lt.receive':'Recevoir','lt.share':'part de votre portefeuille','lt.chg24':'{v} sur 24 h',
   'omx.movers':'Marchés','omx.all':'Tous','omx.fav':'Favoris','omx.search':'Rechercher un actif','omx.price':'Cours','omx.value':'Valeur','omx.holding':'Solde',
   'omx.st.live':'En direct','omx.st.polling':'Actualisé toutes les 20 s','omx.st.connecting':'Connexion…','omx.st.offline':'Hors ligne — derniers cours','omx.st.error':'Données de marché indisponibles','omx.st.idle':'—',
   'omx.sync':'Dernière synchro {t}','omx.retry':'Réessayer','omx.source':'Source : données de marché Binance · cours en USDT ≈ USD',
@@ -61,7 +61,7 @@ Object.assign(TR.ar, {
   'omx.welcome':'مرحباً، {n}','omx.total':'إجمالي الأصول','omx.omr':'≈ {v} ر.ع.','omx.chg':'24 ساعة','omx.pfNote':'قيمة أصولك الحالية بأسعار السوق (Binance)',
   'omx.deposit':'إيداع','omx.withdraw':'سحب','omx.exchange':'تبادل','omx.markets':'الأسواق','omx.crypto':'العملات الرقمية','omx.activity':'النشاط','omx.account':'الحساب',
   'omx.yourAssets':'أصولك','omx.noAssets':'لا توجد عملات رقمية بعد','omx.noAssetsD':'ستظهر أصولك الرقمية هنا بقيمتها الحقيقية.','omx.seeMarkets':'عرض الأسواق',
-  'lt.movers':'الأكثر تحركاً','lt.walletTab':'المحفظة','lt.watchlist':'المفضلة','lt.wallet':'محفظتك','lt.myAssets':'أصولي','lt.receive':'استلام','lt.share':'حصتها من محفظتك','lt.chg24':'{v} خلال 24 ساعة',
+  'lt.movers':'الأكثر تحركاً','lt.cryptos':'العملات الرقمية','lt.walletTab':'المحفظة','lt.watchlist':'المفضلة','lt.wallet':'محفظتك','lt.myAssets':'أصولي','lt.receive':'استلام','lt.share':'حصتها من محفظتك','lt.chg24':'{v} خلال 24 ساعة',
   'omx.movers':'الأسواق','omx.all':'الكل','omx.fav':'المفضلة','omx.search':'ابحث عن أصل','omx.price':'السعر','omx.value':'القيمة','omx.holding':'الرصيد',
   'omx.st.live':'مباشر','omx.st.polling':'تحديث كل 20 ثانية','omx.st.connecting':'جارٍ الاتصال…','omx.st.offline':'غير متصل — آخر الأسعار','omx.st.error':'بيانات السوق غير متاحة','omx.st.idle':'—',
   'omx.sync':'آخر مزامنة {t}','omx.retry':'إعادة المحاولة','omx.source':'المصدر: بيانات سوق Binance · الأسعار بعملة USDT ≈ دولار',
@@ -165,6 +165,9 @@ const OMX = (() => {
           '<span class="ltr" data-omx-omr>≈ ' + moneyHtml(CurrencyEngine.format(Math.round(tt.omr * 1000) / 1000, 'OMR')) + '</span>') + '</div>' +
       '</section>' +
       '<nav class="omx-acts lt-acts" aria-label="' + escapeHtml(t('omx.total')) + '">' + act('deposit', 'receive', t('omx.deposit')) + act('withdraw', 'withdraw', t('omx.withdraw')) + act('send-internal', 'send', t('si.short')) + (Runtime.ctx && Runtime.ctx.role === 'admin' ? act('topup', 'mobile', t('tp.short')) : '') + '</nav>' +
+      /* 17.0.0 — owner (27/11): the home screen shows the cryptocurrencies — every asset of the app, live price and 24 h change (public Binance prices), tap = its page */
+      '<section class="lt-sec lt-cryptos"><div class="omx-sh"><h2>' + escapeHtml(t('lt.cryptos')) + '</h2><button data-nav="markets">' + escapeHtml(t('px.seeAll')) + '</button></div>' +
+        '<div class="omx-list" id="omx-home-cr">' + OMX_ASSETS.map(a => assetRow(a)).join('') + '</div></section>' +
       '<section class="lt-sec"><div class="omx-sh"><h2>' + escapeHtml(t('lt.movers')) + '</h2><button data-nav="markets">' + escapeHtml(t('px.seeAll')) + '</button></div>' + statusLine() +
         '<div class="lt-movers" id="omx-home-mk">' + (movers.length ? movers.map(card).join('') : skeletonRows(2)) + '</div></section>' +
       '<section class="lt-sec"><div class="omx-sh"><h2>' + escapeHtml(t('lt.watchlist')) + '</h2><button data-nav="markets">' + escapeHtml(t('px.seeAll')) + '</button></div>' +

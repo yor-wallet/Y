@@ -1,3 +1,12 @@
+# DYT 17.0.0 (web) — l'accueil affiche les cryptomonnaies
+
+Demande du propriétaire (27/11) : « le menu principal, je voudrais qu'il affiche les cryptos ».
+
+- **Accueil** : nouvelle section « Cryptomonnaies » juste sous Dépôt / Retrait / Envoyer : les 13 actifs de l'application (BTC, ETH, USDT, USDC, BNB, SOL, TRX, XRP, LTC, DOGE, ADA, AVAX, POL) avec logo, cours en dollars, variation sur 24 h et mini-courbe, mis à jour en direct (cours publics Binance, comme l'écran Marchés). Toucher une ligne ouvre la page de l'actif ; « Voir tout » ouvre Marchés. fr / en / ar.
+- Le reste de l'accueil ne change pas (plus fortes variations, favoris, activité récente).
+
+---
+
 # DYT 16.9.0 (web) — présentation refaite avec la planche, plus aucune photo ; fluidité 60 / 90 / 120 Hz
 
 Demande du propriétaire (27/11) : enlever l'ancien démarrage bleu et les photos de la présentation ; découper la planche « Next Level » pour bien placer ses éléments ; expérience fluide quel que soit l'écran.
