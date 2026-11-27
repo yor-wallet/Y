@@ -252,3 +252,12 @@ html[lang="ar"] .svc-h{letter-spacing:0}
 @media (max-width:860px){.svc-grid{grid-template-columns:1fr}.services{padding-top:64px}.svc{padding:22px}}
 @media (prefers-reduced-motion:reduce){.svc,.svc-index a{transition:none}}
 @media (min-width:861px){.svc-grid>.svc:last-child:nth-child(odd){grid-column:1/-1}.svc-grid>.svc:last-child:nth-child(odd) .svc-steps{grid-template-columns:repeat(3,1fr)}}
+
+/* 16.8.0 — the DYT mascot (cut out of the owner's « Next Level » board, never retouched) replaces the gold coin; the gold sparks go */
+.aura .sparks{display:none}
+.coin-float.mascot{z-index:3;width:clamp(120px,14vw,170px);border-radius:28%;top:-2%;inset-inline-start:-24%;animation:mascot 6s ease-in-out infinite;
+  filter:drop-shadow(0 0 30px rgba(215,230,0,.38)) drop-shadow(0 20px 26px rgba(0,0,0,.6))}
+@keyframes mascot{50%{transform:translateY(-8px)}}
+@media (max-width:980px){.coin-float.mascot{inset-inline-start:-2%;top:2%}}
+@media (max-width:640px){.coin-float.mascot{display:block;width:30vw;inset-inline-start:-1%;top:0;z-index:3}}
+@media (prefers-reduced-motion:reduce){.coin-float.mascot{animation:none}}

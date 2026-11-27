@@ -17,18 +17,18 @@ const Onboarding = (() => {
     en:{ skip:'Skip', have:'I already have an account', lang:'Language', page:(a, b) => 'Screen ' + a + ' of ' + b, slides:[
       { title:'Your digital wallet, always with you', text:'Follow all your assets from one place.', cta:'Discover the wallet' },
       { title:'An easier experience', text:'Deposit, send and withdraw in a few simple steps.', cta:'Continue' },
-      { title:'Protected by your PIN', text:'Your 6-digit code and Face ID lock your account each time you come back.', cta:'Create my account' } ] },
+      { title:'Protected by your PIN', text:'Your 6-digit code locks the app each time you come back; two-step verification protects your sign-in.', cta:'Create my account' } ] },
     fr:{ skip:'Passer', have:'J’ai déjà un compte', lang:'Langue', page:(a, b) => 'Écran ' + a + ' sur ' + b, slides:[
       { title:'Votre portefeuille numérique, toujours avec vous', text:'Suivez tous vos actifs depuis un seul endroit.', cta:'Découvrir le portefeuille' },
       { title:'Une expérience plus simple', text:'Déposez, envoyez et retirez en quelques gestes.', cta:'Continuer' },
-      { title:'Protégé par votre code', text:'Votre code à 6 chiffres et Face ID verrouillent votre compte à chaque retour.', cta:'Créer mon compte' } ] },
+      { title:'Protégé par votre code', text:'Votre code à 6 chiffres verrouille l’application à chaque retour ; la vérification en deux étapes protège votre connexion.', cta:'Créer mon compte' } ] },
     ar:{ skip:'تخطي', have:'لدي حساب بالفعل', lang:'اللغة', page:(a, b) => 'الشاشة ' + a + ' من ' + b, slides:[
       { title:'محفظتك الرقمية معك', text:'تابع أصولك من مكان واحد', cta:'اكتشف المحفظة' },
       { title:'تجربة أسهل', text:'أودِع وأرسِل واسحب بخطوات بسيطة.', cta:'متابعة' },
-      { title:'محمية برمزك السري', text:'رمزك المكوّن من 6 أرقام وFace ID يقفلان حسابك في كل مرة تعود فيها.', cta:'إنشاء حسابي' } ] }
+      { title:'محمية برمزك السري', text:'رمزك المكوّن من 6 أرقام يقفل التطبيق في كل مرة تعود فيها، والتحقق بخطوتين يحمي تسجيل دخولك.', cta:'إنشاء حسابي' } ] }
   };
   /* art of each screen: the two owner photos, then the glass app icon */
-  const ART = [{ photo:'assets/promo/promo-1-nj.jpg', pos:'50% 12%' }, { photo:'assets/promo/promo-2-nj.jpg', pos:'28% 30%' }, { icon:true }];
+  const ART = [{ photo:'assets/promo/promo-1-lime.jpg', pos:'50% 12%' }, { photo:'assets/promo/promo-2-lime.jpg', pos:'28% 30%' }, { icon:true }];
   const LANGS = [['en', 'EN'], ['fr', 'FR'], ['ar', 'عربي']];
   const NAMES = { en:'English', fr:'Français', ar:'العربية' };
 

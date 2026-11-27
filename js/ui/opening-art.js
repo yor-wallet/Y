@@ -24,8 +24,8 @@ const OpeningArt = (() => {
     lang = lang || (typeof LANG === 'string' ? LANG : 'en');
     const ar = lang === 'ar';
     return '<div class="sp2" role="img" aria-label="' + (ar ? 'DYT' : 'DYT') + '">' +
-      '<svg class="sp2-mark" viewBox="0 0 512 512" focusable="false" aria-hidden="true">' + defs('sp2') + mark('sp2-tile', 'sp2') + '</svg>' +
-      '<div class="sp2-word" aria-hidden="true">' + 'OM <span>Wallet</span>' + '</div>' +
+      '<img class="sp2-mark sp2-dyt" src="assets/icons/icon-512.png" alt="" width="148" height="148" decoding="async">' +   /* 16.8.0: the DYT icon (owner's logo) */
+      '<div class="sp2-word" aria-hidden="true">DYT <span>Dream You Trade</span></div>' +
       '<p class="sp2-tag">' + esc(SPLASH_TXT[lang] || SPLASH_TXT.en) + '</p>' +
       '<span class="sp2-bar" aria-hidden="true"><i></i></span></div>';
   }

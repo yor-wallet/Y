@@ -215,3 +215,39 @@ html:root:root:root:root body .lt-key{height:58px!important;border-radius:14px!i
 html:root:root:root:root body .lt-key:is(.m-down,:active){background:rgba(255,255,255,.10)!important;transform:none!important;transition:none!important}
 html:root:root:root:root[data-theme="light"] body .lt-key:is(.m-down,:active){background:rgba(50,50,40,.09)!important}
 html:root:root:root:root body :is(.lt-amt,.tr-amt,[data-amt]).lv-type{animation:none!important}
+
+/* ---------- 11. 16.8.0 — components as on the owner's « Next Level » board (colours and finish only; markup, sizes and motion unchanged) ---------- */
+/* bottom bar: the current tab's icon sits in a lime disc with a dark glyph, its label in the accent (board: « Accueil ») */
+html:root:root:root:root body #bottom-nav .nav-item:not(.nav-cta) .nav-ic{width:36px;height:36px;border-radius:50%;align-items:center;justify-content:center;transition:background-color .2s ease,color .2s ease,transform var(--m-snappy-d,360ms) var(--m-snappy,var(--m-out))}
+html:root:root:root:root body #bottom-nav .nav-item:not(.nav-cta)[aria-current="page"] .nav-ic{background:var(--lt-yellow);color:var(--lt-on-yellow);box-shadow:0 6px 16px -8px rgba(215,230,0,.75)}
+html:root:root:root:root body #bottom-nav .nav-item:not(.nav-cta)[aria-current="page"] .nav-ic svg{color:var(--lt-on-yellow)!important;stroke:var(--lt-on-yellow)!important}
+html:root:root:root:root body #bottom-nav .nav-item:not(.nav-cta)[aria-current="page"] .nav-lb{color:var(--lt-link)!important}
+html:root:root:root:root body #bottom-nav .nav-item:not(.nav-cta) .nav-lb{margin-top:-2px}
+/* the travelling pill stays (it carries the motion between tabs) but only as a faint glass, the disc is the highlight */
+html:root:root:root:root body #bottom-nav .nav-ind{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02) 72%)!important;box-shadow:inset 0 0 0 .5px rgba(255,255,255,.06)!important}
+html:root:root:root:root[data-theme="light"] body #bottom-nav .nav-ind{background:linear-gradient(180deg,rgba(9,9,9,.05),rgba(9,9,9,.025) 72%)!important;box-shadow:inset 0 0 0 .5px rgba(9,9,9,.06)!important}
+/* secondary button: black (or ivory) capsule with a lime rim, text in the page ink (board: « Bouton Secondaire ») */
+html:root:root:root:root body .btn-secondary.btn-secondary{background:transparent!important;background-image:none!important;color:var(--lt-ink)!important;border:1.5px solid var(--lt-yellow)!important;box-shadow:none!important}
+html:root:root:root:root[data-theme="light"] body .btn-secondary.btn-secondary{border-color:#A8B500!important}
+html:root:root:root:root body .btn-secondary.btn-secondary :is(svg,i,b,span){color:inherit!important}
+/* rise chip: solid green with dark text (board: « ↗ +0.50 % ») */
+html:root:root:root:root body .omx-chip.up{background:var(--lt-pos)!important;color:var(--lt-on-yellow)!important}
+html:root:root:root:root[data-theme="light"] body .omx-chip.up{background:#8BC900!important;color:#090909!important}
+/* cards: a hairline of light on the top edge, as on the board's dark panels */
+html:root:root:root:root[data-theme="dark"] body :is(.omx-card,.settings-group,.rv-list,.ds-list,.hub-card,.card,.wd-card,.w-glass){box-shadow:inset 0 1px 0 rgba(255,255,255,.045)!important}
+/* the DYT mascot (owner's board, cut out as drawn) replaces the gold arch + coin on sign-in, sign-up and the 3rd welcome page; it does not move */
+html:root:root:root:root body :is(.w-auth-icon,.wp-third .wp-icon){background:url(../assets/brand/dyt-mascot.webp) center/contain no-repeat!important;animation:none!important;filter:drop-shadow(0 18px 34px rgba(215,230,0,.28))!important}
+html:root:root:root:root body :is(.w-auth-icon,.wp-third .wp-icon)::before,html:root:root:root:root body :is(.w-auth-icon,.wp-third .wp-icon)::after{display:none!important;content:none!important}
+html:root:root:root:root body .w-auth-icon{width:min(56vw,220px)!important;aspect-ratio:398/702!important;height:auto!important;margin:0 auto 10px!important}
+html:root:root:root:root body .wp-third .wp-icon{width:min(48vw,200px)!important;aspect-ratio:398/702!important;height:auto!important}
+html:root:root:root:root body :is(.w-emblem,.w-promo-art){background-image:url(../assets/brand/dyt-mascot-head.webp)!important}
+/* start-up screen: black (ivory) page, a soft lime light, the DYT icon, a lime progress line — no blue left */
+html:root:root:root:root body #splash{background:var(--lt-bg)!important;color:var(--lt-ink)!important}
+html:root:root:root:root body .sp2{background:radial-gradient(70% 45% at 50% 38%,rgba(215,230,0,.16),rgba(215,230,0,0) 70%)!important}
+html:root:root:root:root body .sp2::before{background:radial-gradient(circle,rgba(215,230,0,.14),rgba(215,230,0,0) 64%)!important}
+html:root:root:root:root body .sp2-mark.sp2-dyt{width:min(34vw,148px);height:auto;border-radius:0;filter:drop-shadow(0 16px 30px rgba(215,230,0,.25))!important}
+html:root:root:root:root body .sp2-word{color:var(--lt-ink)!important;font-weight:800}
+html:root:root:root:root body .sp2-word span{display:block;margin-top:6px;font-size:13px;line-height:18px;font-weight:700;letter-spacing:.32em;text-transform:uppercase;color:var(--lt-link)!important}
+html:root:root:root:root body .sp2-tag{color:var(--lt-ink2)!important}
+html:root:root:root:root body .sp2-bar{background:var(--lt-edge)!important}
+html:root:root:root:root body .sp2-bar i{background:var(--lt-yellow)!important}

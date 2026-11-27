@@ -1,3 +1,16 @@
+# DYT 16.8.0 (web) — la planche « Next Level » appliquée : composants et mascotte
+
+Demande du propriétaire (27/11) : « utiliser exactement les mêmes couleurs et la mascotte » de sa planche « Next Level Design System ».
+
+- **Mascotte** (découpée de la planche telle quelle, `brand/make_mascot.py`, jamais retouchée, lunettes comprises) : à la place de l'arche et de la pièce dorées sur la connexion, l'inscription et la 3e page de présentation (immobile) ; sur le site `/welcome` à la place de la pièce dorée.
+- **Composants comme sur la planche** : onglet actif de la barre du bas dans un rond lime (glyphe noir, libellé lime) ; bouton secondaire noir à bord lime ; pastille de hausse pleine en vert `#8BC900`, texte noir ; filet de lumière en haut des cartes sombres. La pastille qui glisse entre les onglets reste, en verre discret.
+- **Écran de démarrage** : l'ancien carreau bleu « OM » est remplacé par l'icône DYT, « Dream You Trade », une barre de chargement lime.
+- **Présentation** : photos en duotone lime (`assets/promo/promo-{1,2}-lime.jpg`) au lieu du doré ; texte de la 3e page corrigé (Face ID n'existe plus : « code à 6 chiffres » + « vérification en deux étapes »), fr / en / ar.
+- **Site `/welcome`** : captures de l'application refaites (`tools/site-shots.mjs`), halo lime, icône DYT.
+- Restent à l'ancien dessin : images de partage, images de démarrage iOS, e-mails du serveur, application Android.
+
+---
+
 # DYT 16.7.0 (web) — OM Wallet devient « DYT — Dream You Trade »
 
 Demande du propriétaire (27/11) : « Renommé », avec son logo DYT (couronne, lettres DYT, anneau lime, ligne « DREAM YOU TRADE »).
