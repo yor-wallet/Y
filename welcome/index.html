@@ -53,16 +53,19 @@
 <main id="main">
   <!-- HERO -->
   <section class="hero">
+    <canvas class="hero-fx" aria-hidden="true"></canvas>
     <div class="wrap hero-in">
       <div class="hero-copy">
-        <p class="eyebrow" data-i="hero.eyebrow">Portefeuille crypto · Arabe · Anglais · Français</p>
+        <div class="hero-logo"><img src="/assets/brand/om-logo-horizontal-white.png" alt="DYT — Dream You Trade" width="360" height="84" fetchpriority="high"><span class="hero-shine" aria-hidden="true"></span></div>
+        <p class="eyebrow" data-i="hero.eyebrow">Compte ouvert en quelques minutes · juste un e-mail</p>
         <h1 data-i="hero.title">Votre portefeuille crypto, simple et sûr.</h1>
         <p class="lead" data-i="hero.lead">Déposez, échangez et suivez vos cryptomonnaies au même endroit. Chaque opération est vérifiée avant d’être créditée, et vous voyez son état en temps réel.</p>
         <div class="ctas">
           <a class="btn btn-primary" href="/#/signup" data-i="cta.signup">Créer mon compte</a>
-          <a class="btn btn-ghost" href="/" data-i="cta.open">Ouvrir l’application</a>
+          <a class="btn btn-ghost" href="/#/login" data-i="cta.open">Ouvrir l’application</a>
           <a class="btn btn-link" href="#services" data-i="cta.discover">Découvrir les prestations</a>
         </div>
+        <p class="hero-note" data-i="hero.note">Sans numéro de téléphone · en arabe, anglais ou français</p>
         <ul class="hero-facts">
           <li><b data-i="fact1.b">Web</b><span data-i="fact1.s">sur téléphone et ordinateur</span></li>
           <li><b data-i="fact2.b">0 frais</b><span data-i="fact2.s">sur les échanges (Swap)</span></li>
@@ -216,17 +219,18 @@
       <img src="/welcome/img/app-icon.webp" alt="" width="96" height="96" decoding="async">
       <h2 data-i="fn.title">Prêt à commencer ?</h2>
       <p data-i="fn.p">Créez votre compte en quelques minutes.</p>
-      <div class="ctas center"><a class="btn btn-primary" href="/#/signup" data-i="cta.signup">Créer mon compte</a><a class="btn btn-ghost" href="/" data-i="cta.open">Ouvrir l’application</a></div>
+      <div class="ctas center"><a class="btn btn-primary" href="/#/signup" data-i="cta.signup">Créer mon compte</a><a class="btn btn-ghost" href="/#/login" data-i="cta.open">Ouvrir l’application</a></div>
     </div>
   </section>
 </main>
+<div class="m-cta" aria-hidden="true"><a class="btn btn-primary" href="/#/signup" data-i="cta.signup" tabindex="-1">Créer mon compte</a></div>
 
 <footer class="foot">
   <div class="wrap foot-in">
     <div><img src="/assets/brand/om-logo-horizontal-white.png" alt="DYT" width="130" height="37" loading="lazy">
       <p data-i="ftr.p">Portefeuille crypto en arabe, anglais et français.</p></div>
     <div class="foot-links">
-      <a href="/" data-i="cta.open">Ouvrir l’application</a>
+      <a href="/#/login" data-i="cta.open">Ouvrir l’application</a>
       <a href="/#/signup" data-i="cta.signup">Créer mon compte</a>
       <a href="mailto:yordigitalefinance@gmail.com" data-i="ftr.contact">Nous contacter</a>
     </div>

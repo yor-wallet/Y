@@ -15,30 +15,23 @@ const cur = page => page.evaluate(() => R.current());
 
 {
   console.log('\n[ouverture et connexion]');
+  /* 17.4.0 (owner): a new visitor sees the showcase site first; its buttons come back to the app's sign-up / sign-in */
+  {
+    const fr = await openApp(browser, url, { lang: 'ar', signedOut: true, firstRun: true, settle: 700 });
+    await fr.page.waitForURL(/\/welcome$/, { timeout: 15000 }).catch(() => {});
+    await ok('première ouverture : le site de présentation s’affiche (et non un écran de l’application)', async () => {
+      assert.match(fr.page.url(), /\/welcome$/);
+      assert.ok(await fr.page.locator('a[href="/#/signup"]').count() >= 1, 'un bouton « créer mon compte » vers l’application');
+    });
+    await ok('« Créer mon compte » du site ouvre l’inscription ; la visite suivante va à la connexion', async () => {
+      await fr.page.evaluate(() => { location.href = '/#/signup'; }); await fr.page.waitForFunction(() => typeof R !== 'undefined' && R.current() === 'signup', null, { timeout: 15000 });
+      await fr.page.evaluate(() => { location.href = '/'; }); await fr.page.waitForFunction(() => typeof R !== 'undefined' && R.current() === 'login', null, { timeout: 15000 });
+    });
+    await fr.ctx.close();
+  }
   const { ctx, page, logs } = await openApp(browser, url, { lang: 'ar', signedOut: true, settle: 700 });
   await wait(900);
-  await ok('présentation : 3 écrans, chacun son message et son bouton, « تخطي » visible', async () => {
-    assert.equal(await page.locator('.wp .wp-slide').count(), 3);
-    assert.equal(await page.locator('.wp [data-ob-cta]').count(), 3);
-    assert.equal((await page.locator('#ob-skip').innerText()).trim(), 'تخطي');
-    const titles = await page.$$eval('.wp .wp-glass h1', h => h.map(x => x.textContent));
-    assert.equal(new Set(titles).size, 3);
-  });
-  await ok('le bouton de chaque écran passe au suivant ; les points suivent', async () => {
-    await page.click('[data-ob-cta="0"]'); await wait(900);
-    assert.ok(await page.locator('.wp-slide[data-k="1"].on').count());
-    await page.click('[data-ob-cta="1"]'); await wait(900);
-    assert.ok(await page.locator('.wp-slide[data-k="2"].on').count());
-  });
-  await ok('changer de langue traduit la présentation (FR)', async () => {
-    await page.click('[data-ob-lang="fr"]'); await wait(400);
-    assert.equal((await page.locator('#ob-skip').textContent()).trim(), 'Passer');
-  });
-  await ok('« Passer » mène à la connexion', async () => {
-    await page.evaluate(() => { const s = document.getElementById('ob-skip'); s.style.visibility = 'visible'; s.click(); }); await wait(1200);
-    assert.equal(await page.locator('.wp').count(), 0);
-    assert.equal(await cur(page), 'login');
-  });
+  await ok('visiteur déjà venu : l’application ouvre la connexion', async () => { assert.equal(await cur(page), 'login'); assert.equal(await page.locator('.wp').count(), 0); });
   await ok('connexion : icône, titre, carte, mot de passe oublié → réinitialisation, créer un compte → inscription', async () => {
     assert.equal(await page.locator('#login .w-auth-icon').count(), 1);
     assert.equal(await page.locator('#login .w-auth-card #au-email').count(), 1);

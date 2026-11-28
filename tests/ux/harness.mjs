@@ -40,7 +40,9 @@ const CSP = (() => { try { const h = JSON.parse(fs.readFileSync(path.join(ROOT, 
 export function serve(port = 0, root = ROOT_APP, index){
   const srv = http.createServer((req, res) => {
     let p = decodeURIComponent(req.url.split('?')[0]); if (p === '/') p = index ? '/' + index : (process.env.FP_DEV ? '/index.src.html' : '/index.html');
-    const f = path.join(root, p);
+    let f = path.join(root, p);
+    if (fs.existsSync(f) && fs.statSync(f).isDirectory()) f = path.join(f, 'index.html');            /* /welcome/ → welcome/index.html, like the host */
+    else if (!path.extname(f) && fs.existsSync(f + '/index.html')) f = path.join(f, 'index.html');    /* /welcome (clean URL) */
     if (!f.startsWith(root) || !fs.existsSync(f) || fs.statSync(f).isDirectory()){ res.writeHead(404); res.end('nf'); return; }
     const hdr = { 'content-type': TYPES[path.extname(f)] || 'application/octet-stream', 'cache-control': 'no-store' };
     if (CSP && path.extname(f) === '.html') hdr['content-security-policy'] = CSP;
@@ -100,9 +102,13 @@ export async function openApp(browser, base, opts = {}){
     if (tick.unref) tick.unref();          /* never keeps the test process alive */
     ws.onClose(() => clearInterval(tick)); page.once('close', () => clearInterval(tick));
   }); } catch (e) {}
-  await page.addInitScript((o) => { window.__FP_SPLASH_MIN = 50; try { if (o.lang) localStorage.setItem('fp_lang_test', o.lang); if (o.theme) localStorage.setItem('fp_theme', o.theme); } catch (e) {} }, opts);
+  await page.addInitScript((o) => { window.__FP_SPLASH_MIN = 50; try { if (o.lang) localStorage.setItem('fp_lang_test', o.lang); if (o.theme) localStorage.setItem('fp_theme', o.theme);
+    /* 17.4.0: a first visit is sent to the showcase site; tests start as a returning visitor unless opts.firstRun */
+    if (!o.firstRun) localStorage.setItem('yor_onboarded', '1'); } catch (e) {} }, opts);
   if (opts.net){ const c = await ctx.newCDPSession(page); await c.send('Network.enable'); await c.send('Network.emulateNetworkConditions', opts.net); }
   await page.goto(base, { waitUntil: 'load' });
+  /* 17.4.0: signed out, the app now goes straight to sign-in (no presentation waiting for a tap): wait for it, so a test's own R.go() is not overridden */
+  if (opts.signedOut && !opts.firstRun){ await page.waitForFunction(() => typeof R !== 'undefined' && R.current() === 'login', null, { timeout: 15000 }).catch(() => {}); await page.waitForTimeout(300); }
   if (!opts.signedOut && opts.unlock !== false){
     await page.waitForSelector('.yl', { timeout: 15000 });
     for (const k of (opts.pin || '482913')) await page.keyboard.press(k);

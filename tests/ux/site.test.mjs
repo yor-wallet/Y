@@ -34,8 +34,10 @@ async function site(opts = {}){
   });
   await ok('liens vers l’application : créer un compte et se connecter', async () => {
     assert.ok(await page.locator('a[href="/#/signup"]').count() >= 2);
-    assert.equal(await page.locator('a[href="/#/login"]').count(), 1);
-    assert.ok(await page.locator('a[href="/"]').count() >= 2);
+    assert.ok(await page.locator('a[href="/#/login"]').count() >= 3, 'se connecter + ouvrir l’application (×2)');
+    assert.equal(await page.locator('a[href="/"]').count(), 0, '17.4.0: « / » renverrait un nouveau visiteur vers ce site');
+    assert.equal(await page.locator('.hero-logo img').count(), 1, 'le logo DYT en tête');
+    assert.equal(await page.locator('canvas.hero-fx').count(), 1, 'le fond animé');
   });
   await ok('arabe : de droite à gauche, textes et captures en arabe ; choix retenu', async () => {
     await page.click('[data-lang="ar"]'); await page.waitForTimeout(300);

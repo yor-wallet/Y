@@ -418,3 +418,55 @@ html:root:root:root:root body .lt-wallet .lt-two .btn{background:var(--lt-card2)
 html:root:root:root:root body .lt-wallet .lt-two .btn svg{color:var(--lt-link)!important;stroke:currentColor!important}
 /* Market: the star and its word keep a space */
 html:root:root:root:root body .chip[data-omx-tab="fav"]{gap:6px!important;display:inline-flex;align-items:center}
+
+/* ---------- 16. 17.4.0 — Transaction history, new look (and the same rows in the home « recent activity») ---------- */
+/* search field with the period inside it */
+html:root:root:root:root body .hx .hx-search{display:flex!important;align-items:center;gap:8px;min-height:48px;padding:0 6px 0 14px!important;border-radius:14px!important;margin:4px 0 12px!important}
+html:root:root:root:root[dir="rtl"] body .hx .hx-search{padding:0 14px 0 6px!important}
+html:root:root:root:root body .hx .hx-search input{flex:1 1 auto;min-width:0;background:transparent!important;border:0!important;font-size:16px}
+html:root:root:root:root body .hx .hx-period{flex:none;display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px;border-radius:10px;border:0;background:var(--lt-card)!important;color:var(--lt-ink)!important;font:600 13px/1 var(--ios-sans);white-space:nowrap}
+html:root:root:root:root[data-theme="light"] body .hx .hx-period{background:#FFFFFF!important;box-shadow:0 0 0 1px var(--set-sep)}
+html:root:root:root:root body .hx .hx-period.on{background:var(--lt-yellow)!important;color:var(--lt-on-yellow)!important;box-shadow:none}
+html:root:root:root:root body .hx .hx-caret{width:7px;height:7px;border:solid currentColor;border-width:0 1.8px 1.8px 0;transform:translateY(-2px) rotate(45deg);opacity:.7}
+/* one row of tabs: quiet text, the current one underlined in lime — scrolls sideways on a small phone, never wraps */
+html:root:root:root:root body .hx .hx-tabs{display:flex!important;gap:4px!important;background:transparent!important;padding:0!important;border-radius:0!important;overflow-x:auto;scrollbar-width:none;margin:0 -16px 6px!important;padding-inline:16px!important;border-bottom:1px solid var(--set-sep)!important}
+html:root:root:root:root body .hx .hx-tabs::-webkit-scrollbar{display:none}
+html:root:root:root:root body .hx .hx-tabs > .chip-pill{display:none!important}
+html:root:root:root:root body .hx .hx-tabs .chip{flex:none;background:transparent!important;color:var(--lt-ink2)!important;border-radius:0!important;padding:12px 10px!important;font-weight:600!important;font-size:15px!important;position:relative;box-shadow:none!important}
+html:root:root:root:root body .hx .hx-tabs .chip[aria-pressed="true"]{color:var(--lt-ink)!important}
+html:root:root:root:root body .hx .hx-tabs .chip[aria-pressed="true"]::after{content:"";position:absolute;left:10px;right:10px;bottom:-1px;height:2.5px;border-radius:2px;background:var(--lt-yellow)}
+/* day labels and groups */
+html:root:root:root:root body :is(#history,#home) .rv-day{font:600 13px/18px var(--ios-sans)!important;letter-spacing:.04em!important;text-transform:uppercase;color:var(--lt-ink2)!important;margin:22px 4px 8px!important;padding:0!important}
+html:root:root:root:root[lang="ar"] body :is(#history,#home) .rv-day{letter-spacing:0!important;text-transform:none;font-size:14px!important}
+html:root:root:root:root body :is(#history,#home) .ds-list{border-radius:16px!important;background:var(--lt-card)!important;border:0!important;padding:0!important;overflow:hidden}
+html:root:root:root:root[data-theme="light"] body :is(#history,#home) .ds-list{box-shadow:0 0 0 1px var(--set-sep)!important}
+/* the row: a round direction mark, name and detail, amount at the end */
+html:root:root:root:root body :is(#history,#home) .tx-row{display:flex!important;align-items:center;gap:12px!important;min-height:66px;padding:10px 16px!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+html:root:root:root:root body :is(#history,#home) .tx-row + .tx-row::before{content:""!important;position:absolute;top:0;inset-inline-start:68px!important;inset-inline-end:0;height:1px;background:var(--set-sep)!important;display:block!important}
+html:root:root:root:root body :is(#history,#home) .tx-row{position:relative}
+html:root:root:root:root body :is(#history,#home) .tx-row .tile{flex:0 0 40px!important;width:40px!important;height:40px!important;border-radius:50%!important;background:var(--lt-card2)!important;color:var(--lt-ink)!important;display:grid!important;place-items:center;border:0!important;box-shadow:none!important}
+html:root:root:root:root body :is(#history,#home) .tx-row .tile svg{width:18px!important;height:18px!important;color:currentColor!important;stroke:currentColor!important}
+html:root:root:root:root body :is(#history,#home) .tx-row.tx-in.st-success .tile{color:var(--lt-pos)!important;background:var(--lt-chip-up)!important}
+html:root:root:root:root body :is(#history,#home) .tx-row.st-failed .tile{color:var(--lt-neg)!important;background:var(--lt-chip-dn)!important}
+html:root:root:root:root body :is(#history,#home) .tx-row.st-pending .tile{color:var(--w-warn)!important}
+html:root:root:root:root body :is(#history,#home) .tx-row .dirb{display:none!important}
+html:root:root:root:root body :is(#history,#home) .tx-row .item-title{font:500 16px/22px var(--ios-sans)!important;color:var(--lt-ink)!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html:root:root:root:root[dir="rtl"] body :is(#history,#home) .tx-row .item-title{font-family:var(--ios-sans-ar)!important}
+html:root:root:root:root body :is(#history,#home) .tx-row .item-sub{font-size:13px!important;line-height:18px!important;color:var(--lt-ink2)!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html:root:root:root:root body :is(#history,#home) .tx-row .item-amount{font:600 16px/22px var(--ios-sans)!important;font-variant-numeric:tabular-nums;color:var(--lt-ink)!important;white-space:nowrap}
+html:root:root:root:root body :is(#history,#home) .tx-row .item-amount.credit{color:var(--lt-pos)!important}
+html:root:root:root:root body :is(#history,#home) .tx-row .item-amount.failed{color:var(--lt-ink3)!important;text-decoration:line-through}
+html:root:root:root:root body :is(#history,#home) .tx-row .item-amount svg,html:root:root:root:root body :is(#history,#home) .tx-row .item-amount img{opacity:.75}
+/* period sheet */
+html:root:root:root:root body .hx-sheet h2{font:700 20px/26px var(--ios-sans);margin:0 4px 14px;color:var(--lt-ink)}
+html:root:root:root:root body .hx-sheet .hx-prow{min-height:52px!important}
+html:root:root:root:root body .hx-sheet .hx-tick{color:var(--lt-link);display:inline-flex}
+html:root:root:root:root body .hx .hx-tabs{flex-wrap:nowrap!important}
+html:root:root:root:root body .hx .hx-tabs .chip{overflow:visible!important}
+html:root:root:root:root body .hx #history-list > .rv-day:first-child{margin-top:16px!important}
+/* the chip's ::after is also its enlarged touch area (inset:-6px): the underline must reset the top edge */
+html:root:root:root:root body .hx .hx-tabs .chip[aria-pressed="true"]::after{top:auto!important;inset-inline:8px!important;bottom:-1px!important;height:2.5px!important;border-radius:2px!important}
+/* five tabs fit a 360 px phone: equal flexible widths, tighter padding */
+html:root:root:root:root body .hx .hx-tabs{gap:0!important}
+html:root:root:root:root body .hx .hx-tabs .chip{flex:1 0 auto;padding:12px 8px!important;font-size:14.5px!important;justify-content:center}
+html:root:root:root:root body .hx .hx-tabs .chip[aria-pressed="true"]::after{background:var(--lt-yellow)!important;opacity:1!important}

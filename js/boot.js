@@ -127,7 +127,16 @@ function boot(){
           /* 14.6.0 — the showcase site (/welcome) links to « /#/signup » and « /#/login »: the visitor has already seen the presentation
              there, so these links open the requested screen directly */
           const want = (() => { try { return R.resolve(LAUNCH_HASH); } catch(e){ return null; } })();
-          const afterLang = () => { if (want === 'signup') toSignup(); else if (want === 'login') toLogin(); else if (!Onboarding.seen()) Onboarding.show((to) => { if (to === 'signup') toSignup(); else toLogin(); }); else toLogin(); };
+          /* 17.4.0 (owner, 28/11): a NEW visitor first sees the showcase site (/welcome) — the presentation, the offer, then the invitation to
+             open an account; its « Create my account » / « Sign in » buttons come back here (/#/signup, /#/login) and open that screen.
+             Someone who has already come through (or signed in once) goes straight to sign-in. */
+          const markSeen = () => { try { localStorage.setItem('yor_onboarded', '1'); } catch(e){ /* private mode: the site is shown again next time, harmless */ } };
+          const afterLang = () => {
+            if (want === 'signup'){ markSeen(); toSignup(); }
+            else if (want === 'login'){ markSeen(); toLogin(); }
+            else if (!Onboarding.seen()){ try { location.replace('/welcome'); } catch(e){ toSignup(); } }
+            else toLogin();
+          };
           afterLang();        /* the app opens in the device language; it can be changed from the login screen or Settings */
         }
       }, splashWait());

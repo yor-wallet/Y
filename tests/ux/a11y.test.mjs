@@ -11,6 +11,8 @@ const ok = (name, fn) => fn().then(() => console.log('  ok  ', name), e => { fai
 console.log('\n[première page : présentation]');
 const { ctx, page } = await openApp(browser, url, { signedOut: true, lang: 'en', settle: 400 });
 await page.goto('about:blank'); await page.goto(url); await page.waitForTimeout(2800);
+/* 17.4.0: the presentation is no longer part of the launch (the showcase site is); its component is still checked here, opened directly */
+await page.evaluate(() => { if (typeof Onboarding !== 'undefined') Onboarding.show(() => {}); }); await new Promise(r => setTimeout(r, 900));
 await ok('boutons de langue : le nom accessible contient les lettres visibles', async () => {
   const r = await page.evaluate(() => [...document.querySelectorAll('[data-ob-lang]')].map(b => ({ vis: b.textContent.trim(), name: b.getAttribute('aria-label') })));
   assert.equal(r.length, 3, 'trois boutons de langue');

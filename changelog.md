@@ -1,3 +1,16 @@
+# DYT 17.4.0 (web) — nouvel historique, et le site d'abord pour un nouveau visiteur
+
+Demandes du propriétaire (28/11) : refaire totalement l'historique des transactions après avoir regardé comment font les autres ; à la première ouverture, montrer d'abord le site puis inviter à créer un compte, avec le logo animé et un fond en mouvement fluide, en s'inspirant de ce qui encourage les jeunes du monde arabe.
+
+Regardé en ligne : guides UX fintech (Mastercard, UXDA, Bitcoin Design, études de cas Venmo / TenX) — liste chronologique, entrées et sorties bien distinguées, statut clair seulement quand il faut agir, langage simple, recherche et filtres ; néobanques jeunes du Golfe (Zywa, Dubaï) — style franc et vivant, accroche animée avec un appel à l'action clair, ouverture de compte présentée comme rapide, d'abord pensé pour le téléphone.
+
+- **Historique** : une seule barre de recherche avec la période intégrée (panneau de choix) ; une seule rangée d'onglets — Tout · Reçues · Envoyées · En cours · Échouées — soulignement lime, au lieu de trois rangées de pastilles ; groupes par jour ; montant reçu en vert avec « + », envoyé à l'encre de la page avec « − », échoué barré en gris ; le mot « Terminée » n'est plus répété sur chaque ligne (seuls « En cours » et « Échouée » s'affichent) ; pastille ronde de sens (verte pour un reçu, rouge pour un échec). Mêmes données, même reçu au toucher. L'activité récente de l'accueil prend le même style.
+- **Première ouverture** : un visiteur qui n'est jamais venu est envoyé sur le site `/welcome` ; ses boutons « Créer mon compte » et « Se connecter » (et « Ouvrir l'application », qui mène désormais à la connexion pour éviter une boucle) reviennent à l'écran demandé ; la visite suivante ouvre directement la connexion. La présentation en 3 pages n'est plus montrée au lancement (le composant reste dans le code).
+- **Site** : logo DYT en tête qui entre en douceur et accroche la lumière ; fond de rubans lumineux lime dessinés en direct (canevas, cadence de l'écran, même vitesse à 60/90/120 Hz, en pause hors écran ou onglet caché, image fixe si « réduire les animations ») — 60 images/s mesurées, comme sans l'animation ; accroche « Compte ouvert en quelques minutes · juste un e-mail » et « Sans numéro de téléphone » (fr / en / ar) ; reflet discret sur le bouton principal ; sur téléphone, un bouton « Créer mon compte » fixé en bas dès que ceux du haut sont passés.
+- Banc d'essai : le serveur de test sert `/welcome` comme l'hébergeur ; un test démarre en visiteur déjà venu sauf `firstRun`, et attend l'écran de connexion quand il est déconnecté.
+
+---
+
 # DYT 17.3.0 (web) — Spot, Marché, Tokens : finition
 
 Suite de la demande « qualité et perfection » du propriétaire (28/11).

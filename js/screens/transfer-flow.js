@@ -25,7 +25,8 @@ function txRow(tx, mask){
   const sub = '<span class="tx-when">' + escapeHtml(timeAgo(tx.createdAt)) + '</span>' + (party && op ? ' · ' + escapeHtml(op) : '');
   /* 15.2.0: the status has its OWN line in every state. « In progress » / « failed » used to be appended to the one-line sub text (nowrap, ellipsis) and were cut off
      on a 360 px phone — the one thing that must always be visible. */
-  const okLine = state === 'success' ? '<div class="tx-okl">' + escapeHtml(t('tx.st.success')) + '</div>' : '<div class="tx-stl">' + statusPill(state, true) + '</div>';
+  /* 17.4.0: a completed operation is the normal case — no « Completed » line on every row; in progress / failed keep their own visible line */
+  const okLine = state === 'success' ? '' : '<div class="tx-stl">' + statusPill(state, true) + '</div>';
   const dirb = '<span class="dirb ' + (state !== 'success' ? 'dirb-' + state : credit ? 'dirb-in' : 'dirb-out') + '" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">' + (credit ? '<path d="M12 5v14M6 13l6 6 6-6"/>' : '<path d="M12 19V5M6 11l6-6 6 6"/>') + '</svg></span>';
   return '<div class="item tx-row tx-' + (credit ? 'in' : 'out') + ' st-' + state + '" role="button" tabindex="0" data-action="view-tx" data-tx="' + tx.id + '"><div class="tile">' + icon(state === 'failed' ? 'close' : iconName, 20) + '</div>' +
     '<div class="item-body"><div class="item-title">' + escapeHtml(name) + '</div>' + okLine + '<div class="item-sub">' + sub + '</div></div>' +
