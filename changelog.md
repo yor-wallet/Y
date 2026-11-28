@@ -1,3 +1,15 @@
+# DYT 17.3.0 (web) — Spot, Marché, Tokens : finition
+
+Suite de la demande « qualité et perfection » du propriétaire (28/11).
+
+- **Graphique Spot** : toutes ses couleurs suivent le thème. En clair, les prix de l'axe et les heures étaient blanc bleuté sur blanc (invisibles) ; l'étiquette du dernier prix avait un texte bleu marine (reste de l'ancienne identité). Désormais : libellés gris de la palette, grille discrète, texte de l'étiquette noir sur vert clair (sombre) ou blanc sur vert profond (clair). Le prix de l'axe qui passait sous l'étiquette n'est plus dessiné. En arabe, le prix sortait de son étiquette (le canevas héritait du sens droite-à-gauche) : corrigé.
+- **Acheter / Vendre** : vert des gains `#8BC900` (texte noir) et rouge des pertes de la palette, à plat — fini le vert brillant d'une autre marque avec reflet et halo.
+- **Tokens** : Envoyer et Recevoir deviennent deux tuiles égales et discrètes ; le lime reste réservé à l'action principale d'un écran.
+- **Marché** : l'étoile de « Favoris » n'est plus collée au mot.
+- **Numéros de téléphone retirés de l'interface** (propriétaire, 28/11 : « personne ne doit voir ça ni ajouter un numéro ») : plus de numéro pour les confirmations SMS, plus de « Numéros liés » ni « Ajouter un numéro » dans les Paramètres ; le numéro n'apparaît plus sur l'écran Profil ni dans la carte du menu ≡ ; l'ancien lien `#/contact-add` ramène à l'accueil. Rien n'est effacé en base.
+
+---
+
 # DYT 17.2.0 (web) — Paramètres et Profil : listes groupées sobres
 
 Demande du propriétaire (27/11) : paramètres organisés comme les meilleures applications financières — catégories structurées, sections clairement séparées, lignes de navigation élégantes, typographie hiérarchisée, présentation sobre, aucune accumulation d'icônes décoratives. « La qualité et la perfection. »

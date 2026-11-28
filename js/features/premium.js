@@ -493,7 +493,6 @@ const Premium = (() => {
       '<div class="screen-body px-prof" style="padding-top:0">' +
         '<section class="px-hero">' + pxAvatar(p, 'xl') +
           '<div class="px-hero-body"><h1>' + escapeHtml(name) + '</h1>' +
-            (p.phone ? '<span class="px-hero-sub ltr" dir="ltr">' + escapeHtml(maskPhone(p.phone)) + '</span>' : '') +
             '<div class="px-hero-chips">' + (yid ? '<button class="px-chip id" data-action="copy" data-copy="' + escapeHtml(yid) + '" aria-label="' + escapeHtml(t('px.rcvCopy') + ' ' + yid) + '">' + icon('copy', 12) + '<span class="ltr">' + escapeHtml(yid) + '</span></button>' : '') +
               '<span class="px-chip ' + (kyc === 'VERIFIED' ? 'ok' : kyc === 'REJECTED' ? 'bad' : kyc === 'PENDING' ? 'warn' : 'muted') + '"><i></i>' + escapeHtml(t('px.kyc.' + kyc)) + '</span>' +
               (ctx.role === 'admin' ? '<span class="px-chip muted">ADMIN</span>' : '') + '</div></div>' +
@@ -501,7 +500,6 @@ const Premium = (() => {
         '</section>' +
         settingsSection(t('px.personal')) + '<div class="settings-group">' +
           info('user', t('px.first'), escapeHtml(p.firstName || '—')) + info('user', t('px.last'), escapeHtml(p.lastName || '—')) +
-          (p.phone ? info('mobile', t('px.phone'), escapeHtml(maskPhone(p.phone)), true) : '') +
           (p.email ? info('mail', t('px.email'), escapeHtml(maskEmail(p.email)), true) : '') +
           (c ? info('globe', t('px.country'), '<span class="px-flag">' + flag(c.iso) + '</span> ' + escapeHtml(c[LANG] || c.en)) : '') +
           (yid ? info('wallet', t('px.accountId'), escapeHtml(yid), true) : '') +

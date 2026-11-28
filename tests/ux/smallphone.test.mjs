@@ -35,16 +35,15 @@ for (const [lang, w] of [['fr', 360], ['ar', 360], ['fr', 320]]) {
     assert.ok(flagged.length >= 2, 'lignes en cours / échouées : ' + flagged.length);
     assert.ok(flagged.every(x => x.stVisible === true), 'statut caché : ' + JSON.stringify(flagged));
   });
-  await ok('Compte : fiche du profil lisible, petites cartes dans l’écran, pas de défilement horizontal', async () => {
+  await ok('Compte : fiche du profil lisible (sans numéro de téléphone), petites cartes dans l’écran, pas de défilement horizontal', async () => {
     await go(page, 'account');
     const r = await page.evaluate(() => {
       const q = s => document.querySelector(s), b = s => q(s).getBoundingClientRect();
-      return { name: Math.round(b('#account .hub-who b').width), phone: Math.round(b('#account .hub-who > span').width), phoneH: Math.round(b('#account .hub-who > span').height),
-        phoneLH: parseFloat(getComputedStyle(q('#account .hub-who > span')).lineHeight), cards: [...document.querySelectorAll('#account .hub-two .hub-card')].map(c => { const x = c.getBoundingClientRect(); return [Math.round(x.left), Math.round(x.right), Math.round(x.top)]; }),
+      return { name: Math.round(b('#account .hub-who b').width), phoneShown: !!q('#account .hub-who > span.ltr'), cards: [...document.querySelectorAll('#account .hub-two .hub-card')].map(c => { const x = c.getBoundingClientRect(); return [Math.round(x.left), Math.round(x.right), Math.round(x.top)]; }),
         over: document.querySelector('#account').scrollWidth - document.querySelector('#account').clientWidth };
     });
     assert.ok(r.name >= (w === 320 ? 95 : 120), 'nom du profil trop étroit : ' + r.name);
-    assert.ok(r.phoneH <= r.phoneLH * 1.3, 'numéro de téléphone sur plusieurs lignes');
+    assert.equal(r.phoneShown, false, 'le numéro de téléphone n’est plus affiché (17.3.0)');
     assert.equal(r.cards.length, 2);
     assert.ok(r.cards.every(([a, c]) => a >= 0 && c <= w), 'cartes hors écran : ' + JSON.stringify(r.cards));
     if (w <= 340) assert.ok(r.cards[1][2] > r.cards[0][2], 'à 320 px les deux cartes sont l’une sous l’autre');

@@ -406,3 +406,15 @@ html:root:root:root:root body #settings .set-v2 > .set-out{margin:36px 0 0!impor
 /* the currency grid: no sliding pill (it spans both rows), the chosen currency is filled directly */
 html:root:root:root:root body #settings .chips:has([data-currency]) > .chip-pill{display:none!important}
 html:root:root:root:root body #settings .chips:has([data-currency]) .chip[aria-pressed="true"]{background:var(--lt-yellow)!important;color:var(--lt-on-yellow)!important}
+
+/* ---------- 15. 17.3.0 — Spot, Market, Tokens: finish ---------- */
+/* buy / sell in the palette: buy = the green of gains (#8BC900) with dark text, sell = the red of losses; flat, no glossy gradient, no glow */
+html:root:root:root:root body .tr-buy{background:#8BC900!important;background-image:none!important;color:#090909!important;border:0!important;box-shadow:none!important;text-shadow:none!important;font-weight:600!important}
+html:root:root:root:root body .tr-sell{background:var(--lt-neg)!important;background-image:none!important;color:#fff!important;border:0!important;box-shadow:none!important;text-shadow:none!important;font-weight:600!important}
+html:root:root:root:root body .tr-side button.on.buy{background:#8BC900!important;background-image:none!important;color:#090909!important;box-shadow:none!important}
+html:root:root:root:root body .tr-side button.on.sell{background:var(--lt-neg)!important;background-image:none!important;color:#fff!important;box-shadow:none!important}
+/* Tokens: Send and Receive are two equal, quiet tiles — the lime stays for the single main action of a screen */
+html:root:root:root:root body .lt-wallet .lt-two .btn{background:var(--lt-card2)!important;background-image:none!important;color:var(--lt-ink)!important;box-shadow:none!important;border:0!important;border-radius:16px!important;font-weight:600!important;min-height:52px}
+html:root:root:root:root body .lt-wallet .lt-two .btn svg{color:var(--lt-link)!important;stroke:currentColor!important}
+/* Market: the star and its word keep a space */
+html:root:root:root:root body .chip[data-omx-tab="fav"]{gap:6px!important;display:inline-flex;align-items:center}

@@ -34,7 +34,7 @@ const R = (() => {
   };
   /* 14.0.0 — money transfers are retired from the app (their history and receipts stay readable). An old link, a saved screen or a
      shortcut to a transfer screen lands on the home screen; the server functions are not changed by this. */
-  const RETIRED_RE = /^(country-select|service-select|identifier-input|tx-amount|tx-review|tx-result|receive|processing|tx-network-validation|tx-confirmation)$/;
+  const RETIRED_RE = /^(country-select|service-select|identifier-input|tx-amount|tx-review|tx-result|receive|processing|tx-network-validation|tx-confirmation|contact-add)$/;   /* 17.3.0: + contact-add (owner: nobody adds or sees numbers any more) */
   /* 14.5.1 — the October buy / sell / swap screens (instant credit at a stored price) are closed on the server
      (20261125_close_legacy_instant_trades.sql). An old link or shortcut to them opens the real Swap: price fixed by the server,
      PIN, « En cours », confirmed by the administrator. */

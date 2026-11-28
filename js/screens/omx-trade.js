@@ -247,7 +247,10 @@ const OMXTrade = (() => {
   let hoverI = -1, cvW = 0, pal = null, palKey = '';
   function css(v, d){ try { return getComputedStyle(document.documentElement).getPropertyValue(v).trim() || d; } catch(e){ return d; } }
   /* chart colours read once per tone (day / night), not on every frame */
-  function colors(){ const k = document.documentElement.getAttribute('data-tone') || ''; if (!pal || palKey !== k){ palKey = k; pal = { POS: css('--w-pos', '#45E39A'), NEG: css('--w-neg', '#FF7D89') }; } return pal; }
+  /* 17.3.0: every colour of the chart follows the theme (the axis labels used to be a light blue-white, invisible on the light page) */
+  function colors(){ const de = document.documentElement, k = (de.getAttribute('data-tone') || '') + '|' + (de.getAttribute('data-theme') || ''); if (!pal || palKey !== k){ palKey = k; const dark = de.getAttribute('data-theme') !== 'light';
+    pal = { POS: css('--w-pos', '#8BC900'), NEG: css('--w-neg', '#FF5A6E'), INK: css('--lt-ink2', dark ? '#B2B2AA' : '#4F4F48'), INK3: css('--lt-ink3', dark ? '#97978F' : '#5F5F57'),
+      GRID: dark ? 'rgba(255,255,255,.08)' : 'rgba(9,9,9,.08)', HAIR: dark ? 'rgba(255,255,255,.45)' : 'rgba(9,9,9,.35)', TAG: dark ? '#090909' : '#FFFFFF' };   /* tag text: dark on the light green, white on the deep green */ } return pal; }
   /* width of the chart's content box (inside the card padding), kept up to date by a ResizeObserver: no layout read per frame */
   function chartWidth(cv){
     if (cvW > 0) return cvW;
@@ -260,19 +263,21 @@ const OMXTrade = (() => {
     if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)){ cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cv.style.width = W + 'px'; cv.style.height = H + 'px'; }
     const g = cv.getContext('2d'); if (!g) return;
     g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
-    const { POS, NEG } = colors(), cs = M.candles;
+    g.direction = 'ltr'; g.textAlign = 'start';   /* figures are left-to-right, also in Arabic (the canvas inherited RTL and pushed the price out of its tag) */
+    const { POS, NEG, INK, INK3, GRID, HAIR, TAG } = colors(), cs = M.candles;
     g.font = '600 10px -apple-system, BlinkMacSystemFont, Inter, system-ui, sans-serif';   /* 15.3.0: the UI font (SF on Apple devices, Inter elsewhere) */
-    if (!cs.length){ g.fillStyle = 'rgba(225,238,255,.6)'; g.textAlign = 'center'; g.fillText('—', W / 2, H / 2); g.textAlign = 'start'; return; }
+    if (!cs.length){ g.fillStyle = INK3; g.textAlign = 'center'; g.fillText('—', W / 2, H / 2); g.textAlign = 'start'; return; }
     const padR = 64, padT = 12, padB = 20, n = cs.length, cw = (W - padR - 8) / n;
     let lo = Math.min.apply(null, cs.map(c => c.l)), hi = Math.max.apply(null, cs.map(c => c.h));
     if (M.last > 0){ lo = Math.min(lo, M.last); hi = Math.max(hi, M.last); }
     const span = (hi - lo) || hi * 0.002 || 1; lo -= span * 0.08; hi += span * 0.08;
     const y = v => padT + (1 - (v - lo) / (hi - lo)) * (H - padT - padB);
     g.lineWidth = 1;
+    const lastY = Math.round(y(M.last > 0 ? M.last : cs[n - 1].c));
     for (let i = 0; i < 4; i++){
       const v = lo + (hi - lo) * (i + 0.5) / 4, yy = Math.round(y(v)) + 0.5;
-      g.strokeStyle = 'rgba(255,255,255,.09)'; g.beginPath(); g.moveTo(4, yy); g.lineTo(W - padR, yy); g.stroke();
-      g.fillStyle = 'rgba(225,238,255,.62)'; g.fillText(fmtP(v), W - padR + 6, yy + 3);
+      g.strokeStyle = GRID; g.beginPath(); g.moveTo(4, yy); g.lineTo(W - padR, yy); g.stroke();
+      if (Math.abs(yy - lastY) > 16){ g.fillStyle = INK; g.fillText(fmtP(v), W - padR + 6, yy + 3); }   /* no label under the price tag */
     }
     cs.forEach((c, i) => {
       const up = c.c >= c.o, x = 4 + i * cw + cw / 2, bw = Math.max(1.6, cw * 0.62);
@@ -284,13 +289,13 @@ const OMXTrade = (() => {
     const last = cs[n - 1], L = M.last > 0 ? M.last : last.c, ly = Math.round(y(L)) + 0.5, upL = L >= last.o;
     g.setLineDash([4, 4]); g.strokeStyle = upL ? POS : NEG; g.beginPath(); g.moveTo(4, ly); g.lineTo(W - padR, ly); g.stroke(); g.setLineDash([]);
     g.fillStyle = upL ? POS : NEG; roundRect(g, W - padR + 1, ly - 9, padR - 3, 18, 6); g.fill();
-    g.fillStyle = '#04204F'; g.fillText(fmtP(L), W - padR + 6, ly + 3.5);
+    g.fillStyle = TAG; g.fillText(fmtP(L), W - padR + 6, ly + 3.5);
     /* time marks */
-    g.fillStyle = 'rgba(225,238,255,.5)';
+    g.fillStyle = INK3;
     [0, Math.floor(n / 2), n - 1].forEach(i => { const d = new Date(cs[i].t), lab = S.tf === '1D' ? d.toLocaleDateString(undefined, { day: '2-digit', month: '2-digit' }) : d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
       g.fillText(lab, Math.min(W - padR - 34, Math.max(4, 4 + i * cw)), H - 5); });
     if (hoverI >= 0 && hoverI < n){
-      const x = Math.round(4 + hoverI * cw + cw / 2) + 0.5; g.strokeStyle = 'rgba(255,255,255,.45)'; g.beginPath(); g.moveTo(x, padT); g.lineTo(x, H - padB); g.stroke();
+      const x = Math.round(4 + hoverI * cw + cw / 2) + 0.5; g.strokeStyle = HAIR; g.beginPath(); g.moveTo(x, padT); g.lineTo(x, H - padB); g.stroke();
       const c = cs[hoverI], o = document.getElementById('tr-ohlc');
       if (o) o.textContent = 'O ' + fmtP(c.o) + '  H ' + fmtP(c.h) + '  L ' + fmtP(c.l) + '  C ' + fmtP(c.c);
     }

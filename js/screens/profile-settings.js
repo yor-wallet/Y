@@ -157,15 +157,7 @@ function renderSettings(){
     Push.rowHtml() +     /* 12.13.0 : alertes sur le téléphone, même application fermée */
   '</div>';
   html += '<p class="set-note set-foot"><span>' + escapeHtml(t('set.chan')) + '</span></p>';   /* 17.2.0: the explanation is a footnote under its group */
-  html += settingsSection(t('confirm.title'));
-  html += '<div class="settings-group">' +
-    '<div class="settings-row" style="cursor:default"><div class="tile">' + icon('mobile', 20) + '</div><div class="settings-row-body"><div class="settings-row-title">' + t('set.sms') + '</div><div class="settings-row-sub">' + t('confirm.desc') + '</div></div></div>' +
-    '<div style="padding:0 16px 14px;border-top:1px solid var(--border)">' +
-      '<div class="field-box" style="margin-top:calc(10px*var(--ui))"><input type="tel" id="confirm-phone" inputmode="tel" dir="ltr" autocomplete="tel" placeholder="+968 7798 6533" value="' + escapeHtml(setts.confirmPhone || '') + '" aria-label="' + escapeHtml(t('confirm.title')) + '"></div>' +
-      '<div class="field-err" id="confirm-phone-err"></div>' +
-      '<button class="btn btn-secondary" id="confirm-phone-save" type="button" style="margin-top:calc(8px*var(--ui))">' + t('action.save') + '</button>' +
-    '</div>' +
-  '</div>';
+  /* 17.3.0 (owner, 28/11): the SMS number for confirmations is no longer shown to users (the saved value is kept, nothing is deleted) */
 
   /* 4. Money preferences — only what the app really supports (display currency, saved numbers). Limits and fees are set by the server. */
   html += setCat('banknote', t('set.c.fin'), t('set.c.finD'));
@@ -176,14 +168,7 @@ function renderSettings(){
     chipRow('<div class="chips" style="padding-top:2px;flex-wrap:wrap">' + ['OMR','USD','EUR','GBP','AED','SAR','XOF','XAF','QAR','EGP'].map(c => '<button class="chip" data-currency="' + c + '" ' + (primaryCur === c ? 'aria-pressed="true"' : 'aria-pressed="false"') + '>' + c + '</button>').join('') + '</div>' +
       '<p class="set-mini">' + escapeHtml(t('set.curNote')) + '</p>') +
   '</div>';
-  html += settingsSection(t('settings.sectionContacts'));
-  html += '<div class="settings-group">' +
-    '<div class="settings-row" style="cursor:default"><div class="tile">' + icon('contact', 20) + '</div><div class="settings-row-body"><div class="settings-row-title">' + t('settings.contacts') + '</div><div class="settings-row-sub">' + (contactCount === 1 ? t('settings.numbers_count_one') : tf('settings.numbers_count', { n: contactCount })) + '</div></div></div>' +
-    '<div style="padding:calc(8px*var(--ui)) calc(12px*var(--ui));display:flex;flex-direction:column;gap:calc(10px*var(--ui));border-top:1px solid var(--border)">' +
-      (contactCount ? Runtime.contacts.map(c => contactCardHTML(c)).join('') : '<div class="empty" style="padding:20px 0"><div class="empty-sub">' + t('contact.empty') + '</div></div>') +
-      '<button class="btn btn-secondary" data-nav="contact-add" style="margin-top:calc(6px*var(--ui))">' + icon('plus', 18) + '<span>' + t('contact.add') + '</span></button>' +
-    '</div>' +
-  '</div>';
+  /* 17.3.0 (owner, 28/11): the list of linked numbers and « add a number » are no longer shown to users (stored data untouched) */
 
   /* 12.9.0: the connected wallet lives here (it used to sit in the home balance card) */
   if (FEATURES.crypto){

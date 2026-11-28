@@ -50,7 +50,7 @@ function renderAccount(){
     '<section class="hub-head"><h1>' + escapeHtml(t('ac.title')) + '</h1><p>' + escapeHtml(t('ac.sub')) + '</p></section>' +
     '<section class="hub-card hub-me"><button type="button" class="hub-me-go" data-nav="profile" aria-label="' + escapeHtml(name) + '"><span class="hub-chev dir-flip">' + icon('chev', 18) + '</span></button>' +
       '<div class="hub-ava">' + pxAvatar(p) + '<button type="button" class="hub-edit" data-nav="profile-edit" aria-label="' + escapeHtml(t('ac.edit')) + '">' + '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>' + '</button></div>' +
-      '<div class="hub-who"><b>' + escapeHtml(name) + '</b>' + (phone ? '<span class="ltr" dir="ltr">' + escapeHtml(phone) + '</span>' : '') +
+      '<div class="hub-who"><b>' + escapeHtml(name) + '</b>' +   /* 17.3.0: the phone number is no longer shown */
         '<div class="hub-badges"><span class="hub-badge">' + escapeHtml(t('ac.user')) + '</span><span class="hub-badge ' + (verified ? 'ok' : 'no') + '">' + icon(verified ? 'shield' : 'info', 14) + escapeHtml(t(verified ? 'ac.verified' : 'ac.unverified')) + '</span></div></div></section>' +
     '<div class="hub-two">' +
       '<section class="hub-card hub-wallet"><span class="hub-chev dir-flip">' + icon('chev', 16) + '</span><div><small>' + escapeHtml(t('ac.avail')) + '</small><b>' + escapeHtml(t('ac.wallet')) + '</b><span class="hub-amt ltr" dir="ltr">' +
