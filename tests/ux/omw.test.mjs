@@ -81,17 +81,20 @@ const cur = page => page.evaluate(() => R.current());
     assert.deepEqual(await page.$$eval('#wallet .lt-two .btn', b => b.map(x => x.getAttribute('data-nav'))), ['send-internal', 'deposit']);
     assert.equal(await page.locator('#wallet .lt-plus[data-nav="deposit"]').count(), 1);
   });
-  await ok('paramètres : chaque ligne ouvre sa page ou descend à sa section', async () => {
-    const want = { 'profile': 'profile', 'wallet': 'wallet', 'deposit': 'deposit', 'withdraw': 'withdraw', 'help': 'help' };
-    for (const [nav, to] of Object.entries(want)){
+  await ok('paramètres (17.2.0) : la fiche profil puis un groupe par catégorie, dans cet ordre ; chaque lien ouvre sa page ; une seule déconnexion, à la fin', async () => {
+    await page.evaluate(() => R.go('settings', { force: true })); await wait(700);
+    const order = await page.$$eval('#settings .set-v2 > .set-cat h2', h => h.map(x => x.textContent.trim()));
+    const want = await page.evaluate(() => ['set.c.acc', 'set.c.sec', 'set.c.notif', 'set.c.fin', 'set.c.look', 'set.c.info'].map(k => t(k).trim()));
+    assert.deepEqual(order, want);
+    assert.equal(await page.locator('#settings .w-list').count(), 0, 'plus de liste de raccourcis en double');
+    assert.equal(await page.locator('#settings [data-action="sign-out"]').count(), 1, 'une seule déconnexion');
+    assert.equal(await page.evaluate(() => { const k = [...document.querySelector('#settings .set-v2').children].filter(e => e.offsetHeight > 30); return k[k.length - 1].matches('.set-out'); }), true, 'la déconnexion est le dernier élément');
+    assert.equal(await page.locator('#settings .settings-row > .tile:visible').count(), 0, 'aucune icône décorative');
+    for (const [sel, to] of [['#settings .set-me[data-nav="profile"]', 'profile'], ['#settings [data-nav="profile-edit"]', 'profile-edit'], ['#settings [data-nav="help"]', 'help'], ['#settings [data-nav="devices"]', 'devices']]){
       await page.evaluate(() => R.go('settings', { force: true })); await wait(600);
-      await page.click('#settings .w-list [data-nav="' + nav + '"]'); await wait(700);
-      assert.equal(await cur(page), to, nav);
+      await page.locator(sel).first().scrollIntoViewIfNeeded(); await page.click(sel); await wait(700);
+      assert.equal(await cur(page), to, sel);
     }
-    await page.evaluate(() => R.go('settings', { force: true })); await wait(600);
-    for (const id of ['set-a-sec', 'set-a-notif', 'set-a-look']) assert.equal(await page.locator('#' + id).count(), 1, id);
-    await page.click('#settings [data-w-scroll="set-a-notif"]'); await wait(900);
-    assert.ok(await page.evaluate(() => document.getElementById('settings').scrollTop) > 100);
   });
   await ok('messages : toast() affiche la nouvelle capsule (icône, barre de temps)', async () => {
     await page.evaluate(() => toast('Copié', 'success')); await wait(200);

@@ -95,8 +95,8 @@ Object.assign(TR.ar, { 'set.c.look':'المظهر', 'set.c.lookD':'المظهر 
   'set.c.sec':'الأمان والخصوصية', 'set.c.secD':'الرمز الشخصي والتحقق بخطوتين والأجهزة والجلسات', 'set.c.fin':'التفضيلات المالية', 'set.c.finD':'للعرض فقط: تحتفظ عملياتك بعملتها',
   'set.c.acc':'الحساب', 'set.c.info':'المعلومات والمساعدة', 'set.chan':'إشعارات التطبيق تظهر داخل DYT. تنبيهات الهاتف (Push) تصل حتى والتطبيق مغلق. الرسائل النصية يرسلها الخادم إلى رقمك.',
   'set.inapp':'الإشعارات داخل التطبيق', 'set.inappD':'تنبيهات الأموال والأمان داخل التطبيق (تتحكم أيضاً في تنبيهات الهاتف)', 'set.sms':'التأكيد برسالة نصية', 'set.curNote':'تُحوَّل الأرصدة بالسعر المذكور؛ ولا تُحوَّل التحويلات والإيصالات والسجل أبداً.' });
-function setCat(ic, title, desc){
-  return '<div class="set-cat"><span class="set-cat-ic">' + icon(ic, 18) + '</span><div><h2>' + escapeHtml(title) + '</h2>' + (desc ? '<p>' + escapeHtml(desc) + '</p>' : '') + '</div></div>';
+function setCat(ic, title){
+  return '<div class="set-cat"><h2>' + escapeHtml(title) + '</h2></div>';   /* 17.2.0: a plain group label — no icon, no line of description */
 }
 Object.assign(TR.en, { 'set.r.profile':'Personal account', 'set.r.security':'Security & sign-in', 'set.r.wallet':'Wallet & currencies', 'set.r.networks':'Networks & addresses', 'set.r.transfers':'Transfers & withdrawals', 'set.r.notifs':'Notifications', 'set.r.look':'Appearance & motion', 'set.r.lang':'Language & currency', 'set.r.help':'Help & learning', 'set.r.all':'All settings' });
 Object.assign(TR.fr, { 'set.r.profile':'Compte personnel', 'set.r.security':'Sécurité et connexion', 'set.r.wallet':'Portefeuille et devises', 'set.r.networks':'Réseaux et adresses', 'set.r.transfers':'Transferts et retraits', 'set.r.notifs':'Notifications', 'set.r.look':'Apparence et animations', 'set.r.lang':'Langue et devise', 'set.r.help':'Aide et apprentissage', 'set.r.all':'Tous les réglages' });
@@ -115,55 +115,28 @@ function renderSettings(){
   const yid = dispId(Runtime.ctx.yorId || '');
   const chipRow = inner => '<div class="set-chips">' + inner + '</div>';
 
-  /* header and category list from the owner's settings reference; every row opens a real page or the matching section below */
-  const sr = (k, ic, attr) => '<button type="button" class="w-row" ' + attr + '><span class="w-tile">' + icon(ic, 24) + '</span><b>' + escapeHtml(t('set.r.' + k)) + '</b><span class="w-chev dir-flip">' + icon('chev', 20) + '</span></button>';
-  let html = '<div class="screen-body set-body w-set">' +
+  /* 17.2.0 (owner, 27/11: « catégories structurées, sections séparées, lignes élégantes, sans icônes décoratives »):
+     profile card, then one labelled group per category — account, security, notifications, money, appearance, help — and sign-out at the end.
+     The former shortcut list at the top repeated these groups and is gone; every setting is still here, unchanged. */
+  let html = '<div class="screen-body set-body w-set set-v2">' +
     '<div class="w-head">' + (typeof OMX !== 'undefined' ? '<span class="w-brand"><img class="w-l" src="assets/brand/om-logo-horizontal.png" alt="DYT" width="150" height="54"><img class="w-d" src="assets/brand/om-logo-horizontal-white.png" alt="" width="150" height="54"></span>' : '') + '<span></span></div>' +
-    '<div class="w-title"><button class="w-sq" data-action="back" aria-label="' + t('ui.back') + '"><span class="dir-flip" style="display:inline-flex">' + icon('back', 22) + '</span></button><h1>' + t('settings.title') + '</h1><span class="w-sp"></span></div>' +
-    '<section class="glass w-list">' +
-      sr('profile', 'user', 'data-nav="profile"') + sr('security', 'shield', 'data-w-scroll="set-a-sec"') + sr('wallet', 'wallet', 'data-nav="wallet"') +
-      sr('networks', 'share', 'data-nav="deposit"') + sr('transfers', 'swap', 'data-nav="withdraw"') + sr('notifs', 'bell', 'data-w-scroll="set-a-notif"') +
-      sr('look', 'sparkle', 'data-w-scroll="set-a-look"') + sr('lang', 'globe', 'data-w-scroll="set-a-look"') + sr('help', 'help', 'data-nav="help"') +
-    '</section>' +
-    '<button type="button" class="glass w-out" data-action="sign-out">' + icon('logout', 22) + '<span>' + t('ac.logout') + '</span></button>' +
-    '<div class="w-sec-t">' + t('set.r.all') + '</div>';
+    '<div class="w-title"><button class="w-sq" data-action="back" aria-label="' + t('ui.back') + '"><span class="dir-flip" style="display:inline-flex">' + icon('back', 22) + '</span></button><h1>' + t('settings.title') + '</h1><span class="w-sp"></span></div>';
 
   /* account summary -> profile */
   html += '<button class="set-me" type="button" data-nav="profile">' + (typeof pxAvatar === 'function' ? pxAvatar(p) : '') +
     '<span class="set-me-body"><b>' + escapeHtml(((p.firstName || '') + ' ' + (p.lastName || '')).trim() || '—') + '</b><small class="ltr" dir="ltr">' + escapeHtml(yid) + '</small></span>' +
     (isAdmin ? '<span class="badge badge-accent">ADMIN</span>' : '') + '<span class="settings-row-chev">' + icon('chev', 18) + '</span></button>';
 
-  /* 1. Appearance */
-  html += '<div id="set-a-look" class="w-anchor"></div>';
-  html += setCat('sparkle', t('set.c.look'), t('set.c.lookD'));
+  /* 5. Account + information */
+  html += setCat('user', t('set.c.acc'));
   html += '<div class="settings-group">' +
-    '<div class="settings-row" style="cursor:default"><div class="tile">' + icon('sparkle', 20) + '</div><div class="settings-row-body"><div class="settings-row-title">' + t('settings.theme') + '</div><div class="settings-row-sub" id="set-theme-sub">' + t('theme.' + savedThemeMode()) + '</div></div></div>' +
-    chipRow('<div class="chips" style="padding-top:2px">' + ['light','dark','system'].map(th => '<button class="chip" data-theme="' + th + '" ' + (savedThemeMode() === th ? 'aria-pressed="true"' : 'aria-pressed="false"') + '>' + t('theme.' + th) + '</button>').join('') + '</div>') +
-    '<div class="settings-row" style="cursor:default"><div class="tile">' + icon('globe', 20) + '</div><div class="settings-row-body"><div class="settings-row-title">' + t('settings.language') + '</div><div class="settings-row-sub">' + t('settings.languages_list') + '</div></div></div>' +
-    chipRow('<div class="chips" style="padding-top:2px">' + ['en','fr','ar'].map(l => '<button class="chip" data-lang="' + l + '" ' + (LANG === l ? 'aria-pressed="true"' : 'aria-pressed="false"') + '>' + (l === 'fr' ? 'Français' : l === 'en' ? 'English' : 'العربية') + '</button>').join('') + '</div>') +
-    settingsToggleRow({ icon:'vibrate', title:t('settings.vibration'), sub:t('settings.vibrationDesc'), checked:vibOn, action:'settings-toggle-vibration' }) +
-    settingsToggleRow({ icon:'device', title:t('settings.desktopMode'), sub:t('settings.desktopModeDesc'), checked:LayoutMode.isDesktop(), action:'layout-toggle' }) +
-    (typeof PxInstall !== 'undefined' ? PxInstall.settingsRow() : '') +
-  '</div>';
-
-  /* 2. Notifications — in-app, phone alerts (push), SMS: three distinct channels */
-  html += '<div id="set-a-notif" class="w-anchor"></div>';
-  html += setCat('bell', t('set.c.notif'), t('set.c.notifD'));
-  html += '<p class="set-note">' + icon('info', 15) + '<span>' + escapeHtml(t('set.chan')) + '</span></p>';
-  html += '<div class="settings-group">' +
-    settingsToggleRow({ icon:'bell', title:t('settings.notifs'), sub:t('set.inappD'), checked:notifsOn, action:'settings-toggle-notifs' }) +
-    Push.rowHtml() +     /* 12.13.0 : alertes sur le téléphone, même application fermée */
-  '</div>';
-  html += settingsSection(t('confirm.title'));
-  html += '<div class="settings-group">' +
-    '<div class="settings-row" style="cursor:default"><div class="tile">' + icon('mobile', 20) + '</div><div class="settings-row-body"><div class="settings-row-title">' + t('set.sms') + '</div><div class="settings-row-sub">' + t('confirm.desc') + '</div></div></div>' +
-    '<div style="padding:0 16px 14px;border-top:1px solid var(--border)">' +
-      '<div class="field-box" style="margin-top:calc(10px*var(--ui))"><input type="tel" id="confirm-phone" inputmode="tel" dir="ltr" autocomplete="tel" placeholder="+968 7798 6533" value="' + escapeHtml(setts.confirmPhone || '') + '" aria-label="' + escapeHtml(t('confirm.title')) + '"></div>' +
-      '<div class="field-err" id="confirm-phone-err"></div>' +
-      '<button class="btn btn-secondary" id="confirm-phone-save" type="button" style="margin-top:calc(8px*var(--ui))">' + t('action.save') + '</button>' +
+    '<div class="settings-row" style="cursor:pointer" data-action="copy" data-copy="' + escapeHtml(yid) + '">' +
+      '<div class="tile">' + icon('copy', 20) + '</div>' +
+      '<div class="settings-row-body"><div class="settings-row-title">' + escapeHtml(t('transfer.yor_id_label')) + '</div><div class="settings-row-sub">' + escapeHtml(faceIdText('tapCopy')) + '</div></div>' +
+      '<span class="settings-value ltr">' + escapeHtml(yid) + '</span>' +
     '</div>' +
+    settingsLinkRow({ icon:'user', title:t('px.edit'), sub:'', nav:'profile-edit' }) +
   '</div>';
-
   /* 3. Security and privacy */
   html += '<div id="set-a-sec" class="w-anchor"></div>';
   html += setCat('shield', t('set.c.sec'), t('set.c.secD'));
@@ -176,11 +149,23 @@ function renderSettings(){
     settingsLinkRow({ icon:'shield', title:t('settings.privacy'), sub:t('settings.privacyDesc'), nav:'privacy' }) +
   '</div>';
 
-  /* 12.9.0: the connected wallet lives here (it used to sit in the home balance card) */
-  if (FEATURES.crypto){
-    html += settingsSection(t('wc.section'));
-    html += '<div class="nwc-wrap" data-nwc-slot>' + (typeof NexWC !== 'undefined' ? NexWC.cardHtml() : '') + '</div>';
-  }
+  /* 2. Notifications — in-app, phone alerts (push), SMS: three distinct channels */
+  html += '<div id="set-a-notif" class="w-anchor"></div>';
+  html += setCat('bell', t('set.c.notif'), t('set.c.notifD'));
+  html += '<div class="settings-group">' +
+    settingsToggleRow({ icon:'bell', title:t('settings.notifs'), sub:t('set.inappD'), checked:notifsOn, action:'settings-toggle-notifs' }) +
+    Push.rowHtml() +     /* 12.13.0 : alertes sur le téléphone, même application fermée */
+  '</div>';
+  html += '<p class="set-note set-foot"><span>' + escapeHtml(t('set.chan')) + '</span></p>';   /* 17.2.0: the explanation is a footnote under its group */
+  html += settingsSection(t('confirm.title'));
+  html += '<div class="settings-group">' +
+    '<div class="settings-row" style="cursor:default"><div class="tile">' + icon('mobile', 20) + '</div><div class="settings-row-body"><div class="settings-row-title">' + t('set.sms') + '</div><div class="settings-row-sub">' + t('confirm.desc') + '</div></div></div>' +
+    '<div style="padding:0 16px 14px;border-top:1px solid var(--border)">' +
+      '<div class="field-box" style="margin-top:calc(10px*var(--ui))"><input type="tel" id="confirm-phone" inputmode="tel" dir="ltr" autocomplete="tel" placeholder="+968 7798 6533" value="' + escapeHtml(setts.confirmPhone || '') + '" aria-label="' + escapeHtml(t('confirm.title')) + '"></div>' +
+      '<div class="field-err" id="confirm-phone-err"></div>' +
+      '<button class="btn btn-secondary" id="confirm-phone-save" type="button" style="margin-top:calc(8px*var(--ui))">' + t('action.save') + '</button>' +
+    '</div>' +
+  '</div>';
 
   /* 4. Money preferences — only what the app really supports (display currency, saved numbers). Limits and fees are set by the server. */
   html += setCat('banknote', t('set.c.fin'), t('set.c.finD'));
@@ -200,23 +185,32 @@ function renderSettings(){
     '</div>' +
   '</div>';
 
-  /* 5. Account + information */
-  html += setCat('user', t('set.c.acc'));
+  /* 12.9.0: the connected wallet lives here (it used to sit in the home balance card) */
+  if (FEATURES.crypto){
+    html += settingsSection(t('wc.section'));
+    html += '<div class="nwc-wrap" data-nwc-slot>' + (typeof NexWC !== 'undefined' ? NexWC.cardHtml() : '') + '</div>';
+  }
+
+  /* 1. Appearance */
+  html += '<div id="set-a-look" class="w-anchor"></div>';
+  html += setCat('sparkle', t('set.c.look'), t('set.c.lookD'));
   html += '<div class="settings-group">' +
-    '<div class="settings-row" style="cursor:pointer" data-action="copy" data-copy="' + escapeHtml(yid) + '">' +
-      '<div class="tile">' + icon('copy', 20) + '</div>' +
-      '<div class="settings-row-body"><div class="settings-row-title">' + escapeHtml(t('transfer.yor_id_label')) + '</div><div class="settings-row-sub">' + escapeHtml(faceIdText('tapCopy')) + '</div></div>' +
-      '<span class="settings-value ltr">' + escapeHtml(yid) + '</span>' +
-    '</div>' +
-    settingsLinkRow({ icon:'user', title:t('px.edit'), sub:'', nav:'profile-edit' }) +
+    '<div class="settings-row" style="cursor:default"><div class="tile">' + icon('sparkle', 20) + '</div><div class="settings-row-body"><div class="settings-row-title">' + t('settings.theme') + '</div><div class="settings-row-sub" id="set-theme-sub">' + t('theme.' + savedThemeMode()) + '</div></div></div>' +
+    chipRow('<div class="chips" style="padding-top:2px">' + ['light','dark','system'].map(th => '<button class="chip" data-theme="' + th + '" ' + (savedThemeMode() === th ? 'aria-pressed="true"' : 'aria-pressed="false"') + '>' + t('theme.' + th) + '</button>').join('') + '</div>') +
+    '<div class="settings-row" style="cursor:default"><div class="tile">' + icon('globe', 20) + '</div><div class="settings-row-body"><div class="settings-row-title">' + t('settings.language') + '</div><div class="settings-row-sub">' + t('settings.languages_list') + '</div></div></div>' +
+    chipRow('<div class="chips" style="padding-top:2px">' + ['en','fr','ar'].map(l => '<button class="chip" data-lang="' + l + '" ' + (LANG === l ? 'aria-pressed="true"' : 'aria-pressed="false"') + '>' + (l === 'fr' ? 'Français' : l === 'en' ? 'English' : 'العربية') + '</button>').join('') + '</div>') +
+    settingsToggleRow({ icon:'vibrate', title:t('settings.vibration'), sub:t('settings.vibrationDesc'), checked:vibOn, action:'settings-toggle-vibration' }) +
+    settingsToggleRow({ icon:'device', title:t('settings.desktopMode'), sub:t('settings.desktopModeDesc'), checked:LayoutMode.isDesktop(), action:'layout-toggle' }) +
+    (typeof PxInstall !== 'undefined' ? PxInstall.settingsRow() : '') +
   '</div>';
+
   html += setCat('info', t('set.c.info'));
   html += '<div class="settings-group">' +
     settingsLinkRow({ icon:'help', title:t('settings.help'), sub:t('settings.helpDesc'), nav:'help' }) +
     settingsLinkRow({ icon:'info', title:t('settings.about'), sub:t('settings.aboutDesc'), nav:'about', value:'v' + CONFIG.APP.version }) +
-    '<button class="settings-row" type="button" data-action="sign-out"><div class="tile" style="background:var(--danger-bg);color:var(--danger)">' + icon('logout', 20) + '</div><div class="settings-row-body"><div class="settings-row-title" style="color:var(--danger)">' + t('profile.logout') + '</div></div></button>' +
   '</div>';
 
+  html += '<button type="button" class="w-out set-out" data-action="sign-out"><span>' + t('ac.logout') + '</span></button>';
   html += '<div style="height:var(--sp-6)"></div></div>';
   return html;
 }

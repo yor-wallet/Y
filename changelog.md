@@ -1,3 +1,19 @@
+# DYT 17.2.0 (web) — Paramètres et Profil : listes groupées sobres
+
+Demande du propriétaire (27/11) : paramètres organisés comme les meilleures applications financières — catégories structurées, sections clairement séparées, lignes de navigation élégantes, typographie hiérarchisée, présentation sobre, aucune accumulation d'icônes décoratives. « La qualité et la perfection. »
+
+- **Ordre** : fiche profil (avatar, nom, identifiant) puis un groupe par catégorie — Compte · Sécurité et confidentialité · Notifications · Préférences financières (et contacts) · Apparence · Informations et assistance — et **Se déconnecter** seul à la fin.
+- **Doublons retirés** : la liste de raccourcis du haut (elle répétait les groupes) et le premier bouton de déconnexion. Aucun réglage n'est supprimé ni modifié : mêmes interrupteurs, mêmes pages, mêmes actions.
+- **Lignes** : plus aucune tuile d'icône colorée ; titre 16 px, précision 13 px en gris, valeur à droite, chevron discret, trait de séparation à 16 px du bord, hauteur minimale 54 px.
+- **Étiquettes de groupe** : un seul style discret (13 px, demi-gras, gris, petites capitales ; en arabe sans capitales ni espacement). Les longues explications deviennent des notes sous leur groupe.
+- **Rythme** : 36 px entre deux catégories, 8 px entre une étiquette et son groupe (le corps de page ajoutait 18 px autour d'ancres vides, d'où des écarts irréguliers).
+- **Contacts** : lignes simples dans leur groupe, plus de cartes dans la carte. **Devises** : grille 5 × 2 au lieu d'une bande qui sortait de l'écran.
+- **Profil (menu ≡)** : mêmes lignes sans icônes ; les deux cartes résumé suivent le même schéma (libellé puis valeur) ; badges sans encadré.
+- **Accueil en arabe** : le solde est aligné à droite sous son libellé.
+- Tests : `ios-settings` (lignes sans tuile, séparateur à 16 px) et `omw` (ordre des catégories, une seule déconnexion, liens) adaptés.
+
+---
+
 # DYT 17.1.0 (web) — accueil et navigation à cinq sections
 
 Demande du propriétaire (27/11) : accueil composé à partir de deux références (solde de la première ; actions, liste des cryptos et barre flottante de la seconde), cinq sections : Portefeuilles, Spot, Marché, Réseaux, Tokens. Binance reste invisible pour l'utilisateur (géré en interne par l'administrateur).

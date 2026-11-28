@@ -17,20 +17,20 @@ for (const lang of ['en', 'ar']) {
     assert.match(r.n, /tabular-nums/);
     assert.match(r.cls, /\bf-inter\b/, 'off Apple devices the Inter tracking is used');
   });
-  await ok('réglages : lignes de 52 px, texte 17 px normal, tuiles carrées arrondies de 30 px, trait de séparation en retrait', async () => {
+  await ok('réglages (17.2.0) : lignes de 54 px au moins, titre 16 px, aucune tuile d’icône, trait de séparation à 16 px du bord du texte', async () => {
     await go(page, 'settings');
     const r = await page.evaluate((lang) => {
-      const row = document.querySelector('#settings .w-row'), b = row.querySelector('b'), tile = row.querySelector('.w-tile');
-      const second = document.querySelectorAll('#settings .w-row')[1], sep = getComputedStyle(second, '::after');
-      const rb = row.getBoundingClientRect(), tb = tile.getBoundingClientRect(), cs = getComputedStyle(b);
-      return { h: Math.round(rb.height), fs: cs.fontSize, fw: cs.fontWeight, ls: cs.letterSpacing, tw: Math.round(tb.width), th: Math.round(tb.height), tr: getComputedStyle(tile).borderRadius,
-        sepStart: lang === 'ar' ? sep.right : sep.left, sepH: sep.height };
+      const rows = [...document.querySelectorAll('#settings .settings-group .settings-row')].filter(x => x.offsetHeight);
+      const row = rows[0], second = rows[1], title = row.querySelector('.settings-row-title'), sep = getComputedStyle(second, '::after');
+      const tiles = [...document.querySelectorAll('#settings .settings-row > .tile')].filter(x => x.offsetWidth > 0).length;
+      const cs = getComputedStyle(title);
+      return { h: Math.round(row.getBoundingClientRect().height), fs: cs.fontSize, ls: cs.letterSpacing, tiles, sepStart: lang === 'ar' ? sep.right : sep.left };
     }, lang);
-    assert.ok(r.h >= 52 && r.h <= 56, 'hauteur ' + r.h);
-    assert.equal(r.fs, '17px'); assert.equal(r.fw, '400');
+    assert.ok(r.h >= 54, 'hauteur ' + r.h);
+    assert.equal(r.fs, '16px');
     if (lang === 'ar') assert.ok(r.ls === 'normal' || r.ls === '0px', 'pas d’approche en arabe : ' + r.ls);
-    assert.equal(r.tw, 30); assert.equal(r.th, 30); assert.equal(r.tr, '8px');
-    assert.equal(r.sepStart, '58px');
+    assert.equal(r.tiles, 0, 'tuiles visibles : ' + r.tiles);
+    assert.equal(r.sepStart, '16px');
   });
   await ok('interrupteur iOS : 51 x 31, bouton de 27 px, jaune quand il est actif, bouton à droite (à gauche en arabe)', async () => {
     const r = await page.evaluate(() => {

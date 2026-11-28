@@ -338,3 +338,71 @@ html:root:root:root:root[dir="rtl"] body .nw-row::after{transform:rotate(-135deg
 /* the administrator's fifth tile (Credit) keeps the same grid */
 html:root:root:root:root body .lt-home .lt-acts:has(.omx-act:nth-child(5)){grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
 html:root:root:root:root body .lt-home .lt-acts:has(.omx-act:nth-child(5)) .omx-act{font-size:11.5px}
+
+/* ---------- 14. 17.2.0 — Settings and Account: sober grouped lists (owner: structured categories, separated sections, elegant rows,
+   precise typographic hierarchy, no decorative icons). Applies to #settings and #account only. ---------- */
+html:root:root:root:root body{--set-sep:rgba(9,9,9,.09)}
+html:root:root:root:root[data-theme="dark"] body{--set-sep:rgba(255,255,255,.08)}
+/* no icon tiles in the rows */
+html:root:root:root:root body :is(#settings,#account) :is(.settings-row > .tile,.w-tile,.hub-i,.hub-wi,.set-cat-ic){display:none!important}
+html:root:root:root:root body :is(#settings,#account) :is(.settings-row,.hub-row){gap:12px!important;padding:12px 16px!important;min-height:54px!important}
+/* hairline between rows, from the text edge (16 px) to the edge of the group */
+html:root:root:root:root body :is(#settings,#account) :is(.settings-row,.hub-row) + :is(.settings-row,.hub-row)::after,
+html:root:root:root:root body :is(#settings,#account) :is(.set-chips,.push-actions) + :is(.settings-row,.hub-row)::after{inset-inline-start:16px!important;background:var(--set-sep)!important}
+/* row text: title 16/22 regular in the page ink, detail 13/18 secondary, value 15 secondary, chevron light */
+html:root:root:root:root body :is(#settings,#account) :is(.settings-row-title,.hub-t > b){font-size:16px!important;line-height:22px!important;font-weight:500!important}
+html:root:root:root:root body :is(#settings,#account) :is(.settings-row-sub,.hub-t > small){font-size:13px!important;line-height:18px!important;color:var(--lt-ink2)!important}
+html:root:root:root:root body #settings .settings-value{font-size:15px!important;font-weight:400!important;color:var(--lt-ink2)!important;flex:none;max-width:42%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* groups: one card per category, 16 px corners, no border in dark, a hairline in light */
+html:root:root:root:root body :is(#settings,#account) :is(.settings-group,.hub-list){border-radius:16px!important;background:var(--lt-card)!important}
+html:root:root:root:root[data-theme="light"] body :is(#settings,#account) :is(.settings-group,.hub-list){box-shadow:0 0 0 1px var(--set-sep)!important}
+/* group labels: category and sub-group share one quiet style (13 px, semibold, secondary, small caps feel); Arabic: no letter-spacing, no capitals */
+html:root:root:root:root body #settings .set-cat{margin:30px 0 8px!important;padding:0 16px!important}
+html:root:root:root:root body #settings .set-cat h2,html:root:root:root:root body #settings .settings-section{font:600 13px/18px var(--ios-sans)!important;letter-spacing:.04em!important;text-transform:uppercase!important;color:var(--lt-ink2)!important;margin:0!important}
+html:root:root:root:root body #settings .settings-section{padding:0 16px!important;margin:22px 0 8px!important}
+html:root:root:root:root[lang="ar"] body #settings :is(.set-cat h2,.settings-section){letter-spacing:0!important;text-transform:none!important;font-size:14px!important;font-family:var(--ios-sans-ar)!important}
+/* footnotes under a group: 13 px, tertiary, no icon */
+html:root:root:root:root body #settings :is(.set-note,.set-mini){color:var(--lt-ink3)!important;font-size:13px!important;line-height:18px!important}
+html:root:root:root:root body #settings .set-note{margin:0 0 10px!important}
+/* profile card at the top */
+html:root:root:root:root body #settings .set-v2 .set-me{margin-top:8px!important;border-radius:16px!important;background:var(--lt-card)!important}
+html:root:root:root:root[data-theme="light"] body #settings .set-v2 .set-me{box-shadow:0 0 0 1px var(--set-sep)!important}
+html:root:root:root:root body #settings .set-me-body b{font-size:18px!important;line-height:24px!important}
+html:root:root:root:root body #settings .set-me-body small{font-variant-numeric:tabular-nums}
+/* sign-out: its own row at the end, red text, no icon */
+html:root:root:root:root body :is(#settings,#account) :is(.w-out,.hub-out) svg{display:none!important}
+html:root:root:root:root body #settings .set-out{margin:32px 0 0!important;border-radius:16px!important;background:var(--lt-card)!important;font-weight:500!important;font-size:16px!important}
+html:root:root:root:root[data-theme="light"] body #settings .set-out{box-shadow:0 0 0 1px var(--set-sep)!important}
+/* segmented choices inside a group sit on the group's inner padding */
+html:root:root:root:root body #settings .set-chips{padding:0 16px 14px!important}
+/* even rhythm between categories: the anchors take no room, groups carry no outer margin of their own */
+html:root:root:root:root body #settings .w-anchor{height:0!important;margin:0!important;padding:0!important}
+html:root:root:root:root body #settings .set-v2 > :is(.settings-group,.nwc-wrap){margin:0!important}
+html:root:root:root:root body #settings .set-foot{margin:8px 0 0!important;padding:0 16px!important}
+/* contacts: plain rows inside their group, not cards in a card */
+html:root:root:root:root body #settings .settings-group .contact-card{background:transparent!important;border:0!important;box-shadow:none!important;padding:6px 4px!important;border-radius:0!important}
+html:root:root:root:root body #settings .settings-group .contact-card + .contact-card{border-top:1px solid var(--set-sep)!important;padding-top:12px!important}
+/* the ten currencies: a 5 x 2 grid instead of a strip that scrolls off the edge */
+html:root:root:root:root body #settings .chips:has([data-currency]){display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;border-radius:14px!important;overflow:visible!important}
+html:root:root:root:root body #settings .chips:has([data-currency]) .chip{justify-content:center;min-width:0;padding-inline:0!important;border-radius:11px!important}
+
+/* account: one typographic pattern for the two summary cards (label, then value), badges without a box, no decorative glyphs */
+html:root:root:root:root body #account .hub-badges{background:transparent!important;padding:0!important;gap:6px!important;flex-wrap:wrap}
+html:root:root:root:root body #account .hub-badge{background:var(--lt-card2)!important;color:var(--lt-ink2)!important;font-size:12px!important;font-weight:600!important;padding:4px 10px!important;border-radius:999px!important}
+html:root:root:root:root body #account .hub-badge.ok{background:var(--lt-chip-up)!important;color:var(--lt-pos)!important}
+html:root:root:root:root body #account .hub-badge.no{background:var(--lt-soft)!important;color:var(--w-warn)!important}
+html:root:root:root:root body #account .hub-wallet b{display:none!important}
+html:root:root:root:root body #account :is(.hub-wallet small,.hub-level b){display:block;font-size:13px!important;line-height:18px!important;font-weight:400!important;color:var(--lt-ink2)!important;margin:0 0 4px!important}
+html:root:root:root:root body #account :is(.hub-amt,.hub-level span){font-size:17px!important;line-height:22px!important;font-weight:600!important}
+html:root:root:root:root body #account .hub-two .hub-card{border-radius:16px!important}
+html:root:root:root:root body #account .hub-list .hub-out{border-top:1px solid var(--set-sep)!important;border-radius:0!important;font-size:16px!important;font-weight:500!important}
+/* the settings body is a flex column with an 18 px gap: the empty anchors doubled it before some categories. One explicit rhythm instead. */
+html:root:root:root:root body #settings .set-v2{gap:0!important;row-gap:0!important}
+html:root:root:root:root body #settings .set-v2 > .set-me{margin-top:4px!important}
+html:root:root:root:root body #settings .set-v2 > .set-cat{margin:36px 0 8px!important}
+html:root:root:root:root body #settings .set-v2 > .settings-section{margin:24px 0 8px!important}
+html:root:root:root:root body #settings .set-v2 > .set-foot{margin:8px 0 0!important}
+html:root:root:root:root body #settings .set-v2 > .set-out{margin:36px 0 0!important}
+/* the currency grid: no sliding pill (it spans both rows), the chosen currency is filled directly */
+html:root:root:root:root body #settings .chips:has([data-currency]) > .chip-pill{display:none!important}
+html:root:root:root:root body #settings .chips:has([data-currency]) .chip[aria-pressed="true"]{background:var(--lt-yellow)!important;color:var(--lt-on-yellow)!important}
